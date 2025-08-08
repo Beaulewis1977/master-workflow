@@ -1,0 +1,84 @@
+{
+  "workflow": "create-web-app",
+  "version": "1.0",
+  "description": "Build a complete web application with frontend and backend",
+  "author": "AI Dev OS",
+  "created": "2024-01-01",
+  
+  "variables": {
+    "app_name": "my-web-app",
+    "frontend_framework": "react",
+    "backend_framework": "express",
+    "database": "postgresql",
+    "auth_type": "jwt",
+    "styling": "tailwind"
+  },
+  
+  "steps": [
+    {
+      "id": "planning",
+      "name": "Plan Application Architecture",
+      "type": "agent-os",
+      "command": "plan-product",
+      "prompt": "Plan a web application called {{app_name}} with {{frontend_framework}} frontend, {{backend_framework}} backend, {{database}} database, {{auth_type}} authentication, and {{styling}} for styling. Include user management, responsive design, and API integration.",
+      "output": "specs/app-plan.md"
+    },
+    {
+      "id": "create-specs",
+      "name": "Create Detailed Specifications",
+      "type": "agent-os",
+      "command": "create-spec",
+      "prompt": "Create detailed specifications for each component of {{app_name}} based on the plan",
+      "output": "specs/detailed-specs.md"
+    },
+    {
+      "id": "setup-project",
+      "name": "Initialize Project Structure",
+      "type": "claude",
+      "prompt": "Create the project structure for {{app_name}} with separate frontend and backend directories, configuration files, and package.json files for both {{frontend_framework}} and {{backend_framework}}",
+      "capture_output": "project_initialized"
+    },
+    {
+      "id": "implement-backend",
+      "name": "Build Backend API",
+      "type": "claude-flow",
+      "mode": "swarm",
+      "prompt": "Implement the {{backend_framework}} backend API with {{database}} integration, {{auth_type}} authentication, and all endpoints specified in the plan",
+      "output": "backend-complete"
+    },
+    {
+      "id": "implement-frontend",
+      "name": "Build Frontend Application",
+      "type": "claude-flow",
+      "mode": "swarm",
+      "prompt": "Create the {{frontend_framework}} frontend with {{styling}} styling, responsive design, and connection to the backend API",
+      "output": "frontend-complete"
+    },
+    {
+      "id": "create-tests",
+      "name": "Generate Tests",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Create comprehensive unit and integration tests for both frontend and backend of {{app_name}}",
+      "output": "tests-complete"
+    },
+    {
+      "id": "documentation",
+      "name": "Generate Documentation",
+      "type": "claude",
+      "prompt": "Create complete documentation including README, API documentation, setup instructions, and deployment guide for {{app_name}}",
+      "output": "docs/README.md"
+    },
+    {
+      "id": "review",
+      "name": "Code Review",
+      "type": "sub-agent",
+      "agent": "code-reviewer",
+      "prompt": "Review the entire {{app_name}} codebase for best practices, security issues, and optimization opportunities",
+      "output": "review-complete"
+    }
+  ],
+  
+  "on_success": "✅ Web application '{{app_name}}' created successfully with {{frontend_framework}} and {{backend_framework}}!",
+  "on_failure": "❌ Failed to create web application. Check logs for details."
+}

@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "description": "Simple Workflow System Configuration",
+  
+  "settings": {
+    "interactive": true,
+    "auto_confirm": false,
+    "verbose": false,
+    "save_outputs": true,
+    "output_dir": "./outputs",
+    "log_level": "info",
+    "checkpoint_dir": "./checkpoints",
+    "max_retries": 3,
+    "timeout_seconds": 300
+  },
+  
+  "systems": {
+    "claude": {
+      "enabled": true,
+      "api_key_env": "ANTHROPIC_API_KEY",
+      "max_tokens": 4096,
+      "temperature": 0.7
+    },
+    "agent_os": {
+      "enabled": true,
+      "commands_path": "~/.claude/commands",
+      "available_commands": [
+        "plan-product",
+        "create-spec",
+        "analyze-product",
+        "execute-tasks"
+      ]
+    },
+    "claude_flow": {
+      "enabled": true,
+      "command": "npx claude-flow@alpha",
+      "modes": ["swarm", "hive-mind"],
+      "memory_path": "~/.claude-flow/memory"
+    },
+    "sub_agents": {
+      "enabled": true,
+      "agents_path": "~/.claude/agents",
+      "available_agents": [
+        "test-runner",
+        "code-reviewer",
+        "security-auditor",
+        "architect",
+        "frontend-specialist",
+        "backend-specialist"
+      ]
+    }
+  },
+  
+  "defaults": {
+    "execution_mode": "sequential",
+    "confirm_each_step": true,
+    "save_checkpoints": true,
+    "continue_on_error": false,
+    "capture_outputs": true,
+    "timestamp_outputs": true
+  },
+  
+  "paths": {
+    "workflows": "./workflows",
+    "templates": "./templates",
+    "outputs": "./outputs",
+    "logs": "./logs",
+    "checkpoints": "./checkpoints"
+  }
+}

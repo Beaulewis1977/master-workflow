@@ -1,0 +1,71 @@
+{
+  "workflow": "add-feature",
+  "version": "1.0",
+  "description": "Add a new feature to an existing project",
+  "author": "AI Dev OS",
+  "created": "2024-01-01",
+  
+  "variables": {
+    "feature_name": "user-notifications",
+    "feature_description": "Real-time notifications for user actions"
+  },
+  
+  "steps": [
+    {
+      "id": "analyze-codebase",
+      "name": "Analyze Existing Codebase",
+      "type": "agent-os",
+      "command": "analyze-product",
+      "prompt": "Analyze the existing codebase to understand the architecture and identify where to add {{feature_name}}",
+      "capture_output": "codebase_analysis"
+    },
+    {
+      "id": "create-feature-spec",
+      "name": "Create Feature Specification",
+      "type": "agent-os",
+      "command": "create-spec",
+      "prompt": "Create detailed specification for {{feature_name}}: {{feature_description}}. Include technical requirements, UI/UX considerations, and integration points",
+      "output": "specs/{{feature_name}}-spec.md"
+    },
+    {
+      "id": "implement-backend",
+      "name": "Implement Backend Changes",
+      "type": "claude",
+      "prompt": "Implement backend changes for {{feature_name}} based on the specification. Add necessary endpoints, database schema changes, and business logic",
+      "capture_output": "backend_changes"
+    },
+    {
+      "id": "implement-frontend",
+      "name": "Implement Frontend Changes",
+      "type": "claude",
+      "prompt": "Implement frontend changes for {{feature_name}}. Add UI components, state management, and API integration",
+      "capture_output": "frontend_changes"
+    },
+    {
+      "id": "create-tests",
+      "name": "Create Feature Tests",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Create comprehensive tests for {{feature_name}} including unit tests, integration tests, and end-to-end tests",
+      "output": "tests/{{feature_name}}-tests"
+    },
+    {
+      "id": "update-documentation",
+      "name": "Update Documentation",
+      "type": "claude",
+      "prompt": "Update project documentation to include {{feature_name}}. Update README, API docs, and user guides",
+      "output": "docs-updated"
+    },
+    {
+      "id": "review",
+      "name": "Review Implementation",
+      "type": "sub-agent",
+      "agent": "code-reviewer",
+      "prompt": "Review the implementation of {{feature_name}} for code quality, best practices, and potential issues",
+      "output": "review-complete"
+    }
+  ],
+  
+  "on_success": "✅ Feature '{{feature_name}}' successfully added to the project!",
+  "on_failure": "❌ Failed to add feature. Check logs for details."
+}

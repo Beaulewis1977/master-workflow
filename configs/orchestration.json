@@ -1,0 +1,202 @@
+{
+  "version": "2.0",
+  "orchestration": {
+    "master": "workflow-orchestrator",
+    "agents": {
+      "workflow-orchestrator": {
+        "role": "master",
+        "responsibilities": [
+          "Overall workflow coordination",
+          "Agent task assignment",
+          "State management",
+          "Error recovery"
+        ],
+        "priority": 1
+      },
+      "complexity-analyzer-agent": {
+        "role": "analyzer",
+        "responsibilities": [
+          "Project complexity analysis",
+          "8-dimension evaluation",
+          "Stage detection",
+          "Score calculation"
+        ],
+        "priority": 2
+      },
+      "approach-selector-agent": {
+        "role": "selector",
+        "responsibilities": [
+          "Approach selection",
+          "Command generation",
+          "Version management",
+          "Confidence scoring"
+        ],
+        "priority": 2
+      },
+      "document-customizer-agent": {
+        "role": "documenter",
+        "responsibilities": [
+          "Documentation generation",
+          "Tech-stack customization",
+          "Configuration creation",
+          "Template management"
+        ],
+        "priority": 3
+      },
+      "sparc-methodology-agent": {
+        "role": "sparc-manager",
+        "responsibilities": [
+          "SPARC phase management",
+          "Quality gate enforcement",
+          "Phase transition validation",
+          "Enterprise methodology"
+        ],
+        "priority": 2,
+        "conditional": "complexity > 70"
+      },
+      "integration-coordinator-agent": {
+        "role": "integrator",
+        "responsibilities": [
+          "System integration",
+          "MCP server management",
+          "TMux orchestration",
+          "Health monitoring"
+        ],
+        "priority": 2
+      }
+    }
+  },
+  "communication": {
+    "protocol": "message-based",
+    "format": "yaml",
+    "channels": {
+      "analysis": {
+        "publisher": "complexity-analyzer-agent",
+        "subscribers": ["workflow-orchestrator", "approach-selector-agent"]
+      },
+      "selection": {
+        "publisher": "approach-selector-agent",
+        "subscribers": ["workflow-orchestrator", "document-customizer-agent"]
+      },
+      "documentation": {
+        "publisher": "document-customizer-agent",
+        "subscribers": ["workflow-orchestrator", "integration-coordinator-agent"]
+      },
+      "sparc": {
+        "publisher": "sparc-methodology-agent",
+        "subscribers": ["workflow-orchestrator", "document-customizer-agent"]
+      },
+      "integration": {
+        "publisher": "integration-coordinator-agent",
+        "subscribers": ["workflow-orchestrator"]
+      }
+    }
+  },
+  "workflows": {
+    "initialization": {
+      "sequence": [
+        {
+          "step": 1,
+          "agent": "workflow-orchestrator",
+          "action": "initialize",
+          "timeout": "10s"
+        },
+        {
+          "step": 2,
+          "agent": "integration-coordinator-agent",
+          "action": "validate_environment",
+          "timeout": "30s"
+        },
+        {
+          "step": 3,
+          "agent": "complexity-analyzer-agent",
+          "action": "analyze_project",
+          "timeout": "60s"
+        },
+        {
+          "step": 4,
+          "agent": "approach-selector-agent",
+          "action": "select_approach",
+          "timeout": "10s"
+        },
+        {
+          "step": 5,
+          "agent": "document-customizer-agent",
+          "action": "generate_documents",
+          "timeout": "30s"
+        }
+      ]
+    },
+    "execution": {
+      "simple_swarm": {
+        "agents": ["workflow-orchestrator"],
+        "parallel": false
+      },
+      "hive_mind": {
+        "agents": [
+          "workflow-orchestrator",
+          "complexity-analyzer-agent",
+          "approach-selector-agent",
+          "document-customizer-agent",
+          "integration-coordinator-agent"
+        ],
+        "parallel": true
+      },
+      "sparc": {
+        "agents": [
+          "workflow-orchestrator",
+          "sparc-methodology-agent",
+          "complexity-analyzer-agent",
+          "approach-selector-agent",
+          "document-customizer-agent",
+          "integration-coordinator-agent"
+        ],
+        "parallel": true,
+        "phases": 5
+      }
+    }
+  },
+  "error_handling": {
+    "retry_policy": {
+      "max_attempts": 3,
+      "backoff": "exponential",
+      "initial_delay": "1s",
+      "max_delay": "30s"
+    },
+    "fallback_chain": [
+      "workflow-orchestrator",
+      "integration-coordinator-agent"
+    ],
+    "recovery_strategies": {
+      "agent_timeout": "restart_agent",
+      "communication_failure": "retry_with_backoff",
+      "resource_exhaustion": "scale_down",
+      "validation_failure": "manual_intervention"
+    }
+  },
+  "monitoring": {
+    "metrics": {
+      "agent_health": {
+        "interval": "30s",
+        "threshold": 0.95
+      },
+      "workflow_progress": {
+        "interval": "10s",
+        "reporting": true
+      },
+      "resource_usage": {
+        "interval": "60s",
+        "limits": {
+          "cpu": 80,
+          "memory": 80,
+          "disk": 90
+        }
+      }
+    },
+    "logging": {
+      "level": "info",
+      "destinations": [".ai-workflow/logs/", "console"],
+      "rotation": "daily"
+    }
+  }
+}

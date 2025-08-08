@@ -1,0 +1,349 @@
+{
+  "version": "2.0",
+  "languages": {
+    "javascript": {
+      "extensions": [".js", ".jsx", ".mjs"],
+      "packageFile": "package.json",
+      "patterns": ["const ", "let ", "var ", "function ", "=>"],
+      "guidelines": {
+        "style": "ES6+ features, async/await, arrow functions",
+        "testing": "Jest, Mocha, Cypress",
+        "linting": "ESLint"
+      }
+    },
+    "typescript": {
+      "extensions": [".ts", ".tsx"],
+      "packageFile": "package.json",
+      "configFile": "tsconfig.json",
+      "patterns": ["interface ", "type ", ": string", ": number"],
+      "guidelines": {
+        "style": "Strict type checking, interfaces",
+        "testing": "Jest with ts-jest",
+        "linting": "ESLint with TypeScript plugin"
+      }
+    },
+    "python": {
+      "extensions": [".py"],
+      "packageFile": "requirements.txt",
+      "alternatePackageFiles": ["setup.py", "Pipfile", "pyproject.toml"],
+      "patterns": ["def ", "class ", "import ", "from "],
+      "guidelines": {
+        "style": "PEP 8, type hints",
+        "testing": "pytest, unittest",
+        "linting": "pylint, black"
+      }
+    },
+    "go": {
+      "extensions": [".go"],
+      "packageFile": "go.mod",
+      "patterns": ["package ", "func ", "type ", "struct "],
+      "guidelines": {
+        "style": "Effective Go, gofmt",
+        "testing": "go test",
+        "linting": "golint, go vet"
+      }
+    },
+    "rust": {
+      "extensions": [".rs"],
+      "packageFile": "Cargo.toml",
+      "patterns": ["fn ", "let ", "mut ", "impl "],
+      "guidelines": {
+        "style": "Rust conventions, ownership",
+        "testing": "cargo test",
+        "linting": "clippy"
+      }
+    },
+    "java": {
+      "extensions": [".java"],
+      "packageFile": "pom.xml",
+      "alternatePackageFiles": ["build.gradle"],
+      "patterns": ["public class", "private ", "import "],
+      "guidelines": {
+        "style": "Java conventions, OOP",
+        "testing": "JUnit",
+        "linting": "CheckStyle"
+      }
+    }
+  },
+  "frameworks": {
+    "react": {
+      "language": "javascript",
+      "indicators": {
+        "dependencies": ["react", "react-dom"],
+        "files": ["App.jsx", "index.jsx", ".jsx files"],
+        "patterns": ["import React", "useState", "useEffect"]
+      },
+      "documentation": {
+        "componentStructure": "Functional components with hooks",
+        "stateManagement": "Context API, Redux, Zustand",
+        "testing": "React Testing Library"
+      }
+    },
+    "vue": {
+      "language": "javascript",
+      "indicators": {
+        "dependencies": ["vue"],
+        "files": [".vue files", "App.vue"],
+        "patterns": ["<template>", "<script>", "export default"]
+      },
+      "documentation": {
+        "componentStructure": "Single File Components",
+        "stateManagement": "Vuex, Pinia",
+        "testing": "Vue Test Utils"
+      }
+    },
+    "angular": {
+      "language": "typescript",
+      "indicators": {
+        "dependencies": ["@angular/core"],
+        "files": ["angular.json", ".component.ts"],
+        "patterns": ["@Component", "@Injectable", "ngOnInit"]
+      },
+      "documentation": {
+        "componentStructure": "Component classes with decorators",
+        "stateManagement": "Services, RxJS",
+        "testing": "Karma, Jasmine"
+      }
+    },
+    "express": {
+      "language": "javascript",
+      "indicators": {
+        "dependencies": ["express"],
+        "patterns": ["app.get", "app.post", "router.", "middleware"]
+      },
+      "documentation": {
+        "structure": "Route-based architecture",
+        "middleware": "Error handling, authentication",
+        "testing": "Supertest"
+      }
+    },
+    "nextjs": {
+      "language": "javascript",
+      "indicators": {
+        "dependencies": ["next"],
+        "files": ["next.config.js", "pages/", "app/"],
+        "patterns": ["getServerSideProps", "getStaticProps"]
+      },
+      "documentation": {
+        "structure": "File-based routing",
+        "rendering": "SSR, SSG, ISR",
+        "testing": "Jest, Playwright"
+      }
+    },
+    "django": {
+      "language": "python",
+      "indicators": {
+        "files": ["manage.py", "settings.py", "urls.py"],
+        "patterns": ["from django", "models.Model", "views.py"]
+      },
+      "documentation": {
+        "structure": "MVT pattern",
+        "orm": "Django ORM",
+        "testing": "Django TestCase"
+      }
+    },
+    "fastapi": {
+      "language": "python",
+      "indicators": {
+        "dependencies": ["fastapi"],
+        "patterns": ["@app.get", "@app.post", "async def", "FastAPI()"]
+      },
+      "documentation": {
+        "structure": "Route decorators",
+        "validation": "Pydantic models",
+        "testing": "pytest with httpx"
+      }
+    },
+    "gin": {
+      "language": "go",
+      "indicators": {
+        "imports": ["github.com/gin-gonic/gin"],
+        "patterns": ["gin.Default()", "c.JSON", "router.GET"]
+      },
+      "documentation": {
+        "structure": "HTTP router",
+        "middleware": "Gin middleware",
+        "testing": "httptest"
+      }
+    },
+    "spring": {
+      "language": "java",
+      "indicators": {
+        "dependencies": ["spring-boot"],
+        "patterns": ["@SpringBootApplication", "@RestController", "@Service"]
+      },
+      "documentation": {
+        "structure": "Annotation-based configuration",
+        "orm": "Spring Data JPA",
+        "testing": "SpringBootTest"
+      }
+    }
+  },
+  "databases": {
+    "mongodb": {
+      "indicators": {
+        "dependencies": ["mongodb", "mongoose"],
+        "files": ["*.mongo.js", "schemas/"],
+        "patterns": ["mongoose.model", "db.collection", "MongoDB"]
+      },
+      "documentation": {
+        "type": "NoSQL document database",
+        "orm": "Mongoose (Node.js)",
+        "patterns": "Document design, aggregation"
+      }
+    },
+    "postgresql": {
+      "indicators": {
+        "dependencies": ["pg", "postgres", "psycopg2"],
+        "files": ["*.sql", "migrations/"],
+        "patterns": ["CREATE TABLE", "SELECT", "postgres://"]
+      },
+      "documentation": {
+        "type": "Relational database",
+        "features": "ACID, advanced queries",
+        "patterns": "Normalized schemas"
+      }
+    },
+    "mysql": {
+      "indicators": {
+        "dependencies": ["mysql", "mysql2"],
+        "files": ["*.sql"],
+        "patterns": ["mysql://", "CREATE DATABASE"]
+      },
+      "documentation": {
+        "type": "Relational database",
+        "features": "ACID compliance",
+        "patterns": "Normalized schemas"
+      }
+    },
+    "redis": {
+      "indicators": {
+        "dependencies": ["redis", "ioredis"],
+        "patterns": ["redis.createClient", "REDIS_URL", "cache"]
+      },
+      "documentation": {
+        "type": "In-memory data store",
+        "usage": "Caching, sessions, pub/sub",
+        "patterns": "Key-value, TTL"
+      }
+    },
+    "sqlite": {
+      "indicators": {
+        "files": ["*.db", "*.sqlite", "*.sqlite3"],
+        "patterns": ["sqlite://", "sqlite3.connect"]
+      },
+      "documentation": {
+        "type": "Embedded relational database",
+        "usage": "Local storage, prototyping",
+        "patterns": "Single file database"
+      }
+    }
+  },
+  "deploymentPlatforms": {
+    "docker": {
+      "indicators": {
+        "files": ["Dockerfile", "docker-compose.yml", ".dockerignore"],
+        "patterns": ["FROM ", "EXPOSE ", "docker run"]
+      },
+      "documentation": {
+        "containerization": "Application containers",
+        "orchestration": "Docker Compose, Swarm"
+      }
+    },
+    "kubernetes": {
+      "indicators": {
+        "files": ["k8s/", "*.yaml", "deployment.yaml", "service.yaml"],
+        "patterns": ["apiVersion:", "kind:", "kubectl"]
+      },
+      "documentation": {
+        "orchestration": "Container orchestration",
+        "features": "Scaling, load balancing, rollouts"
+      }
+    },
+    "aws": {
+      "indicators": {
+        "files": ["serverless.yml", "sam-template.yaml"],
+        "dependencies": ["aws-sdk"],
+        "patterns": ["AWS", "Lambda", "S3"]
+      },
+      "documentation": {
+        "services": "EC2, Lambda, ECS, S3",
+        "deployment": "CloudFormation, CDK"
+      }
+    },
+    "vercel": {
+      "indicators": {
+        "files": ["vercel.json"],
+        "patterns": ["vercel deploy"]
+      },
+      "documentation": {
+        "type": "Serverless platform",
+        "features": "Edge functions, CDN"
+      }
+    },
+    "heroku": {
+      "indicators": {
+        "files": ["Procfile", "app.json"],
+        "patterns": ["heroku create", "git push heroku"]
+      },
+      "documentation": {
+        "type": "PaaS platform",
+        "features": "Easy deployment, add-ons"
+      }
+    }
+  },
+  "features": {
+    "authentication": {
+      "indicators": {
+        "dependencies": ["jsonwebtoken", "passport", "bcrypt", "auth0"],
+        "files": ["auth/", "login", "signup"],
+        "patterns": ["jwt", "login", "authenticate", "authorization"]
+      },
+      "documentation": {
+        "implementation": "JWT tokens, OAuth, session-based",
+        "security": "Password hashing, rate limiting"
+      }
+    },
+    "realtime": {
+      "indicators": {
+        "dependencies": ["socket.io", "ws", "websocket"],
+        "patterns": ["io.on", "socket.emit", "WebSocket"]
+      },
+      "documentation": {
+        "protocol": "WebSockets",
+        "patterns": "Pub/sub, rooms, events"
+      }
+    },
+    "api": {
+      "indicators": {
+        "files": ["api/", "routes/", "endpoints/"],
+        "patterns": ["/api/", "REST", "GraphQL", "endpoint"]
+      },
+      "documentation": {
+        "style": "RESTful, GraphQL",
+        "documentation": "OpenAPI, Swagger"
+      }
+    },
+    "testing": {
+      "indicators": {
+        "dependencies": ["jest", "mocha", "pytest", "junit"],
+        "files": ["test/", "tests/", "*.test.js", "*.spec.js"],
+        "patterns": ["describe", "it(", "test(", "expect"]
+      },
+      "documentation": {
+        "types": "Unit, integration, e2e",
+        "coverage": "Code coverage reports"
+      }
+    },
+    "cicd": {
+      "indicators": {
+        "files": [".github/workflows/", ".gitlab-ci.yml", "Jenkinsfile", ".circleci/"],
+        "patterns": ["CI/CD", "pipeline", "workflow"]
+      },
+      "documentation": {
+        "automation": "Build, test, deploy",
+        "platforms": "GitHub Actions, GitLab CI, Jenkins"
+      }
+    }
+  }
+}

@@ -1,0 +1,211 @@
+{
+  "version": "2.0",
+  "systems": {
+    "claude-flow": {
+      "name": "Claude Flow 2.0",
+      "description": "Multi-agent AI coordination system",
+      "required": false,
+      "optional": true,
+      "enabled": false,
+      "installation": "npx claude-flow@alpha init",
+      "commands": {
+        "swarm": {
+          "description": "Single-agent quick tasks",
+          "usage": "npx claude-flow@{version} swarm \"{task}\""
+        },
+        "hive-mind": {
+          "description": "Multi-agent coordination",
+          "usage": "npx claude-flow@{version} hive-mind spawn \"{project}\" --agents {count} --claude"
+        },
+        "sparc": {
+          "description": "SPARC methodology wizard",
+          "usage": "npx claude-flow@{version} sparc wizard --interactive"
+        }
+      },
+      "configuration": {
+        "directory": ".claude-flow",
+        "files": ["hive-config.json", "memory.db"],
+        "phases": "sparc-phases/"
+      }
+    },
+    "agent-os": {
+      "name": "Agent OS",
+      "description": "Specification-driven planning system",
+      "required": false,
+      "optional": true,
+      "enabled": false,
+      "installation": "curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash",
+      "commands": {
+        "plan-product": {
+          "description": "Create product specifications",
+          "usage": "/plan-product"
+        },
+        "create-spec": {
+          "description": "Generate feature specifications",
+          "usage": "/create-spec {feature}"
+        },
+        "analyze-product": {
+          "description": "Analyze existing product",
+          "usage": "/analyze-product"
+        },
+        "execute-tasks": {
+          "description": "Execute planned tasks",
+          "usage": "/execute-tasks"
+        }
+      },
+      "configuration": {
+        "directory": ".agent-os",
+        "subdirectories": ["specs", "plans", "tasks"],
+        "files": ["instructions.md", "standards.md"]
+      }
+    },
+    "claude-code": {
+      "name": "Claude Code",
+      "description": "AI-powered code assistant",
+      "required": false,
+      "optional": true,
+      "enabled": false,
+      "installation": "npm install -g @anthropic-ai/claude-code",
+      "commands": {
+        "claude": {
+          "description": "Main Claude interface",
+          "usage": "claude [--dangerously-skip-permissions]"
+        }
+      },
+      "configuration": {
+        "directory": ".claude",
+        "files": ["CLAUDE.md", "settings.json"],
+        "subdirectories": ["agents", "commands", "hooks"]
+      },
+      "settings": {
+        "dangerouslySkipPermissions": false,
+        "autoSave": true,
+        "maxConcurrentTools": 10,
+        "hooks": {
+          "user-prompt-submit-hook": "Log user prompts",
+          "tool-call-hook": "Log tool calls",
+          "model-response-hook": "Log responses"
+        }
+      }
+    },
+    "tmux-orchestrator": {
+      "name": "Tmux Orchestrator",
+      "description": "24/7 autonomous session management",
+      "required": false,
+      "optional": true,
+      "enabled": false,
+      "installation": "git clone https://github.com/Jedward23/Tmux-Orchestrator.git ~/.tmux-orchestrator",
+      "commands": {
+        "start-session": {
+          "description": "Start orchestrated session",
+          "usage": "tmux new-session -d -s {project}-orchestrator"
+        },
+        "attach": {
+          "description": "Attach to session",
+          "usage": "tmux attach -t {project}-orchestrator"
+        },
+        "list": {
+          "description": "List active sessions",
+          "usage": "tmux list-sessions"
+        }
+      },
+      "configuration": {
+        "directory": ".tmux-orchestrator",
+        "windows": {
+          "simpleSwarm": 1,
+          "hiveMind": 4,
+          "hiveMindSparc": 6
+        }
+      }
+    }
+  },
+  "coordination": {
+    "primary": "intelligent-workflow-system",
+    "flow": [
+      {
+        "step": 1,
+        "action": "analyze",
+        "system": "intelligence-engine",
+        "description": "Analyze project complexity"
+      },
+      {
+        "step": 2,
+        "action": "select",
+        "system": "approach-selector",
+        "description": "Select optimal approach"
+      },
+      {
+        "step": 3,
+        "action": "configure",
+        "system": "document-customizer",
+        "description": "Generate customized configuration"
+      },
+      {
+        "step": 4,
+        "action": "plan",
+        "system": "agent-os",
+        "description": "Create specifications (optional)"
+      },
+      {
+        "step": 5,
+        "action": "execute",
+        "system": "claude-flow",
+        "description": "Execute with selected approach"
+      },
+      {
+        "step": 6,
+        "action": "orchestrate",
+        "system": "tmux-orchestrator",
+        "description": "Manage long-running sessions (optional)"
+      }
+    ]
+  },
+  "dependencies": {
+    "required": {
+      "node": {
+        "version": ">=18.0.0",
+        "check": "node -v",
+        "install": "https://nodejs.org"
+      },
+      "npm": {
+        "version": ">=8.0.0",
+        "check": "npm -v",
+        "install": "Comes with Node.js"
+      }
+    },
+    "optional": {
+      "tmux": {
+        "version": ">=2.0",
+        "check": "tmux -V",
+        "install": "apt-get install tmux"
+      },
+      "git": {
+        "version": ">=2.0",
+        "check": "git --version",
+        "install": "apt-get install git"
+      },
+      "jq": {
+        "version": ">=1.5",
+        "check": "jq --version",
+        "install": "apt-get install jq"
+      }
+    }
+  },
+  "environmentVariables": {
+    "CLAUDE_FLOW_VERSION": {
+      "description": "Claude Flow version to use",
+      "values": ["alpha", "beta", "latest", "2.0", "stable", "dev"],
+      "default": "alpha"
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "API key for Claude",
+      "required": false,
+      "source": "https://console.anthropic.com"
+    },
+    "AI_WORKFLOW_MODE": {
+      "description": "Default initialization mode",
+      "values": ["auto", "interactive", "manual"],
+      "default": "interactive"
+    }
+  }
+}

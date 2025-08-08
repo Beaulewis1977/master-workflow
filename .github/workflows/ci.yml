@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm i; fi
+
+      - name: Run JS test (node)
+        run: |
+          if [ -f test/test-basic.js ]; then node test/test-basic.js; else echo "No node tests"; fi
+
+      - name: Run shell tests (bash)
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          chmod +x test/test-intelligent-system.sh || true
+          if [ -f test/test-intelligent-system.sh ]; then bash test/test-intelligent-system.sh; else echo "No bash tests"; fi
+
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: |
+            test/results/**
+            **/coverage/**
+
+

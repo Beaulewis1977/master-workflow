@@ -1,0 +1,40 @@
+{
+  "workflow": "hello-world",
+  "version": "1.0",
+  "description": "Simple test workflow to verify installation",
+  "author": "AI Dev OS",
+  "created": "2024-01-01",
+  
+  "steps": [
+    {
+      "id": "greeting",
+      "name": "Say Hello",
+      "type": "claude",
+      "prompt": "Say hello and confirm the Simple Workflow System is working",
+      "options": {
+        "timeout": 30
+      }
+    },
+    {
+      "id": "check-systems",
+      "name": "Check Systems",
+      "type": "claude",
+      "prompt": "List which AI development systems are available (Agent OS, Claude-Flow, Sub-Agents)",
+      "options": {
+        "timeout": 30
+      }
+    },
+    {
+      "id": "success",
+      "name": "Confirm Success",
+      "type": "claude",
+      "prompt": "Confirm that the Simple Workflow System is successfully installed and working",
+      "options": {
+        "timeout": 30
+      }
+    }
+  ],
+  
+  "on_success": "✅ Hello World workflow completed successfully!",
+  "on_failure": "❌ Workflow encountered an error. Check the logs."
+}

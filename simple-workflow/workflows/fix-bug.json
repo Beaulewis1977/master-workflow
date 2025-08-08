@@ -1,0 +1,70 @@
+{
+  "workflow": "fix-bug",
+  "version": "1.0",
+  "description": "Systematic bug fixing workflow",
+  "author": "AI Dev OS",
+  "created": "2024-01-01",
+  
+  "variables": {
+    "bug_description": "Application crashes when uploading large files",
+    "bug_id": "BUG-001",
+    "priority": "high"
+  },
+  
+  "steps": [
+    {
+      "id": "analyze-bug",
+      "name": "Analyze Bug Report",
+      "type": "claude",
+      "prompt": "Analyze bug {{bug_id}}: {{bug_description}}. Identify potential causes and affected components",
+      "capture_output": "bug_analysis"
+    },
+    {
+      "id": "locate-issue",
+      "name": "Locate Issue in Code",
+      "type": "claude",
+      "prompt": "Search the codebase to locate where the bug '{{bug_description}}' is occurring. Identify the specific files and functions involved",
+      "capture_output": "bug_location"
+    },
+    {
+      "id": "investigate",
+      "name": "Deep Investigation",
+      "type": "sub-agent",
+      "agent": "debugger",
+      "prompt": "Investigate the root cause of {{bug_description}}. Analyze the code flow, check error handling, and identify the exact problem",
+      "capture_output": "root_cause"
+    },
+    {
+      "id": "create-fix",
+      "name": "Implement Fix",
+      "type": "claude",
+      "prompt": "Implement a fix for {{bug_description}} based on the root cause analysis. Ensure the fix handles edge cases and doesn't introduce new issues",
+      "capture_output": "fix_implemented"
+    },
+    {
+      "id": "create-tests",
+      "name": "Create Regression Tests",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Create regression tests for {{bug_id}} to ensure {{bug_description}} doesn't happen again. Include edge cases and boundary conditions",
+      "output": "tests/regression-{{bug_id}}"
+    },
+    {
+      "id": "verify-fix",
+      "name": "Verify Fix",
+      "type": "claude",
+      "prompt": "Verify that the fix for {{bug_description}} works correctly. Run the regression tests and check for any side effects",
+      "capture_output": "verification_result"
+    },
+    {
+      "id": "update-docs",
+      "name": "Update Documentation",
+      "type": "claude",
+      "prompt": "Update relevant documentation about the fix for {{bug_id}}. Include any new error handling or changed behavior",
+      "output": "docs-updated"
+    }
+  ],
+  
+  "on_success": "✅ Bug {{bug_id}} fixed successfully!",
+  "on_failure": "❌ Failed to fix bug. Check logs for details."
+}
