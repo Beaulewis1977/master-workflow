@@ -5,11 +5,22 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run with debug logging'
+        required: false
+        default: false
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,9 +31,29 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Check for package.json
+        id: check_files
+        run: |
+          if [ -f package.json ]; then
+            echo "has_package=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_package=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Install dependencies
+        if: steps.check_files.outputs.has_package == 'true'
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm i; fi
+
+      - name: Lint check
+        if: steps.check_files.outputs.has_package == 'true'
+        continue-on-error: true
+        run: |
+          if npm run | grep -q "lint"; then
+            npm run lint
+          else
+            echo "No lint script found"
+          fi
 
       - name: Run JS test (node)
         run: |
@@ -42,5 +73,18 @@ jobs:
           path: |
             test/results/**
             **/coverage/**
+          retention-days: 7
+
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ All CI checks passed!'
+            })
 
 

@@ -1,0 +1,375 @@
+name: Phase Reports and Analytics
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Weekly on Monday at 9 AM UTC
+  workflow_dispatch:
+    inputs:
+      report_type:
+        description: 'Type of report to generate'
+        required: true
+        type: choice
+        options:
+          - 'phase-summary'
+          - 'burndown-chart'
+          - 'dependency-map'
+          - 'risk-assessment'
+          - 'team-velocity'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: read
+
+jobs:
+  generate-reports:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate Phase Summary Report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Fetch all issues
+            const allIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100
+            });
+            
+            // Fetch all PRs
+            const allPRs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100
+            });
+            
+            // Initialize phase data
+            const phases = {};
+            const phaseNames = [
+              'Planning', 'Architecture', 'Setup', 'Core Development',
+              'Integration', 'Testing', 'Optimization', 'Documentation',
+              'Deployment', 'Monitoring', 'Maintenance', 'Review'
+            ];
+            
+            for (let i = 1; i <= 12; i++) {
+              phases[i] = {
+                name: phaseNames[i-1],
+                issues: { total: 0, open: 0, closed: 0 },
+                prs: { total: 0, open: 0, merged: 0 },
+                blockers: [],
+                risks: [],
+                contributors: new Set(),
+                startDate: null,
+                endDate: null,
+                duration: 0
+              };
+            }
+            
+            // Process issues
+            allIssues.forEach(issue => {
+              issue.labels.forEach(label => {
+                if (label.name.startsWith('phase-')) {
+                  const phaseNum = parseInt(label.name.match(/phase-(\d+)/)[1]);
+                  phases[phaseNum].issues.total++;
+                  
+                  if (issue.state === 'open') {
+                    phases[phaseNum].issues.open++;
+                    
+                    // Check for blockers
+                    if (issue.labels.some(l => l.name === 'status-blocked')) {
+                      phases[phaseNum].blockers.push({
+                        number: issue.number,
+                        title: issue.title,
+                        url: issue.html_url
+                      });
+                    }
+                    
+                    // Check for high priority issues (risks)
+                    if (issue.labels.some(l => l.name === 'priority-high' || l.name === 'priority-critical')) {
+                      phases[phaseNum].risks.push({
+                        number: issue.number,
+                        title: issue.title,
+                        priority: issue.labels.find(l => l.name.startsWith('priority-')).name,
+                        url: issue.html_url
+                      });
+                    }
+                  } else {
+                    phases[phaseNum].issues.closed++;
+                  }
+                  
+                  // Track contributors
+                  if (issue.assignees) {
+                    issue.assignees.forEach(assignee => {
+                      phases[phaseNum].contributors.add(assignee.login);
+                    });
+                  }
+                  
+                  // Track dates
+                  const issueDate = new Date(issue.created_at);
+                  if (!phases[phaseNum].startDate || issueDate < phases[phaseNum].startDate) {
+                    phases[phaseNum].startDate = issueDate;
+                  }
+                  if (issue.closed_at) {
+                    const closeDate = new Date(issue.closed_at);
+                    if (!phases[phaseNum].endDate || closeDate > phases[phaseNum].endDate) {
+                      phases[phaseNum].endDate = closeDate;
+                    }
+                  }
+                }
+              });
+            });
+            
+            // Process PRs
+            allPRs.forEach(pr => {
+              pr.labels.forEach(label => {
+                if (label.name.startsWith('phase-')) {
+                  const phaseNum = parseInt(label.name.match(/phase-(\d+)/)[1]);
+                  phases[phaseNum].prs.total++;
+                  
+                  if (pr.state === 'open') {
+                    phases[phaseNum].prs.open++;
+                  } else if (pr.merged_at) {
+                    phases[phaseNum].prs.merged++;
+                  }
+                }
+              });
+            });
+            
+            // Generate markdown report
+            let report = '# 📊 Master Workflow Build Plan - Phase Report\n\n';
+            report += `*Generated: ${new Date().toLocaleString()}*\n\n`;
+            report += '## Executive Summary\n\n';
+            
+            // Calculate overall progress
+            let totalIssues = 0, closedIssues = 0;
+            let currentPhase = 0;
+            
+            Object.keys(phases).forEach(phaseNum => {
+              const phase = phases[phaseNum];
+              totalIssues += phase.issues.total;
+              closedIssues += phase.issues.closed;
+              
+              if (phase.issues.total > 0 && phase.issues.closed < phase.issues.total) {
+                if (currentPhase === 0) currentPhase = phaseNum;
+              }
+            });
+            
+            const overallProgress = totalIssues > 0 ? Math.round((closedIssues / totalIssues) * 100) : 0;
+            
+            report += `- **Overall Progress**: ${closedIssues}/${totalIssues} issues (${overallProgress}%)\n`;
+            report += `- **Current Phase**: Phase ${currentPhase || 12} - ${phases[currentPhase || 12].name}\n`;
+            report += `- **Active Contributors**: ${new Set([...Object.values(phases).flatMap(p => Array.from(p.contributors))]).size}\n\n`;
+            
+            // Risk summary
+            const allRisks = Object.values(phases).flatMap(p => p.risks);
+            const allBlockers = Object.values(phases).flatMap(p => p.blockers);
+            
+            if (allRisks.length > 0 || allBlockers.length > 0) {
+              report += '## ⚠️ Risks and Blockers\n\n';
+              
+              if (allBlockers.length > 0) {
+                report += '### 🚧 Current Blockers\n';
+                allBlockers.forEach(blocker => {
+                  report += `- [#${blocker.number}](${blocker.url}): ${blocker.title}\n`;
+                });
+                report += '\n';
+              }
+              
+              if (allRisks.length > 0) {
+                report += '### 🔴 High Priority Issues\n';
+                allRisks.forEach(risk => {
+                  report += `- [#${risk.number}](${risk.url}): ${risk.title} (${risk.priority})\n`;
+                });
+                report += '\n';
+              }
+            }
+            
+            // Detailed phase breakdown
+            report += '## Phase Details\n\n';
+            
+            Object.keys(phases).forEach(phaseNum => {
+              const phase = phases[phaseNum];
+              const progress = phase.issues.total > 0 ? Math.round((phase.issues.closed / phase.issues.total) * 100) : 0;
+              const status = progress === 100 ? '✅' : progress > 50 ? '🔄' : progress > 0 ? '🟡' : '⏳';
+              
+              report += `### ${status} Phase ${phaseNum}: ${phase.name}\n\n`;
+              report += `- **Progress**: ${phase.issues.closed}/${phase.issues.total} issues (${progress}%)\n`;
+              report += `- **Pull Requests**: ${phase.prs.merged} merged, ${phase.prs.open} open\n`;
+              report += `- **Contributors**: ${Array.from(phase.contributors).join(', ') || 'None assigned'}\n`;
+              
+              if (phase.startDate && phase.endDate) {
+                const duration = Math.round((phase.endDate - phase.startDate) / (1000 * 60 * 60 * 24));
+                report += `- **Duration**: ${duration} days\n`;
+              } else if (phase.startDate) {
+                const elapsed = Math.round((new Date() - phase.startDate) / (1000 * 60 * 60 * 24));
+                report += `- **Elapsed**: ${elapsed} days (in progress)\n`;
+              }
+              
+              if (phase.blockers.length > 0) {
+                report += `- **Blockers**: ${phase.blockers.length} issue(s) blocked\n`;
+              }
+              
+              report += '\n';
+            });
+            
+            // Velocity metrics
+            report += '## 📈 Velocity Metrics\n\n';
+            
+            const last7Days = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            const last30Days = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+            
+            const recentlyClosed = allIssues.filter(i => 
+              i.closed_at && new Date(i.closed_at) > last7Days
+            ).length;
+            
+            const monthlyClosed = allIssues.filter(i => 
+              i.closed_at && new Date(i.closed_at) > last30Days
+            ).length;
+            
+            report += `- **Last 7 days**: ${recentlyClosed} issues closed\n`;
+            report += `- **Last 30 days**: ${monthlyClosed} issues closed\n`;
+            report += `- **Average velocity**: ${(monthlyClosed / 4).toFixed(1)} issues/week\n\n`;
+            
+            // Dependencies and next steps
+            report += '## 🔗 Phase Dependencies\n\n';
+            report += '```mermaid\n';
+            report += 'graph LR\n';
+            for (let i = 1; i < 12; i++) {
+              const currentStatus = phases[i].issues.closed === phases[i].issues.total ? 'DONE' : 'WIP';
+              const nextStatus = phases[i+1].issues.closed === phases[i+1].issues.total ? 'DONE' : 'WIP';
+              report += `  P${i}[Phase ${i}: ${phases[i].name}<br/>${currentStatus}] --> P${i+1}[Phase ${i+1}: ${phases[i+1].name}<br/>${nextStatus}]\n`;
+            }
+            report += '```\n\n';
+            
+            // Recommendations
+            report += '## 💡 Recommendations\n\n';
+            
+            if (allBlockers.length > 0) {
+              report += `1. **Resolve blockers**: ${allBlockers.length} issues are currently blocked and need attention\n`;
+            }
+            
+            if (currentPhase && phases[currentPhase].contributors.size < 2) {
+              report += `2. **Add resources**: Phase ${currentPhase} has limited contributors\n`;
+            }
+            
+            const stalePhases = Object.keys(phases).filter(p => 
+              phases[p].issues.open > 0 && 
+              phases[p].startDate && 
+              (new Date() - phases[p].startDate) > 60 * 24 * 60 * 60 * 1000
+            );
+            
+            if (stalePhases.length > 0) {
+              report += `3. **Review stale phases**: Phases ${stalePhases.join(', ')} have been open for over 60 days\n`;
+            }
+            
+            // Create or update report issue
+            const reportIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'phase-report',
+              state: 'open'
+            });
+            
+            if (reportIssues.data.length > 0) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: reportIssues.data[0].number,
+                body: report
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '📊 Build Plan Phase Report',
+                body: report,
+                labels: ['phase-report', 'automated']
+              });
+            }
+            
+            // Also save as artifact
+            fs.writeFileSync('phase-report.md', report);
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-reports
+          path: |
+            phase-report.md
+          retention-days: 90
+
+      - name: Create burndown data
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Generate burndown chart data
+            const allIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              per_page: 100
+            });
+            
+            // Group by date
+            const burndownData = {};
+            const startDate = new Date('2024-01-01');
+            const today = new Date();
+            
+            // Initialize data points
+            for (let d = new Date(startDate); d <= today; d.setDate(d.getDate() + 1)) {
+              const dateStr = d.toISOString().split('T')[0];
+              burndownData[dateStr] = { open: 0, closed: 0, total: 0 };
+            }
+            
+            // Process issues
+            allIssues.forEach(issue => {
+              const created = new Date(issue.created_at);
+              const closed = issue.closed_at ? new Date(issue.closed_at) : null;
+              
+              for (let d = new Date(Math.max(created, startDate)); d <= today; d.setDate(d.getDate() + 1)) {
+                const dateStr = d.toISOString().split('T')[0];
+                burndownData[dateStr].total++;
+                
+                if (!closed || d < closed) {
+                  burndownData[dateStr].open++;
+                } else {
+                  burndownData[dateStr].closed++;
+                }
+              }
+            });
+            
+            // Generate CSV
+            let csv = 'Date,Total,Open,Closed,Remaining\n';
+            Object.keys(burndownData).forEach(date => {
+              const data = burndownData[date];
+              csv += `${date},${data.total},${data.open},${data.closed},${data.total - data.closed}\n`;
+            });
+            
+            fs.writeFileSync('burndown.csv', csv);
+
+      - name: Commit reports to repository
+        run: |
+          mkdir -p reports
+          mv phase-report.md reports/
+          mv burndown.csv reports/
+          
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          git add reports/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: Update phase reports [skip ci]" && git push)
