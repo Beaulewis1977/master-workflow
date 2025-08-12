@@ -10,6 +10,7 @@ import envRoute from './routes/env.js';
 import orchestratorRoute from './routes/orchestrator.js';
 import customizerRoute from './routes/customizer.js';
 import scaffolderRoute from './routes/scaffolder.js';
+import yoloRoute from './routes/yolo.js';
 import { randomUUID } from 'crypto';
 
 const logger = createLogger('api');
@@ -31,6 +32,7 @@ async function buildServer() {
   app.register(orchestratorRoute);
   app.register(customizerRoute);
   app.register(scaffolderRoute);
+  app.register(yoloRoute);
 
   // Orchestrator configure stub
   app.post('/api/orchestrator/configure', async () => ({ ok: true }));

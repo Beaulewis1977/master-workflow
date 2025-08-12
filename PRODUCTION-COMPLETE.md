@@ -147,6 +147,11 @@ Choose exactly what you need:
 - API request/response logging via pino
 - Audit events recorded to `audit_logs`
 
+### YOLO Mode, Privilege, Distribution (Phase 10)
+- Toggle via `POST /api/yolo/on` (requires `ack: I-ACCEPT-RISK`) and `/api/yolo/off`
+- Orchestrator switches Claude flag to `--yolo` when enabled
+- Windows: process mode default; tmux via WSL2 if available
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

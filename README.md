@@ -62,6 +62,10 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 ### Project Customization (Phase 7)
 ### Infrastructure Scaffolding (Phase 8)
 ### Security, Logging, Error Handling (Phase 9)
+### YOLO Mode & Distribution Support (Phase 10)
+- API: `POST /api/yolo/on { ack: "I-ACCEPT-RISK" }`, `/api/yolo/off`, `/api/yolo/status`
+- When YOLO is ON, orchestrated Claude Flow commands use `--yolo` alias (e.g., `--yolo` instead of `--claude`)
+- Windows defaults to process mode; WSL2 recommended for tmux
 - Command allowlist enforced in orchestrator paths; YOLO flags gated and blocked in CI
 - API request/response logging via pino hooks
 - Audit log persistence (`audit_logs` table writes) for critical actions
