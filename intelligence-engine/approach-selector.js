@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 class ApproachSelector {
   constructor() {
@@ -518,7 +519,8 @@ class ApproachSelector {
    * Load user preferences
    */
   loadUserPreferences() {
-    const prefsPath = path.join(process.env.HOME, '.ai-dev-os', 'user-preferences.json');
+    const homeDir = process.env.HOME || process.env.USERPROFILE || os.homedir() || '.';
+    const prefsPath = path.join(homeDir, '.ai-dev-os', 'user-preferences.json');
     try {
       if (fs.existsSync(prefsPath)) {
         return JSON.parse(fs.readFileSync(prefsPath, 'utf8'));
@@ -533,7 +535,8 @@ class ApproachSelector {
    * Save user selection for learning
    */
   saveUserSelection(analysis, selected) {
-    const prefsDir = path.join(process.env.HOME, '.ai-dev-os');
+    const homeDir = process.env.HOME || process.env.USERPROFILE || os.homedir() || '.';
+    const prefsDir = path.join(homeDir, '.ai-dev-os');
     const prefsPath = path.join(prefsDir, 'user-preferences.json');
     
     try {
