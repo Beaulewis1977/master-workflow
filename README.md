@@ -154,6 +154,11 @@ CLAUDE_FLOW_VERSION=2.0 ./ai-workflow init --sparc
 All internal command execution now uses a cross-platform helper that preserves quoting and supports sequential runs. This removes brittle `split(' ')` logic and Linux-only shells, improving Windows compatibility. SPARC wizard now runs as a separate sequential step instead of using `&&`.
 ```
 
+### Runner Consolidation (Phase 8)
+
+- The modular runner is the default unified runner across platforms.
+- Legacy runner is considered a tmux-specialized variant only; installer links the modular runner as `workflow-runner.js` by default.
+
 ### Working Without TMux
 
 The system automatically detects if TMux is installed and falls back to background process execution:
@@ -350,14 +355,41 @@ Pick any combination: Core only; Core+Agent-OS; Core+Claude Code; Core+Claude Fl
 - During install, you can attach an image directory; images are copied to `.ai-workflow/assets/images` and referenced in `.ai-workflow/initial-prompt.md`.
 - On Windows, if POSIX copy fails, PowerShell copies jpg/jpeg/png/gif/webp.
 
-### Version control via CLAUDE_FLOW_VERSION
-- Set env var to override auto-selection: `CLAUDE_FLOW_VERSION=stable ./ai-workflow init --auto`.
-- Otherwise, heuristic picks alpha/latest/stable based on analysis.
+### Version policy and CLAUDE_FLOW_VERSION (centralized)
+The system uses a centralized version policy (`lib/version-policy.js`) to decide and format the Claude Flow version for all modules.
+
+- Accepted names: `alpha`, `beta`, `latest`, `stable`, `2.0`, `dev` (aliases like `v2`, `2`, `development` are normalized)
+- Suffix mapping is automatic (e.g., `alpha` → `@alpha`)
+- Defaults: If not set, heuristic picks based on analysis (e.g., `mature` → `stable`, very high complexity → `latest`, otherwise `alpha`)
+- Override via env:
+  - `CLAUDE_FLOW_VERSION=stable ./ai-workflow init --auto`
+  - `CLAUDE_FLOW_VERSION=2.0 ./ai-workflow init --sparc`
 
 ### MCP discovery & usage
 - Refresh registry: `./ai-workflow mcp refresh`
 - View summary in CLAUDE.md under "Discovered MCP Servers & Tools".
 - Agents should consult `.ai-workflow/configs/mcp-registry.json` at runtime (see AGENT-BOOTSTRAP.md).
+- Default server: `context7` (override with `MCP_DEFAULT_SERVER`); you can also add servers via `MCP_SERVERS` env (JSON or CSV: `name=url`)
+
+### Optional experimental features (Phase 3)
+### Phase 4: Sub-Agent Auto-Delegation
+
+- Configure toggles and rules in `.claude/settings.json`:
+  - `autoDelegation.enabled`: enable/disable
+  - `autoDelegation.rules[]`: match `taskKeywords` and/or `filePatterns` to `delegateTo` agent
+- Included templates: `test-engineer`, `security-auditor` (installed to `.claude/agents/`)
+- Modular runner auto-delegates Claude Code tasks based on rules (heuristic matching)
+
+
+- Training (experimental gated by version or flag):
+  - Enable: `ENABLE_CF_TRAINING=true` or `CF_ENABLE_EXPERIMENTAL=true` when using an experimental version (`alpha`, `beta`, `dev`)
+  - Configure epochs: `CF_TRAINING_EPOCHS=5`
+  - Runs: `npx claude-flow@<version> training neural-train --epochs <N>` automatically after core commands
+
+- Memory operations (optional):
+  - Enable: `ENABLE_CF_MEMORY_OPS=true`
+  - Action: `CF_MEMORY_ACTION=summarize|sync|gc` (default `summarize`)
+  - Runs automatically after core commands for the detected project
 
 ### Dashboards & event bus
 
@@ -391,6 +423,8 @@ Pick any combination: Core only; Core+Agent-OS; Core+Claude Code; Core+Claude Fl
 - HTTP (JSON + SSE): `./ai-workflow status-dashboard [port]` (default 8787)
   - JSON: `GET /`
   - SSE: `GET /events/stream?type=prompt|tool|response|approach_change`
+  - Publish: `POST /events/publish` with `{ type, payload }`
+  - Agents emit events automatically (runner publishes log/approach_change/exec_complete)
 - Event schema in AGENT-BOOTSTRAP.md. Hooks already emit prompt/tool/response; supervisor emits approach_change.
 
 ### Supervisors & watchers
@@ -411,6 +445,7 @@ Pick any combination: Core only; Core+Agent-OS; Core+Claude Code; Core+Claude Fl
 - Keep CLAUDE.md, Agent-OS instructions, and AGENT-BOOTSTRAP.md handy for agents.
 - Use MCP tools when available; fallback to built-ins.
 - Watch the dashboard for approach changes and agent activity.
+- Respect risk controls: avoid YOLO in CI, prefer portable commands, and keep MCP registry deterministic.
 
 ## Windows Quickstart (PowerShell + Git Bash)
 
@@ -531,9 +566,14 @@ MIT License - See LICENSE file for details
 
 ## CI/CD and GitHub Actions
 
-- Continuous Integration: `.github/workflows/ci.yml` runs Node and Bash tests, uploads artifacts, and uses concurrency to avoid overlapping runs
-- Security Scanning: CodeQL and Gitleaks workflows can be enabled for code and secret scanning
-- Dependency Updates: Dependabot keeps GitHub Actions and npm packages up-to-date
+- Continuous Integration: `.github/workflows/ci.yml` runs a cross-OS matrix (Windows/macOS/Linux) with Node 18/20 and smoke tests
+- Security Scanning: `.github/workflows/security.yml` runs gitleaks; extend as needed
+- Governance: PR template enforces safety and cross-platform checks
+
+### Rollback Guidance (per phase)
+- Prefer feature flags/env toggles to soft-rollback new features
+- Revert full phase via GitHub “Revert” on the phase PR if needed
+- See `GPT5-EXECUTION-PLAN.MD` section 15 for phase-specific steps
 
 ### Enable Claude Code GitHub Actions
 

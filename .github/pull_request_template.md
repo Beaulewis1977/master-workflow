@@ -1,5 +1,21 @@
 ## Summary
 
+Describe the changes and why they are needed.
+
+## Checklist
+
+- [ ] Linked Task IDs in `GPT5-EXECUTION-PLAN.MD` Tracking & Index
+- [ ] Tests updated/added and passing locally (`node test/test-runner.js`)
+- [ ] Docs updated (`README.md` or guides) if behavior changes
+- [ ] Safety: No `--dangerously-skip-permissions` or YOLO usage in CI paths
+- [ ] Cross-platform: No Linux-only tools without guards; Windows defaults to process mode
+
+## Screenshots/Logs
+
+Attach screenshots or logs if helpful.
+
+## Summary
+
 Describe the change and its purpose.
 
 ## Linked Tasks / Phase

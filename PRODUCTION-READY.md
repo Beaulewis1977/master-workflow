@@ -197,13 +197,42 @@ ai-dev analyze
 - Introduced `lib/exec-helper.js` to standardize command execution across Windows/macOS/Linux.
 - Removed naive argument splitting; default shell execution preserves quoting.
 - Ready to refactor chained commands (`&&`) into sequential helper executions.
+### Phase 3: Claude Flow v2.0.0 Integration
+
+- Centralized version policy: `lib/version-policy.js` (env + heuristic defaults)
+- Runners and selector use policy for `@tag` resolution consistently
+- Optional features (disabled by default):
+  - Training: enable with `ENABLE_CF_TRAINING=true` or `CF_ENABLE_EXPERIMENTAL=true` (when on alpha/beta/dev)
+  - Memory ops: enable with `ENABLE_CF_MEMORY_OPS=true` and `CF_MEMORY_ACTION=summarize|sync|gc`
+- Document customizer includes version info and policy summary in `.claude/CLAUDE.md`
+
 ### Safety & Cross-Platform Defaults (New)
+
+### Phase 4: Sub-Agent Auto-Delegation
+### Phase 8: Consolidation & Migration (Modular Runner)
+
+- Modular runner is now the primary/default execution path.
+- Legacy runner is documented as TMux specialization only; migration guidance provided in README.
+- ### Phase 5: Observability (Status API + SSE Event Bus)
+
+- Minimal HTTP server already included (`package-tools/bin/agent-bus-http.js`):
+  - `/` returns status snapshot and recent events
+  - `/events/stream` streams live events via SSE
+  - `/events/publish` ingests events
+- Runners publish events (`log`, `approach_change`, `exec_complete`) to the bus
+- Start dashboard: `./ai-workflow status-dashboard [port]` (default 8787)
+
+- New sub-agents: `test-engineer`, `security-auditor` (installed to `.claude/agents/`)
+- `.claude/settings.json` includes `autoDelegation.enabled` and `rules[]` (taskKeywords/filePatterns → delegateTo)
+- `workflow-runner-modular.js` auto-delegates Claude Code tasks based on rules (lightweight matching)
+- Documentation updated in README
 
 - Windows hosts default to process mode; tmux orchestration is opt-in (or use WSL2).
 - YOLO is blocked in CI (`CI=true`) or when `BLOCK_YOLO=true`. When enabled, it requires `--ack I-ACCEPT-RISK` and logs a warning.
 - Event bus listens on `AGENT_BUS_PORT` (default 8787) for status and SSE.
 - MCP default server is `context7` (override with `MCP_DEFAULT_SERVER`).
 - TMux auto-commit is disabled by default; set `ENABLE_AUTO_COMMIT=true` to enable.
+- MCP registry is deterministic (env/catalog-based). Avoid untrusted endpoints; review changes via PR.
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches

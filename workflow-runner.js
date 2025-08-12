@@ -11,6 +11,7 @@ const { spawn, exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
 const { runCommand, runCommandsSequentially } = require('./lib/exec-helper');
+const versionPolicy = require('./lib/version-policy');
 const http = require('http');
 
 class WorkflowRunner {
@@ -406,28 +407,29 @@ class WorkflowRunner {
     this.log('info', 'Executing Claude Flow command...');
     this.publishEvent('status', { phase: 'exec:start' }).catch(() => {});
     
-    const version = process.env.CLAUDE_FLOW_VERSION || 'alpha';
+    const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+    const versionSuffix = versionPolicy.getSuffixForName(versionName);
     let command;
     let commands = [];
     
     switch (this.approach.selected) {
       case 'simpleSwarm':
-        command = `npx claude-flow@${version} swarm "${this.approach.task || 'Development task'}"`;
+        command = `npx claude-flow${versionSuffix} swarm "${this.approach.task || 'Development task'}"`;
         commands = [command];
         break;
       
       case 'hiveMind':
         const agentCount = this.approach.agentCount || 5;
-        command = `npx claude-flow@${version} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${agentCount} --claude`;
+        command = `npx claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${agentCount} --claude`;
         commands = [command];
         break;
       
       case 'hiveMindSparc':
         const sparcAgents = this.approach.agentCount || 10;
-        command = `npx claude-flow@${version} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${sparcAgents} --claude`;
+        command = `npx claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${sparcAgents} --claude`;
         commands = [
           command,
-          `npx claude-flow@${version} sparc wizard --interactive`
+          `npx claude-flow${versionSuffix} sparc wizard --interactive`
         ];
         break;
       
@@ -435,6 +437,27 @@ class WorkflowRunner {
         throw new Error(`Unknown approach: ${this.approach.selected}`);
     }
     
+    // Optional experimental features (training, memory ops)
+    const enableTraining = process.env.ENABLE_CF_TRAINING === 'true'
+      || (process.env.CF_ENABLE_EXPERIMENTAL === 'true' && versionPolicy.isExperimentalName(versionName));
+    if (enableTraining) {
+      const epochs = Number(process.env.CF_TRAINING_EPOCHS || 3);
+      commands.push(`npx claude-flow${versionSuffix} training neural-train --epochs ${epochs}`);
+    }
+
+    const enableMemory = process.env.ENABLE_CF_MEMORY_OPS === 'true';
+    if (enableMemory) {
+      const action = (process.env.CF_MEMORY_ACTION || 'summarize').toLowerCase();
+      const projectName = path.basename(this.projectDir);
+      if (action === 'sync') {
+        commands.push(`npx claude-flow${versionSuffix} memory sync --project "${projectName}"`);
+      } else if (action === 'gc') {
+        commands.push(`npx claude-flow${versionSuffix} memory gc --project "${projectName}"`);
+      } else {
+        commands.push(`npx claude-flow${versionSuffix} memory summarize --project "${projectName}"`);
+      }
+    }
+
     this.log('info', `Executing command(s): ${commands.join(' | ')}`);
     runCommandsSequentially(commands, { cwd: this.projectDir, shell: true })
       .then(() => this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {}))

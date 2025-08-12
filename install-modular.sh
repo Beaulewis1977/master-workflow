@@ -494,6 +494,28 @@ install_claude_code_components() {
   "autoSave": true,
   "maxConcurrentTools": 10,
   "defaultMcpServer": "context7",
+  "autoDelegation": {
+    "enabled": false,
+    "rules": [
+      {
+        "id": "delegate-tests-to-test-engineer",
+        "when": {
+          "taskKeywords": ["test", "failing tests", "coverage", "e2e", "spec"],
+          "filePatterns": ["*.test.*", "*.spec.*", "tests/**"]
+        },
+        "delegateTo": "test-engineer",
+        "confidenceThreshold": 0.6
+      },
+      {
+        "id": "delegate-security-to-security-auditor",
+        "when": {
+          "taskKeywords": ["security", "vuln", "xss", "csrf", "secret", "audit", "authz", "sso"]
+        },
+        "delegateTo": "security-auditor",
+        "confidenceThreshold": 0.5
+      }
+    ]
+  },
   "hooks": {
     "user-prompt-submit-hook": ".ai-workflow/hooks/user-prompt-submit-hook.sh",
     "tool-call-hook": ".ai-workflow/hooks/tool-call-hook.sh",

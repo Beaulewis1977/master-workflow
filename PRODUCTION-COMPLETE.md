@@ -94,6 +94,17 @@ Choose exactly what you need:
 - **TMux Orchestrator** - Optional (24/7 operation) with process mode fallback
 
 ### YOLO Mode Integration
+### Claude Flow Version Policy (v2.1 Phase 3)
+
+- Centralized in `lib/version-policy.js` with unified env/heuristic handling
+- Versions: `alpha`, `beta`, `latest`, `stable`, `2.0`, `dev` (+ aliases)
+- Experimental gating recognized for `alpha`, `beta`, `dev`
+
+### Optional Training & Memory Operations
+
+- `ENABLE_CF_TRAINING=true` or `CF_ENABLE_EXPERIMENTAL=true` (with experimental version) runs `training neural-train`
+- `ENABLE_CF_MEMORY_OPS=true` with `CF_MEMORY_ACTION=summarize|sync|gc` runs memory ops per project
+- Added to both runners; sequential execution with failure halt
 - **Interactive Configuration**: Asked during installation
 - **Toggle Support**: `./ai-workflow yolo on/off/status`
 - **Stored Preference**: Saved in installation-config.json
@@ -105,11 +116,15 @@ Choose exactly what you need:
 - **Customization Check**: Confirms Agent-OS has tech-specific docs
 - **Readiness Status**: Shows if system is ready to execute workflows
 
-### Execution Modes
+### Execution Modes & Runner Consolidation (Phase 8)
 System automatically adapts:
 - **With TMux**: Detached sessions, multi-window
 - **Without TMux**: Background processes, file logging
 - **Foreground**: Direct execution with output
+
+Runner consolidation:
+- Modular runner is the default unified path across platforms.
+- Legacy runner acts as TMux specialization only; installer links modular runner as `workflow-runner.js`.
 
 ### New Files Created
 - **install-modular.sh** - Interactive modular installer

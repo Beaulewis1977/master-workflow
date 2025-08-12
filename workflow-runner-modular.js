@@ -8,9 +8,11 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn, exec } = require('child_process');
+const http = require('http');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
 const { runCommand, runCommandsSequentially } = require('./lib/exec-helper');
+const versionPolicy = require('./lib/version-policy');
 
 class ModularWorkflowRunner {
   constructor() {
@@ -34,6 +36,8 @@ class ModularWorkflowRunner {
     this.tasks = [];
     this.errors = [];
     this.processes = {}; // For non-TMux process management
+    // Load Claude auto-delegation settings if present
+    this.claudeSettings = this.loadClaudeSettings();
   }
 
   loadInstallationConfig() {
@@ -105,6 +109,16 @@ class ModularWorkflowRunner {
     }
   }
 
+  loadClaudeSettings() {
+    try {
+      const p = path.join(this.projectDir, '.claude', 'settings.json');
+      if (fs.existsSync(p)) {
+        return JSON.parse(fs.readFileSync(p, 'utf8'));
+      }
+    } catch {}
+    return { autoDelegation: { enabled: false, rules: [] } };
+  }
+
   log(level, message, data = {}) {
     const timestamp = new Date().toISOString();
     const logEntry = {
@@ -129,6 +143,28 @@ class ModularWorkflowRunner {
     // File logging
     const logFile = path.join(this.logDir, 'workflow.log');
     fs.appendFileSync(logFile, JSON.stringify(logEntry) + '\n');
+
+    // Publish to status server (best-effort)
+    this.publishEvent('log', { level, message, context: data }).catch(() => {});
+  }
+
+  publishEvent(type, payload) {
+    return new Promise((resolve, reject) => {
+      const data = JSON.stringify({ type, payload });
+      const req = http.request({
+        host: '127.0.0.1',
+        port: process.env.AGENT_BUS_PORT ? Number(process.env.AGENT_BUS_PORT) : 8787,
+        path: '/events/publish',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+      }, res => {
+        res.on('data', () => {});
+        res.on('end', resolve);
+      });
+      req.on('error', reject);
+      req.write(data);
+      req.end();
+    });
   }
 
   async executePrompt() {
@@ -212,6 +248,7 @@ class ModularWorkflowRunner {
     
     // Determine approach
     this.approach = await this.selectApproach(analysis, mode, task);
+    this.publishEvent('approach_change', { selected: this.approach.selected, score: this.approach.score }).catch(() => {});
     
     // Execute based on available components
     if (this.components.claudeFlow) {
@@ -305,32 +342,57 @@ class ModularWorkflowRunner {
   async executeWithClaudeFlow() {
     this.log('info', 'Executing with Claude Flow 2.0');
     
-    const version = process.env.CLAUDE_FLOW_VERSION || 'alpha';
+    const versionName = versionPolicy.getSelectedVersionName({});
+    const versionSuffix = versionPolicy.getSuffixForName(versionName);
     let command;
     
     switch (this.approach.selected) {
       case 'simpleSwarm':
-        command = `npx claude-flow@${version} swarm "${this.approach.task || 'Development task'}"`;
+        command = `npx claude-flow${versionSuffix} swarm "${this.approach.task || 'Development task'}"`;
         break;
       
       case 'hiveMind':
-        command = `npx claude-flow@${version} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${this.approach.agentCount} --claude`;
+        command = `npx claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${this.approach.agentCount} --claude`;
         break;
       
       case 'hiveMindSparc':
-        command = `npx claude-flow@${version} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${this.approach.agentCount} --claude`;
+        command = `npx claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${this.approach.agentCount} --claude`;
         break;
       
       default:
-        command = `npx claude-flow@${version} swarm "Complete project tasks"`;
+        command = `npx claude-flow${versionSuffix} swarm "Complete project tasks"`;
     }
     
     // Execute based on execution mode
-    if (this.executionMode === 'tmux' && this.components.tmux) {
-      await this.executeInTmux(command);
-    } else {
-      await this.executeViaHelper(command);
+    // Optional experimental features (training, memory ops)
+    const commands = [command];
+    const enableTraining = process.env.ENABLE_CF_TRAINING === 'true'
+      || (process.env.CF_ENABLE_EXPERIMENTAL === 'true' && versionPolicy.isExperimentalName(versionName));
+    if (enableTraining) {
+      const epochs = Number(process.env.CF_TRAINING_EPOCHS || 3);
+      commands.push(`npx claude-flow${versionSuffix} training neural-train --epochs ${epochs}`);
     }
+
+    const enableMemory = process.env.ENABLE_CF_MEMORY_OPS === 'true';
+    if (enableMemory) {
+      const action = (process.env.CF_MEMORY_ACTION || 'summarize').toLowerCase();
+      const projectName = path.basename(this.projectDir);
+      if (action === 'sync') {
+        commands.push(`npx claude-flow${versionSuffix} memory sync --project "${projectName}"`);
+      } else if (action === 'gc') {
+        commands.push(`npx claude-flow${versionSuffix} memory gc --project "${projectName}"`);
+      } else {
+        commands.push(`npx claude-flow${versionSuffix} memory summarize --project "${projectName}"`);
+      }
+    }
+
+    if (this.executionMode === 'tmux' && this.components.tmux) {
+      // In tmux mode, chain via new lines
+      await this.executeInTmux(commands.join(' && '));
+    } else {
+      await runCommandsSequentially(commands, { cwd: this.projectDir, shell: true });
+    }
+    this.publishEvent('exec_complete', { mode: 'claude-flow', commands }).catch(() => {});
   }
 
   async executeWithClaudeCode() {
@@ -344,15 +406,48 @@ class ModularWorkflowRunner {
       return;
     }
     
-    // Use configured Claude command (could be 'yolo', 'claude', or 'claude --dangerously-skip-permissions')
-    const command = this.claudeCommand;
-    this.log('info', `Using Claude command: ${command}`);
+    // Auto-delegation based on settings
+    const delegation = this.maybeDelegateTask(this.approach.task || '', []);
+    let command = this.claudeCommand;
+    if (delegation?.agent) {
+      command = `${command} --agent ${delegation.agent}`;
+      this.log('info', `Auto-delegating to sub-agent: ${delegation.agent} (rule: ${delegation.ruleId})`);
+    } else {
+      this.log('info', `Using Claude command: ${command}`);
+    }
     
     if (this.executionMode === 'tmux' && this.components.tmux) {
       await this.executeInTmux(command);
     } else {
       await this.executeViaHelper(command);
     }
+    this.publishEvent('exec_complete', { mode: 'claude-code', command }).catch(() => {});
+  }
+
+  // Phase 4: Auto-delegation engine (simple heuristic based on settings.json)
+  maybeDelegateTask(taskDescription, fileHints = []) {
+    const settings = this.claudeSettings?.autoDelegation;
+    if (!settings?.enabled || !Array.isArray(settings.rules)) return null;
+
+    const text = (taskDescription || '').toLowerCase();
+    for (const rule of settings.rules) {
+      const when = rule.when || {};
+      const keywords = (when.taskKeywords || []).map(k => String(k).toLowerCase());
+      const matchesKeyword = keywords.length > 0 && keywords.some(k => text.includes(k));
+      const patterns = when.filePatterns || [];
+      const matchesFiles = patterns.length > 0 && fileHints.some(f => patterns.some(pattern => this.fileLikeMatches(f, pattern)));
+      if (matchesKeyword || matchesFiles) {
+        return { agent: rule.delegateTo, ruleId: rule.id, threshold: rule.confidenceThreshold ?? 0.5 };
+      }
+    }
+    return null;
+  }
+
+  fileLikeMatches(filename, pattern) {
+    // Very lightweight matcher: supports **, * and suffix wildcards
+    const esc = s => s.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    const regex = '^' + esc(pattern).replace(/\\\*\\\*/g, '.*').replace(/\\\*/g, '[^/]*') + '$';
+    return new RegExp(regex).test(filename);
   }
 
   async executeBasicWorkflow() {

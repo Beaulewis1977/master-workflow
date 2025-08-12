@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const versionPolicy = require('../lib/version-policy');
 
 class DocumentCustomizer {
   constructor(analysis, approach) {
@@ -63,13 +64,17 @@ class DocumentCustomizer {
     const features = this.analysis.factors?.features?.detected || {};
     const architecture = this.analysis.factors?.architecture || {};
     
+    const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+    const isExperimental = versionPolicy.isExperimentalName(versionName);
+
     let content = `# Claude Configuration - ${this.analysis.stage} Stage Project
 
 ## Project Analysis
 - **Complexity Score**: ${this.analysis.score}/100
 - **Stage**: ${this.analysis.stage}
-- **Selected Approach**: ${this.approach.name}
-- **Command**: \`${this.approach.command}\`
+ - **Selected Approach**: ${this.approach.name}
+ - **Claude Flow Version**: ${versionName} ${isExperimental ? '(experimental)' : ''}
+ - **Command**: \`${this.approach.command}\`
 
 ## Technology Stack
 `;
@@ -167,11 +172,23 @@ class DocumentCustomizer {
           content += `- ${t.name} (${t.type}${t.server ? `:${t.server}` : ''})\n`;
         }
       }
+      // Indicate default server if present
+      const defaultServer = Object.entries(servers).find(([_, v]) => v && v.default);
+      if (defaultServer) {
+        content += `\nDefault MCP Server: ${defaultServer[0]}\n`;
+      }
     }
 
     // Add approach-specific workflow
     content += `\n## ${this.approach.name} Workflow\n`;
     content += this.getApproachWorkflow(this.approach.selected);
+
+    // Version Policy Summary (Phase 3)
+    const policy = versionPolicy.getPolicySummary();
+    content += `\n## Version Policy\n`;
+    content += `- Canonical versions: ${policy.canonicalNames.join(', ')}\n`;
+    content += `- Experimental: ${policy.experimental.join(', ')}\n`;
+    content += `- Override via env: ${policy.examples.env}\n`;
 
     return {
       path: '.claude/CLAUDE.md',
@@ -1242,7 +1259,8 @@ exports.getAll = async (req, res) => {
         
         // Customize based on project
         let customized = template;
-        customized = customized.replace(/\[version\]/g, process.env.CLAUDE_FLOW_VERSION || 'alpha');
+        const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+        customized = customized.replace(/\[version\]/g, versionName);
         customized = customized.replace(/\[project\]/g, this.analysis.projectName || 'project');
         
         commands[`${cmdName}.md`] = customized;

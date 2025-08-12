@@ -8,21 +8,12 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const versionPolicy = require('../lib/version-policy');
 
 class ApproachSelector {
   constructor() {
-    // Claude Flow 2.0 versions available
-    this.claudeFlowVersions = {
-      'alpha': '@alpha',
-      'beta': '@beta', 
-      'latest': '@latest',
-      '2.0': '@2.0',
-      'stable': '@stable',
-      'dev': '@dev'
-    };
-    
-    // Default version (can be overridden by user or env)
-    this.defaultVersion = process.env.CLAUDE_FLOW_VERSION || 'alpha';
+    // Default version name (env or heuristic)
+    this.defaultVersion = versionPolicy.getSelectedVersionName({});
     
     this.approaches = {
       simpleSwarm: {
@@ -101,8 +92,8 @@ class ApproachSelector {
    * @param {string} claudeFlowVersion - Specific Claude Flow version to use
    */
   selectApproach(analysis, userChoice = null, taskDescription = '', claudeFlowVersion = null) {
-    // Set Claude Flow version (user choice or default)
-    this.selectedVersion = claudeFlowVersion || this.defaultVersion;
+    // Determine version name by precedence (input → env → analysis → fallback)
+    this.selectedVersion = versionPolicy.getSelectedVersionName({ input: claudeFlowVersion, analysis });
     // If user made explicit choice, validate and use it
     if (userChoice) {
       return this.validateUserChoice(userChoice, analysis);
@@ -292,11 +283,11 @@ class ApproachSelector {
    * Build actual command with parameters
    */
   buildCommand(approach, analysis) {
-    // Get the version suffix
-    const version = this.claudeFlowVersions[this.selectedVersion] || '@alpha';
+    // Get the version suffix from centralized policy
+    const versionSuffix = versionPolicy.getSuffixForName(this.selectedVersion);
     
     // Build command with version
-    let baseCommand = approach.command.replace('npx claude-flow', `npx claude-flow${version}`);
+    let baseCommand = approach.command.replace('npx claude-flow', `npx claude-flow${versionSuffix}`);
     
     // Add project-specific parameters
     if (approach.name === 'Hive-Mind') {
@@ -327,29 +318,51 @@ class ApproachSelector {
    * Build commands array to avoid chaining with &&
    */
   buildCommands(approach, analysis) {
-    const version = this.claudeFlowVersions[this.selectedVersion] || '@alpha';
+    const versionSuffix = versionPolicy.getSuffixForName(this.selectedVersion);
     const projectName = analysis.projectName || require('path').basename(process.cwd());
+
+    const commands = [];
 
     if (approach.name === 'Hive-Mind + SPARC') {
       const agentCount = this.determineAgentCount(analysis, true);
-      return [
-        `npx claude-flow${version} hive-mind spawn \"${projectName}\" --sparc --agents ${agentCount} --claude`,
-        `npx claude-flow${version} sparc wizard --interactive`
-      ];
+      commands.push(
+        `npx claude-flow${versionSuffix} hive-mind spawn "${projectName}" --sparc --agents ${agentCount} --claude`,
+        `npx claude-flow${versionSuffix} sparc wizard --interactive`
+      );
     }
-    if (approach.name === 'Hive-Mind') {
+    else if (approach.name === 'Hive-Mind') {
       const agentCount = this.determineAgentCount(analysis);
-      return [
-        `npx claude-flow${version} hive-mind spawn "${projectName}" --agents ${agentCount} --claude`
-      ];
+      commands.push(
+        `npx claude-flow${versionSuffix} hive-mind spawn "${projectName}" --agents ${agentCount} --claude`
+      );
     }
-    if (approach.name === 'Simple Swarm') {
+    else if (approach.name === 'Simple Swarm') {
       const task = analysis.taskDescription ? ` "${analysis.taskDescription}"` : '';
-      return [
-        `npx claude-flow${version} swarm${task}`
-      ];
+      commands.push(
+        `npx claude-flow${versionSuffix} swarm${task}`
+      );
     }
-    return [];
+    // Optional experimental/feature-flagged commands
+    const enableTraining = process.env.ENABLE_CF_TRAINING === 'true'
+      || (process.env.CF_ENABLE_EXPERIMENTAL === 'true' && versionPolicy.isExperimentalName(this.selectedVersion));
+    if (enableTraining) {
+      const epochs = Number(process.env.CF_TRAINING_EPOCHS || 3);
+      commands.push(`npx claude-flow${versionSuffix} training neural-train --epochs ${epochs}`);
+    }
+
+    const enableMemory = process.env.ENABLE_CF_MEMORY_OPS === 'true';
+    if (enableMemory) {
+      const action = (process.env.CF_MEMORY_ACTION || 'summarize').toLowerCase();
+      if (action === 'sync') {
+        commands.push(`npx claude-flow${versionSuffix} memory sync --project "${projectName}"`);
+      } else if (action === 'gc') {
+        commands.push(`npx claude-flow${versionSuffix} memory gc --project "${projectName}"`);
+      } else {
+        commands.push(`npx claude-flow${versionSuffix} memory summarize --project "${projectName}"`);
+      }
+    }
+
+    return commands;
   }
 
   /**
