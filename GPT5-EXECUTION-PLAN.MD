@@ -133,14 +133,14 @@ Goals: Robust, portable process execution without naïve splitting.
 
 Status
 - [ ] Not started
-- [x] In progress
-- [ ] Done (Date: ______; PRs: ______)
+- [ ] In progress
+- [x] Done (Date: 2025-08-12; PRs: feat/audit-remediation-ph1)
 
 Tasks
 - [x] P2-T1: Introduce a command execution helper (execa or `spawn` with `{ shell: true }`) with a safe argument builder.
 - [x] P2-T2: Update `workflow-runner-modular.js` to use helper (remove `split(' ')`).
 - [x] P2-T3: Update `workflow-runner.js` to use helper (remove `spawn('sh', ['-c', ...])`).
-- [ ] P2-T4: Refactor commands with `&&` (e.g., SPARC wizard) into sequential executions via helper.
+- [x] P2-T4: Refactor commands with `&&` (e.g., SPARC wizard) into sequential executions via helper.
 
 Acceptance Criteria
 - All runners execute commands on Windows/macOS/Linux with quoting preserved.
@@ -150,11 +150,11 @@ Deliverables
 - PR: `feat/portable-exec-helper` with cross-platform smoke tests (swarm/hive/sparc).
   - Implemented: `lib/exec-helper.js`; wired into runners.
 
-End-of-Phase Summary (to be filled)
-- Changes:
-- Metrics:
-- Risks/Issues:
-- Next Phase Go/No-Go:
+End-of-Phase Summary (completed 2025-08-12)
+- Changes: Added `lib/exec-helper.js`; wired both runners to helper; removed naive tokenization; replaced SPARC `&&` chain with sequential execution using helper; ensured selector no longer emits `&&` in commands.
+- Metrics: Smoke tests green (`node test/test-runner.js`); manual grep shows no runtime `&&` chains in runner paths.
+- Risks/Issues: None blocking.
+- Next Phase Go/No-Go: Go.
 
 ---
 
