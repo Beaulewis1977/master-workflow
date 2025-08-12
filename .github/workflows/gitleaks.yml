@@ -14,5 +14,5 @@ jobs:
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         with:
-          args: "detect --no-git -v"
+          args: "detect -v --redact"
 

@@ -532,3 +532,8 @@ MIT License - See LICENSE file for details
 3) Add a Claude workflow (see `.github/workflows/claude.yml` example) that responds to `@claude` in issues/PRs
 
 Reference: Claude Code GitHub Actions setup and examples: https://docs.anthropic.com/en/docs/claude-code/github-actions
+
+### API Contract
+
+- Minimal API is documented in `openapi.yaml` and validated in CI (`OpenAPI Validate` workflow)
+- Endpoints: `/` (status snapshot), `/events/stream` (SSE), `/events/publish` (event intake)
