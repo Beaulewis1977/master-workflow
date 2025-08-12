@@ -562,7 +562,7 @@ We welcome contributions of new MCP servers and tools.
 
 ## 📝 License
 
-MIT License - See LICENSE file for details
+MIT License - See `LICENSE` file for details
 
 ---
 
