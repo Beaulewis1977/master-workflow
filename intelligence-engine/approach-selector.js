@@ -310,9 +310,6 @@ class ApproachSelector {
       const agentCount = this.determineAgentCount(analysis, true);
       baseCommand += ` --agents ${agentCount} --claude`;
       
-      // Add SPARC wizard for initial setup
-      baseCommand += ' && npx claude-flow' + version + ' sparc wizard --interactive';
-      
       // Add project name
       const projectName = analysis.projectName || path.basename(process.cwd());
       baseCommand = baseCommand.replace('spawn', `spawn "${projectName}"`);
@@ -336,7 +333,7 @@ class ApproachSelector {
     if (approach.name === 'Hive-Mind + SPARC') {
       const agentCount = this.determineAgentCount(analysis, true);
       return [
-        `npx claude-flow${version} hive-mind spawn "${projectName}" --sparc --agents ${agentCount} --claude`,
+        `npx claude-flow${version} hive-mind spawn \"${projectName}\" --sparc --agents ${agentCount} --claude`,
         `npx claude-flow${version} sparc wizard --interactive`
       ];
     }
