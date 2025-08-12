@@ -115,6 +115,10 @@ Choose exactly what you need:
 - Issue templates (bug, feature, phase)
 - Policies in repo: `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
 
+### Engine (Phase 2)
+- Core engine scaffolded (`engine/`): CLI, Fastify API, SQLite migrations
+- Endpoints in place for health, components listing, install planning
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly
