@@ -537,3 +537,10 @@ Reference: Claude Code GitHub Actions setup and examples: https://docs.anthropic
 
 - Minimal API is documented in `openapi.yaml` and validated in CI (`OpenAPI Validate` workflow)
 - Endpoints: `/` (status snapshot), `/events/stream` (SSE), `/events/publish` (event intake)
+
+### Pre-commit Hooks
+
+- Pre-commit configuration `.pre-commit-config.yaml` runs:
+  - gitleaks (secrets scanning)
+  - lint-if-available (executes `npm run lint` if defined)
+  - Install locally: `pip install pre-commit && pre-commit install`

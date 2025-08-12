@@ -10,6 +10,7 @@ const path = require('path');
 const { spawn, exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
+const http = require('http');
 
 class WorkflowRunner {
   constructor() {
@@ -29,6 +30,7 @@ class WorkflowRunner {
     this.sessions = {};
     this.tasks = [];
     this.errors = [];
+    this.yolo = { enabled: false, dangerouslySkipPermissions: false, ack: null };
   }
 
   ensureDirectories() {
@@ -102,6 +104,29 @@ class WorkflowRunner {
       const errorFile = path.join(this.logDir, 'errors.log');
       fs.appendFileSync(errorFile, JSON.stringify(logEntry) + '\n');
     }
+
+    // Publish to status server (best-effort)
+    this.publishEvent('log', { level, message, context }).catch(() => {});
+  }
+
+  publishEvent(type, payload) {
+    return new Promise((resolve, reject) => {
+      const data = JSON.stringify({ type, payload });
+      const req = http.request({
+        host: '127.0.0.1',
+        port: process.env.AGENT_BUS_PORT ? Number(process.env.AGENT_BUS_PORT) : 8787,
+        path: '/events/publish',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
+      }, res => {
+        // 204 expected
+        res.on('data', () => {});
+        res.on('end', resolve);
+      });
+      req.on('error', reject);
+      req.write(data);
+      req.end();
+    });
   }
 
   execSafe(command, options = {}) {
@@ -141,6 +166,7 @@ class WorkflowRunner {
 
   async analyzeProject() {
     this.log('info', 'Starting project analysis...');
+    this.publishEvent('status', { phase: 'analyze:start' }).catch(() => {});
     
     try {
       // Run complexity analyzer
@@ -155,6 +181,7 @@ class WorkflowRunner {
       fs.writeFileSync(analysisPath, JSON.stringify(analysis, null, 2));
       
       this.log('success', `Analysis complete: Score ${analysis.score}/100, Stage: ${analysis.stage}`);
+      this.publishEvent('status', { phase: 'analyze:complete', analysis }).catch(() => {});
       
       // Check for incomplete work
       if (await this.detectIncompleteWork()) {
@@ -165,6 +192,7 @@ class WorkflowRunner {
       return analysis;
     } catch (error) {
       this.log('error', `Analysis failed: ${error.message}`);
+      this.publishEvent('status', { phase: 'analyze:error', error: error.message }).catch(() => {});
       throw error;
     }
   }
@@ -274,6 +302,7 @@ class WorkflowRunner {
 
   async selectApproach() {
     this.log('info', 'Selecting optimal approach...');
+    this.publishEvent('status', { phase: 'approach:start' }).catch(() => {});
     
     try {
       const selectorPath = path.join(this.installDir, 'intelligence-engine', 'approach-selector.js');
@@ -302,16 +331,19 @@ class WorkflowRunner {
       
       this.approach = approach;
       this.log('success', `Selected approach: ${approach.name} (${approach.selected})`);
+      this.publishEvent('status', { phase: 'approach:complete', approach }).catch(() => {});
       
       return approach;
     } catch (error) {
       this.log('error', `Approach selection failed: ${error.message}`);
+      this.publishEvent('status', { phase: 'approach:error', error: error.message }).catch(() => {});
       throw error;
     }
   }
 
   async initializeAgents() {
     this.log('info', 'Initializing agents...');
+    this.publishEvent('status', { phase: 'agents:init' }).catch(() => {});
     
     const agentDir = path.join(this.projectDir, '.claude', 'agents');
     const agents = fs.readdirSync(agentDir).filter(f => f.endsWith('.md'));
@@ -365,6 +397,7 @@ class WorkflowRunner {
 
   async createTmuxSessions() {
     this.log('info', 'Creating TMux sessions...');
+    this.publishEvent('status', { phase: 'tmux:start' }).catch(() => {});
     
     const sessionName = `workflow-${Date.now()}`;
     
@@ -382,16 +415,19 @@ class WorkflowRunner {
       
       this.sessions.main = sessionName;
       this.log('success', `Created TMux session: ${sessionName}`);
+      this.publishEvent('status', { phase: 'tmux:created', session: sessionName }).catch(() => {});
       
       return sessionName;
     } catch (error) {
       this.log('warning', `TMux session creation failed: ${error.message}`);
+      this.publishEvent('status', { phase: 'tmux:error', error: error.message }).catch(() => {});
       return null;
     }
   }
 
   async executeClaudeFlow() {
     this.log('info', 'Executing Claude Flow command...');
+    this.publishEvent('status', { phase: 'exec:start' }).catch(() => {});
     
     const version = process.env.CLAUDE_FLOW_VERSION || 'alpha';
     let command;
@@ -420,8 +456,10 @@ class WorkflowRunner {
     // Execute via execSafe
     this.execSafe(command, { retries: 2, backoffMs: 750 }).then(({ stdout }) => {
       if (stdout) this.log('info', `Claude Flow: ${stdout.trim()}`);
+      this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {});
     }).catch(err => {
       this.log('error', `Claude Flow failed: ${err.message}`);
+      this.publishEvent('status', { phase: 'exec:error', error: err.message }).catch(() => {});
     });
     
     return command;
@@ -448,7 +486,14 @@ class WorkflowRunner {
     if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
     fs.writeFileSync(outPath, JSON.stringify(plan, null, 2));
     this.log('success', `Dry-run plan written to ${outPath}`);
+    this.publishEvent('status', { phase: 'dry-run:ready', planPath: outPath }).catch(() => {});
     return plan;
+  }
+
+  enforceYoloAck() {
+    if ((this.yolo.enabled || this.yolo.dangerouslySkipPermissions) && this.yolo.ack !== 'I-ACCEPT-RISK') {
+      throw new Error('YOLO mode requires --ack I-ACCEPT-RISK');
+    }
   }
 
   async createRecoveryPlan() {
@@ -635,6 +680,7 @@ class WorkflowRunner {
 
   async init(mode = 'interactive', task = '') {
     this.log('info', `Initializing workflow in ${mode} mode...`);
+    this.enforceYoloAck();
     
     try {
       // Step 1: Analyze
