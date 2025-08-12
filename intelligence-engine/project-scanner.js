@@ -19,6 +19,7 @@ class ProjectScanner {
       notImplemented: [],
       failingTests: [],
       missingDocs: [],
+      signals: { containers: {}, ci: {}, iac: {} },
       uncommitted: [],
       total: 0
     };
@@ -96,6 +97,11 @@ class ProjectScanner {
     
     // Check for missing documentation
     await this.checkDocumentation();
+
+    // Environment signals
+    this.results.signals.containers = this.detectContainers(this.projectPath);
+    this.results.signals.ci = this.detectCI(this.projectPath);
+    this.results.signals.iac = this.detectIaC(this.projectPath);
     
     // Calculate totals
     this.calculateTotals();
@@ -288,7 +294,8 @@ class ProjectScanner {
         total: this.results.total
       },
       details: this.results,
-      recommendations: []
+      recommendations: [],
+      environment: this.results.signals
     };
     
     // Add recommendations based on findings
@@ -331,10 +338,55 @@ class ProjectScanner {
         reason: `Found ${this.results.uncommitted.length} uncommitted files`
       });
     }
+
+    // Env-based recommendations
+    const s = this.results.signals;
+    if (s.ci.githubActions) {
+      report.recommendations.push({
+        priority: 2,
+        action: 'Integrate Claude Code GitHub Actions',
+        reason: 'GitHub Actions workflow directory detected'
+      });
+    }
+    if (s.containers.dockerfile || s.containers.compose) {
+      report.recommendations.push({
+        priority: 3,
+        action: 'Enable container-aware workflows',
+        reason: 'Dockerfile/docker-compose present; add containerized hooks'
+      });
+    }
+    if (s.iac.terraform || s.iac.pulumi) {
+      report.recommendations.push({
+        priority: 4,
+        action: 'Add IaC scanning and plan/apply workflows',
+        reason: 'Infrastructure-as-Code detected'
+      });
+    }
     
     return report;
   }
 }
+  detectContainers(rootDir) {
+    const hasDockerfile = fs.existsSync(path.join(rootDir, 'Dockerfile'));
+    const hasCompose = fs.existsSync(path.join(rootDir, 'docker-compose.yml')) || fs.existsSync(path.join(rootDir, 'compose.yaml'));
+    const hasK8s = fs.existsSync(path.join(rootDir, 'k8s'));
+    const hasHelm = fs.existsSync(path.join(rootDir, 'charts'));
+    return { dockerfile: hasDockerfile, compose: hasCompose, k8s: hasK8s, helm: hasHelm };
+  }
+
+  detectCI(rootDir) {
+    const gha = fs.existsSync(path.join(rootDir, '.github', 'workflows'));
+    const gl = fs.existsSync(path.join(rootDir, '.gitlab-ci.yml'));
+    const circle = fs.existsSync(path.join(rootDir, '.circleci', 'config.yml'));
+    const jenkins = fs.existsSync(path.join(rootDir, 'Jenkinsfile'));
+    return { githubActions: gha, gitlabCI: gl, circleCI: circle, jenkins };
+  }
+
+  detectIaC(rootDir) {
+    const terraform = fs.existsSync(path.join(rootDir, 'terraform')) || fs.existsSync(path.join(rootDir, 'main.tf'));
+    const pulumi = fs.existsSync(path.join(rootDir, 'Pulumi.yaml'));
+    return { terraform, pulumi };
+  }
 
 // CLI usage
 if (require.main === module) {
