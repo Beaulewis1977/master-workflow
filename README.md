@@ -63,6 +63,10 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 ### Infrastructure Scaffolding (Phase 8)
 ### Security, Logging, Error Handling (Phase 9)
 ### YOLO Mode & Distribution Support (Phase 10)
+### GitHub Project Automation (Phase 11)
+- Script: `scripts/gh-project-automation.js` (requires gh CLI)
+  - Create labels/milestones idempotently
+  - Ensure Phase 11/12 tracking issues only if missing
 - API: `POST /api/yolo/on { ack: "I-ACCEPT-RISK" }`, `/api/yolo/off`, `/api/yolo/status`
 - When YOLO is ON, orchestrated Claude Flow commands use `--yolo` alias (e.g., `--yolo` instead of `--claude`)
 - Windows defaults to process mode; WSL2 recommended for tmux
