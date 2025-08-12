@@ -1,5 +1,27 @@
 ## Summary
 
+Describe the change and its purpose.
+
+## Linked Tasks / Phase
+
+- Phase: <!-- e.g., Phase 1: Quick Wins -->
+- Tasks: <!-- e.g., P1-T1, P1-T2 -->
+
+## Checklists
+
+- [ ] Tests updated/added and passing locally
+- [ ] Docs updated where appropriate
+- [ ] Updated `GPT5-EXECUTION-PLAN.MD` (Status, End-of-Phase Summary, Tracking & Index)
+- [ ] YOLO gated (no `--dangerously-skip-permissions` in CI)
+- [ ] Cross-platform safe (no unguarded Linux-only tools)
+
+## Risk / Rollback
+
+- Risk level: low/medium/high
+- Rollback: revert this PR
+
+## Summary
+
 Describe the change and why it’s needed.
 
 ## Changes

@@ -53,10 +53,25 @@ Out of scope: changing project licensing or introducing heavy external dependenc
 - Phase 7: CI & Policies
 - Phase 8: Consolidation (modular runner)
 
+### 4.1 Update & Reporting Protocol
+- At the end of each phase, complete the End-of-Phase Summary under that phase with:
+  - What changed (high level) and links to PRs/commits
+  - Key metrics achieved (from KPIs)
+  - Risks discovered and mitigations
+  - Go/No-Go decision for next phase and any blockers
+- Mark the phase Status as Done, include completion date and PRs.
+- Update the Tracking & Index section with PR references (Task IDs → PRs/files).
+- Keep changes small; each phase merges via separate PR to simplify rollback.
+
 ---
 
 ### 5. Phase 0: Preparation and Branching
 Goals: Create safe workspace and tracking to ship incrementally.
+
+Status
+- [ ] Not started
+- [x] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P0-T1: Create feature branch `feat/audit-remediation-ph1`.
@@ -68,10 +83,21 @@ Acceptance Criteria
 Deliverables
 - Branch, PR template updates, labels: `phase:1`, `type:infra`.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 6. Phase 1: Quick Wins (Stability & Safety)
 Goals: Fix obvious bugs and risky defaults fast.
+
+Status
+- [ ] Not started
+- [x] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P1-T1: Fix duplicate declarations and formatting in `intelligence-engine/document-customizer.js`.
@@ -88,10 +114,21 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/quick-wins-stability` with unit/smoke checks for scans and customizer.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 7. Phase 2: Cross-Platform & Safe Command Execution
 Goals: Robust, portable process execution without naïve splitting.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P2-T1: Introduce a command execution helper (execa or `spawn` with `{ shell: true }`) with a safe argument builder.
@@ -106,10 +143,21 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/portable-exec-helper` with cross-platform smoke tests (swarm/hive/sparc).
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 8. Phase 3: Claude Flow v2.0.0 Feature Integration
 Goals: Expose CF v2.0.0 capabilities and centralize version policy.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P3-T1: Centralize `CLAUDE_FLOW_VERSION` policy (alpha/beta/latest/stable/2.0/dev) in a single module.
@@ -122,10 +170,21 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/claude-flow-2-0-integration` with minimal e2e check (mock output accepted) and documentation.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 9. Phase 4: Claude Code Sub-Agent Auto-Delegation
 Goals: Implement practical, opt-in auto-delegation with clear rules.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P4-T1: Define delegation rules (e.g., testing → `test-engineer`, security → `security-auditor`).
@@ -138,10 +197,21 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/sub-agent-autodelegation` and documentation updates.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 10. Phase 5: Observability (Status API + SSE Event Bus)
 Goals: Provide minimal status server and live event stream.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P5-T1: Add a lightweight status server (Express) exposing:
@@ -155,10 +225,21 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/observability-sse-status` with basic tests and docs.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 11. Phase 6: MCP Discovery & Registry Flow
 Goals: Make MCP registry generation reliable or documented.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P6-T1: Provide `lib/mcp-discover.js` or vendor a minimal implementation.
@@ -171,10 +252,21 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/mcp-registry` with example registry and tests.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 12. Phase 7: CI/CD & Governance (Policies and Tests)
 Goals: Enforce safety, portability, and quality.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P7-T1: Matrix CI (Windows/macOS/Linux) with unit + smoke tests.
@@ -187,10 +279,21 @@ Acceptance Criteria
 Deliverables
 - PR: `chore/ci-policy-matrix`.
 
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
+
 ---
 
 ### 13. Phase 8: Consolidation & Migration (Modular Runner)
 Goals: Unify on modular runner; deprecate legacy where appropriate.
+
+Status
+- [x] Not started
+- [ ] In progress
+- [ ] Done (Date: ______; PRs: ______)
 
 Tasks
 - [ ] P8-T1: Document modular runner as the default path; legacy runner as tmux specialization only.
@@ -201,6 +304,12 @@ Acceptance Criteria
 
 Deliverables
 - PR: `docs/unify-modular-runner`.
+
+End-of-Phase Summary (to be filled)
+- Changes:
+- Metrics:
+- Risks/Issues:
+- Next Phase Go/No-Go:
 
 ---
 
@@ -231,6 +340,13 @@ Task Index (sample mapping)
 - P7-* → `.github/workflows/*`, CODEOWNERS, PR templates
 - P8-* → docs, deprecation notes
 
+PR Template Checklist (applies to all phases)
+- [ ] Linked Task IDs and updated `Tracking & Index`
+- [ ] Tests updated/added and passing locally
+- [ ] Docs updated (`README.md`, relevant guides) if behavior changes
+- [ ] Safety: YOLO gated, no `--dangerously-skip-permissions` in CI paths
+- [ ] Cross-platform: no Linux-only tools without guards; Windows defaults to process mode
+
 Definition of Done (per task)
 - Code updated, tests added/updated, docs updated, CI green on matrix.
 
@@ -245,5 +361,45 @@ Definition of Done (per task)
 ---
 
 Use this plan to drive focused PRs per phase. We will not begin implementation until you signal to proceed with Phase 0.
+
+---
+
+### 18. Phase Completion Log (Chronological)
+- Phase 0 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 1 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 2 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 3 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 4 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 5 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 6 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 7 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
+- Phase 8 — Summary:
+  - Date:
+  - PRs:
+  - Highlights:
 
 

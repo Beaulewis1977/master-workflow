@@ -57,13 +57,7 @@ class DocumentCustomizer {
       }
     } catch (e) { /* ignore */ }
 
-    const projectInstructionsPath = path.join(this.projectPath, '.ai-dev', 'project-instructions.md');
-    let projectInstructions = '';
-    try {
-      if (fs.existsSync(projectInstructionsPath)) {
-        projectInstructions = fs.readFileSync(projectInstructionsPath, 'utf8');
-      }
-    } catch (e) { /* ignore */ }
+    // projectInstructions already loaded above
 
     const techStack = this.analysis.factors?.techStack || {};
     const features = this.analysis.factors?.features?.detected || {};
@@ -276,7 +270,7 @@ class DocumentCustomizer {
 
     // Add stage-specific planning
     content += `
-## Project-Specific Instructions\n\n${stage} Stage)
+## Stage-Specific Instructions (${stage})
 `;
     
     switch (stage) {

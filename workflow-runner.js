@@ -134,7 +134,7 @@ class WorkflowRunner {
       'npm', 'node', 'npx', 'bash', 'sh', 'pwsh', 'powershell',
       'git', 'tmux', 'jq', 'claude', 'claude-flow'
     ];
-    const cmd = Array.isArray(command) ? command[0] : command.split(/\s+/)[0];
+    const cmd = Array.isArray(command) ? command[0] : String(command).trim().split(/\s+/)[0];
     if (!allowlist.includes(cmd)) {
       throw new Error(`Command not allowed: ${cmd}`);
     }
@@ -147,7 +147,7 @@ class WorkflowRunner {
       let attempt = 0;
       const run = () => {
         attempt++;
-        const child = spawn('sh', ['-c', Array.isArray(command) ? command.join(' ') : command], { cwd, shell });
+        const child = spawn(Array.isArray(command) ? command.join(' ') : command, { cwd, shell: true });
         let stdout = '', stderr = '';
         child.stdout.on('data', d => (stdout += d.toString()));
         child.stderr.on('data', d => (stderr += d.toString()));
@@ -211,63 +211,39 @@ class WorkflowRunner {
     };
     
     try {
-      // Find TODOs, FIXMEs, HACKs
-      const patterns = {
-        todos: 'TODO',
-        fixmes: 'FIXME',
-        hacks: 'HACK|XXX'
-      };
-      
-      for (const [key, pattern] of Object.entries(patterns)) {
-        try {
-          const { stdout } = await execAsync(
-            `grep -r "${pattern}" "${this.projectDir}" --exclude-dir=node_modules --exclude-dir=.ai-workflow --exclude-dir=.git 2>/dev/null || true`
-          );
-          
-          if (stdout) {
-            incomplete[key] = stdout.split('\n').filter(line => line.trim());
-            this.log('warning', `Found ${incomplete[key].length} ${key.toUpperCase()} items`);
-          }
-        } catch (e) {
-          // Grep returns non-zero if no matches, that's ok
-        }
-      }
-      
-      // Find not implemented functions
+      // Replace grep-based scanning with portable Node scanner
+      const scannerPath = path.join(this.installDir, 'intelligence-engine', 'project-scanner.js');
+      let results;
       try {
-        const { stdout } = await execAsync(
-          `grep -r "throw.*Error.*not.*implemented\\|NotImplemented\\|TODO.*implement" "${this.projectDir}" --exclude-dir=node_modules --exclude-dir=.ai-workflow 2>/dev/null || true`
-        );
-        
-        if (stdout) {
-          incomplete.notImplemented = stdout.split('\n').filter(line => line.trim());
-          this.log('warning', `Found ${incomplete.notImplemented.length} not-implemented functions`);
-        }
+        // Use require to load scanner class
+        const Scanner = require(scannerPath);
+        const scanner = new Scanner(this.projectDir);
+        results = await scanner.scan();
       } catch (e) {
-        // Ignore grep errors
+        this.log('warning', `Project scanner unavailable (${e.message}); skipping detailed scan`);
+      }
+
+      if (results) {
+        incomplete.todos = results.todos || [];
+        incomplete.fixmes = results.fixmes || [];
+        incomplete.hacks = results.hacks || [];
+        incomplete.notImplemented = results.notImplemented || [];
+        incomplete.failingTests = results.failingTests || [];
+        incomplete.uncommitted = results.uncommitted || [];
+        
+        // Log counts
+        const counters = {
+          TODOS: incomplete.todos.length,
+          FIXMES: incomplete.fixmes.length,
+          HACKS: incomplete.hacks.length,
+          NOT_IMPLEMENTED: incomplete.notImplemented.length,
+          TEST_ISSUES: incomplete.failingTests.length,
+          UNCOMMITTED: incomplete.uncommitted.length
+        };
+        Object.entries(counters).forEach(([k, v]) => v > 0 && this.log('warning', `Found ${v} ${k}`));
       }
       
-      // Check for failing tests
-      const testCommands = [
-        'npm test -- --passWithNoTests',
-        'yarn test --passWithNoTests',
-        'pytest --tb=no',
-        'go test ./...',
-        'cargo test'
-      ];
-      
-      for (const cmd of testCommands) {
-        try {
-          const { stdout, stderr } = await execAsync(cmd, { cwd: this.projectDir });
-          if (stderr && stderr.includes('fail')) {
-            incomplete.failingTests.push(stderr);
-            this.log('warning', 'Found failing tests');
-            break;
-          }
-        } catch (e) {
-          // Test command might not exist, that's ok
-        }
-      }
+      // Optional: lightweight failing test detection is handled by scanner
       
       // Check for uncommitted changes
       try {
@@ -491,8 +467,16 @@ class WorkflowRunner {
   }
 
   enforceYoloAck() {
+    // Gate YOLO/skip-permissions behind explicit env guard and ack
+    const yoloBlocked = process.env.CI === 'true' || process.env.BLOCK_YOLO === 'true';
+    if (yoloBlocked && (this.yolo.enabled || this.yolo.dangerouslySkipPermissions)) {
+      throw new Error('YOLO mode is blocked in CI or when BLOCK_YOLO=true');
+    }
     if ((this.yolo.enabled || this.yolo.dangerouslySkipPermissions) && this.yolo.ack !== 'I-ACCEPT-RISK') {
       throw new Error('YOLO mode requires --ack I-ACCEPT-RISK');
+    }
+    if (this.yolo.enabled || this.yolo.dangerouslySkipPermissions) {
+      this.log('warning', 'YOLO mode enabled. Proceed with caution.');
     }
   }
 

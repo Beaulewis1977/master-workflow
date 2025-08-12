@@ -192,6 +192,11 @@
     }
   },
   "environmentVariables": {
+    "MCP_DEFAULT_SERVER": {
+      "description": "Default MCP server to use for libraries/context",
+      "values": ["context7", "filesystem", "git", "http"],
+      "default": "context7"
+    },
     "CLAUDE_FLOW_VERSION": {
       "description": "Claude Flow version to use",
       "values": ["alpha", "beta", "latest", "2.0", "stable", "dev"],

@@ -396,10 +396,9 @@ class ModularWorkflowRunner {
   async executeInProcess(command) {
     this.log('info', 'Executing in background process');
     
-    const [cmd, ...args] = command.split(' ');
-    
-    // Spawn process
-    const child = spawn(cmd, args, {
+    // Use shell to preserve quoting and avoid naive splitting
+    const child = spawn(command, {
+      shell: true,
       detached: true,
       stdio: ['ignore', 'pipe', 'pipe']
     });
