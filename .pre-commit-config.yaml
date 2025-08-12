@@ -4,4 +4,11 @@ repos:
     hooks:
       - id: gitleaks
         args: ["protect", "--verbose", "--redact"]
+  - repo: local
+    hooks:
+      - id: lint-if-available
+        name: lint-if-available
+        entry: node scripts/lint-if-available.js
+        language: system
+        pass_filenames: false
 
