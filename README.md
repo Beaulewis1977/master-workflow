@@ -61,6 +61,10 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 ### Flow Orchestrator (Phase 6)
 ### Project Customization (Phase 7)
 ### Infrastructure Scaffolding (Phase 8)
+### Security, Logging, Error Handling (Phase 9)
+- Command allowlist enforced in orchestrator paths; YOLO flags gated and blocked in CI
+- API request/response logging via pino hooks
+- Audit log persistence (`audit_logs` table writes) for critical actions
 - API
   - `POST /api/scaffold/plan` → dry-run plan with files/conflicts
   - `POST /api/scaffold/preview` → writes preview under `.ai-workflow/scaffold/**`

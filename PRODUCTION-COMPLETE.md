@@ -142,6 +142,11 @@ Choose exactly what you need:
 - Preview: `POST /api/scaffold/preview` → writes to `.ai-workflow/scaffold/**`
 - Apply: `POST /api/scaffold/apply` → additive, avoids overwrites
 
+### Security, Logging, Error Handling (Phase 9)
+- Command allowlist and YOLO gating enforced
+- API request/response logging via pino
+- Audit events recorded to `audit_logs`
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

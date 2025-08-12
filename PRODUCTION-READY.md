@@ -240,6 +240,7 @@ ai-dev analyze
 - Flow Integration (Phase 6): Orchestrator builds launch commands for Claude Flow with centralized version policy and optional training/memory ops.
 - Project Customization (Phase 7): API generates Agent-OS product/spec docs and optional Claude Code subagents tailored to detected stack.
 - Infrastructure Scaffolding (Phase 8): Non-destructive planning/preview/apply endpoints to add scripts, agents, and infra workflows with conflict detection.
+- Security/Logging/Error Handling (Phase 9): Command allowlist + YOLO gate, API logging hooks, and audit log records for key actions.
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches

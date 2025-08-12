@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { createLogger } from '../core/logging.js';
 import { openDb } from '../core/db.js';
+import loggingHook from './hooks/logging.js';
 import componentsRoute from './routes/components.js';
 import installRoute from './routes/install.js';
 import convoRoute from './routes/convo.js';
@@ -17,6 +18,7 @@ const PORT = Number(process.env.MW_ENGINE_PORT || 13800);
 async function buildServer() {
   const app = Fastify({ logger });
   app.register(cors, { origin: true });
+  app.register(loggingHook);
 
   // Health
   app.get('/health', async () => ({ status: 'ok' }));
