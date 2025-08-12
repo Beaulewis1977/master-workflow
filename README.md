@@ -52,10 +52,11 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
    - Background session management
    - Multi-window workflow orchestration
 
-## Engine (Phase 2)
+## Engine (Phase 2–3)
 
 - Core engine added under `engine/` (CLI + Fastify API + SQLite via better-sqlite3).
 - Endpoints: `/health`, `/api/components`, `/api/install` (plan), `/api/install/:id/status`, `/api/convo/:sessionId/message`, `/api/env/scan`.
+- Wizard CLI (planning): `cd engine && npm run build && node dist/cli/index.js wizard` (use inside devcontainer).
 - Build/Run inside devcontainer or Linux host:
   - `cd engine && npm ci && npm run build && npm run cli migrate && npm start`.
 
