@@ -110,6 +110,11 @@ Choose exactly what you need:
 - **Stored Preference**: Saved in installation-config.json
 - **Universal Application**: Works with all workflows and recovery mode
 
+### Governance (Phase 1)
+- CI workflow on main/develop (Node 18/20; Windows/macOS/Linux)
+- Issue templates (bug, feature, phase)
+- Policies in repo: `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

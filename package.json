@@ -1,0 +1,16 @@
+{
+  "name": "master-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Intelligent Workflow Decision System - governance and CI scaffolding",
+  "scripts": {
+    "test": "node test/test-runner.js",
+    "lint": "node scripts/lint-if-available.js",
+    "coverage": "echo 'No coverage tool configured; skipping'"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+
+

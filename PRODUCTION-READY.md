@@ -233,6 +233,7 @@ ai-dev analyze
 - MCP default server is `context7` (override with `MCP_DEFAULT_SERVER`).
 - TMux auto-commit is disabled by default; set `ENABLE_AUTO_COMMIT=true` to enable.
 - MCP registry is deterministic (env/catalog-based). Avoid untrusted endpoints; review changes via PR.
+- Governance (Phase 1): CI matrix on Node 18/20 across OS, issue templates, and policies (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`).
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches

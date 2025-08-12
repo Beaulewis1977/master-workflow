@@ -500,6 +500,10 @@ Configuration references:
 - **tmux** - Optional, for session management
 - **git** - Optional, for version control
 
+### Governance and Security
+- Phase 1 governance is in place: CI workflow, issue templates, `SECURITY.md`, `CONTRIBUTING.md`, and `CODE_OF_CONDUCT.md`.
+- YOLO mode is blocked in CI; dangerous flags must not be committed. See `SECURITY.md`.
+
 ## Contributing: MCP Servers & Tools
 
 We welcome contributions of new MCP servers and tools.

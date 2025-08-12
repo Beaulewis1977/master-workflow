@@ -1,5 +1,20 @@
 ## Summary
 
+Describe the change and the motivation. Link related issues.
+
+## Checklist
+
+- [ ] Tests added/updated (`npm test` passes on Node 18/20)
+- [ ] Docs updated (`README.md`, relevant guides)
+- [ ] Security reviewed (no secrets; no YOLO flags committed)
+- [ ] References to `GPT5-PLAN.MD` phases where applicable
+
+## Screenshots / Logs
+
+Paste relevant output if helpful.
+
+## Summary
+
 Describe the changes and why they are needed.
 
 ## Checklist
