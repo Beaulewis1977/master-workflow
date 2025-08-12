@@ -192,6 +192,11 @@ ai-dev analyze
 - ✅ **Learning system** - Remembers user preferences
 
 ### User Control
+### Cross-Platform Execution (Phase 2)
+
+- Introduced `lib/exec-helper.js` to standardize command execution across Windows/macOS/Linux.
+- Removed naive argument splitting; default shell execution preserves quoting.
+- Ready to refactor chained commands (`&&`) into sequential helper executions.
 ### Safety & Cross-Platform Defaults (New)
 
 - Windows hosts default to process mode; tmux orchestration is opt-in (or use WSL2).

@@ -10,6 +10,7 @@ const path = require('path');
 const { spawn, exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
+const { runCommand, runCommandsSequentially } = require('./lib/exec-helper');
 const http = require('http');
 
 class WorkflowRunner {
@@ -430,7 +431,7 @@ class WorkflowRunner {
     this.log('info', `Executing: ${command}`);
     
     // Execute via execSafe
-    this.execSafe(command, { retries: 2, backoffMs: 750 }).then(({ stdout }) => {
+    runCommand(command, { cwd: this.projectDir, shell: true }).then(({ stdout }) => {
       if (stdout) this.log('info', `Claude Flow: ${stdout.trim()}`);
       this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {});
     }).catch(err => {

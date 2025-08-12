@@ -10,6 +10,7 @@ const path = require('path');
 const { spawn, exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
+const { runCommand, runCommandsSequentially } = require('./lib/exec-helper');
 
 class ModularWorkflowRunner {
   constructor() {
@@ -328,7 +329,7 @@ class ModularWorkflowRunner {
     if (this.executionMode === 'tmux' && this.components.tmux) {
       await this.executeInTmux(command);
     } else {
-      await this.executeInProcess(command);
+      await this.executeViaHelper(command);
     }
   }
 
@@ -350,7 +351,7 @@ class ModularWorkflowRunner {
     if (this.executionMode === 'tmux' && this.components.tmux) {
       await this.executeInTmux(command);
     } else {
-      await this.executeInProcess(command);
+      await this.executeViaHelper(command);
     }
   }
 
@@ -393,36 +394,15 @@ class ModularWorkflowRunner {
     }
   }
 
-  async executeInProcess(command) {
-    this.log('info', 'Executing in background process');
-    
-    // Use shell to preserve quoting and avoid naive splitting
-    const child = spawn(command, {
-      shell: true,
-      detached: true,
-      stdio: ['ignore', 'pipe', 'pipe']
-    });
-    
-    // Log output
-    const logFile = path.join(this.logDir, `process-${child.pid}.log`);
-    const logStream = fs.createWriteStream(logFile);
-    
-    child.stdout.pipe(logStream);
-    child.stderr.pipe(logStream);
-    
-    // Store process reference
-    this.processes[child.pid] = {
-      command,
-      startTime: new Date(),
-      logFile
-    };
-    
-    // Don't wait for process to complete
-    child.unref();
-    
-    this.log('success', `Process started: PID ${child.pid}`);
-    console.log(`\n✅ Workflow running in background: PID ${child.pid}`);
-    console.log(`   Logs: ${logFile}`);
+  async executeViaHelper(command) {
+    this.log('info', 'Executing via helper', { command });
+    const result = await runCommand(command, { cwd: this.projectDir, shell: true });
+    if (result.code !== 0) {
+      this.log('error', 'Execution failed', { code: result.code, stderr: result.stderr });
+      throw new Error(`Execution failed: ${result.stderr || result.stdout}`);
+    }
+    this.log('success', 'Execution complete');
+    return result;
   }
 
   async recover(action = 'analyze') {

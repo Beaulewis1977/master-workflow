@@ -132,14 +132,14 @@ End-of-Phase Summary (completed 2025-08-12)
 Goals: Robust, portable process execution without naïve splitting.
 
 Status
-- [x] Not started
-- [ ] In progress
+- [ ] Not started
+- [x] In progress
 - [ ] Done (Date: ______; PRs: ______)
 
 Tasks
-- [ ] P2-T1: Introduce a command execution helper (execa or `spawn` with `{ shell: true }`) with a safe argument builder.
-- [ ] P2-T2: Update `workflow-runner-modular.js` to use helper (remove `split(' ')`).
-- [ ] P2-T3: Update `workflow-runner.js` to use helper (remove `spawn('sh', ['-c', ...])`).
+- [x] P2-T1: Introduce a command execution helper (execa or `spawn` with `{ shell: true }`) with a safe argument builder.
+- [x] P2-T2: Update `workflow-runner-modular.js` to use helper (remove `split(' ')`).
+- [x] P2-T3: Update `workflow-runner.js` to use helper (remove `spawn('sh', ['-c', ...])`).
 - [ ] P2-T4: Refactor commands with `&&` (e.g., SPARC wizard) into sequential executions via helper.
 
 Acceptance Criteria
@@ -148,6 +148,7 @@ Acceptance Criteria
 
 Deliverables
 - PR: `feat/portable-exec-helper` with cross-platform smoke tests (swarm/hive/sparc).
+  - Implemented: `lib/exec-helper.js`; wired into runners.
 
 End-of-Phase Summary (to be filled)
 - Changes:
@@ -187,6 +188,7 @@ End-of-Phase Summary (to be filled)
 ### 9. Phase 4: Claude Code Sub-Agent Auto-Delegation
 Goals: Implement practical, opt-in auto-delegation with clear rules.
 
+claude code sub-agents are to be added to /.claude/agent with
 Status
 - [x] Not started
 - [ ] In progress

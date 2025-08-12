@@ -148,6 +148,10 @@ YOLO details
 # Use specific Claude Flow version
 CLAUDE_FLOW_VERSION=beta ./ai-workflow init --auto
 CLAUDE_FLOW_VERSION=2.0 ./ai-workflow init --sparc
+
+### Command Execution Helper (Phase 2)
+
+All internal command execution now uses a cross-platform helper that preserves quoting and supports sequential runs. This removes brittle `split(' ')` logic and Linux-only shells, improving Windows compatibility.
 ```
 
 ### Working Without TMux
