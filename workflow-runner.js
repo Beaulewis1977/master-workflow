@@ -408,36 +408,40 @@ class WorkflowRunner {
     
     const version = process.env.CLAUDE_FLOW_VERSION || 'alpha';
     let command;
+    let commands = [];
     
     switch (this.approach.selected) {
       case 'simpleSwarm':
         command = `npx claude-flow@${version} swarm "${this.approach.task || 'Development task'}"`;
+        commands = [command];
         break;
       
       case 'hiveMind':
         const agentCount = this.approach.agentCount || 5;
         command = `npx claude-flow@${version} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${agentCount} --claude`;
+        commands = [command];
         break;
       
       case 'hiveMindSparc':
         const sparcAgents = this.approach.agentCount || 10;
         command = `npx claude-flow@${version} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${sparcAgents} --claude`;
+        commands = [
+          command,
+          `npx claude-flow@${version} sparc wizard --interactive`
+        ];
         break;
       
       default:
         throw new Error(`Unknown approach: ${this.approach.selected}`);
     }
     
-    this.log('info', `Executing: ${command}`);
-    
-    // Execute via execSafe
-    runCommand(command, { cwd: this.projectDir, shell: true }).then(({ stdout }) => {
-      if (stdout) this.log('info', `Claude Flow: ${stdout.trim()}`);
-      this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {});
-    }).catch(err => {
-      this.log('error', `Claude Flow failed: ${err.message}`);
-      this.publishEvent('status', { phase: 'exec:error', error: err.message }).catch(() => {});
-    });
+    this.log('info', `Executing command(s): ${commands.join(' | ')}`);
+    runCommandsSequentially(commands, { cwd: this.projectDir, shell: true })
+      .then(() => this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {}))
+      .catch(err => {
+        this.log('error', `Claude Flow failed: ${err.message}`);
+        this.publishEvent('status', { phase: 'exec:error', error: err.message }).catch(() => {});
+      });
     
     return command;
   }

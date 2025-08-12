@@ -274,6 +274,7 @@ class ApproachSelector {
       selected: approachKey,
       name: approach.name,
       command: this.buildCommand(approach, analysis),
+      commands: this.buildCommands(approach, analysis),
       score: score,
       stage: analysis.stage,
       description: approach.description,
@@ -323,6 +324,35 @@ class ApproachSelector {
     }
     
     return baseCommand;
+  }
+
+  /**
+   * Build commands array to avoid chaining with &&
+   */
+  buildCommands(approach, analysis) {
+    const version = this.claudeFlowVersions[this.selectedVersion] || '@alpha';
+    const projectName = analysis.projectName || require('path').basename(process.cwd());
+
+    if (approach.name === 'Hive-Mind + SPARC') {
+      const agentCount = this.determineAgentCount(analysis, true);
+      return [
+        `npx claude-flow${version} hive-mind spawn "${projectName}" --sparc --agents ${agentCount} --claude`,
+        `npx claude-flow${version} sparc wizard --interactive`
+      ];
+    }
+    if (approach.name === 'Hive-Mind') {
+      const agentCount = this.determineAgentCount(analysis);
+      return [
+        `npx claude-flow${version} hive-mind spawn "${projectName}" --agents ${agentCount} --claude`
+      ];
+    }
+    if (approach.name === 'Simple Swarm') {
+      const task = analysis.taskDescription ? ` "${analysis.taskDescription}"` : '';
+      return [
+        `npx claude-flow${version} swarm${task}`
+      ];
+    }
+    return [];
   }
 
   /**

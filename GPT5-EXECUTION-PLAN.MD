@@ -188,7 +188,7 @@ End-of-Phase Summary (to be filled)
 ### 9. Phase 4: Claude Code Sub-Agent Auto-Delegation
 Goals: Implement practical, opt-in auto-delegation with clear rules.
 
-claude code sub-agents are to be added to /.claude/agent with
+Note: Claude Code sub-agents are added to `/.claude/agents` using templates from `https://docs.anthropic.com/en/docs/claude-code/sub-agents`. They can be chained to form a workflow.
 Status
 - [x] Not started
 - [ ] In progress
