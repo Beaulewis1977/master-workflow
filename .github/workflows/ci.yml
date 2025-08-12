@@ -15,7 +15,11 @@ on:
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     concurrency:
       group: ci-${{ github.ref }}
       cancel-in-progress: true
@@ -62,11 +66,17 @@ jobs:
         run: |
           if [ -f test/test-basic.js ]; then node test/test-basic.js; else echo "No node tests"; fi
 
-      - name: Run shell tests (bash)
+      - name: Run shell tests (bash on Linux/macOS)
+        if: runner.os != 'Windows'
         run: |
-          sudo apt-get update && sudo apt-get install -y jq
+          if command -v apt-get >/dev/null 2>&1; then sudo apt-get update && sudo apt-get install -y jq; fi
           chmod +x test/test-intelligent-system.sh || true
           if [ -f test/test-intelligent-system.sh ]; then bash test/test-intelligent-system.sh; else echo "No bash tests"; fi
+      - name: Run shell tests (PowerShell on Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (Test-Path test/test-intelligent-system.sh) { wsl bash test/test-intelligent-system.sh } else { Write-Output "No bash tests" }
 
       - name: Archive test results
         if: always()
