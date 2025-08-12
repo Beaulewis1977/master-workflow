@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
+    jq \
     python3 \
     python3-pip \
     python3-venv \
@@ -21,7 +22,8 @@ ENV LANG=en_US.UTF-8 \
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate || true
 
 WORKDIR /workspace
-EXPOSE 13800
+RUN git config --global --add safe.directory /workspace
+EXPOSE 13800 8787
 
 # Keep container running for interactive/dev use
 CMD ["bash", "-lc", "tail -f /dev/null"]

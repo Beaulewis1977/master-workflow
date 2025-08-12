@@ -725,7 +725,7 @@ install_agent_os_components() {
     
     # Create CUSTOMIZED instructions.md
     print_info "Creating customized Agent-OS instructions..."
-    cat > "$PROJECT_DIR/.agent-os/instructions/instructions.md" << EOF
+    cat > "$PROJECT_DIR/.agent-os/instructions/instructions.md" << 'EOF'
 # Agent-OS Instructions - Customized for This Project
 
 ## Project Analysis
@@ -796,7 +796,7 @@ EOF
     fi
     
     # Add stage-specific planning
-    cat >> "$PROJECT_DIR/.agent-os/instructions/instructions.md" << EOF
+    cat >> "$PROJECT_DIR/.agent-os/instructions/instructions.md" << 'EOF'
 
 ## Planning Approach ($STAGE Stage)
 EOF
@@ -844,7 +844,7 @@ EOF
     
     # Create standards.md based on detected tech stack
     print_info "Creating coding standards document..."
-    cat > "$PROJECT_DIR/.agent-os/instructions/standards.md" << EOF
+    cat > "$PROJECT_DIR/.agent-os/instructions/standards.md" << 'EOF'
 # Coding Standards - ${LANGUAGES:-General} Project
 
 ## Overview
@@ -934,7 +934,7 @@ EOF
 EOF
     
     # Create implementation plan based on complexity
-    cat > "$PROJECT_DIR/.agent-os/plans/implementation-plan.md" << EOF
+    cat > "$PROJECT_DIR/.agent-os/plans/implementation-plan.md" << 'EOF'
 # Implementation Plan
 
 ## Project Complexity: $SCORE/100
@@ -986,7 +986,7 @@ EOF
 EOF
     
     # Create Agent-OS configuration
-    cat > "$PROJECT_DIR/.agent-os/agentOS-config.json" << EOF
+    cat > "$PROJECT_DIR/.agent-os/agentOS-config.json" << 'EOF'
 {
   "version": "1.0",
   "integration": "intelligent-workflow",
@@ -1233,7 +1233,7 @@ generate_hive_config() {
         if [ "$SCORE" -lt 40 ]; then AGENTS=4; elif [ "$SCORE" -lt 60 ]; then AGENTS=5; else AGENTS=6; fi
     fi
 
-    cat > "$PROJECT_DIR/.claude-flow/hive-config.json" << EOF
+    cat > "$PROJECT_DIR/.claude-flow/hive-config.json" << 'EOF'
 {
   "project": "$PROJECT_NAME_BASENAME",
   "memoryDir": ".claude-flow/memory",
@@ -1289,25 +1289,6 @@ generate_hive_config() {
 }
 EOF
 
-  "project": "$PROJECT_NAME_BASENAME",
-  "memoryDir": ".claude-flow/memory",
-  "roles": [
-    { "name": "Queen", "capabilities": ["plan", "coordinate", "review"], "priority": 1 },
-    { "name": "Architect", "capabilities": ["architecture", "standards", "docs"], "priority": 2 },
-    { "name": "Backend", "capabilities": ["api", "db", "auth"], "priority": 3 },
-    { "name": "Frontend", "capabilities": ["ui", "ux", "components"], "priority": 3 },
-    { "name": "Integrator", "capabilities": ["agents", "workflows", "integrations"], "priority": 2 }
-  ],
-  "agentCount": $AGENTS,
-  "persistence": {
-    "enabled": true,
-    "logs": ".claude-flow/memory/logs",
-    "artifacts": ".claude-flow/memory/artifacts"
-  },
-  "claudeFlowVersion": "${CLAUDE_FLOW_VERSION:-alpha}"
-}
-EOF
-
     # Remove the duplicate block potentially appended by shell heredoc issues
     # Keep only the first JSON object by truncating at the first closing brace pattern
     if command -v awk >/dev/null 2>&1; then
@@ -1352,8 +1333,13 @@ install_tmux_components() {
     
     # Copy TMux scripts
     if [ -d "$SCRIPT_DIR/tmux-scripts" ]; then
+        mkdir -p "$INSTALL_DIR/tmux-scripts"
         cp -r "$SCRIPT_DIR/tmux-scripts/"* "$INSTALL_DIR/tmux-scripts/"
-        chmod +x "$INSTALL_DIR/tmux-scripts/"*.sh
+        # Normalize line endings and ensure executability
+        if ls "$INSTALL_DIR/tmux-scripts"/*.sh >/dev/null 2>&1; then
+            sed -i 's/\r$//' "$INSTALL_DIR/tmux-scripts/"*.sh 2>/dev/null || true
+            chmod +x "$INSTALL_DIR/tmux-scripts/"*.sh || true
+        fi
         print_success "TMux scripts installed"
     fi
     
@@ -1653,20 +1639,18 @@ case "$1" in
         esac
         ;;
     help|--help|-h)
-        cat << HELP
-Modular AI Workflow System
-
-Core Commands (always available):
-  init [options]          Initialize workflow
-  analyze [path]          Analyze project complexity
-  prompt [edit]           View/edit saved prompt
-  components              List installed components
-  verify                  Verify component integration
-  add [component]         Add component post-install
-  yolo [on|off|status]    Manage YOLO mode (skip permissions)
-  help                    Show this help
-
-EOF
+        echo "Modular AI Workflow System"
+        echo ""
+        echo "Core Commands (always available):"
+        echo "  init [options]          Initialize workflow"
+        echo "  analyze [path]          Analyze project complexity"
+        echo "  prompt [edit]           View/edit saved prompt"
+        echo "  components              List installed components"
+        echo "  verify                  Verify component integration"
+        echo "  add [component]         Add component post-install"
+        echo "  yolo [on|off|status]    Manage YOLO mode (skip permissions)"
+        echo "  help                    Show this help"
+        echo ""
         
         if [ "$HAS_CLAUDE_CODE" = "true" ]; then
             echo "Claude Code Commands:"
@@ -1706,7 +1690,7 @@ EOF
         ;;
 esac
 EOF
-    
+
     chmod +x "$INSTALL_DIR/bin/ai-workflow"
     ln -sf "$INSTALL_DIR/bin/ai-workflow" "$PROJECT_DIR/ai-workflow"
     
@@ -1720,19 +1704,19 @@ save_installation_config() {
   "version": "2.0",
   "components": {
     "core": true,
-    "claudeCode": $INSTALL_CLAUDE_CODE,
-    "agentOS": $INSTALL_AGENT_OS,
-    "claudeFlow": $INSTALL_CLAUDE_FLOW,
-    "tmux": $INSTALL_TMUX
+    "claudeCode": ${INSTALL_CLAUDE_CODE},
+    "agentOS": ${INSTALL_AGENT_OS},
+    "claudeFlow": ${INSTALL_CLAUDE_FLOW},
+    "tmux": ${INSTALL_TMUX}
   },
-  "executionMode": $([ "$INSTALL_TMUX" = true ] && echo '"tmux"' || echo '"process"'),
-  "claudeCommand": "$CLAUDE_COMMAND",
-  "skipPermissions": $SKIP_PERMISSIONS,
-  "initialPrompt": "$PROMPT_FILE",
+  "executionMode": "$([ "$INSTALL_TMUX" = true ] && echo tmux || echo process)",
+  "claudeCommand": "${CLAUDE_COMMAND}",
+  "skipPermissions": ${SKIP_PERMISSIONS},
+  "initialPrompt": "${PROMPT_FILE}",
   "recommendedApproach": "${RECOMMENDED_APPROACH:-standard}",
   "installedAt": "$(date -Iseconds)",
-  "projectDir": "$PROJECT_DIR",
-  "installDir": "$INSTALL_DIR"
+  "projectDir": "${PROJECT_DIR}",
+  "installDir": "${INSTALL_DIR}"
 }
 EOF
     

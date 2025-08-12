@@ -1,0 +1,107 @@
+{
+  "metrics": {
+    "system_health": {
+      "status": "healthy",
+      "uptime": "0h 0m 0s",
+      "last_check": "2025-01-12T10:30:00Z"
+    },
+    "worker_status": {
+      "worker-researcher-001": {
+        "status": "active",
+        "utilization": 0,
+        "tasks_assigned": 2,
+        "tasks_completed": 0,
+        "error_count": 0,
+        "last_activity": "2025-01-12T10:30:00Z"
+      },
+      "worker-coder-001": {
+        "status": "active",
+        "utilization": 0,
+        "tasks_assigned": 4,
+        "tasks_completed": 0,
+        "error_count": 0,
+        "last_activity": "2025-01-12T10:30:00Z"
+      },
+      "worker-analyst-001": {
+        "status": "active",
+        "utilization": 0,
+        "tasks_assigned": 3,
+        "tasks_completed": 0,
+        "error_count": 0,
+        "last_activity": "2025-01-12T10:30:00Z"
+      },
+      "worker-tester-001": {
+        "status": "active",
+        "utilization": 0,
+        "tasks_assigned": 1,
+        "tasks_completed": 0,
+        "error_count": 0,
+        "last_activity": "2025-01-12T10:30:00Z"
+      }
+    },
+    "task_metrics": {
+      "total_tasks": 10,
+      "pending": 10,
+      "in_progress": 0,
+      "completed": 0,
+      "failed": 0,
+      "average_completion_time": null,
+      "success_rate": null
+    },
+    "resource_usage": {
+      "memory": {
+        "used": "0MB",
+        "available": "2048MB",
+        "percentage": 0
+      },
+      "cpu": {
+        "usage": 0,
+        "cores_available": 4
+      },
+      "disk": {
+        "used": "1MB",
+        "available": "100GB",
+        "percentage": 0.001
+      }
+    },
+    "communication_metrics": {
+      "messages_sent": 0,
+      "messages_received": 0,
+      "average_latency": null,
+      "channel_health": {
+        "strategy_channel": "active",
+        "task_queue": "active",
+        "research_topic": "active",
+        "implementation_topic": "active",
+        "analysis_topic": "active",
+        "testing_topic": "active",
+        "coordination_channel": "active"
+      }
+    },
+    "performance_indicators": {
+      "task_completion_rate": 0,
+      "worker_efficiency": 0,
+      "system_throughput": 0,
+      "error_rate": 0,
+      "response_time_p50": null,
+      "response_time_p95": null,
+      "response_time_p99": null
+    }
+  },
+  "alerts": [],
+  "thresholds": {
+    "worker_utilization_high": 0.9,
+    "worker_utilization_low": 0.2,
+    "task_failure_rate": 0.1,
+    "memory_usage_critical": 0.9,
+    "cpu_usage_critical": 0.85,
+    "communication_latency_warn": "500ms",
+    "communication_latency_critical": "2000ms"
+  },
+  "monitoring_config": {
+    "collection_interval": "10s",
+    "retention_period": "7d",
+    "aggregation_window": "5m",
+    "alert_cooldown": "5m"
+  }
+}

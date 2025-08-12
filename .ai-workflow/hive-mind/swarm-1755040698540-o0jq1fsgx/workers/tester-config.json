@@ -1,0 +1,27 @@
+{
+  "worker": {
+    "id": "worker-tester-001",
+    "type": "tester",
+    "status": "active",
+    "spawned_at": "2025-01-12T10:30:00Z",
+    "capabilities": [
+      "unit_testing",
+      "integration_testing",
+      "e2e_testing",
+      "performance_testing",
+      "coverage_analysis",
+      "bug_detection"
+    ],
+    "assigned_tasks": ["task-006"],
+    "mcp_servers": ["context7", "filesystem"],
+    "memory_allocation": "256MB",
+    "priority": "normal"
+  },
+  "configuration": {
+    "test_frameworks": ["Jest", "Mocha", "Cypress"],
+    "coverage_target": 80,
+    "parallel_execution": true,
+    "fail_fast": false,
+    "report_format": "json"
+  }
+}

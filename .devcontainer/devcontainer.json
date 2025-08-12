@@ -1,5 +1,17 @@
 {
   "name": "MASTER-WORKFLOW Dev",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "remoteUser": "node",
+  "forwardPorts": [13800, 8787],
+  "features": {},
+  "postCreateCommand": "npm ci --no-audit --no-fund && (cd engine && npm ci --no-audit --no-fund)"
+}
+
+{
+  "name": "MASTER-WORKFLOW Dev",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   "customizations": {
     "vscode": {

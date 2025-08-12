@@ -1,0 +1,26 @@
+{
+  "worker": {
+    "id": "worker-coder-001",
+    "type": "coder",
+    "status": "active",
+    "spawned_at": "2025-01-12T10:30:00Z",
+    "capabilities": [
+      "multi_language_coding",
+      "architecture_implementation",
+      "api_development",
+      "testing",
+      "refactoring",
+      "optimization"
+    ],
+    "assigned_tasks": ["task-003", "task-004", "task-005", "task-008"],
+    "mcp_servers": ["context7", "filesystem", "git"],
+    "memory_allocation": "512MB",
+    "priority": "high"
+  },
+  "configuration": {
+    "languages": ["JavaScript", "TypeScript", "Python"],
+    "frameworks": ["Node.js", "Express", "React"],
+    "code_style": "eslint-standard",
+    "test_coverage_target": 80
+  }
+}

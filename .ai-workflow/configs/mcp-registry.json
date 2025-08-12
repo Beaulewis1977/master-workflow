@@ -1,0 +1,199 @@
+{
+  "servers": {
+    "context7": {
+      "enabled": true,
+      "default": true,
+      "description": "General-purpose coding MCP server (preferred for coding)"
+    },
+    "filesystem": {
+      "enabled": true,
+      "root": "."
+    },
+    "http": {
+      "enabled": true
+    },
+    "git": {
+      "enabled": true,
+      "repo": "auto"
+    },
+    "openapi": {
+      "enabled": true
+    },
+    "browser": {
+      "enabled": true
+    },
+    "search": {
+      "enabled": true
+    },
+    "github": {
+      "enabled": true
+    },
+    "slack": {
+      "enabled": true
+    },
+    "jira": {
+      "enabled": true
+    },
+    "docker": {
+      "enabled": true
+    },
+    "kubernetes": {
+      "enabled": true
+    },
+    "postgres": {
+      "enabled": true
+    },
+    "redis": {
+      "enabled": true
+    },
+    "s3": {
+      "enabled": true
+    },
+    "aws": {
+      "enabled": true
+    },
+    "gcp": {
+      "enabled": true
+    },
+    "azure": {
+      "enabled": true
+    },
+    "stripe": {
+      "enabled": true
+    },
+    "twilio": {
+      "enabled": true
+    }
+  },
+  "tools": [
+    {
+      "name": "context7",
+      "type": "mcp",
+      "server": "context7"
+    },
+    {
+      "name": "fs",
+      "type": "mcp",
+      "server": "filesystem"
+    },
+    {
+      "name": "httpClient",
+      "type": "mcp",
+      "server": "http"
+    },
+    {
+      "name": "git",
+      "type": "mcp",
+      "server": "git"
+    },
+    {
+      "name": "openapi",
+      "type": "mcp",
+      "server": "openapi"
+    },
+    {
+      "name": "browser",
+      "type": "mcp",
+      "server": "browser"
+    },
+    {
+      "name": "search",
+      "type": "mcp",
+      "server": "search"
+    },
+    {
+      "name": "github",
+      "type": "mcp",
+      "server": "github"
+    },
+    {
+      "name": "slack",
+      "type": "mcp",
+      "server": "slack"
+    },
+    {
+      "name": "jira",
+      "type": "mcp",
+      "server": "jira"
+    },
+    {
+      "name": "docker",
+      "type": "mcp",
+      "server": "docker"
+    },
+    {
+      "name": "k8s",
+      "type": "mcp",
+      "server": "kubernetes"
+    },
+    {
+      "name": "postgres",
+      "type": "mcp",
+      "server": "postgres"
+    },
+    {
+      "name": "redis",
+      "type": "mcp",
+      "server": "redis"
+    },
+    {
+      "name": "s3",
+      "type": "mcp",
+      "server": "s3"
+    },
+    {
+      "name": "aws",
+      "type": "mcp",
+      "server": "aws"
+    },
+    {
+      "name": "gcp",
+      "type": "mcp",
+      "server": "gcp"
+    },
+    {
+      "name": "azure",
+      "type": "mcp",
+      "server": "azure"
+    },
+    {
+      "name": "stripe",
+      "type": "mcp",
+      "server": "stripe"
+    },
+    {
+      "name": "twilio",
+      "type": "mcp",
+      "server": "twilio"
+    },
+    {
+      "name": "grep",
+      "type": "builtin",
+      "description": "Search files"
+    },
+    {
+      "name": "httpClient",
+      "type": "mcp",
+      "server": "http"
+    },
+    {
+      "name": "fs",
+      "type": "mcp",
+      "server": "filesystem"
+    },
+    {
+      "name": "context7",
+      "type": "mcp",
+      "server": "context7"
+    },
+    {
+      "name": "git",
+      "type": "mcp",
+      "server": "git"
+    }
+  ],
+  "meta": {
+    "autoDiscover": true,
+    "generatedAt": "2025-08-12T23:14:39.283Z"
+  }
+}

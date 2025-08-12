@@ -1,0 +1,19 @@
+{
+  "name": "hive-workflow",
+  "description": "Multi-agent coordination workflow",
+  "approach": "hiveMind",
+  "steps": [
+    {
+      "type": "analyze",
+      "description": "Comprehensive project analysis"
+    },
+    {
+      "type": "setup",
+      "description": "Configure multi-agent environment"
+    },
+    {
+      "type": "execute",
+      "command": "npx claude-flow@${version} hive-mind spawn \"${project}\" --agents ${agentCount} --claude"
+    }
+  ]
+}

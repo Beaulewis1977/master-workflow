@@ -1,11 +1,41 @@
-# Contributing
+# Contributing Guidelines
 
-Thanks for your interest in contributing! Please follow these guidelines:
+## Development Setup
 
-- Open an issue first for significant changes; link to relevant plan sections (e.g., `GPT5-PLAN.MD`).
-- Keep PRs focused and small; include tests and docs updates.
-- Run tests locally: `npm test` (Node 18/20). Lint: `npm run lint`.
-- Do not include secrets in commits. Follow security policy in `SECURITY.md`.
-- CI must pass across OS matrix before approval.
-- Follow the code style in the repository. Prefer clarity over cleverness.
-- Use the default MCP server `context7` for libraries unless explicitly overridden.
+### Prerequisites
+- Node.js v18+ and npm/yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd <project-name>
+
+# Install dependencies
+npm install
+# or
+yarn install
+
+```
+
+## Development Workflow
+
+### Using AI Development OS
+This project uses the Intelligent Workflow Decision System.
+
+- **Approach**: Hive-Mind
+- **Command**: `npx claude-flow@latest hive-mind spawn --agents 5 --claude "MASTER-WORKFLOW"`
+
+### Code Standards
+- Large codebase - maintain clear organization
+- Test-driven development practices
+
+### Testing
+Run tests with: `npm test` or `pytest`
+
+## Current Focus (active Stage)
+- Adding new features
+- Maintaining code quality
+- Improving test coverage
+- Updating documentation

@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "swarm_id": "swarm-1755040698540-o0jq1fsgx",
+    "initialized": "2025-01-12T10:30:00Z",
+    "version": "1.0.0"
+  },
+  "project_context": {
+    "name": "MASTER-WORKFLOW",
+    "complexity_score": 39,
+    "stage": "active",
+    "approach": "hive-mind",
+    "technology_stack": {
+      "languages": ["JavaScript", "TypeScript"],
+      "architecture": "backend",
+      "patterns": ["RESTful API", "Service Layer", "Repository Pattern"]
+    }
+  },
+  "knowledge_base": {
+    "discovered_components": {
+      "engine": {
+        "location": "/workspaces/MASTER-WORKFLOW/engine",
+        "type": "core_system",
+        "modules": [
+          "flow-orchestrator",
+          "installer",
+          "customizer",
+          "convo-manager",
+          "scaffolder",
+          "version-policy"
+        ]
+      },
+      "intelligence_engine": {
+        "location": "/workspaces/MASTER-WORKFLOW/intelligence-engine",
+        "type": "decision_system",
+        "modules": [
+          "complexity-analyzer",
+          "approach-selector",
+          "document-customizer",
+          "project-scanner"
+        ]
+      },
+      "agents": {
+        "location": "/workspaces/MASTER-WORKFLOW/agent-templates",
+        "type": "agent_definitions",
+        "available": [
+          "workflow-orchestrator",
+          "complexity-analyzer-agent",
+          "approach-selector-agent",
+          "document-customizer-agent",
+          "integration-coordinator-agent",
+          "sparc-methodology-agent",
+          "security-auditor",
+          "test-engineer"
+        ]
+      }
+    },
+    "mcp_servers": {
+      "active": ["context7", "filesystem", "http", "git", "openapi"],
+      "available": ["browser", "search", "github", "docker", "kubernetes", "postgres"]
+    }
+  },
+  "shared_state": {
+    "current_phase": "initialization",
+    "active_tasks": [],
+    "completed_tasks": [],
+    "pending_decisions": [],
+    "consensus_achieved": false
+  },
+  "learning_patterns": {
+    "successful_strategies": [],
+    "failed_approaches": [],
+    "optimization_opportunities": []
+  }
+}

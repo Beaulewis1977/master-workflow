@@ -1,0 +1,81 @@
+{
+  "swarm_id": "swarm-1755040583416-mmlxsi9fp",
+  "queen": {
+    "type": "strategic",
+    "role": "orchestrator",
+    "capabilities": [
+      "task_distribution",
+      "priority_management",
+      "resource_allocation",
+      "conflict_resolution"
+    ]
+  },
+  "workers": [
+    {
+      "id": "worker-researcher-001",
+      "type": "researcher",
+      "status": "active",
+      "capabilities": [
+        "code_analysis",
+        "documentation_review",
+        "pattern_detection",
+        "best_practice_identification"
+      ],
+      "assigned_tasks": [
+        "Analyze existing codebase structure",
+        "Research optimal workflow patterns",
+        "Identify integration points"
+      ]
+    },
+    {
+      "id": "worker-coder-002",
+      "type": "coder",
+      "status": "active",
+      "capabilities": [
+        "implementation",
+        "refactoring",
+        "optimization",
+        "testing"
+      ],
+      "assigned_tasks": [
+        "Implement workflow decision engine",
+        "Create agent communication protocols",
+        "Build version management system"
+      ]
+    },
+    {
+      "id": "worker-analyst-003",
+      "type": "analyst",
+      "status": "active",
+      "capabilities": [
+        "complexity_scoring",
+        "performance_analysis",
+        "risk_assessment",
+        "metrics_tracking"
+      ],
+      "assigned_tasks": [
+        "Evaluate project complexity",
+        "Analyze workflow efficiency",
+        "Monitor system performance"
+      ]
+    },
+    {
+      "id": "worker-tester-004",
+      "type": "tester",
+      "status": "active",
+      "capabilities": [
+        "unit_testing",
+        "integration_testing",
+        "performance_testing",
+        "validation"
+      ],
+      "assigned_tasks": [
+        "Test workflow decision logic",
+        "Validate agent interactions",
+        "Ensure system reliability"
+      ]
+    }
+  ],
+  "initialization_timestamp": "2025-08-12T10:30:00Z",
+  "objective": "MASTER-WORKFLOW"
+}

@@ -34,8 +34,7 @@ async function buildServer() {
   app.register(scaffolderRoute);
   app.register(yoloRoute);
 
-  // Orchestrator configure stub
-  app.post('/api/orchestrator/configure', async () => ({ ok: true }));
+  // Note: orchestrator routes are defined in routes/orchestrator.ts
 
   return app;
 }

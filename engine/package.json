@@ -12,6 +12,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/api/server.js",
     "dev": "ts-node-esm src/api/server.ts",
+    "health": "node -e \"fetch('http://127.0.0.1:'+ (process.env.MW_ENGINE_PORT||13800) +'/health').then(r=>r.text()).then(t=>console.log(t)).catch(e=>{console.error(e);process.exit(1)})\"",
     "cli": "node dist/cli/index.js",
     "migrate": "node dist/core/db.js migrate",
     "prepare": "npm install typescript@5.5.4 --no-save && npm install ts-node@10.9.2 --no-save"

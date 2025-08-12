@@ -1,0 +1,94 @@
+{
+  "score": 40,
+  "factors": {
+    "size": {
+      "fileCount": 57,
+      "score": 50,
+      "description": "Medium project"
+    },
+    "dependencies": {
+      "count": 0,
+      "score": 10,
+      "description": "0 dependencies detected"
+    },
+    "architecture": {
+      "patterns": {
+        "microservices": 20,
+        "monolith": 0,
+        "frontend": 0,
+        "backend": 50,
+        "fullstack": 0,
+        "api": 30,
+        "database": 20
+      },
+      "score": 50,
+      "primaryArchitecture": "backend"
+    },
+    "techStack": {
+      "languages": [
+        "JavaScript",
+        "TypeScript"
+      ],
+      "frameworks": [],
+      "databases": [],
+      "tools": [],
+      "score": 20,
+      "diversity": 2
+    },
+    "features": {
+      "detected": {
+        "authentication": false,
+        "realtime": false,
+        "api": false,
+        "database": false,
+        "testing": true,
+        "ci_cd": true,
+        "docker": true,
+        "kubernetes": true
+      },
+      "count": 4,
+      "score": 60
+    },
+    "team": {
+      "indicators": {
+        "multiContributor": true,
+        "documentation": true,
+        "codeReviews": true,
+        "issueTracking": false
+      },
+      "score": 30,
+      "isTeamProject": true
+    },
+    "deployment": {
+      "docker": true,
+      "kubernetes": false,
+      "cicd": true,
+      "cloudProvider": null,
+      "monitoring": true,
+      "score": 55
+    },
+    "testing": {
+      "hasTests": true,
+      "testFileCount": 18,
+      "testTypes": {
+        "unit": false,
+        "integration": false,
+        "e2e": true
+      },
+      "score": 45
+    }
+  },
+  "stage": "active",
+  "recommendations": [
+    {
+      "approach": "Hive-Mind",
+      "reason": "Medium complexity requiring multi-agent coordination",
+      "confidence": 0.85
+    },
+    {
+      "focus": "Feature Development",
+      "suggestion": "Maintain consistency while adding features"
+    }
+  ],
+  "confidence": 100
+}

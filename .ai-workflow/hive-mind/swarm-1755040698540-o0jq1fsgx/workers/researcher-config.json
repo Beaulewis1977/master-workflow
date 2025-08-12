@@ -1,0 +1,26 @@
+{
+  "worker": {
+    "id": "worker-researcher-001",
+    "type": "researcher",
+    "status": "active",
+    "spawned_at": "2025-01-12T10:30:00Z",
+    "capabilities": [
+      "document_analysis",
+      "web_search",
+      "knowledge_synthesis",
+      "trend_analysis",
+      "best_practices_research",
+      "technology_evaluation"
+    ],
+    "assigned_tasks": ["task-002", "task-009"],
+    "mcp_servers": ["search", "browser", "openapi"],
+    "memory_allocation": "256MB",
+    "priority": "normal"
+  },
+  "configuration": {
+    "research_depth": "comprehensive",
+    "sources": ["documentation", "web", "codebase", "best_practices"],
+    "output_format": "structured_json",
+    "validation_required": true
+  }
+}
