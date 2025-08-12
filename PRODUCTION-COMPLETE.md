@@ -133,6 +133,10 @@ Choose exactly what you need:
 - Launch commands builder for swarm/hive/sparc paths
 - Optional training (`training neural-train`) and memory ops (`memory summarize|sync|gc`) gated by env
 
+### Project Customization (Phase 7)
+- Generates `.agent-os/product/*` and `.agent-os/specs/<date-slug>/*` docs
+- Optional `.claude/agents/*` minimal subagents for testing, security, review, and debugging
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

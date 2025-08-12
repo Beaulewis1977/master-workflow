@@ -59,6 +59,9 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 - Wizard CLI (planning): `cd engine && npm run build && node dist/cli/index.js wizard` (use inside devcontainer).
 
 ### Flow Orchestrator (Phase 6)
+### Project Customization (Phase 7)
+- API
+  - `POST /api/customize` { specName?, includeAgents? } → writes `.agent-os/product/*`, `.agent-os/specs/<slug>/*`, optional `.claude/agents/*`
 - API
   - `POST /api/orchestrator/configure` { version, sandbox, agents[] }
   - `POST /api/orchestrator/launch` { approach, agentCount, flow: { version } } → returns `commands[]`
