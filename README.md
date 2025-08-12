@@ -1,8 +1,15 @@
-# Intelligent Workflow Decision System v2.0
+# Intelligent Workflow Decision System v2.1
 
-## 🚀 Modular Installation with Component Selection
+## 🚀 Enhanced Autonomous Workflow System with Smart Integration
 
-Choose exactly what you need! The Intelligent Workflow System now offers fully modular installation where you can select which components to install based on your project needs. Works perfectly with just the core, or unlock full power with all integrations.
+An intelligent, container-aware workflow orchestration system that seamlessly coordinates Claude Code, Agent-OS, Claude Flow 2.0, and TMux Orchestrator. Now with enhanced intelligence, better integration checking, and smart tool selection for optimal task execution.
+
+### 🆕 Latest Improvements (v2.1)
+- **🧠 Enhanced Complexity Analyzer**: Detects 13+ languages, AI tools, and containerization
+- **🐳 Container-Aware**: Full devcontainer support with host-container bridge detection
+- **🎯 Smart Tool Selection**: Intelligently chooses the best tool for each task
+- **✅ Integration Checker**: Health monitoring for all components with recommendations
+- **📊 Better Detection**: Improved project stage and architecture pattern recognition
 
 ## Quick CLI Cheatsheet
 

@@ -49,6 +49,9 @@ class DocumentCustomizer {
       }
     } catch (e) { /* ignore */ }
 
+    // Check if running in container
+    const isContainer = this.detectContainerEnvironment();
+
     // Load MCP registry if present
     const mcpRegistryPath = path.join(this.projectPath, '.ai-workflow', 'configs', 'mcp-registry.json');
     let mcpRegistry = null;
@@ -66,6 +69,7 @@ class DocumentCustomizer {
     
     const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
     const isExperimental = versionPolicy.isExperimentalName(versionName);
+    const hasAITools = techStack.aiTools && techStack.aiTools.length > 0;
 
     let content = `# Claude Configuration - ${this.analysis.stage} Stage Project
 
@@ -74,7 +78,7 @@ class DocumentCustomizer {
 - **Stage**: ${this.analysis.stage}
  - **Selected Approach**: ${this.approach.name}
  - **Claude Flow Version**: ${versionName} ${isExperimental ? '(experimental)' : ''}
- - **Command**: \`${this.approach.command}\`
+ - **Command**: \`${this.generateOptimalCommand()}\`
 
 ## Technology Stack
 `;
@@ -1229,6 +1233,61 @@ exports.getAll = async (req, res) => {
         approach: this.approach.selected
       }
     };
+  }
+
+  /**
+   * Detect if running in container environment
+   */
+  detectContainerEnvironment() {
+    // Check for common container indicators
+    if (process.env.CONTAINER || 
+        fs.existsSync('/.dockerenv') || 
+        fs.existsSync('/run/.containerenv') ||
+        process.env.KUBERNETES_SERVICE_HOST) {
+      return true;
+    }
+    
+    // Check for devcontainer
+    if (process.env.REMOTE_CONTAINERS || 
+        process.env.CODESPACES ||
+        fs.existsSync('/workspaces/.devcontainer')) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  /**
+   * Generate optimal command based on environment and analysis
+   */
+  generateOptimalCommand() {
+    const score = this.analysis.score || 50;
+    const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+    const isContainer = this.detectContainerEnvironment();
+    const hasYolo = process.env.YOLO_MODE === 'true';
+    
+    let command = 'npx claude-flow';
+    command += versionPolicy.suffixFor(versionName);
+    
+    if (score <= 30) {
+      command += ' swarm';
+    } else if (score <= 70) {
+      command += ' hive-mind spawn --agents 4';
+    } else {
+      command += ' hive-mind spawn --sparc --agents 8';
+    }
+    
+    // Add appropriate Claude command
+    command += hasYolo ? ' --yolo' : ' --claude';
+    
+    // Add container-specific flags if needed
+    if (isContainer) {
+      command += ' --container-mode';
+    }
+    
+    command += ` "MASTER-WORKFLOW"`;
+    
+    return command;
   }
 
   /**
