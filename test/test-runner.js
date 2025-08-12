@@ -20,3 +20,9 @@ try {
   const mod = await import('file://' + discover);
   ok('mcp-discover module loads', !!mod);
 } catch (e) { ok('mcp-discover load failed: ' + e.message, false); }
+
+// bus + scanner smoke
+try {
+  const mod = await import('file://' + path.resolve('test/test-bus-and-scanner.js'));
+  ok('bus+scanner test executed', true);
+} catch (e) { ok('bus+scanner test failed: ' + e.message, false); }

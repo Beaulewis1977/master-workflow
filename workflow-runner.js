@@ -772,12 +772,23 @@ if (require.main === module) {
   const runner = new WorkflowRunner();
   const command = process.argv[2];
   const args = process.argv.slice(3);
+
+  // Parse global flags
+  if (args.includes('--yolo')) runner.yolo.enabled = true;
+  if (args.includes('--dangerously-skip-permissions')) runner.yolo.dangerouslySkipPermissions = true;
+  const ackIdx = args.indexOf('--ack');
+  if (ackIdx !== -1 && args[ackIdx + 1]) runner.yolo.ack = args[ackIdx + 1];
   
   switch (command) {
     case 'init':
-      const mode = args.find(a => a.startsWith('--'))?.replace('--', '') || 'interactive';
-      const task = args.find(a => !a.startsWith('--')) || '';
-      runner.init(mode, task).catch(console.error);
+      const modeFlag = args.find(a => a.startsWith('--mode='));
+      const mode = modeFlag ? modeFlag.split('=')[1] : 'interactive';
+      const task = args.find(a => !a.startsWith('--') && !a.startsWith('mode=')) || '';
+      if (args.includes('--dry-run')) {
+        runner.planDryRun().catch(console.error);
+      } else {
+        runner.init(mode, task).catch(console.error);
+      }
       break;
     
     case 'recover':
