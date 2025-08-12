@@ -235,6 +235,7 @@ ai-dev analyze
 - MCP registry is deterministic (env/catalog-based). Avoid untrusted endpoints; review changes via PR.
 - Governance (Phase 1): CI matrix on Node 18/20 across OS, issue templates, and policies (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`).
 - Engine (Phase 2): CLI + Fastify API + SQLite scaffolded under `engine/` with migrations and health endpoints.
+- Conversational API (Phase 4): `/api/convo/:sessionId/message` persists threads with basic action suggestions; `/api/convo/:sessionId` returns session history.
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches

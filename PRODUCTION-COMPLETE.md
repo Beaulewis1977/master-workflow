@@ -119,6 +119,11 @@ Choose exactly what you need:
 - Core engine scaffolded (`engine/`): CLI, Fastify API, SQLite migrations
 - Endpoints in place for health, components listing, install planning
 
+### Conversational Interface (Phase 4)
+- Session persistence and message storage
+- POST `/api/convo/:sessionId/message` with `{ text, images[] }` → `{ reply, actions[] }`
+- GET `/api/convo/:sessionId` returns full thread with attachments
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly
