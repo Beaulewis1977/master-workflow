@@ -137,6 +137,11 @@ Choose exactly what you need:
 - Generates `.agent-os/product/*` and `.agent-os/specs/<date-slug>/*` docs
 - Optional `.claude/agents/*` minimal subagents for testing, security, review, and debugging
 
+### Autonomous Infrastructure Scaffolding (Phase 8)
+- Planning: `POST /api/scaffold/plan` → file adds and conflicts
+- Preview: `POST /api/scaffold/preview` → writes to `.ai-workflow/scaffold/**`
+- Apply: `POST /api/scaffold/apply` → additive, avoids overwrites
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

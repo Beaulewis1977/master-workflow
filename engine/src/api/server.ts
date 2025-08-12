@@ -8,6 +8,7 @@ import convoRoute from './routes/convo.js';
 import envRoute from './routes/env.js';
 import orchestratorRoute from './routes/orchestrator.js';
 import customizerRoute from './routes/customizer.js';
+import scaffolderRoute from './routes/scaffolder.js';
 import { randomUUID } from 'crypto';
 
 const logger = createLogger('api');
@@ -27,6 +28,7 @@ async function buildServer() {
   app.register(envRoute);
   app.register(orchestratorRoute);
   app.register(customizerRoute);
+  app.register(scaffolderRoute);
 
   // Orchestrator configure stub
   app.post('/api/orchestrator/configure', async () => ({ ok: true }));

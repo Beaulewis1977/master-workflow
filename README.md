@@ -60,6 +60,11 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 
 ### Flow Orchestrator (Phase 6)
 ### Project Customization (Phase 7)
+### Infrastructure Scaffolding (Phase 8)
+- API
+  - `POST /api/scaffold/plan` → dry-run plan with files/conflicts
+  - `POST /api/scaffold/preview` → writes preview under `.ai-workflow/scaffold/**`
+  - `POST /api/scaffold/apply` → applies plan additively (skips existing files)
 - API
   - `POST /api/customize` { specName?, includeAgents? } → writes `.agent-os/product/*`, `.agent-os/specs/<slug>/*`, optional `.claude/agents/*`
 - API
