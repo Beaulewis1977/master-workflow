@@ -493,6 +493,7 @@ install_claude_code_components() {
   "dangerouslySkipPermissions": false,
   "autoSave": true,
   "maxConcurrentTools": 10,
+  "defaultMcpServer": "context7",
   "hooks": {
     "user-prompt-submit-hook": ".ai-workflow/hooks/user-prompt-submit-hook.sh",
     "tool-call-hook": ".ai-workflow/hooks/tool-call-hook.sh",

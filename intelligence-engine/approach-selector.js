@@ -20,8 +20,8 @@ class ApproachSelector {
       'dev': '@dev'
     };
     
-    // Default version (can be overridden by user)
-    this.defaultVersion = 'alpha';
+    // Default version (can be overridden by user or env)
+    this.defaultVersion = process.env.CLAUDE_FLOW_VERSION || 'alpha';
     
     this.approaches = {
       simpleSwarm: {

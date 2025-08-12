@@ -105,6 +105,12 @@ Tasks
 - [ ] P1-T3: Default Windows to process mode; fence tmux usage; remove `at` dependency or guard behind presence checks.
 - [ ] P1-T4: Gate YOLO/`--dangerously-skip-permissions` behind explicit env var and print warnings; ensure CI blocks it.
 
+Interim Progress
+- P1-T1: Implemented (duplicates removed; header fixed to `## Stage-Specific Instructions (...)`).
+- P1-T2: Implemented (Node `project-scanner.js` integrated; grep removed; results persisted to `.ai-dev/incomplete-work.json`).
+- P1-T3: Implemented (Windows defaults to process mode; `tmux-scripts/schedule-checkin.sh` guards `at`; auto-commit disabled by default behind `ENABLE_AUTO_COMMIT`).
+- P1-T4: Implemented (YOLO gated by `BLOCK_YOLO`/`CI` with explicit `--ack I-ACCEPT-RISK`; warning log on enable).
+
 Acceptance Criteria
 - Document customizer runs without runtime errors; stage headers render correctly.
 - Recovery scans no longer depend on grep; work on Windows/macOS/Linux.
