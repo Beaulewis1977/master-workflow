@@ -104,6 +104,41 @@ class WorkflowRunner {
     }
   }
 
+  execSafe(command, options = {}) {
+    const allowlist = [
+      'npm', 'node', 'npx', 'bash', 'sh', 'pwsh', 'powershell',
+      'git', 'tmux', 'jq', 'claude', 'claude-flow'
+    ];
+    const cmd = Array.isArray(command) ? command[0] : command.split(/\s+/)[0];
+    if (!allowlist.includes(cmd)) {
+      throw new Error(`Command not allowed: ${cmd}`);
+    }
+    const maxRetries = options.retries ?? 2;
+    const backoffMs = options.backoffMs ?? 500;
+    const shell = options.shell ?? true;
+    const cwd = options.cwd ?? this.projectDir;
+
+    return new Promise((resolve, reject) => {
+      let attempt = 0;
+      const run = () => {
+        attempt++;
+        const child = spawn('sh', ['-c', Array.isArray(command) ? command.join(' ') : command], { cwd, shell });
+        let stdout = '', stderr = '';
+        child.stdout.on('data', d => (stdout += d.toString()));
+        child.stderr.on('data', d => (stderr += d.toString()));
+        child.on('exit', code => {
+          if (code === 0) return resolve({ stdout, stderr, code });
+          if (attempt <= maxRetries) {
+            setTimeout(run, backoffMs * attempt);
+          } else {
+            reject(new Error(`Command failed (${code}): ${stderr || stdout}`));
+          }
+        });
+      };
+      run();
+    });
+  }
+
   async analyzeProject() {
     this.log('info', 'Starting project analysis...');
     
@@ -382,29 +417,38 @@ class WorkflowRunner {
     
     this.log('info', `Executing: ${command}`);
     
-    // Execute in background
-    const child = spawn('sh', ['-c', command], {
-      cwd: this.projectDir,
-      detached: true,
-      stdio: ['ignore', 'pipe', 'pipe']
+    // Execute via execSafe
+    this.execSafe(command, { retries: 2, backoffMs: 750 }).then(({ stdout }) => {
+      if (stdout) this.log('info', `Claude Flow: ${stdout.trim()}`);
+    }).catch(err => {
+      this.log('error', `Claude Flow failed: ${err.message}`);
     });
-    
-    // Log output
-    child.stdout.on('data', (data) => {
-      this.log('info', `Claude Flow: ${data.toString().trim()}`);
-    });
-    
-    child.stderr.on('data', (data) => {
-      this.log('warning', `Claude Flow Error: ${data.toString().trim()}`);
-    });
-    
-    child.on('exit', (code) => {
-      this.log(code === 0 ? 'success' : 'error', `Claude Flow exited with code ${code}`);
-    });
-    
-    this.processes = { claudeFlow: child };
     
     return command;
+  }
+
+  async planDryRun() {
+    const plan = {
+      dag: [
+        { id: 'analyze', dependsOn: [] },
+        { id: 'select-approach', dependsOn: ['analyze'] },
+        { id: 'init-agents', dependsOn: ['select-approach'] },
+        { id: 'create-sessions', dependsOn: ['init-agents'] },
+        { id: 'execute', dependsOn: ['create-sessions'] }
+      ],
+      rollback: [
+        'stop-processes', 'remove-sessions', 'restore-configs', 'cleanup-temp'
+      ],
+      risks: [
+        'network-failure', 'permission-denied', 'tool-missing'
+      ]
+    };
+    const outPath = path.join(this.projectDir, '.ai-dev', 'dry-run-plan.json');
+    const outDir = path.dirname(outPath);
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(outPath, JSON.stringify(plan, null, 2));
+    this.log('success', `Dry-run plan written to ${outPath}`);
+    return plan;
   }
 
   async createRecoveryPlan() {
