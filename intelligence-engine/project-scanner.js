@@ -365,7 +365,6 @@ class ProjectScanner {
     
     return report;
   }
-}
   detectContainers(rootDir) {
     const hasDockerfile = fs.existsSync(path.join(rootDir, 'Dockerfile'));
     const hasCompose = fs.existsSync(path.join(rootDir, 'docker-compose.yml')) || fs.existsSync(path.join(rootDir, 'compose.yaml'));
@@ -387,6 +386,7 @@ class ProjectScanner {
     const pulumi = fs.existsSync(path.join(rootDir, 'Pulumi.yaml'));
     return { terraform, pulumi };
   }
+}
 
 // CLI usage
 if (require.main === module) {
