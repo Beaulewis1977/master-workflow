@@ -128,6 +128,11 @@ Choose exactly what you need:
 - GET `/api/env/scan` → `{ fingerprint, matrix, suggestions }`
 - Detects OS/distro, languages, frameworks, CI, containers; provides actionable suggestions
 
+### Flow Integration Orchestrator (Phase 6)
+- Centralized version policy for Claude Flow tags
+- Launch commands builder for swarm/hive/sparc paths
+- Optional training (`training neural-train`) and memory ops (`memory summarize|sync|gc`) gated by env
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

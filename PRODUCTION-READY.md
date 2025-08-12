@@ -237,6 +237,7 @@ ai-dev analyze
 - Engine (Phase 2): CLI + Fastify API + SQLite scaffolded under `engine/` with migrations and health endpoints.
 - Conversational API (Phase 4): `/api/convo/:sessionId/message` persists threads with basic action suggestions; `/api/convo/:sessionId` returns session history.
 - Environment Analysis (Phase 5): `/api/env/scan` returns fingerprint (host, distro, pkg managers, languages, frameworks, CI, containers) and suggestions.
+- Flow Integration (Phase 6): Orchestrator builds launch commands for Claude Flow with centralized version policy and optional training/memory ops.
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches

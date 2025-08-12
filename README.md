@@ -57,6 +57,12 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 - Core engine added under `engine/` (CLI + Fastify API + SQLite via better-sqlite3).
 - Endpoints: `/health`, `/api/components`, `/api/install` (plan), `/api/install/:id/status`, `/api/convo/:sessionId/message`, `/api/convo/:sessionId`, `/api/env/scan`.
 - Wizard CLI (planning): `cd engine && npm run build && node dist/cli/index.js wizard` (use inside devcontainer).
+
+### Flow Orchestrator (Phase 6)
+- API
+  - `POST /api/orchestrator/configure` { version, sandbox, agents[] }
+  - `POST /api/orchestrator/launch` { approach, agentCount, flow: { version } } → returns `commands[]`
+  - `POST /api/orchestrator/rollback` → `{ ok: true }`
 - Build/Run inside devcontainer or Linux host:
   - `cd engine && npm ci && npm run build && npm run cli migrate && npm start`.
 
