@@ -124,6 +124,10 @@ Choose exactly what you need:
 - POST `/api/convo/:sessionId/message` with `{ text, images[] }` → `{ reply, actions[] }`
 - GET `/api/convo/:sessionId` returns full thread with attachments
 
+### Environment Analysis (Phase 5)
+- GET `/api/env/scan` → `{ fingerprint, matrix, suggestions }`
+- Detects OS/distro, languages, frameworks, CI, containers; provides actionable suggestions
+
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
 - **Integration Testing**: Verifies components communicate properly

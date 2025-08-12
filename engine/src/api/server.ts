@@ -5,6 +5,7 @@ import { openDb } from '../core/db.js';
 import componentsRoute from './routes/components.js';
 import installRoute from './routes/install.js';
 import convoRoute from './routes/convo.js';
+import envRoute from './routes/env.js';
 import { randomUUID } from 'crypto';
 
 const logger = createLogger('api');
@@ -21,6 +22,7 @@ async function buildServer() {
   app.register(componentsRoute);
   app.register(installRoute);
   app.register(convoRoute);
+  app.register(envRoute);
 
   // Env scan stub
   app.get('/api/env/scan', async () => ({ fingerprint: {}, matrix: {}, suggestions: [] }));
