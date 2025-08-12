@@ -64,6 +64,9 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 ### Security, Logging, Error Handling (Phase 9)
 ### YOLO Mode & Distribution Support (Phase 10)
 ### GitHub Project Automation (Phase 11)
+### Docs, E2E, Performance & Release (Phase 12)
+- E2E Workflow: `.github/workflows/engine-e2e.yml` (manual trigger) runs build and smoke test against API
+- Release process: tag and prepare artifacts (to be finalized post-devcontainer validation)
 - Script: `scripts/gh-project-automation.js` (requires gh CLI)
   - Create labels/milestones idempotently
   - Ensure Phase 11/12 tracking issues only if missing
