@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
+const requireCjs = createRequire(import.meta.url);
 
 function ok(name, cond) { console.log((cond? '✓':'✗') + ' ' + name); if (!cond) process.exitCode = 1; }
 
@@ -11,7 +13,7 @@ try {
     selPath = path.resolve('intelligence-engine/approach-selector.js');
   }
   const analysis = { score: 25, stage: 'early' };
-  const Selector = (await import('file://' + selPath)).default || (await import('file://' + selPath));
+  const Selector = requireCjs(selPath);
   const selector = new (Selector.default || Selector)();
   const rec = selector.selectApproach(analysis);
   ok('approach-selector returns object', !!rec && typeof rec === 'object');
