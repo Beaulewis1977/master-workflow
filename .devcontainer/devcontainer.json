@@ -1,0 +1,25 @@
+{
+  "name": "MASTER-WORKFLOW Dev",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-vscode.powershell",
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format",
+        "dbaeumer.vscode-eslint",
+        "EditorConfig.EditorConfig",
+        "ms-playwright.playwright"
+      ]
+    }
+  },
+  "remoteUser": "node",
+  "containerEnv": { "DEBIAN_FRONTEND": "noninteractive" },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y jq tmux ripgrep curl ca-certificates build-essential python3 python3-pip procps openssh-client git-lfs && corepack enable && corepack prepare pnpm@latest --activate && corepack prepare yarn@stable --activate && git lfs install && sudo -E npx --yes playwright@latest install --with-deps && git config --global --add safe.directory ${containerWorkspaceFolder}",
+  "updateRemoteUserUID": true
+}
+
+

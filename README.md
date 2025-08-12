@@ -4,6 +4,16 @@
 
 Choose exactly what you need! The Intelligent Workflow System now offers fully modular installation where you can select which components to install based on your project needs. Works perfectly with just the core, or unlock full power with all integrations.
 
+## Quick CLI Cheatsheet
+
+- Analyze project: `./ai-workflow analyze`
+- Initialize with auto-approach: `./ai-workflow init --auto`
+- Force approach: `./ai-workflow init --swarm|--hive|--sparc`
+- Override Claude Flow version: `CLAUDE_FLOW_VERSION=stable ./ai-workflow init --auto`
+- Refresh MCP registry: `./ai-workflow mcp refresh`
+- Start dashboards: `./ai-workflow status-dashboard 8787`
+- Tail bus: `./ai-workflow bus tail [--type T] [--agent A] [--role R]`
+
 ## ✨ Key Features
 
 - **🎛️ Modular Components**: Install only what you need
@@ -112,6 +122,11 @@ After installation, each project will have:
 # During installation, you'll be asked:
 # "Do you have a 'yolo' alias for Claude Code?"
 ```
+
+YOLO details
+- Flags used by the engine: `--yolo --dangerously-skip-permissions --non-interactive --ack I-ACCEPT-RISK`
+- Guardrails remain active: command allowlists, filesystem write roots, full journaling, transactional rollback
+- Kill switch: set `INSTALLER_KILL=1` to abort new actions
 
 ### Workflow Execution
 
@@ -308,6 +323,115 @@ npx claude-flow@alpha hive-mind spawn "enterprise-app" --sparc --agents 10 --cla
 npx claude-flow@alpha sparc wizard --interactive
 ```
 
+## User Guide
+
+### Installation matrix
+- Windows: Use install-modular.ps1 (Git Bash recommended). If you skip tmux, the system runs in process mode. PowerShell fallback for image attachments; FileSystemWatcher supervisor available.
+- WSL: Works as Linux; inotify watcher.
+- macOS: Full support; fswatch watcher used when installed.
+- Linux: Full support; inotify watcher used when installed.
+
+### Component selections and combinations
+Pick any combination: Core only; Core+Agent-OS; Core+Claude Code; Core+Claude Flow; Any+TMux. The installer cleans up docs for unselected components to keep the project tidy.
+
+### Initial prompt with image attachments
+- During install, you can attach an image directory; images are copied to `.ai-workflow/assets/images` and referenced in `.ai-workflow/initial-prompt.md`.
+- On Windows, if POSIX copy fails, PowerShell copies jpg/jpeg/png/gif/webp.
+
+### Version control via CLAUDE_FLOW_VERSION
+- Set env var to override auto-selection: `CLAUDE_FLOW_VERSION=stable ./ai-workflow init --auto`.
+- Otherwise, heuristic picks alpha/latest/stable based on analysis.
+
+### MCP discovery & usage
+- Refresh registry: `./ai-workflow mcp refresh`
+- View summary in CLAUDE.md under "Discovered MCP Servers & Tools".
+- Agents should consult `.ai-workflow/configs/mcp-registry.json` at runtime (see AGENT-BOOTSTRAP.md).
+
+### Dashboards & event bus
+
+#### Bus commands and TUI
+- Start JSON + SSE dashboard (default port 8787):
+  - `./ai-workflow status-dashboard 8787`
+  - UI: http://localhost:8787/ui (filters: type, agent, role)
+  - SSE: `GET /events/stream?type=prompt|tool|response|approach_change&agent=...&role=...`
+- Tail the bus in terminal (with filters):
+  - `./ai-workflow bus tail --type tool --agent worker-1 --role architect`
+- Minimal TUI (no external deps):
+  - `./ai-workflow bus tui --type response`
+  - or `node .ai-workflow/bin/tmp_rovodev_agent_bus_tui.js --type response --agent queen --role watcher`
+
+
+### Bus filtering examples
+- Filter by type only (tool):
+  - UI: Select Type=tool, leave Agent/Role blank
+  - SSE: `/events/stream?type=tool`
+  - Tail: `./ai-workflow bus tail --type tool`
+- Filter by type and agent:
+  - UI: Type=tool, Agent=worker-1
+  - SSE: `/events/stream?type=tool&agent=worker-1`
+  - Tail: `./ai-workflow bus tail --type tool --agent worker-1`
+- Filter by role:
+  - UI: Role=architect
+  - SSE: `/events/stream?role=architect`
+  - Tail: `./ai-workflow bus tail --role architect`
+
+- Tail: `bash .ai-workflow/bin/tmp_rovodev_agent_bus_tail.sh`
+- HTTP (JSON + SSE): `./ai-workflow status-dashboard [port]` (default 8787)
+  - JSON: `GET /`
+  - SSE: `GET /events/stream?type=prompt|tool|response|approach_change`
+- Event schema in AGENT-BOOTSTRAP.md. Hooks already emit prompt/tool/response; supervisor emits approach_change.
+
+### Supervisors & watchers
+- Linux: inotify; macOS: fswatch; Windows: FileSystemWatcher.
+- Installer offers to start supervisor; Windows attempt is also made automatically if PowerShell is available.
+
+### Workflow examples
+- Small bug fix (Simple Swarm):
+  - `./ai-workflow init --swarm "Fix off-by-one error in pagination"`
+- Full-stack feature (Hive-Mind):
+  - `./ai-workflow init --hive "Add user profile page with API"`
+- Enterprise planning/refactor (SPARC):
+  - `CLAUDE_FLOW_VERSION=stable ./ai-workflow init --sparc`
+- Recovery of a messy repo:
+  - Use recovery-specialist agent and run: `claude /recover analyze` (hooks trigger analysis/recovery paths)
+
+### Best practices
+- Keep CLAUDE.md, Agent-OS instructions, and AGENT-BOOTSTRAP.md handy for agents.
+- Use MCP tools when available; fallback to built-ins.
+- Watch the dashboard for approach changes and agent activity.
+
+## Windows Quickstart (PowerShell + Git Bash)
+
+- Install prerequisites:
+  - Node.js 18+ from nodejs.org
+  - Git for Windows (includes Git Bash)
+- Run installer:
+  - PowerShell: `./install-modular.ps1`
+  - Or Git Bash: `bash install-modular.sh`
+- If you skip TMux (recommended on native Windows), the system runs in process mode.
+- Supervisors:
+  - The PowerShell wrapper starts a FileSystemWatcher supervisor after a successful install.
+  - The bash installer also attempts to start it if PowerShell is available.
+- Image attachments: If POSIX copy fails, PowerShell fallback copies jpg/jpeg/png/gif/webp.
+
+Common fixes:
+- PowerShell execution policy: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+- Git Bash not found: Install Git for Windows and relaunch PowerShell
+- Node version: `node -v` must be >= 18
+
+## Dashboard previews (placeholders)
+
+- UI (http://localhost:8787/ui):
+
+  ![Dashboard UI Placeholder](docs/images/dashboard-ui.png)
+
+- SSE stream example:
+  - `GET http://localhost:8787/events/stream?type=tool&agent=worker-1`
+
+## FAQ
+
+See FAQ.md for common issues (jq, tmux, fswatch, PowerShell execution policy) and fixes.
+
 ## 📚 Documentation Files
 
 All documentation in this directory:
@@ -328,6 +452,32 @@ Configuration references:
 - **npm** - Package manager
 - **tmux** - Optional, for session management
 - **git** - Optional, for version control
+
+## Contributing: MCP Servers & Tools
+
+We welcome contributions of new MCP servers and tools.
+
+- Add a server:
+  - Extend `.ai-workflow/lib/mcp-discover.js` to detect the server (via env, PATH, or known socket URLs)
+  - Add a baseline entry in `.claude-flow/hive-config.json` if widely useful
+  - Document usage in README/AGENT-BOOTSTRAP.md
+- Add a tool:
+  - Add a tool entry to the registry (name, type, server binding if MCP)
+  - Update CLAUDE.md/MCP section generation if special instructions are needed
+- Testing:
+  - Run `./ai-workflow mcp refresh` and verify the registry and docs update
+  - Use the bus dashboard to observe agent/tool interactions
+
+## 🆕 What’s New
+
+- Interactive modular installer with component selection (Core, Claude Code, Agent-OS, Claude Flow, TMux)
+- Prompt collection supports optional image attachments; Windows PowerShell fallback if POSIX find is unavailable
+- Auto-selects Claude Flow version (alpha/latest/stable) based on analysis, with environment override
+- Merges your .ai-dev/project-instructions.md into both .claude/CLAUDE.md and .agent-os/instructions/instructions.md
+- Generates .claude-flow/hive-config.json with role-specific prompts, agent counts from complexity, and memory policies
+- Optional “Auto-run now” at the end of install (tmux orchestration or direct command)
+- Background supervisor loop to re-analyze and regenerate docs; restarts orchestration if approach changes significantly
+- TMux orchestration uses the selected CLAUDE_FLOW_VERSION
 
 ## 🎉 Features Implemented
 
@@ -366,3 +516,19 @@ MIT License - See LICENSE file for details
 ---
 
 **Ready for Production Use** - All features implemented and tested!
+
+## CI/CD and GitHub Actions
+
+- Continuous Integration: `.github/workflows/ci.yml` runs Node and Bash tests, uploads artifacts, and uses concurrency to avoid overlapping runs
+- Security Scanning: CodeQL and Gitleaks workflows can be enabled for code and secret scanning
+- Dependency Updates: Dependabot keeps GitHub Actions and npm packages up-to-date
+
+### Enable Claude Code GitHub Actions
+
+1) Install the Claude GitHub App to this repo and grant Contents/Issues/PRs permissions
+2) Add repository secrets (Settings → Secrets and variables → Actions):
+   - `ANTHROPIC_API_KEY` (direct API) or provider creds (Bedrock/Vertex)
+   - If using a custom GitHub App: `APP_ID`, `APP_PRIVATE_KEY`
+3) Add a Claude workflow (see `.github/workflows/claude.yml` example) that responds to `@claude` in issues/PRs
+
+Reference: Claude Code GitHub Actions setup and examples: https://docs.anthropic.com/en/docs/claude-code/github-actions

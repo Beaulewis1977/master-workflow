@@ -56,7 +56,7 @@ case "$WORKFLOW_TYPE" in
         # Window 0: Main swarm agent
         tmux rename-window -t "${SESSION_NAME}:0" "swarm"
         send_to_window 0 "cd $(pwd)"
-        send_to_window 0 "npx claude-flow@alpha swarm 'Complete project tasks'"
+        send_to_window 0 "npx claude-flow@${CLAUDE_FLOW_VERSION:-alpha} swarm 'Complete project tasks'"
         ;;
     
     hive-mind)
@@ -70,7 +70,7 @@ case "$WORKFLOW_TYPE" in
         # Window 1: Queen
         create_window 1 "queen"
         send_to_window 1 "cd $(pwd)"
-        send_to_window 1 "npx claude-flow@alpha hive-mind spawn '$PROJECT_NAME' --agents 5 --claude"
+        send_to_window 1 "npx claude-flow@${CLAUDE_FLOW_VERSION:-alpha} hive-mind spawn '$PROJECT_NAME' --agents 5 --claude"
         
         # Windows 2-4: Worker agents
         for i in {2..4}; do
@@ -92,7 +92,7 @@ case "$WORKFLOW_TYPE" in
         # Window 1: Queen with SPARC
         create_window 1 "queen-sparc"
         send_to_window 1 "cd $(pwd)"
-        send_to_window 1 "npx claude-flow@alpha hive-mind spawn '$PROJECT_NAME' --sparc --agents 10 --claude"
+        send_to_window 1 "npx claude-flow@${CLAUDE_FLOW_VERSION:-alpha} hive-mind spawn '$PROJECT_NAME' --sparc --agents 10 --claude"
         
         # Window 2: SPARC Phase Manager
         create_window 2 "sparc-phases"

@@ -40,6 +40,31 @@ class DocumentCustomizer {
    * Generate CLAUDE.md with deep customization
    */
   async generateClaudeConfig() {
+    const projectInstructionsPath = path.join(this.projectPath, '.ai-dev', 'project-instructions.md');
+    let projectInstructions = '';
+    try {
+      if (fs.existsSync(projectInstructionsPath)) {
+        projectInstructions = fs.readFileSync(projectInstructionsPath, 'utf8');
+      }
+    } catch (e) { /* ignore */ }
+
+    // Load MCP registry if present
+    const mcpRegistryPath = path.join(this.projectPath, '.ai-workflow', 'configs', 'mcp-registry.json');
+    let mcpRegistry = null;
+    try {
+      if (fs.existsSync(mcpRegistryPath)) {
+        mcpRegistry = JSON.parse(fs.readFileSync(mcpRegistryPath, 'utf8'));
+      }
+    } catch (e) { /* ignore */ }
+
+    const projectInstructionsPath = path.join(this.projectPath, '.ai-dev', 'project-instructions.md');
+    let projectInstructions = '';
+    try {
+      if (fs.existsSync(projectInstructionsPath)) {
+        projectInstructions = fs.readFileSync(projectInstructionsPath, 'utf8');
+      }
+    } catch (e) { /* ignore */ }
+
     const techStack = this.analysis.factors?.techStack || {};
     const features = this.analysis.factors?.features?.detected || {};
     const architecture = this.analysis.factors?.architecture || {};
@@ -123,6 +148,33 @@ class DocumentCustomizer {
     content += `\n## Stage-Specific Instructions (${this.analysis.stage})\n`;
     content += this.getStageInstructions(this.analysis.stage);
 
+    // Project-specific instructions (if provided)
+    if (projectInstructions && projectInstructions.trim().length > 0) {
+      content += `\n## Project-Specific Instructions\n`;
+      content += `${projectInstructions}\n`;
+    }
+
+    // MCP Registry summary
+    if (mcpRegistry) {
+      content += `\n## Discovered MCP Servers & Tools\n`;
+      const servers = mcpRegistry.servers || {};
+      const tools = mcpRegistry.tools || [];
+      const serverNames = Object.keys(servers);
+      if (serverNames.length > 0) {
+        content += `\n### Servers\n`;
+        for (const name of serverNames) {
+          const s = servers[name];
+          content += `- ${name}: ${JSON.stringify(s)}\n`;
+        }
+      }
+      if (tools.length > 0) {
+        content += `\n### Tools\n`;
+        for (const t of tools) {
+          content += `- ${t.name} (${t.type}${t.server ? `:${t.server}` : ''})\n`;
+        }
+      }
+    }
+
     // Add approach-specific workflow
     content += `\n## ${this.approach.name} Workflow\n`;
     content += this.getApproachWorkflow(this.approach.selected);
@@ -137,6 +189,14 @@ class DocumentCustomizer {
    * Generate Agent OS instructions
    */
   async generateAgentOSInstructions() {
+    const projectInstructionsPath = path.join(this.projectPath, '.ai-dev', 'project-instructions.md');
+    let projectInstructions = '';
+    try {
+      if (fs.existsSync(projectInstructionsPath)) {
+        projectInstructions = fs.readFileSync(projectInstructionsPath, 'utf8');
+      }
+    } catch (e) { /* ignore */ }
+
     const stage = this.analysis.stage;
     const techStack = this.analysis.factors?.techStack || {};
     
@@ -208,9 +268,15 @@ class DocumentCustomizer {
 `;
     }
 
+    // Inject project-specific instructions into Agent-OS if provided
+    if (projectInstructions && projectInstructions.trim().length > 0) {
+      content += `\n## Project-Specific Instructions\n`;
+      content += `${projectInstructions}\n`;
+    }
+
     // Add stage-specific planning
     content += `
-## Planning Approach (${stage} Stage)
+## Project-Specific Instructions\n\n${stage} Stage)
 `;
     
     switch (stage) {
@@ -253,7 +319,7 @@ class DocumentCustomizer {
     }
 
     return {
-      path: '.agent-os/instructions.md',
+      path: '.agent-os/instructions/instructions.md',
       content
     };
   }

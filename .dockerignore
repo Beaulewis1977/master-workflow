@@ -1,0 +1,33 @@
+# VCS and metadata
+.git
+.gitignore
+
+# Node
+node_modules
+npm-debug.log*
+yarn.lock
+pnpm-lock.yaml
+
+# Python
+.venv
+__pycache__/
+*.py[cod]
+
+# OS/editor
+.DS_Store
+.vscode
+.idea
+
+# Builds/artifacts
+build
+dist
+.out
+coverage
+
+# Env
+.env
+.env.*
+
+# Docker
+Dockerfile*
+*.tar
