@@ -6,7 +6,10 @@ function ok(name, cond) { console.log((cond? '✓':'✗') + ' ' + name); if (!co
 
 // approach-selector smoke
 try {
-  const selPath = path.resolve('.ai-workflow/intelligence-engine/approach-selector.js');
+  let selPath = path.resolve('.ai-workflow/intelligence-engine/approach-selector.js');
+  if (!fs.existsSync(selPath)) {
+    selPath = path.resolve('intelligence-engine/approach-selector.js');
+  }
   const analysis = { score: 25, stage: 'early' };
   const Selector = (await import('file://' + selPath)).default || (await import('file://' + selPath));
   const selector = new (Selector.default || Selector)();
