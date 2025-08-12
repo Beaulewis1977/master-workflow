@@ -70,8 +70,8 @@ Goals: Create safe workspace and tracking to ship incrementally.
 
 Status
 - [ ] Not started
-- [x] In progress
-- [ ] Done (Date: ______; PRs: ______)
+- [ ] In progress
+- [x] Done (Date: 2025-08-12; PRs: feat/audit-remediation-ph1)
 
 Tasks
 - [ ] P0-T1: Create feature branch `feat/audit-remediation-ph1`.
@@ -83,11 +83,11 @@ Acceptance Criteria
 Deliverables
 - Branch, PR template updates, labels: `phase:1`, `type:infra`.
 
-End-of-Phase Summary (to be filled)
-- Changes:
-- Metrics:
-- Risks/Issues:
-- Next Phase Go/No-Go:
+End-of-Phase Summary (completed)
+- Changes: Created branch `feat/audit-remediation-ph1`; added `.github/pull_request_template.md` with governance checks.
+- Metrics: Branch created; template present.
+- Risks/Issues: None.
+- Next Phase Go/No-Go: Go.
 
 ---
 
@@ -96,14 +96,14 @@ Goals: Fix obvious bugs and risky defaults fast.
 
 Status
 - [ ] Not started
-- [x] In progress
-- [ ] Done (Date: ______; PRs: ______)
+- [ ] In progress
+- [x] Done (Date: 2025-08-12; PRs: feat/audit-remediation-ph1)
 
 Tasks
-- [ ] P1-T1: Fix duplicate declarations and formatting in `intelligence-engine/document-customizer.js`.
-- [ ] P1-T2: Replace grep-based recovery scanning in `workflow-runner.js` with `project-scanner.js`.
-- [ ] P1-T3: Default Windows to process mode; fence tmux usage; remove `at` dependency or guard behind presence checks.
-- [ ] P1-T4: Gate YOLO/`--dangerously-skip-permissions` behind explicit env var and print warnings; ensure CI blocks it.
+- [x] P1-T1: Fix duplicate declarations and formatting in `intelligence-engine/document-customizer.js`.
+- [x] P1-T2: Replace grep-based recovery scanning in `workflow-runner.js` with `project-scanner.js`.
+- [x] P1-T3: Default Windows to process mode; fence tmux usage; remove `at` dependency or guard behind presence checks.
+- [x] P1-T4: Gate YOLO/`--dangerously-skip-permissions` behind explicit env var and print warnings; ensure CI blocks it.
 
 Interim Progress
 - P1-T1: Implemented (duplicates removed; header fixed to `## Stage-Specific Instructions (...)`).
@@ -120,11 +120,11 @@ Acceptance Criteria
 Deliverables
 - PR: `feat/quick-wins-stability` with unit/smoke checks for scans and customizer.
 
-End-of-Phase Summary (to be filled)
-- Changes:
-- Metrics:
-- Risks/Issues:
-- Next Phase Go/No-Go:
+End-of-Phase Summary (completed 2025-08-12)
+- Changes: Fixed `document-customizer.js` duplicates and header; replaced `grep` with Node `project-scanner.js`; Windows defaults to process mode; guarded `at` and disabled tmux auto-commit by default (enable via `ENABLE_AUTO_COMMIT=true`); YOLO gated via `BLOCK_YOLO`/`CI` and requires `--ack I-ACCEPT-RISK`; honored `CLAUDE_FLOW_VERSION` env; set MCP default to `context7`.
+- Metrics: Local tests green (`node test/test-runner.js`); status bus configurable via `AGENT_BUS_PORT`.
+- Risks/Issues: None blocking.
+- Next Phase Go/No-Go: Go.
 
 ---
 
@@ -372,13 +372,13 @@ Use this plan to drive focused PRs per phase. We will not begin implementation u
 
 ### 18. Phase Completion Log (Chronological)
 - Phase 0 — Summary:
-  - Date:
-  - PRs:
-  - Highlights:
+  - Date: 2025-08-12
+  - PRs: feat/audit-remediation-ph1
+  - Highlights: Branch created; PR template added.
 - Phase 1 — Summary:
-  - Date:
-  - PRs:
-  - Highlights:
+  - Date: 2025-08-12
+  - PRs: feat/audit-remediation-ph1
+  - Highlights: Quick wins shipped (portable scanner, Windows process mode, YOLO gating, tmux guards, context7 default).
 - Phase 2 — Summary:
   - Date:
   - PRs:

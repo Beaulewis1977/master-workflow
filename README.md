@@ -275,6 +275,14 @@ Edit `.ai-dev/config.json` in your project:
 }
 ```
 
+### New Defaults and Environment Variables
+
+- Windows defaults to process mode (tmux disabled on `win32`).
+- YOLO mode is gated in CI: set `BLOCK_YOLO=true` or rely on `CI=true` to block; enabling YOLO requires `--ack I-ACCEPT-RISK`.
+- MCP default server: `context7` (override with `MCP_DEFAULT_SERVER`).
+- Event bus port: set `AGENT_BUS_PORT` (defaults to 8787).
+- TMux auto-commit is disabled by default; enable with `ENABLE_AUTO_COMMIT=true`.
+
 ## 📊 Example Analysis Output
 
 ```json

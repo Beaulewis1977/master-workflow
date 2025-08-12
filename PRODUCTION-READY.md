@@ -192,6 +192,13 @@ ai-dev analyze
 - ✅ **Learning system** - Remembers user preferences
 
 ### User Control
+### Safety & Cross-Platform Defaults (New)
+
+- Windows hosts default to process mode; tmux orchestration is opt-in (or use WSL2).
+- YOLO is blocked in CI (`CI=true`) or when `BLOCK_YOLO=true`. When enabled, it requires `--ack I-ACCEPT-RISK` and logs a warning.
+- Event bus listens on `AGENT_BUS_PORT` (default 8787) for status and SSE.
+- MCP default server is `context7` (override with `MCP_DEFAULT_SERVER`).
+- TMux auto-commit is disabled by default; set `ENABLE_AUTO_COMMIT=true` to enable.
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches
