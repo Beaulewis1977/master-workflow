@@ -681,8 +681,12 @@ class WorkflowRunner {
         await this.createRecoveryPlan();
       }
       
-      // Step 5: Create TMux sessions
-      await this.createTmuxSessions();
+      // Step 5: Create TMux sessions when available and non-Windows
+      if (process.platform !== 'win32') {
+        await this.createTmuxSessions();
+      } else {
+        this.log('info', 'Windows detected; defaulting to process mode (tmux disabled)');
+      }
       
       // Step 6: Execute workflow
       if (mode === 'auto' || mode === 'interactive') {
