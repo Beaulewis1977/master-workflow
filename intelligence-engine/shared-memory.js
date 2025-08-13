@@ -820,6 +820,7 @@ class SharedMemoryStore extends EventEmitter {
       cacheHitRate: `${cacheHitRate}%`,
       memoryUsage: this.memoryUsage,
       entryCount: this.entryCount,
+      totalEntries: this.entryCount, // Alias for test compatibility
       maxMemorySize: this.maxMemorySize,
       maxEntries: this.maxEntries,
       memoryUtilization: `${(this.memoryUsage / this.maxMemorySize * 100).toFixed(2)}%`,

@@ -23,12 +23,14 @@ class DocumentCustomizer {
    */
   async generateDocuments() {
     const documents = {
+      readme: await this.generateReadme(),
       claude: await this.generateClaudeConfig(),
       agentOS: await this.generateAgentOSInstructions(),
       workflows: await this.generateWorkflows(),
       contributing: await this.generateContributing(),
       deployment: await this.generateDeployment(),
       architecture: await this.generateArchitecture(),
+      api: await this.generateAPI(),
       sparc: this.approach.selected === 'hiveMindSparc' ? await this.generateSPARCPhases() : null,
       agents: await this.generateAgentConfigs(),
       slashCommands: await this.generateSlashCommands()
@@ -93,12 +95,14 @@ class DocumentCustomizer {
    */
   getFilenameForType(type) {
     const typeMap = {
+      'readme': 'README.md',
       'claude': 'CLAUDE.md',
       'agentOS': 'Agent-OS.md',
       'workflows': 'WORKFLOWS.md',
       'contributing': 'CONTRIBUTING.md',
       'deployment': 'DEPLOYMENT.md',
       'architecture': 'ARCHITECTURE.md',
+      'api': 'API.md',
       'sparc': 'SPARC-PHASES.md',
       'slashCommands': 'SLASH-COMMANDS.md',
       'agents.queen': '.agents/queen-controller.md',
@@ -1406,6 +1410,214 @@ exports.getAll = async (req, res) => {
       files: commands,
       defaultCommand: this.analysis.score > 70 ? 'sparc' : 'workflow'
     };
+  }
+
+  /**
+   * Generate command string for the selected approach
+   */
+  generateCommand() {
+    if (this.approach.selected === 'hiveMindSparc') {
+      return 'npx --yes claude-flow@latest hive-mind spawn "[project-name]" --sparc --agents 10 --claude';
+    } else if (this.approach.selected === 'hiveMind') {
+      return 'npx --yes claude-flow@latest hive-mind spawn "[project-name]" --agents 10 --claude';
+    } else if (this.approach.selected === 'singleAgent') {
+      return 'npx --yes claude-flow@latest single-agent "[project-name]" --claude';
+    } else {
+      return 'npx --yes claude-flow@latest workflow "[project-name]" --claude';
+    }
+  }
+
+  /**
+   * Generate README.md
+   */
+  async generateReadme() {
+    const projectName = this.analysis.projectName || 'Project';
+    const complexity = this.analysis.complexity?.score || this.analysis.score || 50;
+    const stage = this.analysis.stage || 'development';
+    const techStack = this.analysis.factors?.techStack?.languages || [];
+    
+    let content = `# ${projectName}
+
+## Overview
+This is a ${stage} stage project with complexity score ${complexity}/100.
+
+## Technology Stack
+${techStack.length > 0 ? techStack.map(lang => `- ${lang}`).join('\n') : '- JavaScript (default)'}
+
+## Architecture
+- **Type**: ${this.analysis.factors?.architecture?.primaryArchitecture || 'modular'}
+- **Approach**: ${this.approach.selected || 'standard development'}
+
+## Getting Started
+
+### Prerequisites
+- Node.js v18+ and npm/yarn
+${techStack.includes('Python') ? '- Python 3.8+ and pip' : ''}
+${techStack.includes('Go') ? '- Go 1.19+' : ''}
+
+### Installation
+
+\`\`\`bash
+# Clone the repository
+git clone <repository-url>
+cd ${projectName.toLowerCase().replace(/\s+/g, '-')}
+
+# Install dependencies
+npm install
+# or
+yarn install
+${techStack.includes('Python') ? `
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+
+# Install dependencies
+pip install -r requirements.txt
+` : ''}
+\`\`\`
+
+## Development
+
+### Using AI Development OS
+This project uses the Intelligent Workflow Decision System.
+
+- **Approach**: ${this.approach.selected || 'Standard'}
+- **Command**: \`${this.generateCommand()}\`
+
+### Testing
+Run tests with: \`npm test\`${techStack.includes('Python') ? ' or `pytest`' : ''}
+
+## Current Focus (${stage} Stage)
+${stage === 'active' ? `- Adding new features
+- Maintaining code quality
+- Improving test coverage
+- Updating documentation` : 
+stage === 'initial' ? `- Setting up project structure
+- Implementing core features
+- Establishing development workflow` :
+`- Finalizing features
+- Preparing for deployment
+- Documentation completion`}
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Architecture
+See [ARCHITECTURE.md](ARCHITECTURE.md) for system design details.
+
+## Deployment
+See [DEPLOYMENT.md](DEPLOYMENT.md) for deployment instructions.
+`;
+
+    return content;
+  }
+
+  /**
+   * Generate API.md
+   */
+  async generateAPI() {
+    const projectName = this.analysis.projectName || 'Project';
+    const hasApi = this.analysis.factors?.features?.detected?.api || 
+                   this.analysis.factors?.architecture?.patterns?.api > 0;
+    
+    let content = `# API Documentation
+
+## Overview
+${hasApi ? 'This project provides a RESTful API with the following endpoints.' : 'API documentation for the project endpoints.'}
+
+## Base URL
+\`\`\`
+${hasApi ? 'https://api.example.com/v1' : 'http://localhost:3000/api'}
+\`\`\`
+
+## Authentication
+${hasApi ? `API requests require authentication using bearer tokens.
+
+\`\`\`bash
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.example.com/v1/endpoint
+\`\`\`` : 'Authentication details will be added as the API is developed.'}
+
+## Endpoints
+
+${hasApi ? `### GET /health
+Health check endpoint
+
+**Response:**
+\`\`\`json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+\`\`\`
+
+### GET /users
+Get list of users
+
+**Parameters:**
+- \`limit\` (optional): Number of users to return (default: 10)
+- \`offset\` (optional): Number of users to skip (default: 0)
+
+**Response:**
+\`\`\`json
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  ],
+  "total": 100
+}
+\`\`\`
+
+### POST /users
+Create a new user
+
+**Request Body:**
+\`\`\`json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com"
+}
+\`\`\`
+
+**Response:**
+\`\`\`json
+{
+  "id": 2,
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "created_at": "2024-01-01T00:00:00Z"
+}
+\`\`\`` : 'API endpoints will be documented as they are implemented.'}
+
+## Error Handling
+
+All API errors follow this format:
+
+\`\`\`json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable error message",
+    "details": {}
+  }
+}
+\`\`\`
+
+## Rate Limiting
+${hasApi ? 'API requests are limited to 1000 requests per hour per API key.' : 'Rate limiting will be implemented based on usage patterns.'}
+
+## SDK Support
+${hasApi ? 'Official SDKs are available for:' : 'SDKs will be provided for:'}
+- JavaScript/Node.js
+- Python
+${this.analysis.factors?.techStack?.languages?.includes('Go') ? '- Go' : ''}
+${this.analysis.factors?.techStack?.languages?.includes('Java') ? '- Java' : ''}
+`;
+
+    return content;
   }
 }
 

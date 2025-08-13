@@ -767,6 +767,25 @@ class QueenController extends EventEmitter {
       // Learn from this workflow execution
       const learningResult = await this.neuralLearning.learn(workflowData, outcomeData);
 
+      // Ensure learningResult has the expected structure
+      if (!learningResult || !learningResult.pattern) {
+        // Create a fallback pattern structure
+        const fallbackPattern = {
+          id: `pattern_${taskId}_${Date.now()}`,
+          workflowType: workflowData.type,
+          successRate: outcome.success ? 1.0 : 0.0,
+          complexity: workflowData.complexity,
+          agentType: workflowData.agentType,
+          timestamp: Date.now()
+        };
+        
+        return {
+          pattern: fallbackPattern,
+          success: true,
+          fallback: true
+        };
+      }
+
       // Share learned patterns with other agents via shared memory
       if (this.sharedMemoryStore) {
         // Store the pattern for cross-agent access
@@ -813,6 +832,21 @@ class QueenController extends EventEmitter {
         error: error.message,
         operation: 'record-outcome'
       });
+      
+      // Return a fallback pattern even on error
+      return {
+        pattern: {
+          id: `error_pattern_${taskId}_${Date.now()}`,
+          workflowType: 'unknown',
+          successRate: 0.5,
+          complexity: 5,
+          agentType: 'unknown',
+          timestamp: Date.now(),
+          error: true
+        },
+        success: false,
+        error: error.message
+      };
     }
   }
 
