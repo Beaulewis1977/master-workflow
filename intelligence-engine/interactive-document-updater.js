@@ -1297,8 +1297,206 @@ class InteractiveDocumentUpdater extends EventEmitter {
   }
   
   async createBackups(updatePlan) {
-    // Placeholder for backup creation
-    this.stats.backupsCreated += updatePlan.documents.length;
+    try {
+      for (const docUpdate of updatePlan.documents) {
+        if (docUpdate.hasExisting) {
+          const existingContent = await this.readFileContent(docUpdate.path);
+          if (existingContent) {
+            await this.createBackup(docUpdate.path, existingContent);
+          }
+        }
+      }
+      this.stats.backupsCreated += updatePlan.documents.length;
+    } catch (error) {
+      console.error('Error creating backups:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a backup of a document
+   * @param {string} docPath - Path to the document
+   * @param {string} content - Content to backup
+   * @returns {Object} Backup metadata
+   */
+  async createBackup(docPath, content) {
+    try {
+      const backupId = this.generateBackupId();
+      const timestamp = new Date().toISOString();
+      
+      // Create backup metadata
+      const backupMetadata = {
+        id: backupId,
+        docPath,
+        timestamp,
+        size: content.length,
+        hash: crypto.createHash('sha256').update(content).digest('hex')
+      };
+
+      // Store backup in manifest
+      if (!this.backupManifest.has(docPath)) {
+        this.backupManifest.set(docPath, []);
+      }
+      
+      const backups = this.backupManifest.get(docPath);
+      backups.push({
+        ...backupMetadata,
+        content: content
+      });
+
+      // Keep only last 10 backups per document
+      if (backups.length > 10) {
+        backups.shift(); // Remove oldest backup
+      }
+
+      this.backupManifest.set(docPath, backups);
+      
+      // Update stats
+      this.stats.backupsCreated++;
+      
+      return backupMetadata;
+    } catch (error) {
+      console.error(`Error creating backup for ${docPath}:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Rollback a document to a previous backup
+   * @param {string} docPath - Path to the document
+   * @param {string} backupId - ID of the backup to restore
+   * @returns {Object} Rollback result
+   */
+  async rollback(docPath, backupId) {
+    try {
+      const backups = this.backupManifest.get(docPath);
+      if (!backups || backups.length === 0) {
+        throw new Error(`No backups found for ${docPath}`);
+      }
+
+      const backup = backups.find(b => b.id === backupId);
+      if (!backup) {
+        throw new Error(`Backup ${backupId} not found for ${docPath}`);
+      }
+
+      // Create a backup of current state before rollback
+      const currentContent = await this.readFileContent(docPath);
+      if (currentContent) {
+        await this.createBackup(docPath + '.pre-rollback', currentContent);
+      }
+
+      // Restore from backup
+      await this.writeFileContent(docPath, backup.content);
+
+      return {
+        success: true,
+        docPath,
+        backupId,
+        timestamp: backup.timestamp,
+        message: `Successfully rolled back ${docPath} to backup ${backupId}`
+      };
+    } catch (error) {
+      console.error(`Error rolling back ${docPath} to ${backupId}:`, error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * List all backups for a document
+   * @param {string} docPath - Path to the document
+   * @returns {Array} Array of backup metadata
+   */
+  listBackups(docPath) {
+    const backups = this.backupManifest.get(docPath) || [];
+    return backups.map(backup => ({
+      id: backup.id,
+      timestamp: backup.timestamp,
+      size: backup.size,
+      hash: backup.hash
+    })).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }
+
+  /**
+   * Restore from a specific backup
+   * @param {string} docPath - Path to the document
+   * @param {string} backupId - ID of the backup to restore
+   * @returns {Object} Restoration result
+   */
+  async restoreFromBackup(docPath, backupId) {
+    return await this.rollback(docPath, backupId);
+  }
+
+  /**
+   * Generate a unique backup ID
+   * @returns {string} Backup ID
+   */
+  generateBackupId() {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 8);
+    return `backup_${timestamp}_${random}`;
+  }
+
+  /**
+   * Get backup statistics
+   * @returns {Object} Backup statistics
+   */
+  getBackupStats() {
+    let totalBackups = 0;
+    let totalSize = 0;
+    const documentsWithBackups = [];
+
+    for (const [docPath, backups] of this.backupManifest.entries()) {
+      totalBackups += backups.length;
+      documentsWithBackups.push({
+        docPath,
+        backupCount: backups.length,
+        latestBackup: backups.length > 0 ? backups[backups.length - 1].timestamp : null
+      });
+      
+      for (const backup of backups) {
+        totalSize += backup.size || 0;
+      }
+    }
+
+    return {
+      totalBackups,
+      totalSize,
+      documentsWithBackups: documentsWithBackups.length,
+      documents: documentsWithBackups
+    };
+  }
+
+  /**
+   * Clean old backups based on age or count
+   * @param {Object} options - Cleanup options
+   */
+  async cleanupBackups(options = {}) {
+    const maxAge = options.maxAge || 7 * 24 * 60 * 60 * 1000; // 7 days
+    const maxBackupsPerDoc = options.maxBackupsPerDoc || 10;
+    
+    let cleanedCount = 0;
+    const cutoffTime = Date.now() - maxAge;
+
+    for (const [docPath, backups] of this.backupManifest.entries()) {
+      // Remove old backups
+      const validBackups = backups.filter(backup => {
+        const backupTime = new Date(backup.timestamp).getTime();
+        return backupTime > cutoffTime;
+      });
+
+      // Keep only the specified number of recent backups
+      const recentBackups = validBackups
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0, maxBackupsPerDoc);
+
+      cleanedCount += backups.length - recentBackups.length;
+      this.backupManifest.set(docPath, recentBackups);
+    }
+
+    return {
+      cleanedCount,
+      message: `Cleaned up ${cleanedCount} old backups`
+    };
   }
   
   async updateSectionCache(filePath, content) {

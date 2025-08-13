@@ -233,11 +233,52 @@ class AgentOSDocumentAnalyzer extends EventEmitter {
   
   /**
    * Detect user customizations in a document
-   * @param {object} doc - Document analysis result
-   * @param {object} options - Detection options
+   * @param {object|string} docOrOriginal - Document analysis result or original content
+   * @param {object|string} optionsOrCustomized - Detection options or customized content
    */
-  async detectCustomizations(doc, options = {}) {
+  async detectCustomizations(docOrOriginal, optionsOrCustomized = {}) {
     try {
+      // Handle dual signature: (doc, options) or (originalContent, customizedContent)
+      let doc, options;
+      
+      if (typeof docOrOriginal === 'string' && typeof optionsOrCustomized === 'string') {
+        // Called with (originalContent, customizedContent)
+        const originalContent = docOrOriginal;
+        const customizedContent = optionsOrCustomized;
+        
+        // Use customization manager directly if available
+        if (this.customizationManager && this.customizationManager.detectCustomizations) {
+          return await this.customizationManager.detectCustomizations(
+            originalContent,
+            customizedContent,
+            { filePath: 'comparison' }
+          );
+        }
+        
+        // Fallback to simple diff-based detection
+        const customizations = [];
+        const originalLines = originalContent.split('\n');
+        const customizedLines = customizedContent.split('\n');
+        
+        // Find added lines
+        customizedLines.forEach((line, index) => {
+          if (!originalLines.includes(line) && line.trim()) {
+            customizations.push({
+              type: 'addition',
+              line: index + 1,
+              content: line,
+              category: line.includes('USER:') ? 'user-comment' : 'user-content'
+            });
+          }
+        });
+        
+        return customizations;
+      }
+      
+      // Original behavior: (doc, options)
+      doc = docOrOriginal;
+      options = optionsOrCustomized;
+      
       if (!doc || !doc.content) {
         throw new Error('Document content is required for customization detection');
       }
