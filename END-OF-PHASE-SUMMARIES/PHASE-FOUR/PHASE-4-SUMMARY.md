@@ -30,6 +30,47 @@
 3. Leverage preservation system for workflow state management
 4. Consider using parallel sub-agents for workflow execution
 
+## TODO List for Phase 5 Agent
+
+### Immediate Tasks to Add to Your Todo List:
+1. **Fix Agent-OS Template Manager Test**
+   - File: `intelligence-engine/test-phase4-implementation.js`
+   - Issue: Template customization based on analysis needs refinement
+   - Test failing at line ~380-400
+   - Priority: Medium (functionality works but test needs adjustment)
+
+2. **Fix Interactive Document Update Test**
+   - File: `intelligence-engine/test-phase4-implementation.js`
+   - Issue: 3-way merge display formatting issue
+   - Test failing at line ~420-440
+   - Priority: Medium (display issue only, merge works correctly)
+
+3. **Complete Phase 5 Workflow Execution Engine**
+   - Primary objective as per CLAUDE-CODE-PLAN.MD
+   - Build on top of working document preservation system
+   - Use Agent-OS structure for workflow organization
+   - Leverage preservation system for workflow state management
+
+### Integration Requirements:
+- Ensure all Phase 3 tests remain at 100% pass rate
+- Ensure Phase 4 tests reach 100% (currently at 90%)
+- Use parallel sub-agents throughout implementation
+- Maintain backward compatibility with enhanced installer
+
+### Test Commands to Run First:
+```bash
+# Verify current test status
+node intelligence-engine/test-phase4-implementation.js
+# Expected: 18/20 tests passing (90%)
+
+# Check preservation features
+node intelligence-engine/test-preservation-features.js
+# Expected: All passing
+
+# Run all tests to ensure nothing broke
+node intelligence-engine/run-all-tests.js
+```
+
 ## Important Documents to Read
 1. `/workspaces/MASTER-WORKFLOW/intelligence-engine/preservation-test-results.md` - Comprehensive test results
 2. `/workspaces/MASTER-WORKFLOW/intelligence-engine/test-phase4-implementation.js` - Full test suite
