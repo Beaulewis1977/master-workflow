@@ -203,14 +203,38 @@ class EnhancedTemplateEngine extends EventEmitter {
   /**
    * Render a template with given context
    */
-  async render(templateName, context = {}, options = {}) {
+  async render(templateNameOrContent, context = {}, options = {}) {
     try {
       const startTime = Date.now();
       
-      // Get or compile template
-      let compiled = this.compiledTemplates.get(templateName);
-      if (!compiled) {
-        compiled = await this.compileTemplate(templateName);
+      let compiled;
+      let templateName;
+      
+      // Detect if input is a template string (contains template syntax) or a template name
+      const isInlineTemplate = this.isTemplateString(templateNameOrContent);
+      const isPlainText = !isInlineTemplate && !this.templateCache.has(templateNameOrContent);
+      
+      if (isInlineTemplate || isPlainText) {
+        // Handle inline template compilation (including plain text)
+        templateName = `inline_${this.generateTemplateId(templateNameOrContent)}_${Date.now()}`;
+        
+        // Create a temporary compiler for inline templates
+        const syntax = options.syntax || 'handlebars';
+        const compiler = this.getCompiler(syntax);
+        
+        compiled = await compiler.compile(templateNameOrContent, {
+          ...options,
+          syntax,
+          helpers: this.helpers,
+          partials: this.partials
+        });
+      } else {
+        // Handle named template lookup
+        templateName = templateNameOrContent;
+        compiled = this.compiledTemplates.get(templateName);
+        if (!compiled) {
+          compiled = await this.compileTemplate(templateName);
+        }
       }
       
       // Prepare rendering context
@@ -244,7 +268,7 @@ class EnhancedTemplateEngine extends EventEmitter {
       return result;
       
     } catch (error) {
-      this.emit('error', new Error(`Failed to render template '${templateName}': ${error.message}`));
+      this.emit('error', new Error(`Failed to render template '${templateNameOrContent}': ${error.message}`));
       throw error;
     }
   }
@@ -782,6 +806,32 @@ class EnhancedTemplateEngine extends EventEmitter {
     });
     
     return issues;
+  }
+  
+  /**
+   * Check if a string contains template syntax
+   */
+  isTemplateString(content) {
+    if (typeof content !== 'string') {
+      return false;
+    }
+    
+    // Check for Handlebars/Mustache syntax {{...}}
+    if (content.includes('{{') && content.includes('}}')) {
+      return true;
+    }
+    
+    // Check for custom syntax ${...}
+    if (content.includes('${') && content.includes('}')) {
+      return true;
+    }
+    
+    // Check for EJS-style syntax <%...%>
+    if (content.includes('<%') && content.includes('%>')) {
+      return true;
+    }
+    
+    return false;
   }
   
   /**

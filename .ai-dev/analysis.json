@@ -2,14 +2,14 @@
   "score": 42,
   "factors": {
     "size": {
-      "fileCount": 67,
+      "fileCount": 91,
       "score": 50,
       "description": "Medium project"
     },
     "dependencies": {
-      "count": 0,
+      "count": 2,
       "score": 10,
-      "description": "0 dependencies detected"
+      "description": "2 dependencies detected"
     },
     "architecture": {
       "patterns": {
@@ -69,7 +69,7 @@
     },
     "testing": {
       "hasTests": true,
-      "testFileCount": 38,
+      "testFileCount": 45,
       "testTypes": {
         "unit": false,
         "integration": true,

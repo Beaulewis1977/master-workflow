@@ -36,6 +36,7 @@ class CustomizationManager extends EventEmitter {
     // User comment patterns
     this.customizationPatterns.set('user-comments', [
       /<!--\s*USER:\s*(.*?)\s*-->/gi,
+      /<!--\s*[Uu]ser\s+(.*?)\s*-->/gi,  // General user comments
       /\/\*\s*USER:\s*(.*?)\s*\*\//gi,
       /#\s*USER:\s*(.*?)$/gim,
       /\/\/\s*USER:\s*(.*?)$/gim
@@ -134,15 +135,23 @@ class CustomizationManager extends EventEmitter {
    */
   async detectCustomizations(originalContent, newContent, options = {}) {
     try {
+      // Input validation
+      if (typeof originalContent !== 'string') {
+        throw new Error('originalContent must be a string');
+      }
+      if (typeof newContent !== 'string') {
+        throw new Error('newContent must be a string');
+      }
+      
       const documentType = this.detectDocumentType(options.filePath || '');
       const customizations = [];
       
       // Store content for comparison
       await this.storeContentForComparison(originalContent, newContent, options);
       
-      // Pattern-based detection
+      // Pattern-based detection (detect patterns in new content that weren't in original)
       const patternCustomizations = await this.detectPatternCustomizations(
-        originalContent, 
+        newContent, 
         documentType
       );
       customizations.push(...patternCustomizations);
@@ -174,8 +183,10 @@ class CustomizationManager extends EventEmitter {
       const uniqueCustomizations = this.deduplicateCustomizations(customizations);
       const rankedCustomizations = this.rankCustomizations(uniqueCustomizations);
       
-      // Store detected customizations
-      await this.storeCustomizations(options.filePath, rankedCustomizations);
+      // Store detected customizations (only if filePath is provided)
+      if (options.filePath) {
+        await this.storeCustomizations(options.filePath, rankedCustomizations);
+      }
       
       this.emit('customizations-detected', {
         filePath: options.filePath,
@@ -197,10 +208,13 @@ class CustomizationManager extends EventEmitter {
   async detectPatternCustomizations(content, documentType) {
     const customizations = [];
     
+    // Reset regex global state by recreating patterns
     for (const [patternType, patterns] of this.customizationPatterns) {
       for (const pattern of patterns) {
+        // Create a new regex instance to avoid global state issues
+        const regex = new RegExp(pattern.source, pattern.flags);
         let match;
-        while ((match = pattern.exec(content)) !== null) {
+        while ((match = regex.exec(content)) !== null) {
           customizations.push({
             type: patternType,
             pattern: pattern.source,
@@ -213,6 +227,11 @@ class CustomizationManager extends EventEmitter {
             confidence: 0.9, // High confidence for explicit patterns
             description: this.describeCustomization(patternType, match)
           });
+          
+          // Prevent infinite loop for zero-width matches
+          if (match.index === regex.lastIndex) {
+            regex.lastIndex++;
+          }
         }
       }
     }
@@ -760,7 +779,9 @@ class CustomizationManager extends EventEmitter {
   }
   
   hashFilePath(filePath) {
-    return crypto.createHash('md5').update(filePath).digest('hex').substring(0, 8);
+    // Handle undefined/null filePath by providing a default
+    const pathToHash = filePath || 'unknown-file';
+    return crypto.createHash('md5').update(pathToHash).digest('hex').substring(0, 8);
   }
   
   /**

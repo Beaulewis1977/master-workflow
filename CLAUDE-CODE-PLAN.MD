@@ -30,9 +30,6 @@ This document outlines the implementation of MASTER-WORKFLOW v3.0, introducing a
 | Phase 6 | System Integration & Testing | 3-4 hours | Phases 1-5 |
 | Phase 7 | Documentation & Final Updates | 1-2 hours | Phase 6 |
 
----
-
-## 📦 Phase 1: Queen Controller & Sub-Agent Core Architecture
 **Context Window Safe: ~50k tokens**
 
 ### Objective

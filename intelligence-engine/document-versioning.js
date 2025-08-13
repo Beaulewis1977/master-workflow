@@ -137,6 +137,7 @@ class DocumentVersioning extends EventEmitter {
       });
       
       return {
+        id: versionEntry.id,
         versionId: versionEntry.id,
         version: newVersion,
         documentId,

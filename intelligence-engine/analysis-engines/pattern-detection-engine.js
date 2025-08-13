@@ -19,9 +19,11 @@ class PatternDetectionEngine {
       singleton: {
         signatures: [
           'static instance',
-          'getInstance()',
-          'new.target',
-          'constructor.*instance'
+          'getInstance\\(',
+          'new\\.target',
+          '\\.instance',
+          'instance.*=.*this',
+          'if.*instance.*return.*instance'
         ],
         confidence: 0.8
       },
@@ -78,10 +80,17 @@ class PatternDetectionEngine {
     const results = [];
     
     try {
-      for (const file of files) {
-        const content = file.content || await this.readFile(file.path);
-        const patterns = await this.analyzeContentForPatterns(content, file.path);
+      // Handle single string input for testing
+      if (typeof files === 'string') {
+        const patterns = await this.analyzeContentForPatterns(files, 'test-code');
         results.push(...patterns);
+      } else {
+        // Handle array of file objects
+        for (const file of files) {
+          const content = file.content || await this.readFile(file.path);
+          const patterns = await this.analyzeContentForPatterns(content, file.path);
+          results.push(...patterns);
+        }
       }
       
       // Store results in shared memory
