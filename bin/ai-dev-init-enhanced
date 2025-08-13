@@ -1,0 +1,441 @@
+#!/bin/bash
+
+# AI Dev OS - Enhanced Intelligent Project Initializer
+# Integrates intelligent decision system for optimal Claude Flow approach selection
+
+set -e
+
+# Configuration
+AI_DEV_HOME="$HOME/.ai-dev-os"
+CLAUDE_HOME="$HOME/.claude"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INTELLIGENCE_ENGINE_DIR="$(dirname "$SCRIPT_DIR")/intelligence-engine"
+PROJECT_DIR="${1:-$(pwd)}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+BOLD='\033[1m'
+
+# Function to print colored output
+print_header() {
+    echo -e "\n${BOLD}${BLUE}═══════════════════════════════════════════════════════${NC}"
+    echo -e "${BOLD}${CYAN}  $1${NC}"
+    echo -e "${BOLD}${BLUE}═══════════════════════════════════════════════════════${NC}\n"
+}
+
+print_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+print_info() {
+    echo -e "${CYAN}ℹ️  $1${NC}"
+}
+
+# Parse command line arguments
+parse_arguments() {
+    MODE="interactive"  # Default mode
+    TASK_DESCRIPTION=""
+    FORCE_APPROACH=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --auto|--automatic)
+                MODE="auto"
+                shift
+                ;;
+            --interactive|--choose)
+                MODE="interactive"
+                shift
+                ;;
+            --smart)
+                MODE="auto"
+                shift
+                ;;
+            --analyze-only|--recommend)
+                MODE="analyze"
+                shift
+                ;;
+            --swarm|--simple)
+                FORCE_APPROACH="simple-swarm"
+                MODE="force"
+                shift
+                ;;
+            --hive|--hivemind)
+                FORCE_APPROACH="hive-mind"
+                MODE="force"
+                shift
+                ;;
+            --sparc|--enterprise)
+                FORCE_APPROACH="hive-mind-sparc"
+                MODE="force"
+                shift
+                ;;
+            --help|-h)
+                show_help
+                exit 0
+                ;;
+            *)
+                # Assume it's the task description
+                TASK_DESCRIPTION="$1"
+                shift
+                ;;
+        esac
+    done
+}
+
+# Show help message
+show_help() {
+    cat << EOF
+AI Dev OS - Enhanced Intelligent Initializer
+
+Usage: ai-dev init [options] [task-description]
+
+Options:
+  --auto, --automatic, --smart
+      Let AI automatically select the optimal approach
+      
+  --interactive, --choose
+      Show analysis and let user choose approach (default)
+      
+  --analyze-only, --recommend
+      Analyze project and show recommendation without setup
+      
+  --swarm, --simple
+      Force Simple Swarm approach
+      
+  --hive, --hivemind
+      Force Hive-Mind approach
+      
+  --sparc, --enterprise
+      Force Hive-Mind + SPARC approach
+      
+  --help, -h
+      Show this help message
+
+Examples:
+  ai-dev init --auto "Build a REST API with authentication"
+  ai-dev init --interactive
+  ai-dev init --sparc "Complex enterprise system"
+  ai-dev init --analyze-only
+
+The system will:
+1. Analyze your project's complexity and stage
+2. Recommend the optimal Claude Flow approach
+3. Allow you to accept the recommendation or choose differently
+4. Set up the selected approach with proper configuration
+EOF
+}
+
+# Check if intelligence engine is available
+check_intelligence_engine() {
+    if [ ! -d "$INTELLIGENCE_ENGINE_DIR" ]; then
+        print_warning "Intelligence engine not found, using default setup"
+        return 1
+    fi
+    
+    if [ ! -f "$INTELLIGENCE_ENGINE_DIR/complexity-analyzer.js" ]; then
+        print_warning "Complexity analyzer not found"
+        return 1
+    fi
+    
+    if [ ! -f "$INTELLIGENCE_ENGINE_DIR/approach-selector.js" ]; then
+        print_warning "Approach selector not found"
+        return 1
+    fi
+    
+    if [ ! -f "$INTELLIGENCE_ENGINE_DIR/user-choice-handler.sh" ]; then
+        print_warning "User choice handler not found"
+        return 1
+    fi
+    
+    return 0
+}
+
+# Detect project type (fallback for when intelligence engine is not available)
+detect_project_type() {
+    if [ -f "package.json" ]; then
+        if grep -q "react\|vue\|angular\|next" package.json; then
+            echo "web-app"
+        else
+            echo "api-service"
+        fi
+    elif [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
+        echo "api-service"
+    elif [ -f "go.mod" ]; then
+        echo "api-service"
+    elif [ -f "Cargo.toml" ]; then
+        echo "cli-tool"
+    elif [ -f "pom.xml" ] || [ -f "build.gradle" ]; then
+        echo "api-service"
+    else
+        echo "unknown"
+    fi
+}
+
+# Initialize with intelligent decision system
+init_with_intelligence() {
+    print_header "🧠 Intelligent AI Development OS Initialization"
+    
+    cd "$PROJECT_DIR"
+    
+    # Run the user choice handler with appropriate mode
+    case "$MODE" in
+        auto)
+            print_info "Running in automatic mode - AI will select optimal approach"
+            "$INTELLIGENCE_ENGINE_DIR/user-choice-handler.sh" --auto "$TASK_DESCRIPTION" "$PROJECT_DIR"
+            ;;
+        interactive)
+            print_info "Running in interactive mode - you can choose the approach"
+            "$INTELLIGENCE_ENGINE_DIR/user-choice-handler.sh" --interactive "$TASK_DESCRIPTION" "$PROJECT_DIR"
+            ;;
+        analyze)
+            print_info "Running analysis only"
+            "$INTELLIGENCE_ENGINE_DIR/user-choice-handler.sh" --analyze-only "$TASK_DESCRIPTION" "$PROJECT_DIR"
+            return 0
+            ;;
+        force)
+            print_info "Forcing approach: $FORCE_APPROACH"
+            "$INTELLIGENCE_ENGINE_DIR/user-choice-handler.sh" "--$FORCE_APPROACH" "$TASK_DESCRIPTION" "$PROJECT_DIR"
+            ;;
+    esac
+    
+    # After approach selection, set up the project structure
+    setup_project_structure
+    
+    # Create enhanced configuration files
+    create_enhanced_configs
+    
+    print_success "Enhanced AI Development OS initialized with intelligent approach selection!"
+}
+
+# Fallback initialization without intelligence engine
+init_fallback() {
+    print_header "AI Development OS Initialization (Standard Mode)"
+    
+    print_warning "Intelligence engine not available, using standard initialization"
+    
+    cd "$PROJECT_DIR"
+    
+    # Detect project type
+    PROJECT_TYPE=$(detect_project_type)
+    
+    if [ "$PROJECT_TYPE" = "unknown" ]; then
+        print_error "Could not detect project type"
+        echo "Please specify: web-app, api-service, cli-tool, etc."
+        read -p "Project type: " PROJECT_TYPE
+    fi
+    
+    print_info "Detected project type: $PROJECT_TYPE"
+    
+    # Setup basic project structure
+    setup_project_structure
+    
+    # Create standard configuration files
+    create_standard_configs "$PROJECT_TYPE"
+    
+    print_success "AI Development OS initialized (standard mode)"
+}
+
+# Set up project structure
+setup_project_structure() {
+    print_info "Setting up project structure..."
+    
+    # Create required directories
+    mkdir -p .ai-dev
+    mkdir -p .claude/agents
+    mkdir -p .claude/commands
+    mkdir -p .agent-os/specs
+    mkdir -p .claude-flow
+    mkdir -p .tmux-orchestrator
+    
+    # Create activity log
+    touch .ai-dev/activity.log
+    
+    print_success "Project structure created"
+}
+
+# Create enhanced configuration files
+create_enhanced_configs() {
+    print_info "Creating enhanced configuration files..."
+    
+    # Load approach selection if it exists
+    if [ -f ".ai-dev/approach-selection.json" ]; then
+        APPROACH=$(jq -r '.selected' .ai-dev/approach-selection.json)
+        APPROACH_NAME=$(jq -r '.name' .ai-dev/approach-selection.json)
+        COMMAND=$(jq -r '.command' .ai-dev/approach-selection.json)
+    else
+        APPROACH="hiveMind"
+        APPROACH_NAME="Hive-Mind"
+        COMMAND="npx claude-flow@alpha hive-mind spawn --agents 6 --claude"
+    fi
+    
+    # Create project.json with enhanced metadata
+    cat > .ai-dev/project.json << EOF
+{
+  "projectDir": "$PROJECT_DIR",
+  "initialized": "$(date -Iseconds)",
+  "approach": {
+    "selected": "$APPROACH",
+    "name": "$APPROACH_NAME",
+    "command": "$COMMAND"
+  },
+  "systems": {
+    "agentOS": true,
+    "claudeFlow": true,
+    "tmuxOrchestrator": true,
+    "subAgents": true,
+    "intelligenceEngine": true
+  },
+  "features": {
+    "automaticApproachSelection": true,
+    "userChoiceMode": true,
+    "complexityAnalysis": true,
+    "stageDetection": true
+  }
+}
+EOF
+    
+    # Create Claude settings with enhanced hooks
+    cat > .claude/settings.json << 'EOF'
+{
+  "dangerouslySkipPermissions": false,
+  "hooks": {
+    "user-prompt-submit-hook": "echo '$(date): [${USER_PROMPT:0:50}...] submitted' >> .ai-dev/activity.log",
+    "tool-call-hook": "echo '$(date): Tool ${TOOL_NAME} called' >> .ai-dev/activity.log",
+    "model-response-hook": "echo '$(date): Response generated' >> .ai-dev/activity.log"
+  },
+  "autoSave": true,
+  "maxConcurrentTools": 10,
+  "integrations": {
+    "intelligenceEngine": true,
+    "approachRouting": true
+  }
+}
+EOF
+    
+    # Create CLAUDE.md with project context
+    cat > .claude/CLAUDE.md << EOF
+# Project Context
+
+This project is using the Enhanced AI Development OS with intelligent approach selection.
+
+## Selected Approach
+- **Approach**: $APPROACH_NAME
+- **Command**: \`$COMMAND\`
+
+## Project Analysis
+$(cat .ai-dev/approach-selection.json 2>/dev/null | jq -r '.reasoning[]' | sed 's/^/- /')
+
+## Development Guidelines
+- Follow the selected approach's best practices
+- Use the Claude Flow command for multi-agent coordination
+- Leverage Agent OS for planning and specifications
+- Utilize tmux sessions for long-running tasks
+
+## Available Commands
+- \`ai-dev status\` - Check system status
+- \`ai-dev orchestrate\` - Start autonomous development
+- \`ai-dev flow [cmd]\` - Run Claude Flow commands
+- \`ai-dev agent [cmd]\` - Run Agent OS commands
+EOF
+    
+    print_success "Enhanced configuration files created"
+}
+
+# Create standard configuration files (fallback)
+create_standard_configs() {
+    local project_type="$1"
+    
+    print_info "Creating standard configuration files..."
+    
+    # Create project.json
+    cat > .ai-dev/project.json << EOF
+{
+  "projectType": "$project_type",
+  "projectDir": "$PROJECT_DIR",
+  "initialized": "$(date -Iseconds)",
+  "systems": {
+    "agentOS": true,
+    "claudeFlow": true,
+    "tmuxOrchestrator": true,
+    "subAgents": true
+  }
+}
+EOF
+    
+    # Create Claude settings
+    cat > .claude/settings.json << 'EOF'
+{
+  "dangerouslySkipPermissions": false,
+  "hooks": {
+    "user-prompt-submit-hook": "echo '$(date): User prompt submitted' >> .ai-dev/activity.log",
+    "tool-call-hook": "echo '$(date): Tool ${TOOL_NAME} called' >> .ai-dev/activity.log",
+    "model-response-hook": "echo '$(date): Model responded' >> .ai-dev/activity.log"
+  },
+  "autoSave": true,
+  "maxConcurrentTools": 10
+}
+EOF
+    
+    print_success "Standard configuration files created"
+}
+
+# Show next steps
+show_next_steps() {
+    echo ""
+    print_header "✨ Next Steps"
+    
+    if [ -f ".ai-dev/approach-selection.json" ]; then
+        local command=$(jq -r '.command' .ai-dev/approach-selection.json)
+        echo -e "${CYAN}1. Start AI coordination:${NC}"
+        echo -e "   ${BOLD}$command${NC}"
+        echo ""
+    fi
+    
+    echo -e "${CYAN}2. Check system status:${NC}"
+    echo -e "   ${BOLD}ai-dev status${NC}"
+    echo ""
+    echo -e "${CYAN}3. Start autonomous development:${NC}"
+    echo -e "   ${BOLD}ai-dev orchestrate${NC}"
+    echo ""
+    echo -e "${CYAN}4. Use Agent OS for planning:${NC}"
+    echo -e "   ${BOLD}claude /plan-product${NC}"
+    echo ""
+    echo -e "${CYAN}5. View activity logs:${NC}"
+    echo -e "   ${BOLD}tail -f .ai-dev/activity.log${NC}"
+}
+
+# Main execution
+main() {
+    # Parse arguments
+    parse_arguments "$@"
+    
+    # Check if intelligence engine is available
+    if check_intelligence_engine; then
+        # Use intelligent initialization
+        init_with_intelligence
+    else
+        # Fallback to standard initialization
+        init_fallback
+    fi
+    
+    # Show next steps
+    show_next_steps
+}
+
+# Execute main function
+main "$@"

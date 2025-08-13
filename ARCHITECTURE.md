@@ -2,7 +2,7 @@
 
 ## Overview
 - **Architecture Type**: backend
-- **Complexity Score**: 40/100
+- **Complexity Score**: 42/100
 - **Development Stage**: active
 
 ## Technology Stack

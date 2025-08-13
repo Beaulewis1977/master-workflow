@@ -27,7 +27,7 @@ Top recommendations (high impact):
 - Tmux Orchestrator: tmux-based autonomous scheduling/coordination for Claude. Repo: https://github.com/Jedward23/Tmux-Orchestrator
 
 ---
-
+yolo
 ## Architecture synthesis (recommended integration)
 
 ### Control plane

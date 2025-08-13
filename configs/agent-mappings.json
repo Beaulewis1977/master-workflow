@@ -37,11 +37,15 @@
           "complexity-analyzer-agent",
           "approach-selector-agent",
           "document-customizer-agent",
-          "integration-coordinator-agent"
+          "integration-coordinator-agent",
+          "test-engineer",
+          "security-auditor",
+          "recovery-specialist",
+          "performance-optimizer"
         ],
         "approach": "sparc",
-        "agent_count": 6,
-        "description": "Enterprise projects require SPARC methodology and all agents"
+        "agent_count": 10,
+        "description": "Enterprise projects require SPARC methodology and full agent team with Queen Controller"
       }
     },
     "task_to_agent": {
@@ -165,13 +169,14 @@
     }
   },
   "constraints": {
-    "max_concurrent_agents": 6,
-    "max_message_queue": 100,
-    "max_execution_time": "4h",
+    "max_concurrent_agents": 10,
+    "max_message_queue": 200,
+    "max_execution_time": "6h",
     "resource_limits": {
       "per_agent_memory": "512MB",
-      "total_memory": "4GB",
-      "cpu_cores": 4
+      "total_memory": "6GB",
+      "cpu_cores": 8,
+      "context_window_per_agent": 200000
     }
   }
 }

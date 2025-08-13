@@ -1,8 +1,8 @@
 {
-  "score": 40,
+  "score": 42,
   "factors": {
     "size": {
-      "fileCount": 58,
+      "fileCount": 65,
       "score": 50,
       "description": "Medium project"
     },
@@ -69,13 +69,13 @@
     },
     "testing": {
       "hasTests": true,
-      "testFileCount": 18,
+      "testFileCount": 24,
       "testTypes": {
         "unit": false,
-        "integration": false,
+        "integration": true,
         "e2e": true
       },
-      "score": 45
+      "score": 85
     }
   },
   "stage": "active",

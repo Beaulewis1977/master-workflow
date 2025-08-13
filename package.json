@@ -6,11 +6,13 @@
   "scripts": {
     "test": "node test/test-runner.js",
     "lint": "node scripts/lint-if-available.js",
-    "coverage": "echo 'No coverage tool configured; skipping'"
+    "coverage": "echo 'No coverage tool configured; skipping'",
+    "install-sqlite": "npm install sqlite3 || echo 'SQLite3 installation failed, will use file-based fallback'"
   },
   "engines": {
     "node": ">=18"
+  },
+  "optionalDependencies": {
+    "sqlite3": "^5.1.7"
   }
 }
-
-

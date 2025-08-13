@@ -14,6 +14,11 @@ const { runCommand, runCommandsSequentially } = require('./lib/exec-helper');
 const versionPolicy = require('./lib/version-policy');
 const http = require('http');
 
+// Import Queen Controller for hierarchical sub-agent management
+const QueenController = require('./intelligence-engine/queen-controller');
+const SubAgentManager = require('./intelligence-engine/sub-agent-manager');
+const SharedMemoryStore = require('./intelligence-engine/shared-memory');
+
 class WorkflowRunner {
   constructor() {
     this.projectDir = process.cwd();
@@ -33,6 +38,11 @@ class WorkflowRunner {
     this.tasks = [];
     this.errors = [];
     this.yolo = { enabled: false, dangerouslySkipPermissions: false, ack: null };
+    
+    // Initialize Queen Controller for hierarchical sub-agent management
+    this.queenController = null;
+    this.subAgentManager = null;
+    this.sharedMemory = null;
   }
 
   ensureDirectories() {
@@ -343,7 +353,63 @@ class WorkflowRunner {
       }
     }
     
+    // Initialize Queen Controller for high-complexity projects
+    if (this.analysis?.score > 70 || this.approach?.agentCount >= 10) {
+      await this.initializeQueenController();
+    }
+    
     return this.agents;
+  }
+  
+  async initializeQueenController() {
+    this.log('info', 'Initializing Queen Controller for hierarchical sub-agent management...');
+    
+    try {
+      // Initialize shared memory
+      this.sharedMemory = new SharedMemoryStore({
+        projectRoot: this.projectDir,
+        persistPath: path.join(this.projectDir, '.hive-mind')
+      });
+      await this.sharedMemory.initialize();
+      
+      // Initialize Queen Controller
+      this.queenController = new QueenController({
+        maxConcurrent: 10,
+        contextWindowSize: 200000,
+        projectRoot: this.projectDir
+      });
+      
+      // Initialize Sub-Agent Manager
+      this.subAgentManager = new SubAgentManager({
+        maxAgents: 10,
+        contextWindowLimit: 200000,
+        projectRoot: this.projectDir,
+        tmuxEnabled: process.platform !== 'win32'
+      });
+      
+      // Set up event listeners
+      this.queenController.on('agent-spawned', (data) => {
+        this.log('info', `Queen spawned agent: ${data.agentId} (${data.type})`);
+      });
+      
+      this.queenController.on('task-distributed', (data) => {
+        this.log('info', `Task ${data.taskId} distributed to ${data.agentId}`);
+      });
+      
+      this.queenController.on('agent-completed', (data) => {
+        this.log('success', `Agent ${data.agentId} completed in ${data.runtime}ms`);
+      });
+      
+      this.queenController.on('agent-error', (data) => {
+        this.log('error', `Agent ${data.agentId} error: ${data.error}`);
+      });
+      
+      this.log('success', 'Queen Controller initialized with 10-agent capacity');
+      
+    } catch (error) {
+      this.log('error', `Failed to initialize Queen Controller: ${error.message}`);
+      // Fall back to standard agent management
+    }
   }
 
   shouldActivateAgent(agentName) {

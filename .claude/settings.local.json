@@ -1,10 +1,73 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(node:*)",
+      "Bash(docker-compose config:*)",
       "Bash(find:*)",
-      "WebFetch(domain:github.com)"
-    ],
-    "deny": []
-  }
+      "mcp__context7-mcp__resolve-library-id",
+      "mcp__context7-mcp__get-library-docs",
+      "mcp__github-official__get_issue",
+      "WebFetch(domain:github.com)",
+      "mcp__github-official__list_issues",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh api:*)",
+      "Bash(gh milestone list:*)",
+      "Bash(gh label list:*)",
+      "Bash(gh repo list:*)",
+	   "WebFetch(domain:docs.anthropic.com)",
+      "Bash(find:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:buildermethods.com)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "firebase",
+    "fetch",
+    "sequential-thinking",
+    "puppeteer",
+    "mcp-playwright",
+    "everything",
+    "memory",
+    "memory-bank-mcp",
+    "quick-data-mcp",
+    "github-official",
+    "mcp-filesystem",
+    "desktop-commander",
+     "firecrawl",
+    "context7-mcp",
+    "consult7",
+    "brave-search",
+    "taskmanager",
+    "taskmaster-ai",
+    "agentic-tools-claude",
+    "perplexity-mcp",
+    "deep-code-reasoning",
+    "shadcn-ui",
+    "nextjs-manager",
+    "vibe-coder-mcp-wsl",
+    "vibe-coder-mcp",
+    "mcp-installer",
+    "supabase",
+  
+    "awesome-ui-component-library Docs",
+    "BMAD-METHOD DOCS"
+   
+  ],
+  "disabledMcpjsonServers": [
+    "vibe-coder-mcp-wsl",
+    "memory-bank-mcp",
+    "mcp-installer",
+    "netlify",
+    "n8n-mcp",
+    "taskmanager",
+    "Prisma-local",
+    "Prisma-Remote",
+    "uptash",
+    "postgres",
+    "consult7",
+    "dart-mcp",
+    "dart-mcp"
+  ]
 }
