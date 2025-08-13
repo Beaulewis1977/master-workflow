@@ -16,6 +16,7 @@
 const EventEmitter = require('events');
 const path = require('path');
 const fs = require('fs').promises;
+const { NeuralLearningSystem } = require('./neural-learning');
 
 class QueenController extends EventEmitter {
   constructor(options = {}) {
@@ -25,6 +26,14 @@ class QueenController extends EventEmitter {
     this.maxConcurrent = options.maxConcurrent || 10;
     this.contextWindowSize = options.contextWindowSize || 200000; // 200k tokens
     this.projectRoot = options.projectRoot || process.cwd();
+    
+    // Neural Learning System integration
+    this.neuralLearning = new NeuralLearningSystem({
+      persistencePath: path.join(this.projectRoot, '.hive-mind', 'neural-data'),
+      autoSave: true,
+      saveInterval: 300000, // 5 minutes
+      learningRate: 0.001
+    });
     
     // Agent management
     this.subAgents = new Map();
@@ -68,6 +77,9 @@ class QueenController extends EventEmitter {
     
     // Initialize monitoring
     this.startMonitoring();
+    
+    // Initialize neural learning system
+    this.initializeNeuralLearning();
   }
   
   /**
@@ -164,7 +176,7 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Distribute a task to appropriate agents with dependency management
+   * Distribute a task to appropriate agents with dependency management and neural predictions
    * @param {object} task - Task to distribute
    * @param {array} dependencies - Task dependencies
    */
@@ -181,8 +193,9 @@ class QueenController extends EventEmitter {
       }
     }
     
-    // Determine best agent type for task
-    const agentType = this.selectAgentType(task);
+    // Use neural learning to select optimal agent type
+    const agentSelection = await this.selectOptimalAgent(task);
+    const agentType = agentSelection.agentType;
     
     // Gather dependency results as context
     const dependencyContext = {};
@@ -193,14 +206,16 @@ class QueenController extends EventEmitter {
       }
     }
     
-    // Spawn agent for task
+    // Spawn agent for task with neural predictions
     const agentId = await this.spawnSubAgent(agentType, task, {
       dependencies: dependencyContext,
       taskMetadata: {
         priority: task.priority || 'normal',
         estimatedTokens: task.estimatedTokens || 50000,
         timeout: task.timeout || 300000 // 5 minutes default
-      }
+      },
+      neuralPredictions: agentSelection.prediction,
+      selectionReasoning: agentSelection.reasoning
     });
     
     if (agentId) {
@@ -418,7 +433,7 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Handle agent completion
+   * Handle agent completion with neural learning integration
    */
   async handleAgentCompletion(agent) {
     const agentId = agent.id;
@@ -426,8 +441,31 @@ class QueenController extends EventEmitter {
     // Get agent results
     const results = this.sharedMemory.get('agent_results').get(agentId) || {};
     
-    // Mark task as completed
+    // Determine if task was successful
+    const taskSuccess = results.success !== false && agent.status === 'completed';
+    
+    // Record task outcome for neural learning
     if (agent.task && agent.task.id) {
+      const runtime = Date.now() - agent.startTime;
+      
+      const outcome = {
+        success: taskSuccess,
+        quality: results.quality || (taskSuccess ? 0.8 : 0.3),
+        userRating: results.userRating || (taskSuccess ? 4 : 2),
+        errors: results.errors || [],
+        optimizationPotential: results.optimizationPotential || 0.5
+      };
+
+      const metrics = {
+        duration: runtime,
+        cpuUsage: 0.5, // Placeholder - in production, get from system
+        memoryUsage: 0.4, // Placeholder
+        userInteractions: results.userInteractions || 0
+      };
+
+      await this.recordTaskOutcome(agent.task.id, outcome, metrics);
+      
+      // Mark task as completed
       this.completedTasks.set(agent.task.id, results);
       this.metrics.tasksCompleted++;
     }
@@ -541,6 +579,279 @@ class QueenController extends EventEmitter {
     }
   }
   
+  /**
+   * Initialize Neural Learning System
+   */
+  async initializeNeuralLearning() {
+    try {
+      await this.neuralLearning.initialize();
+      console.log('Neural Learning System initialized successfully in Queen Controller');
+      
+      // Share neural learning data with shared memory if available
+      if (this.sharedMemoryStore) {
+        const neuralStatus = this.neuralLearning.getSystemStatus();
+        await this.sharedMemoryStore.set('neural_status', neuralStatus, {
+          namespace: this.sharedMemoryStore.namespaces.CROSS_AGENT
+        });
+      }
+      
+      this.emit('neural-learning-ready', {
+        status: 'initialized',
+        wasmEnabled: this.neuralLearning.getSystemStatus().wasmEnabled
+      });
+      
+    } catch (error) {
+      console.error('Failed to initialize Neural Learning System:', error);
+      this.emit('neural-learning-error', { error: error.message });
+    }
+  }
+
+  /**
+   * Select optimal agent using neural predictions
+   * @param {object} task - Task to find the best agent for
+   */
+  async selectOptimalAgent(task) {
+    try {
+      // Get neural prediction for the task
+      const prediction = await this.neuralLearning.predict({
+        id: task.id,
+        type: task.category || task.type,
+        taskCount: 1,
+        duration: task.estimatedDuration || 0,
+        complexity: task.complexity || 5,
+        projectSize: task.projectSize || 0,
+        primaryLanguage: task.language || 'javascript',
+        workflowType: task.category || 'general',
+        projectType: task.projectType || 'web'
+      });
+
+      // Get available agent types based on task capabilities
+      const candidateTypes = this.getAgentTypesForTask(task);
+      
+      // Score each agent type using neural predictions and current load
+      let bestAgent = null;
+      let bestScore = -1;
+
+      for (const agentType of candidateTypes) {
+        // Get current load for this agent type
+        const activeAgentsOfType = Array.from(this.activeAgents)
+          .filter(id => this.subAgents.get(id)?.type === agentType)
+          .length;
+        
+        // Calculate load factor (prefer less loaded agent types)
+        const loadFactor = Math.max(0, 1 - (activeAgentsOfType / 3)); // Normalize to 3 max per type
+        
+        // Combine neural success probability with load factor
+        const score = prediction.successProbability * 0.7 + loadFactor * 0.3;
+        
+        if (score > bestScore) {
+          bestScore = score;
+          bestAgent = agentType;
+        }
+      }
+
+      // Log the selection reasoning
+      console.log(`Neural agent selection for task ${task.id}:`);
+      console.log(`  Success probability: ${prediction.successProbability.toFixed(3)}`);
+      console.log(`  Selected agent: ${bestAgent}`);
+      console.log(`  Confidence: ${prediction.confidence.toFixed(3)}`);
+
+      // Share selection data with neural system for future learning
+      if (this.sharedMemoryStore) {
+        await this.sharedMemoryStore.set(`task_selection_${task.id}`, {
+          taskId: task.id,
+          selectedAgent: bestAgent,
+          prediction: prediction,
+          timestamp: Date.now()
+        }, {
+          namespace: this.sharedMemoryStore.namespaces.TASKS
+        });
+      }
+
+      return {
+        agentType: bestAgent || this.selectAgentType(task),
+        prediction: prediction,
+        reasoning: {
+          successProbability: prediction.successProbability,
+          confidence: prediction.confidence,
+          optimizations: prediction.optimizations,
+          risks: prediction.riskFactors
+        }
+      };
+
+    } catch (error) {
+      console.error('Neural agent selection failed, falling back to traditional method:', error);
+      return {
+        agentType: this.selectAgentType(task),
+        prediction: null,
+        reasoning: { fallback: true, error: error.message }
+      };
+    }
+  }
+
+  /**
+   * Get agent types suitable for a task based on capabilities
+   */
+  getAgentTypesForTask(task) {
+    const taskKeywords = (task.description || task.name || '').toLowerCase();
+    const suitableTypes = [];
+
+    // Check each agent type's capabilities
+    for (const [agentType, config] of this.agentTypes.entries()) {
+      const capabilities = config.capabilities || [];
+      
+      // Check if agent capabilities match task requirements
+      const hasMatchingCapability = capabilities.some(capability => 
+        taskKeywords.includes(capability) || 
+        task.requiredCapabilities?.includes(capability)
+      );
+
+      if (hasMatchingCapability) {
+        suitableTypes.push(agentType);
+      }
+    }
+
+    // If no specific matches, return all agent types
+    return suitableTypes.length > 0 ? suitableTypes : Array.from(this.agentTypes.keys());
+  }
+
+  /**
+   * Record task outcome and feed to neural learning system
+   * @param {string} taskId - Task identifier
+   * @param {object} outcome - Task execution outcome
+   * @param {object} metrics - Performance metrics
+   */
+  async recordTaskOutcome(taskId, outcome, metrics) {
+    try {
+      const agent = Array.from(this.subAgents.values())
+        .find(a => a.task?.id === taskId);
+
+      if (!agent) {
+        console.warn(`Cannot record outcome for unknown task: ${taskId}`);
+        return;
+      }
+
+      // Prepare workflow data for neural learning
+      const workflowData = {
+        id: taskId,
+        type: agent.task.category || agent.task.type || 'general',
+        workflowType: agent.task.category || 'general',
+        projectType: agent.task.projectType || 'web',
+        taskCount: 1,
+        duration: metrics.duration || (Date.now() - agent.startTime),
+        complexity: agent.task.complexity || 5,
+        userInteractions: metrics.userInteractions || 0,
+        errorCount: outcome.errors?.length || 0,
+        resourceUsage: metrics.cpuUsage || 0.5,
+        projectSize: agent.task.projectSize || 0,
+        primaryLanguage: agent.task.language || 'javascript',
+        agentType: agent.type,
+        estimatedTokens: agent.tokenUsage || 0,
+        contextUsage: agent.tokenUsage / this.contextWindowSize
+      };
+
+      // Prepare outcome data
+      const outcomeData = {
+        success: outcome.success || false,
+        duration: metrics.duration || (Date.now() - agent.startTime),
+        quality: outcome.quality || (outcome.success ? 0.8 : 0.3),
+        userRating: outcome.userRating || (outcome.success ? 4 : 2),
+        errors: outcome.errors || [],
+        resourceUsage: {
+          cpu: metrics.cpuUsage || 0.5,
+          memory: metrics.memoryUsage || 0.4
+        },
+        optimizationPotential: outcome.optimizationPotential || 0.5
+      };
+
+      // Learn from this workflow execution
+      const learningResult = await this.neuralLearning.learn(workflowData, outcomeData);
+
+      // Share learned patterns with other agents via shared memory
+      if (this.sharedMemoryStore) {
+        // Store the pattern for cross-agent access
+        await this.sharedMemoryStore.set(`learned_pattern_${taskId}`, {
+          workflowData,
+          outcomeData,
+          pattern: learningResult.pattern,
+          timestamp: Date.now()
+        }, {
+          namespace: this.sharedMemoryStore.namespaces.CROSS_AGENT,
+          ttl: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        // Update global neural metrics
+        const globalMetrics = await this.sharedMemoryStore.get('global_neural_metrics', {
+          namespace: this.sharedMemoryStore.namespaces.CROSS_AGENT
+        }) || { totalLearned: 0, successRate: 0, lastUpdate: 0 };
+
+        globalMetrics.totalLearned++;
+        globalMetrics.successRate = (globalMetrics.successRate * (globalMetrics.totalLearned - 1) + 
+                                   (outcome.success ? 1 : 0)) / globalMetrics.totalLearned;
+        globalMetrics.lastUpdate = Date.now();
+
+        await this.sharedMemoryStore.set('global_neural_metrics', globalMetrics, {
+          namespace: this.sharedMemoryStore.namespaces.CROSS_AGENT
+        });
+      }
+
+      this.emit('task-outcome-recorded', {
+        taskId,
+        agentType: agent.type,
+        success: outcome.success,
+        learningResult
+      });
+
+      console.log(`Recorded task outcome for ${taskId}: ${outcome.success ? 'SUCCESS' : 'FAILURE'}`);
+
+      return learningResult;
+
+    } catch (error) {
+      console.error('Failed to record task outcome:', error);
+      this.emit('neural-learning-error', { 
+        taskId, 
+        error: error.message,
+        operation: 'record-outcome'
+      });
+    }
+  }
+
+  /**
+   * Get predicted success probability for a task
+   * @param {object} task - Task to predict success for
+   */
+  async getPredictedSuccess(task) {
+    try {
+      const prediction = await this.neuralLearning.predict({
+        id: task.id,
+        type: task.category || task.type,
+        taskCount: 1,
+        duration: task.estimatedDuration || 0,
+        complexity: task.complexity || 5,
+        projectSize: task.projectSize || 0,
+        primaryLanguage: task.language || 'javascript',
+        workflowType: task.category || 'general',
+        projectType: task.projectType || 'web'
+      });
+
+      return {
+        successProbability: prediction.successProbability,
+        confidence: prediction.confidence,
+        estimatedDuration: prediction.estimatedDuration,
+        riskFactors: prediction.riskFactors,
+        optimizations: prediction.optimizations
+      };
+
+    } catch (error) {
+      console.error('Failed to get success prediction:', error);
+      return {
+        successProbability: 0.5,
+        confidence: 0.1,
+        error: error.message
+      };
+    }
+  }
+
   /**
    * Select appropriate agent type for a task
    */
@@ -684,7 +995,7 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Shutdown Queen Controller
+   * Shutdown Queen Controller with neural learning cleanup
    */
   async shutdown() {
     // Stop monitoring
@@ -695,6 +1006,15 @@ class QueenController extends EventEmitter {
     // Terminate all active agents
     for (const agentId of this.activeAgents) {
       await this.terminateAgent(agentId, 'shutdown');
+    }
+    
+    // Flush any remaining neural learning training
+    try {
+      await this.neuralLearning.flushTraining();
+      await this.neuralLearning.savePersistentData();
+      console.log('Neural learning data saved during shutdown');
+    } catch (error) {
+      console.error('Failed to save neural learning data:', error);
     }
     
     // Save metrics
@@ -709,10 +1029,10 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Get current status
+   * Get current status with neural learning metrics
    */
   getStatus() {
-    return {
+    const status = {
       active: this.activeAgents.size,
       queued: this.taskQueue.length,
       pending: this.pendingTasks.size,
@@ -727,6 +1047,18 @@ class QueenController extends EventEmitter {
         runtime: agent.endTime ? agent.endTime - agent.startTime : Date.now() - agent.startTime
       }))
     };
+
+    // Add neural learning system status if available
+    try {
+      status.neuralLearning = this.neuralLearning.getSystemStatus();
+    } catch (error) {
+      status.neuralLearning = { 
+        error: 'Failed to get neural status',
+        initialized: false
+      };
+    }
+
+    return status;
   }
 }
 
