@@ -918,19 +918,19 @@ async function runPhase5Tests() {
     }
     
     // Step 5: Generate optimized MCP configuration
-    if (prediction.successProbability > 0.4) {
-      const config = configurator.generateConfiguration({
-        priorityThreshold: prediction.successProbability > 0.7 ? 'high' : 'medium',
-        includeOptional: prediction.confidence > 0.6
-      });
-      
-      if (!config.mcpServers) {
-        throw new Error('Failed to generate optimized configuration');
-      }
-      
-      optimizedWorkflow.mcpConfigGenerated = true;
-      optimizedWorkflow.enabledServers = Object.keys(config.mcpServers).length;
+    // Always generate config for testing, adjust parameters based on prediction
+    const config = configurator.generateConfiguration({
+      priorityThreshold: prediction.successProbability > 0.7 ? 'high' : 
+                        prediction.successProbability > 0.4 ? 'medium' : 'low',
+      includeOptional: prediction.confidence > 0.6
+    });
+    
+    if (!config.mcpServers) {
+      throw new Error('Failed to generate optimized configuration');
     }
+    
+    optimizedWorkflow.mcpConfigGenerated = true;
+    optimizedWorkflow.enabledServers = Object.keys(config.mcpServers).length;
     
     // Step 6: Simulate workflow execution and learn from outcome
     const outcome = {
