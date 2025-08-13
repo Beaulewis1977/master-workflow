@@ -15,10 +15,11 @@
       "Bash(gh milestone list:*)",
       "Bash(gh label list:*)",
       "Bash(gh repo list:*)",
-	   "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:docs.anthropic.com)",
       "Bash(find:*)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:buildermethods.com)"
+      "WebFetch(domain:buildermethods.com)",
+      "mcp__sequential-thinking__sequentialthinking"
     ]
   },
   "enableAllProjectMcpServers": true,
@@ -35,7 +36,7 @@
     "github-official",
     "mcp-filesystem",
     "desktop-commander",
-     "firecrawl",
+    "firecrawl",
     "context7-mcp",
     "consult7",
     "brave-search",
@@ -50,10 +51,9 @@
     "vibe-coder-mcp",
     "mcp-installer",
     "supabase",
-  
     "awesome-ui-component-library Docs",
-    "BMAD-METHOD DOCS"
-   
+    "BMAD-METHOD DOCS",
+    "zen-mcp-server"
   ],
   "disabledMcpjsonServers": [
     "vibe-coder-mcp-wsl",
@@ -68,6 +68,6 @@
     "postgres",
     "consult7",
     "dart-mcp",
-    "dart-mcp"
+    "dart"
   ]
 }

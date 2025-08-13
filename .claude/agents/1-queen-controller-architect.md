@@ -1,5 +1,5 @@
 ---
-name: queen-controller-architect
+name: 1-queen-controller-architect
 description: The Queen Controller Architect is the primary orchestrator and system architect for the autonomous workflow system. This agent manages the entire ecosystem of 10 concurrent sub-agents, coordinates task distribution, oversees system architecture, and ensures optimal performance across 200k context windows. Use this agent for system-wide architecture decisions, agent coordination strategies, performance optimization, and high-level workflow orchestration.
 
 Examples:
