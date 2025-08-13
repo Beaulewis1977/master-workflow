@@ -1,0 +1,341 @@
+{
+  "name": "Game Development",
+  "description": "Specialized game development environment with Unity, Unreal Engine, game services, and multimedia tools",
+  "category": "gamedev",
+  "version": "1.0.0",
+  "priority_level": "high",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Game development coding assistance with engine-specific expertise",
+      "default": true,
+      "config": {
+        "features": ["game_mechanics", "graphics_programming", "performance_optimization"],
+        "languages": ["c#", "c++", "javascript", "lua", "python", "hlsl", "glsl"],
+        "game_engines": ["unity", "unreal", "godot", "defold"]
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Game asset and project file management with large file support",
+      "config": {
+        "root": ".",
+        "large_file_support": true,
+        "binary_file_handling": true,
+        "watch_patterns": ["Assets/**/*", "Scripts/**/*", "Scenes/**/*", "Prefabs/**/*"],
+        "ignore_patterns": ["Library/**", "Temp/**", "Build/**", "Logs/**", "*.meta"]
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Version control optimized for game development with LFS support",
+      "config": {
+        "repo": "auto",
+        "lfs_enabled": true,
+        "large_files": ["*.fbx", "*.blend", "*.psd", "*.wav", "*.mp4", "*.unity"],
+        "hooks": ["pre-commit"],
+        "binary_handling": true
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 4,
+      "description": "GitHub with LFS and game-specific CI/CD workflows",
+      "config": {
+        "lfs_support": true,
+        "workflows": ["build_game", "test_gameplay", "package_builds"],
+        "artifact_storage": true,
+        "release_management": true
+      }
+    },
+    "aws": {
+      "enabled": true,
+      "priority": 5,
+      "description": "AWS game services and cloud infrastructure",
+      "config": {
+        "services": ["gamelift", "s3", "cloudfront", "dynamodb", "lambda", "cognito"],
+        "regions": ["us-east-1", "us-west-2", "eu-west-1"],
+        "game_analytics": true,
+        "multiplayer_networking": true
+      }
+    },
+    "gcp": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Google Cloud gaming services",
+      "config": {
+        "services": ["game_servers", "cloud_storage", "firebase", "cloud_functions"],
+        "regions": ["us-central1", "europe-west1"],
+        "realtime_multiplayer": true,
+        "analytics": true
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Containerized game server deployment",
+      "config": {
+        "game_server_support": true,
+        "dedicated_servers": true,
+        "scaling_support": true,
+        "performance_optimization": true
+      }
+    },
+    "kubernetes": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Scalable game server orchestration",
+      "config": {
+        "game_server_scaling": true,
+        "matchmaking": true,
+        "session_management": true,
+        "load_balancing": true
+      }
+    },
+    "postgres": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Game database for player data and statistics",
+      "config": {
+        "high_performance": true,
+        "real_time_analytics": true,
+        "player_data_storage": true,
+        "leaderboards": true
+      }
+    },
+    "redis": {
+      "enabled": true,
+      "priority": 10,
+      "description": "Real-time game state and caching",
+      "config": {
+        "session_storage": true,
+        "matchmaking_queue": true,
+        "real_time_data": true,
+        "pub_sub": true
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 11,
+      "description": "Game API and web service integration",
+      "config": {
+        "timeout": 10000,
+        "game_api_support": true,
+        "webhook_handling": true,
+        "real_time_communication": true
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "UNITY_VERSION",
+      "GAME_ENVIRONMENT",
+      "BUILD_TARGET"
+    ],
+    "optional": [
+      "UNITY_LICENSE",
+      "UNITY_EMAIL",
+      "UNITY_PASSWORD",
+      "STEAM_API_KEY",
+      "EPIC_GAMES_API_KEY",
+      "GOOGLE_PLAY_GAMES_API_KEY",
+      "APPLE_GAME_CENTER_KEY",
+      "AWS_GAMELIFT_REGION",
+      "PLAYFAB_TITLE_ID",
+      "PLAYFAB_SECRET_KEY",
+      "PHOTON_APP_ID",
+      "MIRROR_NETWORKING_KEY"
+    ],
+    "development": {
+      "GAME_ENVIRONMENT": "development",
+      "UNITY_LOG_LEVEL": "debug",
+      "ENABLE_PROFILER": "true",
+      "DEBUG_BUILD": "true"
+    },
+    "production": {
+      "GAME_ENVIRONMENT": "production",
+      "UNITY_LOG_LEVEL": "error",
+      "ENABLE_PROFILER": "false",
+      "OPTIMIZE_BUILD": "true"
+    }
+  },
+  "recommended_tools": [
+    "unity",
+    "unreal-engine",
+    "blender",
+    "maya",
+    "photoshop",
+    "substance-painter",
+    "fmod",
+    "wwise",
+    "perforce",
+    "plasticscm",
+    "jenkins",
+    "teamcity",
+    "rider",
+    "visual-studio",
+    "profiler-tools"
+  ],
+  "project_structure": {
+    "unity": {
+      "required_files": [
+        "ProjectSettings/",
+        "Assets/",
+        "Packages/",
+        "UserSettings/"
+      ],
+      "recommended_directories": [
+        "Assets/Scripts/",
+        "Assets/Scenes/",
+        "Assets/Prefabs/",
+        "Assets/Materials/",
+        "Assets/Textures/",
+        "Assets/Models/",
+        "Assets/Audio/",
+        "Assets/Animations/",
+        "Assets/Plugins/",
+        "Assets/StreamingAssets/"
+      ]
+    },
+    "unreal": {
+      "required_files": [
+        "Config/",
+        "Content/",
+        "Source/",
+        "*.uproject"
+      ],
+      "recommended_directories": [
+        "Content/Blueprints/",
+        "Content/Maps/",
+        "Content/Materials/",
+        "Content/Meshes/",
+        "Content/Textures/",
+        "Content/Audio/",
+        "Content/Animations/",
+        "Source/",
+        "Plugins/"
+      ]
+    }
+  },
+  "game_engines": {
+    "unity": {
+      "version": ">=2022.3 LTS",
+      "render_pipeline": "URP",
+      "scripting_backend": "IL2CPP",
+      "api_compatibility": ".NET Standard 2.1",
+      "platforms": ["PC", "Mobile", "Console", "WebGL"]
+    },
+    "unreal": {
+      "version": ">=5.1",
+      "rendering": "Lumen",
+      "physics": "Chaos",
+      "scripting": ["Blueprint", "C++"],
+      "platforms": ["PC", "Console", "Mobile"]
+    },
+    "godot": {
+      "version": ">=4.0",
+      "scripting": ["GDScript", "C#", "C++"],
+      "rendering": "Vulkan",
+      "platforms": ["PC", "Mobile", "Web"]
+    }
+  },
+  "game_services": {
+    "unity_services": {
+      "unity_analytics": true,
+      "unity_cloud_build": true,
+      "unity_multiplayer": true,
+      "unity_ads": true,
+      "unity_iap": true
+    },
+    "steam_services": {
+      "steamworks_sdk": true,
+      "steam_achievements": true,
+      "steam_leaderboards": true,
+      "steam_workshop": true
+    },
+    "epic_games": {
+      "epic_online_services": true,
+      "epic_games_store": true,
+      "achievements": true,
+      "matchmaking": true
+    },
+    "playfab": {
+      "player_management": true,
+      "multiplayer": true,
+      "analytics": true,
+      "economy": true
+    }
+  },
+  "platform_targets": {
+    "pc": {
+      "windows": true,
+      "mac": true,
+      "linux": true,
+      "steam": true,
+      "epic_games_store": true
+    },
+    "console": {
+      "playstation": true,
+      "xbox": true,
+      "nintendo_switch": true
+    },
+    "mobile": {
+      "ios": true,
+      "android": true,
+      "app_stores": true
+    },
+    "web": {
+      "webgl": true,
+      "webgpu": true,
+      "progressive_web_app": true
+    }
+  },
+  "multiplayer_solutions": {
+    "networking": {
+      "unity_netcode": true,
+      "mirror_networking": true,
+      "photon": true,
+      "custom_solutions": true
+    },
+    "backend_services": {
+      "aws_gamelift": true,
+      "google_cloud_game_servers": true,
+      "azure_playfab": true,
+      "dedicated_servers": true
+    },
+    "matchmaking": {
+      "skill_based": true,
+      "region_based": true,
+      "custom_logic": true
+    }
+  },
+  "asset_pipeline": {
+    "3d_modeling": ["blender", "maya", "3ds_max"],
+    "texturing": ["substance_painter", "photoshop", "gimp"],
+    "audio": ["fmod", "wwise", "audacity"],
+    "version_control": ["perforce", "plasticscm", "git_lfs"],
+    "optimization": ["texture_compression", "mesh_optimization", "asset_bundles"]
+  },
+  "performance_tools": {
+    "profiling": {
+      "unity_profiler": true,
+      "unreal_insights": true,
+      "custom_profilers": true
+    },
+    "optimization": {
+      "gpu_profiling": true,
+      "memory_profiling": true,
+      "cpu_profiling": true,
+      "network_profiling": true
+    },
+    "testing": {
+      "automated_testing": true,
+      "performance_testing": true,
+      "compatibility_testing": true,
+      "load_testing": true
+    }
+  }
+}

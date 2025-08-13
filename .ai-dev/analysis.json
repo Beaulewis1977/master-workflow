@@ -2,7 +2,7 @@
   "score": 42,
   "factors": {
     "size": {
-      "fileCount": 91,
+      "fileCount": 97,
       "score": 50,
       "description": "Medium project"
     },
@@ -69,7 +69,7 @@
     },
     "testing": {
       "hasTests": true,
-      "testFileCount": 45,
+      "testFileCount": 49,
       "testTypes": {
         "unit": false,
         "integration": true,

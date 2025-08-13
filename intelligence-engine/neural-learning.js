@@ -412,19 +412,26 @@ class PatternRecorder {
             
             // Update success rate
             existing.successRate = existing.outcomes.filter(o => o.success).length / existing.outcomes.length;
+            
+            // Cleanup old patterns if memory limit exceeded
+            if (this.patterns.size > this.maxPatterns) {
+                this.cleanupOldPatterns();
+            }
+
+            return existing;
         } else {
             pattern.outcomes.push(outcome);
             pattern.successRate = outcome.success ? 1.0 : 0.0;
             pattern.usageCount = 1;
             this.patterns.set(patternId, pattern);
-        }
+            
+            // Cleanup old patterns if memory limit exceeded
+            if (this.patterns.size > this.maxPatterns) {
+                this.cleanupOldPatterns();
+            }
 
-        // Cleanup old patterns if memory limit exceeded
-        if (this.patterns.size > this.maxPatterns) {
-            this.cleanupOldPatterns();
+            return pattern;
         }
-
-        return pattern;
     }
 
     /**
