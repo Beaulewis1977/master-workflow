@@ -2,7 +2,7 @@
 
 ## Overview
 - **Architecture Type**: backend
-- **Complexity Score**: 42/100
+- **Complexity Score**: 51/100
 - **Development Stage**: active
 
 ## Technology Stack
@@ -10,6 +10,10 @@
 ### Languages
 - JavaScript
 - TypeScript
+- Python
+- Go
+- Java
+- Rust
 
 ## Architecture Diagram
 

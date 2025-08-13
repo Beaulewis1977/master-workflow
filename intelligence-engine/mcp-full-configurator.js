@@ -1375,12 +1375,59 @@ class MCPFullConfigurator {
      * Get analysis results
      */
     _getAnalysisResults() {
-        return {
+        const analysis = {
             detectedTechnologies: Array.from(this.detectedTechnologies),
             recommendedServers: Object.fromEntries(this.recommendedServers),
             totalServers: this.recommendedServers.size,
-            priorityBreakdown: this._getPriorityBreakdown()
+            priorityBreakdown: this._getPriorityBreakdown(),
+            projectType: this._determineProjectType(),
+            complexity: this._calculateComplexity()
         };
+        
+        return analysis;
+    }
+
+    /**
+     * Determine project type based on detected technologies
+     */
+    _determineProjectType() {
+        const technologies = Array.from(this.detectedTechnologies);
+        const techString = technologies.join(' ').toLowerCase();
+        
+        if (techString.includes('react') || techString.includes('next') || techString.includes('vue')) {
+            return 'web-app';
+        } else if (techString.includes('express') || techString.includes('api') || techString.includes('postgres')) {
+            return 'api-service';
+        } else if (techString.includes('android') || techString.includes('ios') || techString.includes('mobile')) {
+            return 'mobile-app';
+        } else if (techString.includes('openai') || techString.includes('ai') || techString.includes('ml')) {
+            return 'ai-ml-project';
+        } else if (techString.includes('stripe') || techString.includes('payment') || techString.includes('ecommerce')) {
+            return 'ecommerce';
+        }
+        
+        return 'generic';
+    }
+
+    /**
+     * Calculate project complexity based on detected technologies and server count
+     */
+    _calculateComplexity() {
+        const techCount = this.detectedTechnologies.size;
+        const serverCount = this.recommendedServers.size;
+        
+        // Base complexity on number of technologies and servers
+        let complexity = Math.min(10, Math.max(1, techCount + Math.floor(serverCount / 5)));
+        
+        // Adjust for specific high-complexity indicators
+        const technologies = Array.from(this.detectedTechnologies);
+        const techString = technologies.join(' ').toLowerCase();
+        
+        if (techString.includes('kubernetes') || techString.includes('docker')) complexity += 2;
+        if (techString.includes('ai') || techString.includes('ml')) complexity += 1;
+        if (techString.includes('microservices') || techString.includes('distributed')) complexity += 2;
+        
+        return Math.min(10, complexity);
     }
 
     /**
@@ -1403,7 +1450,8 @@ class MCPFullConfigurator {
         const {
             includeOptional = false,
             priorityThreshold = 'low',
-            outputPath = '.claude/mcp.json'
+            outputPath = '.claude/mcp.json',
+            validateConfiguration = false
         } = options;
 
         const priorityOrder = ['critical', 'high', 'medium', 'low', 'dependency'];
@@ -1431,6 +1479,14 @@ class MCPFullConfigurator {
             }
         }
 
+        // Validate configuration if requested
+        if (validateConfiguration) {
+            const validation = this._validateConfiguration(mcpConfig);
+            mcpConfig.valid = validation.valid;
+            mcpConfig.warnings = validation.warnings;
+            mcpConfig.errors = validation.errors;
+        }
+
         // Create output directory if it doesn't exist
         const outputDir = path.dirname(outputPath);
         if (!fs.existsSync(outputDir)) {
@@ -1442,6 +1498,48 @@ class MCPFullConfigurator {
         
         console.log(`✅ MCP configuration generated: ${outputPath}`);
         return mcpConfig;
+    }
+
+    /**
+     * Validate MCP configuration
+     */
+    _validateConfiguration(config) {
+        const warnings = [];
+        const errors = [];
+        
+        if (!config.mcpServers || Object.keys(config.mcpServers).length === 0) {
+            errors.push('No MCP servers configured');
+        }
+        
+        // Check for required core servers
+        const coreServers = ['core:filesystem-mcp', 'core:http-mcp'];
+        let hasCoreServer = false;
+        
+        for (const serverId of Object.keys(config.mcpServers)) {
+            if (coreServers.some(core => serverId.includes(core.split(':')[1]))) {
+                hasCoreServer = true;
+                break;
+            }
+        }
+        
+        if (!hasCoreServer) {
+            warnings.push('No core servers detected - consider adding filesystem or http servers');
+        }
+        
+        // Check for conflicting servers
+        const enabledServers = Object.entries(config.mcpServers)
+            .filter(([_, serverConfig]) => !serverConfig.disabled)
+            .map(([serverId, _]) => serverId);
+            
+        if (enabledServers.length === 0) {
+            warnings.push('All servers are disabled');
+        }
+        
+        return {
+            valid: errors.length === 0,
+            warnings,
+            errors
+        };
     }
 
     /**
@@ -1549,16 +1647,172 @@ class MCPFullConfigurator {
     }
 
     /**
-     * Utility method to glob files
+     * Analyze environment requirements for the project
+     */
+    analyzeEnvironmentRequirements(projectPath = '.') {
+        const requiredVars = new Set();
+        const optionalVars = new Set();
+        const detectedEnvFiles = [];
+        
+        // Check for .env files
+        const envFiles = ['.env', '.env.example', '.env.local', '.env.production'];
+        for (const envFile of envFiles) {
+            const envPath = path.join(projectPath, envFile);
+            if (fs.existsSync(envPath)) {
+                detectedEnvFiles.push(envFile);
+                
+                try {
+                    const content = fs.readFileSync(envPath, 'utf8');
+                    const lines = content.split('\n');
+                    
+                    for (const line of lines) {
+                        const match = line.match(/^([A-Z_][A-Z0-9_]*)\s*=/);
+                        if (match) {
+                            optionalVars.add(match[1]);
+                        }
+                    }
+                } catch (error) {
+                    // Skip files that can't be read
+                }
+            }
+        }
+        
+        // Analyze recommended servers for required environment variables
+        for (const [serverId] of this.recommendedServers) {
+            const [category, serverName] = serverId.split(':');
+            const serverConfig = this.mcpCatalog[category]?.[serverName];
+            
+            if (serverConfig?.envVars) {
+                for (const envVar of serverConfig.envVars) {
+                    requiredVars.add(envVar);
+                }
+            }
+        }
+        
+        return {
+            requiredVars: Array.from(requiredVars),
+            optionalVars: Array.from(optionalVars),
+            detectedEnvFiles,
+            recommendations: this._generateEnvRecommendations(requiredVars, optionalVars)
+        };
+    }
+
+    /**
+     * Generate environment variable recommendations
+     */
+    _generateEnvRecommendations(required, optional) {
+        const recommendations = [];
+        
+        if (required.size > 0) {
+            recommendations.push({
+                type: 'required',
+                message: `Configure these required environment variables: ${Array.from(required).join(', ')}`,
+                priority: 'high'
+            });
+        }
+        
+        const missingApiKeys = Array.from(required).filter(var_name => 
+            var_name.includes('API_KEY') || var_name.includes('TOKEN') || var_name.includes('SECRET')
+        );
+        
+        if (missingApiKeys.length > 0) {
+            recommendations.push({
+                type: 'security',
+                message: `Secure API keys needed: ${missingApiKeys.join(', ')}`,
+                priority: 'critical'
+            });
+        }
+        
+        return recommendations;
+    }
+
+    /**
+     * Utility method to glob files (simplified version without external dependencies)
      */
     async _globFiles(pattern, basePath = '.') {
-        const glob = require('glob');
-        return new Promise((resolve, reject) => {
-            glob(pattern, { cwd: basePath }, (err, files) => {
-                if (err) reject(err);
-                else resolve(files.map(f => path.join(basePath, f)));
-            });
-        });
+        try {
+            const files = [];
+            
+            // Simplified pattern matching for common cases
+            if (pattern === '**/*.js' || pattern === '**/*.ts' || pattern === '**/*.jsx' || pattern === '**/*.tsx') {
+                // Find JavaScript/TypeScript files recursively
+                await this._findFilesRecursive(basePath, ['.js', '.ts', '.jsx', '.tsx'], files);
+            } else if (pattern === '**/*.json') {
+                await this._findFilesRecursive(basePath, ['.json'], files);
+            } else if (pattern === '**/*.yml' || pattern === '**/*.yaml') {
+                await this._findFilesRecursive(basePath, ['.yml', '.yaml'], files);
+            } else if (pattern.startsWith('**/')) {
+                // Generic recursive pattern
+                const ext = pattern.slice(3); // Remove '**/''
+                if (ext.startsWith('*.')) {
+                    await this._findFilesRecursive(basePath, [ext.slice(1)], files);
+                }
+            } else if (pattern.includes('*')) {
+                // Simple wildcard in current directory
+                const entries = await fs.promises.readdir(basePath, { withFileTypes: true });
+                for (const entry of entries) {
+                    if (entry.isFile() && this._matchesSimplePattern(entry.name, pattern)) {
+                        files.push(path.join(basePath, entry.name));
+                    }
+                }
+            } else {
+                // Exact file name
+                const fullPath = path.join(basePath, pattern);
+                if (fs.existsSync(fullPath)) {
+                    files.push(fullPath);
+                }
+            }
+            
+            return files;
+        } catch (error) {
+            return []; // Return empty array on error
+        }
+    }
+
+    /**
+     * Find files recursively with given extensions
+     */
+    async _findFilesRecursive(dir, extensions, files, depth = 0) {
+        // Limit recursion depth to prevent infinite loops
+        if (depth > 10) return;
+        
+        try {
+            const entries = await fs.promises.readdir(dir, { withFileTypes: true });
+            
+            for (const entry of entries) {
+                // Skip node_modules and other common directories
+                if (entry.name.startsWith('.') || entry.name === 'node_modules' || entry.name === 'dist' || entry.name === 'build') {
+                    continue;
+                }
+                
+                const fullPath = path.join(dir, entry.name);
+                
+                if (entry.isDirectory()) {
+                    await this._findFilesRecursive(fullPath, extensions, files, depth + 1);
+                } else if (entry.isFile()) {
+                    const ext = path.extname(entry.name);
+                    if (extensions.includes(ext)) {
+                        files.push(fullPath);
+                    }
+                }
+            }
+        } catch (error) {
+            // Skip directories that can't be read
+        }
+    }
+
+    /**
+     * Simple pattern matching for basic wildcards
+     */
+    _matchesSimplePattern(filename, pattern) {
+        if (pattern === '*') return true;
+        if (pattern.startsWith('*.')) {
+            return filename.endsWith(pattern.slice(1));
+        }
+        if (pattern.endsWith('*')) {
+            return filename.startsWith(pattern.slice(0, -1));
+        }
+        return filename === pattern;
     }
 
     /**

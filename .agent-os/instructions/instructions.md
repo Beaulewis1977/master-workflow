@@ -2,7 +2,7 @@
 
 ## Project Context
 - **Stage**: active
-- **Complexity**: 42/100
+- **Complexity**: 51/100
 - **Primary Language**: JavaScript
 - **Primary Framework**: Not detected
 
@@ -14,6 +14,20 @@
 - Use strict mode
 - Implement proper error handling with try/catch
 - Use TypeScript for type safety when available
+
+### Python Standards
+- Follow PEP 8 style guide
+- Use type hints for function signatures
+- Implement proper exception handling
+- Use virtual environments for dependencies
+- Write docstrings for all functions and classes
+
+### Go Standards
+- Follow effective Go guidelines
+- Use gofmt for formatting
+- Implement proper error handling
+- Use goroutines for concurrency
+- Write tests alongside code
 
 ## Stage-Specific Instructions (active)
 

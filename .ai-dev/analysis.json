@@ -1,15 +1,15 @@
 {
-  "score": 42,
+  "score": 51,
   "factors": {
     "size": {
-      "fileCount": 97,
+      "fileCount": 105,
       "score": 50,
       "description": "Medium project"
     },
     "dependencies": {
-      "count": 2,
+      "count": 3,
       "score": 10,
-      "description": "2 dependencies detected"
+      "description": "3 dependencies detected"
     },
     "architecture": {
       "patterns": {
@@ -27,13 +27,17 @@
     "techStack": {
       "languages": [
         "JavaScript",
-        "TypeScript"
+        "TypeScript",
+        "Python",
+        "Go",
+        "Java",
+        "Rust"
       ],
       "frameworks": [],
       "databases": [],
       "tools": [],
-      "score": 20,
-      "diversity": 2
+      "score": 75,
+      "diversity": 6
     },
     "features": {
       "detected": {
@@ -69,7 +73,7 @@
     },
     "testing": {
       "hasTests": true,
-      "testFileCount": 49,
+      "testFileCount": 64,
       "testTypes": {
         "unit": false,
         "integration": true,

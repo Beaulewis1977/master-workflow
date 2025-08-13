@@ -1,0 +1,82 @@
+{
+  "name": "Rust",
+  "version": "1.70+",
+  "runtime": "Native",
+  "runtimeVersions": ["1.70", "1.71", "1.72", "1.73", "1.74"],
+  "features": {
+    "memoryMangement": "ownership and borrowing",
+    "compilation": true,
+    "staticTyping": true,
+    "zeroRuntimeCost": true,
+    "threadSafety": true,
+    "patternMatching": true,
+    "traits": true,
+    "generics": true,
+    "macros": true,
+    "async": true
+  },
+  "packageManagement": {
+    "primary": "Cargo",
+    "alternatives": ["Bazel", "Buck2"],
+    "registry": "https://crates.io/",
+    "lockFiles": ["Cargo.lock"],
+    "configFiles": ["Cargo.toml"]
+  },
+  "editions": {
+    "current": "2021",
+    "previous": ["2015", "2018"],
+    "next": "2024"
+  },
+  "commonDependencies": {
+    "dev": [
+      "criterion",
+      "proptest",
+      "pretty_assertions",
+      "cargo-watch",
+      "cargo-tarpaulin",
+      "cargo-audit",
+      "cargo-deny"
+    ],
+    "production": [
+      "serde",
+      "tokio",
+      "clap",
+      "anyhow",
+      "thiserror",
+      "log",
+      "env_logger",
+      "reqwest",
+      "sqlx"
+    ]
+  },
+  "fileStructure": {
+    "src": "Source code",
+    "tests": "Integration tests",
+    "examples": "Example code",
+    "benches": "Benchmark tests",
+    "target": "Build artifacts",
+    "docs": "Documentation",
+    "scripts": "Build scripts",
+    "Cargo.toml": "Package manifest",
+    "Cargo.lock": "Dependency lock file"
+  },
+  "buildConfiguration": {
+    "profiles": ["dev", "release", "test", "bench"],
+    "targets": ["bin", "lib", "proc-macro", "cdylib", "staticlib"],
+    "features": "conditional compilation",
+    "workspaces": "multi-package projects",
+    "crossCompilation": "supported via rustup targets"
+  },
+  "bestPractices": [
+    "Use ownership and borrowing effectively",
+    "Prefer Result<T, E> over panicking",
+    "Use pattern matching extensively",
+    "Write comprehensive tests and documentation",
+    "Use clippy for additional linting",
+    "Follow Rust API guidelines",
+    "Use semantic versioning for crates",
+    "Handle errors explicitly with proper propagation",
+    "Use traits for shared behavior",
+    "Prefer composition over inheritance"
+  ]
+}

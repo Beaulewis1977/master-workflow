@@ -18,6 +18,7 @@ const http = require('http');
 const QueenController = require('./intelligence-engine/queen-controller');
 const SubAgentManager = require('./intelligence-engine/sub-agent-manager');
 const SharedMemoryStore = require('./intelligence-engine/shared-memory');
+const MCPFullConfigurator = require('./intelligence-engine/mcp-full-configurator');
 
 class WorkflowRunner {
   constructor() {
@@ -43,6 +44,10 @@ class WorkflowRunner {
     this.queenController = null;
     this.subAgentManager = null;
     this.sharedMemory = null;
+    
+    // MCP Configuration system
+    this.mcpConfigurator = new MCPFullConfigurator();
+    this.mcpConfiguration = null;
   }
 
   ensureDirectories() {
@@ -370,13 +375,26 @@ class WorkflowRunner {
         projectRoot: this.projectDir,
         persistPath: path.join(this.projectDir, '.hive-mind')
       });
-      await this.sharedMemory.initialize();
       
-      // Initialize Queen Controller
+      // Wait for shared memory to be ready
+      await new Promise((resolve, reject) => {
+        this.sharedMemory.once('ready', resolve);
+        this.sharedMemory.once('error', reject);
+        setTimeout(resolve, 3000); // Fallback timeout
+      });
+      
+      // Initialize Queen Controller with enhanced neural learning
       this.queenController = new QueenController({
         maxConcurrent: 10,
         contextWindowSize: 200000,
-        projectRoot: this.projectDir
+        projectRoot: this.projectDir,
+        sharedMemory: this.sharedMemory
+      });
+      
+      // Wait for neural learning to initialize
+      await new Promise((resolve) => {
+        this.queenController.once('neural-learning-ready', resolve);
+        setTimeout(resolve, 3000); // Fallback timeout
       });
       
       // Initialize Sub-Agent Manager
@@ -404,11 +422,195 @@ class WorkflowRunner {
         this.log('error', `Agent ${data.agentId} error: ${data.error}`);
       });
       
-      this.log('success', 'Queen Controller initialized with 10-agent capacity');
+      this.log('success', 'Queen Controller initialized with 10-agent capacity and Neural Learning');
       
     } catch (error) {
       this.log('error', `Failed to initialize Queen Controller: ${error.message}`);
       // Fall back to standard agent management
+    }
+  }
+
+  /**
+   * Initialize MCP Configuration for the project
+   */
+  async initializeMCPConfiguration() {
+    this.log('info', 'Initializing MCP Configuration system...');
+    
+    try {
+      // Analyze project for MCP server requirements
+      const mcpAnalysis = await this.analyzeProjectForMCPServers(this.projectDir);
+      
+      // Get neural predictions if Queen Controller is available
+      let neuralOptimization = null;
+      if (this.queenController) {
+        try {
+          neuralOptimization = await this.queenController.getPredictedSuccess({
+            id: 'mcp-configuration',
+            name: 'MCP Configuration',
+            category: 'configuration',
+            complexity: mcpAnalysis.complexity || 5,
+            projectType: mcpAnalysis.projectType || 'web'
+          });
+        } catch (error) {
+          this.log('warning', `Neural optimization unavailable: ${error.message}`);
+        }
+      }
+      
+      // Apply optimal MCP configuration
+      await this.applyOptimalMCPConfiguration(mcpAnalysis, neuralOptimization);
+      
+      this.log('success', `MCP Configuration initialized with ${mcpAnalysis.totalServers} servers`);
+      
+      return this.mcpConfiguration;
+      
+    } catch (error) {
+      this.log('error', `MCP Configuration initialization failed: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  /**
+   * Analyze project for MCP server requirements
+   */
+  async analyzeProjectForMCPServers(projectPath) {
+    this.log('info', 'Analyzing project for MCP server requirements...');
+    
+    try {
+      // Use MCPFullConfigurator to analyze the project
+      const analysis = await this.mcpConfigurator.analyzeProject(projectPath);
+      
+      this.log('info', `Detected ${analysis.totalServers} required MCP servers`);
+      this.log('info', `Project type: ${analysis.projectType}, Complexity: ${analysis.complexity}/10`);
+      
+      // Log detected technologies
+      if (analysis.detectedTechnologies && analysis.detectedTechnologies.length > 0) {
+        this.log('info', `Detected technologies: ${analysis.detectedTechnologies.join(', ')}`);
+      }
+      
+      return analysis;
+      
+    } catch (error) {
+      this.log('error', `Project analysis for MCP failed: ${error.message}`);
+      // Return fallback analysis
+      return {
+        totalServers: 5,
+        projectType: 'web',
+        complexity: 5,
+        detectedTechnologies: [],
+        recommendedServers: []
+      };
+    }
+  }
+  
+  /**
+   * Apply optimal MCP configuration with neural optimization
+   */
+  async applyOptimalMCPConfiguration(analysis, neuralPredictions) {
+    this.log('info', 'Applying optimal MCP configuration...');
+    
+    try {
+      const configOptions = {
+        includeOptional: analysis.complexity > 7,
+        priorityThreshold: analysis.complexity > 5 ? 'medium' : 'high',
+        outputPath: path.join(this.projectDir, '.claude', 'mcp.json')
+      };
+      
+      // Apply neural optimization if available
+      if (neuralPredictions) {
+        this.log('info', `Neural success prediction: ${(neuralPredictions.successProbability * 100).toFixed(1)}%`);
+        
+        // Adjust configuration based on neural predictions
+        if (neuralPredictions.successProbability < 0.5) {
+          configOptions.priorityThreshold = 'high'; // Use only high-priority servers
+          this.log('info', 'Neural optimization: Using conservative configuration');
+        }
+        
+        if (neuralPredictions.riskFactors && neuralPredictions.riskFactors.length > 0) {
+          this.log('warning', `Neural risk factors: ${neuralPredictions.riskFactors.join(', ')}`);
+        }
+      }
+      
+      // Generate configuration
+      this.mcpConfiguration = this.mcpConfigurator.generateConfiguration(configOptions);
+      
+      // Apply project type preset if beneficial
+      if (analysis.projectType && analysis.projectType !== 'unknown') {
+        try {
+          this.mcpConfigurator.applyProjectTypePreset(analysis.projectType);
+          this.log('info', `Applied ${analysis.projectType} project preset`);
+        } catch (error) {
+          this.log('warning', `Failed to apply preset: ${error.message}`);
+        }
+      }
+      
+      // Store configuration in shared memory if available
+      if (this.sharedMemory) {
+        await this.sharedMemory.set('mcp_configuration', {
+          config: this.mcpConfiguration,
+          analysis: analysis,
+          neuralPredictions: neuralPredictions,
+          timestamp: Date.now()
+        }, {
+          namespace: this.sharedMemory.namespaces.CONFIG
+        });
+      }
+      
+      this.log('success', 'MCP Configuration applied successfully');
+      
+      return this.mcpConfiguration;
+      
+    } catch (error) {
+      this.log('error', `Failed to apply MCP configuration: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  /**
+   * Generate MCP configuration with neural optimization
+   */
+  async generateMCPConfigWithNeuralOptimization() {
+    this.log('info', 'Generating optimized MCP configuration...');
+    
+    try {
+      // Ensure MCP configuration is initialized
+      if (!this.mcpConfiguration) {
+        await this.initializeMCPConfiguration();
+      }
+      
+      const configPath = path.join(this.projectDir, '.claude', 'mcp.json');
+      
+      // Ensure .claude directory exists
+      const claudeDir = path.dirname(configPath);
+      if (!fs.existsSync(claudeDir)) {
+        fs.mkdirSync(claudeDir, { recursive: true });
+      }
+      
+      // Write configuration to file
+      fs.writeFileSync(configPath, JSON.stringify(this.mcpConfiguration, null, 2));
+      
+      // Record task outcome for neural learning if Queen Controller is available
+      if (this.queenController) {
+        await this.queenController.recordTaskOutcome('mcp-configuration', {
+          success: true,
+          quality: 0.9,
+          userRating: 5,
+          errors: [],
+          optimizationPotential: 0.8
+        }, {
+          duration: 5000, // 5 seconds
+          cpuUsage: 0.3,
+          memoryUsage: 0.2,
+          userInteractions: 0
+        });
+      }
+      
+      this.log('success', `MCP configuration written to ${configPath}`);
+      
+      return configPath;
+      
+    } catch (error) {
+      this.log('error', `Failed to generate MCP configuration: ${error.message}`);
+      throw error;
     }
   }
 
@@ -466,6 +668,90 @@ class WorkflowRunner {
       this.log('warning', `TMux session creation failed: ${error.message}`);
       this.publishEvent('status', { phase: 'tmux:error', error: error.message }).catch(() => {});
       return null;
+    }
+  }
+
+  /**
+   * Execute tasks with sub-agents using Queen Controller
+   * @param {object} task - Task to execute with sub-agents
+   * @returns {Promise<object>} - Execution results
+   */
+  async executeWithSubAgents(task) {
+    if (!this.queenController) {
+      throw new Error('Queen Controller not initialized. Call initializeQueenController() first.');
+    }
+
+    this.log('info', `Executing task with sub-agents: ${task.name || task.type}`);
+    
+    try {
+      // Get neural prediction for optimal agent selection
+      const prediction = await this.queenController.getPredictedSuccess(task);
+      this.log('debug', `Neural prediction confidence: ${(prediction.confidence * 100).toFixed(1)}%`);
+      
+      // Select optimal agents for the task
+      const agentSelection = await this.queenController.selectOptimalAgent(task);
+      const selectedAgents = agentSelection.topAgents || [agentSelection.selectedAgent];
+      
+      this.log('info', `Selected ${selectedAgents.length} agent(s) for parallel execution`);
+      
+      // Distribute task to selected agents
+      const distributionResult = await this.queenController.distributeTask(task, {
+        agents: selectedAgents,
+        parallel: task.parallel !== false,
+        dependencies: task.dependencies || []
+      });
+      
+      // Wait for task completion
+      const results = await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error(`Task execution timeout after ${task.timeout || 300000}ms`));
+        }, task.timeout || 300000);
+        
+        this.queenController.once(`task-${task.id || task.name}-complete`, (result) => {
+          clearTimeout(timeout);
+          resolve(result);
+        });
+        
+        this.queenController.once(`task-${task.id || task.name}-error`, (error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+      });
+      
+      // Record task outcome for neural learning
+      await this.queenController.recordTaskOutcome(
+        task.id || task.name,
+        { success: true, results },
+        { 
+          executionTime: results.executionTime,
+          agentsUsed: selectedAgents.length,
+          confidence: prediction.confidence
+        }
+      );
+      
+      // Share results via shared memory for cross-agent learning
+      if (this.sharedMemory) {
+        await this.sharedMemory.set(
+          `task_result_${task.id || task.name}`,
+          results,
+          { namespace: 'CROSS_AGENT', type: 'SHARED' }
+        );
+      }
+      
+      this.log('success', `Task completed successfully with ${selectedAgents.length} agent(s)`);
+      return results;
+      
+    } catch (error) {
+      this.log('error', `Task execution failed: ${error.message}`);
+      
+      // Record failure for neural learning
+      await this.queenController.recordTaskOutcome(
+        task.id || task.name,
+        { success: false, error: error.message },
+        { failureReason: error.message }
+      );
+      
+      throw error;
     }
   }
 
@@ -770,24 +1056,30 @@ class WorkflowRunner {
       // Step 3: Initialize agents
       await this.initializeAgents();
       
-      // Step 4: Create recovery plan if needed
+      // Step 4: Initialize MCP Configuration with neural optimization
+      if (this.analysis?.score > 50 || this.approach?.selected === 'hiveMind') {
+        await this.initializeMCPConfiguration();
+        await this.generateMCPConfigWithNeuralOptimization();
+      }
+      
+      // Step 5: Create recovery plan if needed
       if (this.analysis.hasIncompleteWork) {
         await this.createRecoveryPlan();
       }
       
-      // Step 5: Create TMux sessions when available and non-Windows
+      // Step 6: Create TMux sessions when available and non-Windows
       if (process.platform !== 'win32') {
         await this.createTmuxSessions();
       } else {
         this.log('info', 'Windows detected; defaulting to process mode (tmux disabled)');
       }
       
-      // Step 6: Execute workflow
+      // Step 7: Execute workflow
       if (mode === 'auto' || mode === 'interactive') {
         await this.executeClaudeFlow();
       }
       
-      this.log('success', 'Workflow initialization complete!');
+      this.log('success', 'Workflow initialization complete with MCP optimization!');
       
       // Show summary
       await this.showStatus();

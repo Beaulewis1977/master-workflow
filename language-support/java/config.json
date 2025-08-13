@@ -1,0 +1,106 @@
+{
+  "name": "Java",
+  "version": "17+",
+  "runtime": "JVM",
+  "runtimeVersions": ["8", "11", "17", "21"],
+  "ltsVersions": ["8", "11", "17", "21"],
+  "features": {
+    "staticTyping": true,
+    "compilation": true,
+    "objectOriented": true,
+    "platformIndependent": true,
+    "multithreading": true,
+    "garbageCollection": true,
+    "lambdas": true,
+    "streams": true,
+    "modules": true,
+    "records": true,
+    "textBlocks": true,
+    "patternMatching": true,
+    "virtualThreads": true
+  },
+  "packageManagement": {
+    "primary": "Maven",
+    "alternatives": ["Gradle", "SBT", "Ant", "Bazel"],
+    "registry": "Maven Central Repository",
+    "lockFiles": ["pom.xml.lock", "gradle.lockfile"],
+    "configFiles": ["pom.xml", "build.gradle", "build.gradle.kts"]
+  },
+  "jvmImplementations": {
+    "oracle": "Oracle HotSpot",
+    "openjdk": "OpenJDK HotSpot",
+    "eclipse": "Eclipse OpenJ9",
+    "graalvm": "GraalVM",
+    "azul": "Azul Zulu",
+    "amazon": "Amazon Corretto"
+  },
+  "commonDependencies": {
+    "dev": [
+      "junit-jupiter",
+      "mockito-core",
+      "assertj-core",
+      "testcontainers",
+      "maven-surefire-plugin",
+      "jacoco-maven-plugin",
+      "spotless-maven-plugin",
+      "maven-checkstyle-plugin"
+    ],
+    "production": [
+      "spring-boot-starter-web",
+      "spring-boot-starter-data-jpa",
+      "spring-boot-starter-security",
+      "jackson-databind",
+      "slf4j-api",
+      "logback-classic",
+      "micrometer-core"
+    ]
+  },
+  "fileStructure": {
+    "src/main/java": "Main Java source code",
+    "src/main/resources": "Main resources (configs, static files)",
+    "src/test/java": "Test source code",
+    "src/test/resources": "Test resources",
+    "target": "Maven build output",
+    "build": "Gradle build output",
+    "pom.xml": "Maven project configuration",
+    "build.gradle": "Gradle project configuration",
+    "gradle.properties": "Gradle properties",
+    "settings.gradle": "Gradle settings"
+  },
+  "buildProfiles": {
+    "development": {
+      "debug": true,
+      "optimization": false,
+      "testing": true
+    },
+    "production": {
+      "debug": false,
+      "optimization": true,
+      "testing": false,
+      "packaging": "jar/war"
+    }
+  },
+  "frameworks": {
+    "web": ["Spring Boot", "Spring MVC", "Jersey", "Dropwizard", "Spark Java"],
+    "enterprise": ["Spring Framework", "Jakarta EE", "Micronaut", "Quarkus"],
+    "microservices": ["Spring Cloud", "Micronaut", "Quarkus", "Helidon"],
+    "orm": ["Hibernate", "JPA", "MyBatis", "JOOQ", "Spring Data"],
+    "testing": ["JUnit 5", "TestNG", "Mockito", "Testcontainers", "WireMock"]
+  },
+  "applicationServers": {
+    "embedded": ["Tomcat", "Jetty", "Undertow"],
+    "standalone": ["Apache Tomcat", "Eclipse Jetty", "WildFly", "WebLogic", "WebSphere"]
+  },
+  "bestPractices": [
+    "Follow Java naming conventions and coding standards",
+    "Use appropriate access modifiers (private, protected, public)",
+    "Implement proper exception handling with try-catch-finally",
+    "Use generics for type safety",
+    "Implement equals(), hashCode(), and toString() when needed",
+    "Use composition over inheritance",
+    "Follow SOLID principles",
+    "Write comprehensive unit and integration tests",
+    "Use dependency injection for better testability",
+    "Handle resources properly with try-with-resources"
+  ]
+}

@@ -1,7 +1,7 @@
 # Claude Configuration - active Stage Project
 
 ## Project Analysis
-- **Complexity Score**: 42/100
+- **Complexity Score**: 51/100
 - **Stage**: active
  - **Selected Approach**: Hive-Mind
  - **Claude Flow Version**: latest 
@@ -17,6 +17,16 @@
   - Strict type checking
   - Interface definitions
   - Generic types where appropriate
+- Python
+  - PEP 8 compliance
+  - Type hints
+  - Virtual environments
+- Go
+  - Effective Go principles
+  - Error handling patterns
+  - Goroutines for concurrency
+- Java
+- Rust
 
 ## Feature Guidelines
 

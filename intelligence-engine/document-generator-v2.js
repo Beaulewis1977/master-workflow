@@ -86,6 +86,74 @@ class DocumentGeneratorV2 extends EventEmitter {
   }
   
   /**
+   * Generate all documents (batch mode - for tests and automation)
+   * Returns an object with all generated documents
+   */
+  async generateAllDocuments(options = {}) {
+    try {
+      // Use default analysis if none provided
+      const analysis = options.analysis || {
+        complexity: { score: 45 },
+        patterns: {},
+        architecture: { type: 'modular' },
+        projectPath: process.cwd()
+      };
+      
+      const approach = options.approach || 'hive-mind';
+      
+      // Initialize document customizer with analysis
+      this.documentCustomizer = new DocumentCustomizer(analysis, approach);
+      
+      // Use the DocumentCustomizer's generateAllDocuments method which handles the conversion
+      const documentArray = await this.documentCustomizer.generateAllDocuments();
+      
+      // Write documents to disk if requested
+      if (options.writeToDisc !== false) {
+        for (const doc of documentArray) {
+          await this.writeDocument(doc.path, doc.content);
+        }
+      }
+      
+      return {
+        generated: documentArray.length,
+        documents: documentArray,
+        summary: {
+          types: documentArray.length,
+          totalSize: documentArray.reduce((sum, doc) => sum + doc.size, 0)
+        }
+      };
+      
+    } catch (error) {
+      this.emit('generation-error', { error });
+      throw error;
+    }
+  }
+  
+  /**
+   * Get filename for document type
+   */
+  getFilenameForType(type) {
+    const typeMap = {
+      'claude': 'CLAUDE.md',
+      'agentOS': 'Agent-OS.md',
+      'workflows': 'WORKFLOWS.md',
+      'contributing': 'CONTRIBUTING.md',
+      'deployment': 'DEPLOYMENT.md',
+      'architecture': 'ARCHITECTURE.md',
+      'sparc': 'SPARC-PHASES.md',
+      'slashCommands': 'SLASH-COMMANDS.md',
+      'agents.queen': '.agents/queen-controller.md',
+      'agents.coder': '.agents/coder-agent.md',
+      'agents.tester': '.agents/tester-agent.md',
+      'agents.deployer': '.agents/deployer-agent.md',
+      'agents.analyst': '.agents/analyst-agent.md',
+      'agents.doc-generator': '.agents/doc-generator-agent.md'
+    };
+    
+    return typeMap[type] || `${type.toUpperCase()}.md`;
+  }
+  
+  /**
    * Main entry point for interactive document generation
    */
   async generateDocumentsInteractive(analysis, approach, options = {}) {
@@ -186,23 +254,23 @@ class DocumentGeneratorV2 extends EventEmitter {
   async generateFreshDocuments(analysis, approach, options) {
     console.log(chalk.green('\n🚀 Generating new documents...'));
     
-    const documents = await this.documentCustomizer.generateAllDocuments();
+    const documentArray = await this.documentCustomizer.generateAllDocuments();
     
     // Create document versions
-    for (const doc of documents) {
+    for (const doc of documentArray) {
       await this.versionManager.createSnapshot(doc.path, doc.content);
     }
     
     // Write documents to disk
-    for (const doc of documents) {
+    for (const doc of documentArray) {
       await this.writeDocument(doc.path, doc.content);
     }
     
-    console.log(chalk.green(`✅ Generated ${documents.length} documents successfully!`));
+    console.log(chalk.green(`✅ Generated ${documentArray.length} documents successfully!`));
     
     return {
-      generated: documents.length,
-      documents: documents.map(d => d.path)
+      generated: documentArray.length,
+      documents: documentArray.map(d => d.path)
     };
   }
   

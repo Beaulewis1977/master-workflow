@@ -420,6 +420,28 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
+   * Set multiple values in bulk for efficiency
+   * @param {Array} entries - Array of {key, value, options} objects
+   */
+  async setBulk(entries) {
+    if (!Array.isArray(entries)) {
+      throw new Error('setBulk requires an array of entries');
+    }
+
+    const results = [];
+    for (const entry of entries) {
+      try {
+        await this.set(entry.key, entry.value, entry.options || {});
+        results.push({ key: entry.key, success: true });
+      } catch (error) {
+        results.push({ key: entry.key, success: false, error: error.message });
+      }
+    }
+    
+    return results;
+  }
+
+  /**
    * Set a value in shared memory with full feature support
    * @param {string} key - Unique key for the data
    * @param {any} value - Data to store
@@ -1455,6 +1477,342 @@ class SharedMemoryStore extends EventEmitter {
     }
   }
   
+  /**
+   * Distribute neural pattern to all agents
+   * @param {object} pattern - Neural pattern to distribute
+   * @param {string} namespace - Target namespace
+   */
+  async distributeNeuralPattern(pattern, namespace = this.namespaces.CROSS_AGENT) {
+    const patternId = `neural_pattern_${pattern.id || Date.now()}`;
+    
+    // Add distribution metadata
+    const distributedPattern = {
+      ...pattern,
+      distributedAt: Date.now(),
+      distributionId: patternId,
+      sourceAgent: pattern.sourceAgent || 'queen-controller'
+    };
+    
+    // Store pattern for all agents to access
+    await this.set(patternId, distributedPattern, {
+      namespace: namespace,
+      ttl: 24 * 60 * 60 * 1000, // 24 hours
+      dataType: this.dataTypes.SHARED
+    });
+    
+    // Notify subscribers about new pattern
+    this.emit('pattern-distributed', {
+      patternId,
+      pattern: distributedPattern,
+      namespace
+    });
+    
+    // Update pattern distribution stats
+    this.stats.patternsDistributed = (this.stats.patternsDistributed || 0) + 1;
+    
+    return patternId;
+  }
+
+  /**
+   * Aggregate success metrics from multiple agents
+   * @param {string} agentId - ID of the reporting agent
+   * @param {object} metrics - Success metrics to aggregate
+   */
+  async aggregateSuccessMetrics(agentId, metrics) {
+    const metricsKey = 'global_success_metrics';
+    const agentMetricsKey = `agent_metrics_${agentId}`;
+    
+    // Store agent-specific metrics
+    await this.set(agentMetricsKey, {
+      agentId,
+      metrics,
+      timestamp: Date.now()
+    }, {
+      namespace: this.namespaces.METRICS,
+      ttl: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
+    // Aggregate into global metrics
+    let globalMetrics = await this.get(metricsKey, {
+      namespace: this.namespaces.METRICS
+    }) || {
+      totalAgents: 0,
+      totalTasks: 0,
+      successfulTasks: 0,
+      totalDuration: 0,
+      averageDuration: 0,
+      successRate: 0,
+      lastUpdate: 0,
+      agentContributions: {}
+    };
+    
+    // Update with new agent metrics
+    const previousContribution = globalMetrics.agentContributions[agentId] || {
+      tasks: 0,
+      successfulTasks: 0,
+      duration: 0
+    };
+    
+    globalMetrics.agentContributions[agentId] = {
+      tasks: metrics.totalTasks || 0,
+      successfulTasks: metrics.successfulTasks || 0,
+      duration: metrics.totalDuration || 0,
+      lastUpdate: Date.now()
+    };
+    
+    // Recalculate global metrics
+    const allContributions = Object.values(globalMetrics.agentContributions);
+    globalMetrics.totalAgents = allContributions.length;
+    globalMetrics.totalTasks = allContributions.reduce((sum, contrib) => sum + contrib.tasks, 0);
+    globalMetrics.successfulTasks = allContributions.reduce((sum, contrib) => sum + contrib.successfulTasks, 0);
+    globalMetrics.totalDuration = allContributions.reduce((sum, contrib) => sum + contrib.duration, 0);
+    globalMetrics.averageDuration = globalMetrics.totalTasks > 0 ? globalMetrics.totalDuration / globalMetrics.totalTasks : 0;
+    globalMetrics.successRate = globalMetrics.totalTasks > 0 ? globalMetrics.successfulTasks / globalMetrics.totalTasks : 0;
+    globalMetrics.lastUpdate = Date.now();
+    
+    // Store updated global metrics
+    await this.set(metricsKey, globalMetrics, {
+      namespace: this.namespaces.METRICS
+    });
+    
+    // Notify about metrics update
+    this.emit('metrics-aggregated', {
+      agentId,
+      globalMetrics,
+      previousContribution,
+      newContribution: globalMetrics.agentContributions[agentId]
+    });
+    
+    return globalMetrics;
+  }
+
+  /**
+   * Synchronize neural weights across agents
+   * @param {Array} weights - Neural weights to sync
+   * @param {string} agentId - ID of the contributing agent
+   */
+  async syncNeuralWeights(weights, agentId) {
+    const weightsKey = 'neural_weights_sync';
+    const contributionKey = `weights_contribution_${agentId}`;
+    
+    // Store agent's weight contribution
+    const contribution = {
+      agentId,
+      weights,
+      timestamp: Date.now(),
+      weightCount: weights.length
+    };
+    
+    await this.set(contributionKey, contribution, {
+      namespace: this.namespaces.CROSS_AGENT,
+      ttl: 60 * 60 * 1000 // 1 hour
+    });
+    
+    // Get all weight contributions
+    const allContributions = [];
+    const contributionKeys = await this.keys({
+      namespace: this.namespaces.CROSS_AGENT
+    });
+    
+    for (const key of contributionKeys) {
+      if (key.startsWith('weights_contribution_')) {
+        const contrib = await this.get(key, {
+          namespace: this.namespaces.CROSS_AGENT
+        });
+        if (contrib && contrib.timestamp > Date.now() - 60 * 60 * 1000) { // Only recent contributions
+          allContributions.push(contrib);
+        }
+      }
+    }
+    
+    // Average the weights if we have multiple contributions
+    let synchronizedWeights = weights;
+    if (allContributions.length > 1) {
+      synchronizedWeights = this.averageNeuralWeights(allContributions);
+    }
+    
+    // Store synchronized weights
+    const syncData = {
+      synchronizedWeights,
+      contributingAgents: allContributions.map(c => c.agentId),
+      synchronizedAt: Date.now(),
+      contributionCount: allContributions.length
+    };
+    
+    await this.set(weightsKey, syncData, {
+      namespace: this.namespaces.CROSS_AGENT
+    });
+    
+    // Notify about weight synchronization
+    this.emit('weights-synchronized', {
+      agentId,
+      synchronizedWeights,
+      contributingAgents: syncData.contributingAgents,
+      contributionCount: syncData.contributionCount
+    });
+    
+    return synchronizedWeights;
+  }
+
+  /**
+   * Get collaborative learning data for an agent
+   * @param {string} requestingAgent - ID of the agent requesting the data
+   */
+  async getCollaborativeLearningData(requestingAgent = 'unknown') {
+    try {
+      const learningData = {
+        patterns: [],
+        metrics: null,
+        weights: null,
+        lastUpdate: Date.now(),
+        requestingAgent
+      };
+      
+      // Get recent neural patterns
+      const patternKeys = await this.keys({
+        namespace: this.namespaces.CROSS_AGENT
+      });
+      
+      for (const key of patternKeys) {
+        if (key.startsWith('neural_pattern_')) {
+          const pattern = await this.get(key, {
+            namespace: this.namespaces.CROSS_AGENT
+          });
+          if (pattern) {
+            learningData.patterns.push(pattern);
+          }
+        }
+      }
+      
+      // Get global success metrics
+      learningData.metrics = await this.get('global_success_metrics', {
+        namespace: this.namespaces.METRICS
+      });
+      
+      // Get synchronized weights
+      const weightSync = await this.get('neural_weights_sync', {
+        namespace: this.namespaces.CROSS_AGENT
+      });
+      if (weightSync) {
+        learningData.weights = weightSync.synchronizedWeights;
+      }
+      
+      // Update access stats
+      this.stats.collaborativeDataRequests = (this.stats.collaborativeDataRequests || 0) + 1;
+      
+      return learningData;
+      
+    } catch (error) {
+      console.error('Failed to get collaborative learning data:', error);
+      return {
+        patterns: [],
+        metrics: null,
+        weights: null,
+        error: error.message,
+        lastUpdate: Date.now(),
+        requestingAgent
+      };
+    }
+  }
+
+  /**
+   * Average neural weights from multiple agent contributions
+   * @param {Array} contributions - Array of weight contributions
+   */
+  averageNeuralWeights(contributions) {
+    if (contributions.length === 0) return [];
+    if (contributions.length === 1) return contributions[0].weights;
+    
+    const weightCount = contributions[0].weights.length;
+    const averagedWeights = new Array(weightCount).fill(0);
+    
+    // Sum all weights
+    for (const contribution of contributions) {
+      if (contribution.weights.length === weightCount) {
+        for (let i = 0; i < weightCount; i++) {
+          averagedWeights[i] += contribution.weights[i];
+        }
+      }
+    }
+    
+    // Average the weights
+    const contributionCount = contributions.length;
+    for (let i = 0; i < weightCount; i++) {
+      averagedWeights[i] /= contributionCount;
+    }
+    
+    return averagedWeights;
+  }
+
+  /**
+   * Clean up old patterns and sync data
+   */
+  async cleanupCollaborativeData() {
+    const cutoffTime = Date.now() - 24 * 60 * 60 * 1000; // 24 hours ago
+    
+    try {
+      // Clean up old patterns
+      const patternKeys = await this.keys({
+        namespace: this.namespaces.CROSS_AGENT
+      });
+      
+      let cleanedPatterns = 0;
+      let cleanedContributions = 0;
+      
+      for (const key of patternKeys) {
+        if (key.startsWith('neural_pattern_')) {
+          const pattern = await this.get(key, {
+            namespace: this.namespaces.CROSS_AGENT
+          });
+          if (pattern && pattern.distributedAt < cutoffTime) {
+            await this.delete(key, { namespace: this.namespaces.CROSS_AGENT });
+            cleanedPatterns++;
+          }
+        } else if (key.startsWith('weights_contribution_')) {
+          const contribution = await this.get(key, {
+            namespace: this.namespaces.CROSS_AGENT
+          });
+          if (contribution && contribution.timestamp < cutoffTime) {
+            await this.delete(key, { namespace: this.namespaces.CROSS_AGENT });
+            cleanedContributions++;
+          }
+        }
+      }
+      
+      // Clean up old agent metrics
+      const metricsKeys = await this.keys({
+        namespace: this.namespaces.METRICS
+      });
+      
+      let cleanedMetrics = 0;
+      const metricsRetentionTime = Date.now() - 7 * 24 * 60 * 60 * 1000; // 7 days
+      
+      for (const key of metricsKeys) {
+        if (key.startsWith('agent_metrics_')) {
+          const metrics = await this.get(key, {
+            namespace: this.namespaces.METRICS
+          });
+          if (metrics && metrics.timestamp < metricsRetentionTime) {
+            await this.delete(key, { namespace: this.namespaces.METRICS });
+            cleanedMetrics++;
+          }
+        }
+      }
+      
+      console.log(`Collaborative data cleanup: ${cleanedPatterns} patterns, ${cleanedContributions} weight contributions, ${cleanedMetrics} agent metrics`);
+      
+      return {
+        cleanedPatterns,
+        cleanedContributions,
+        cleanedMetrics
+      };
+      
+    } catch (error) {
+      console.error('Failed to cleanup collaborative data:', error);
+      return { error: error.message };
+    }
+  }
+
   /**
    * Shutdown the shared memory store gracefully
    */

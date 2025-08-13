@@ -1029,11 +1029,24 @@ class QueenController extends EventEmitter {
   }
   
   /**
+   * Get task queue status
+   */
+  getTaskQueueStatus() {
+    return {
+      queued: this.taskQueue.length,
+      pending: this.pendingTasks.size,
+      completed: this.completedTasks.size,
+      nextTask: this.taskQueue[0] || null
+    };
+  }
+
+  /**
    * Get current status with neural learning metrics
    */
   getStatus() {
     const status = {
       active: this.activeAgents.size,
+      activeAgents: this.activeAgents.size,  // Added for backward compatibility
       queued: this.taskQueue.length,
       pending: this.pendingTasks.size,
       completed: this.completedTasks.size,

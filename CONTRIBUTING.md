@@ -4,6 +4,8 @@
 
 ### Prerequisites
 - Node.js v18+ and npm/yarn
+- Python 3.8+ and pip
+- Go 1.19+
 
 ### Installation
 
@@ -16,6 +18,13 @@ cd <project-name>
 npm install
 # or
 yarn install
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 
 ```
 

@@ -38,6 +38,81 @@ class DocumentCustomizer {
   }
 
   /**
+   * Generate all documents (alias for backward compatibility)
+   * Returns documents in array format expected by tests
+   */
+  async generateAllDocuments() {
+    const documents = await this.generateDocuments();
+    const documentArray = [];
+    
+    // Convert to array format
+    for (const [type, content] of Object.entries(documents)) {
+      if (!content) {
+        continue; // Skip null/undefined documents
+      }
+      
+      if (typeof content === 'string') {
+        // Simple string content
+        const filename = this.getFilenameForType(type);
+        documentArray.push({
+          type,
+          path: filename,
+          content,
+          size: content.length
+        });
+      } else if (typeof content === 'object') {
+        // Check if it's a document with path and content
+        if (content.path && content.content) {
+          documentArray.push({
+            type,
+            path: content.path,
+            content: content.content,
+            size: content.content.length
+          });
+        } else if (content.files && Array.isArray(content.files)) {
+          // Handle complex types like agents with multiple files
+          content.files.forEach(file => {
+            if (file.path && file.content) {
+              documentArray.push({
+                type: `${type}.${file.name || 'file'}`,
+                path: file.path,
+                content: file.content,
+                size: file.content.length
+              });
+            }
+          });
+        }
+      }
+    }
+    
+    return documentArray;
+  }
+
+  /**
+   * Get filename for document type
+   */
+  getFilenameForType(type) {
+    const typeMap = {
+      'claude': 'CLAUDE.md',
+      'agentOS': 'Agent-OS.md',
+      'workflows': 'WORKFLOWS.md',
+      'contributing': 'CONTRIBUTING.md',
+      'deployment': 'DEPLOYMENT.md',
+      'architecture': 'ARCHITECTURE.md',
+      'sparc': 'SPARC-PHASES.md',
+      'slashCommands': 'SLASH-COMMANDS.md',
+      'agents.queen': '.agents/queen-controller.md',
+      'agents.coder': '.agents/coder-agent.md',
+      'agents.tester': '.agents/tester-agent.md',
+      'agents.deployer': '.agents/deployer-agent.md',
+      'agents.analyst': '.agents/analyst-agent.md',
+      'agents.doc-generator': '.agents/doc-generator-agent.md'
+    };
+    
+    return typeMap[type] || `${type.replace(/[^a-zA-Z0-9]/g, '-').toUpperCase()}.md`;
+  }
+
+  /**
    * Generate CLAUDE.md with deep customization
    */
   async generateClaudeConfig() {
@@ -1267,7 +1342,7 @@ exports.getAll = async (req, res) => {
     const hasYolo = process.env.YOLO_MODE === 'true';
     
     let command = 'npx claude-flow';
-    command += versionPolicy.suffixFor(versionName);
+    command += versionPolicy.getSuffixForName(versionName);
     
     if (score <= 30) {
       command += ' swarm';
