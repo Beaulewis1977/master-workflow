@@ -1,0 +1,6 @@
+{
+  "averageTaskTime": 5000,
+  "averageTokenUsage": 50000,
+  "averageResponseTime": 2000,
+  "baselineAccuracy": 0.65
+}

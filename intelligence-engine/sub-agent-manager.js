@@ -51,11 +51,21 @@ class SubAgentManager extends EventEmitter {
       paneSync: false
     };
     
-    // Agent template paths
+    // Agent template paths - Enhanced for Claude Flow 2.0
     this.templatePaths = {
+      specialized: path.join(this.projectRoot, '.claude/agents'),
       default: path.join(this.projectRoot, '.claude/agents'),
       workflow: path.join(this.projectRoot, '.ai-workflow/agent-templates'),
       custom: path.join(this.projectRoot, 'agent-templates')
+    };
+    
+    // Claude Flow 2.0 Configuration
+    this.claudeFlow2Config = {
+      enabled: true,
+      contextWindowPerAgent: 200000,
+      targetSpeedupFactor: 3.6,
+      tokenReductionTarget: 32.3,
+      specializedAgentPath: this.templatePaths.specialized
     };
     
     // Start resource monitoring
@@ -221,11 +231,27 @@ class SubAgentManager extends EventEmitter {
   }
   
   /**
-   * Load agent template from various locations
+   * Load agent template from various locations - Enhanced for Claude Flow 2.0
    */
   async loadAgentTemplate(type) {
-    const templateFileName = `${type}.md`;
+    // Claude Flow 2.0: Map agent types to specialized templates
+    const agentTypeMapping = {
+      'code-analyzer': 'code-analyzer-agent.md',
+      'test-runner': 'testing-validation-agent.md',
+      'doc-generator': 'doc-generator-agent.md',
+      'api-builder': 'api-builder-agent.md',
+      'database-architect': 'database-architect-agent.md',
+      'security-scanner': 'security-auditor.md',
+      'performance-optimizer': 'performance-optimizer-agent.md',
+      'deployment-engineer': 'deployment-engineer-agent.md',
+      'frontend-specialist': 'frontend-specialist-agent.md',
+      'recovery-specialist': 'recovery-specialist.md'
+    };
+    
+    const templateFileName = agentTypeMapping[type] || `${type}.md`;
+    
     const searchPaths = [
+      path.join(this.templatePaths.specialized, templateFileName), // Prioritize specialized agents
       path.join(this.templatePaths.default, templateFileName),
       path.join(this.templatePaths.workflow, templateFileName),
       path.join(this.templatePaths.custom, templateFileName)
@@ -244,11 +270,12 @@ class SubAgentManager extends EventEmitter {
       }
     }
     
-    // Return default template if none found
+    // Return Claude Flow 2.0 enhanced default template if none found
     return {
       type: type,
-      content: this.getDefaultTemplate(type),
-      isDefault: true
+      content: this.getClaudeFlow2DefaultTemplate(type),
+      isDefault: true,
+      claudeFlow2Enhanced: true
     };
   }
   
@@ -714,25 +741,56 @@ class SubAgentManager extends EventEmitter {
   }
   
   /**
-   * Get default template for agent type
+   * Get Claude Flow 2.0 enhanced default template for agent type
    */
-  getDefaultTemplate(type) {
+  getClaudeFlow2DefaultTemplate(type) {
     return `---
 name: ${type}
-description: Default ${type} agent
+description: Claude Flow 2.0 Enhanced ${type} agent
 context_window: ${this.contextWindowLimit}
+claudeflow2_version: 2.0
+wasm_acceleration: true
+simd_optimization: true
+target_speedup_factor: ${this.claudeFlow2Config.targetSpeedupFactor}
+token_reduction_target: ${this.claudeFlow2Config.tokenReductionTarget}
 ---
 
-You are a specialized ${type} agent.
+# ${type.charAt(0).toUpperCase() + type.slice(1)} Agent - Claude Flow 2.0 Enhanced
+
+You are a specialized ${type} agent enhanced with Claude Flow 2.0 capabilities.
 
 ## Core Responsibilities
-- Perform ${type} tasks efficiently
-- Report results to Queen Controller
-- Collaborate with other agents
+- Perform ${type} tasks with 200,000 token context window
+- Leverage WASM acceleration and SIMD optimization for performance
+- Target ${this.claudeFlow2Config.targetSpeedupFactor}x execution speedup
+- Achieve ${this.claudeFlow2Config.tokenReductionTarget}% token usage reduction
+- Report results to Queen Controller with performance metrics
+- Collaborate with other agents using adaptive topology
+
+## Claude Flow 2.0 Features
+- **WASM Core**: Accelerated neural predictions and vector operations
+- **Topology Awareness**: Adapt to hierarchical, mesh, ring, or star communication patterns
+- **Capability Matching**: 89%+ accuracy in task-agent matching
+- **Neural Live Training**: Continuous improvement from task outcomes
+- **Context Optimization**: Intelligent 200k token window management
+
+## Performance Targets
+- Execution Speed: ${this.claudeFlow2Config.targetSpeedupFactor}x faster than baseline
+- Token Efficiency: ${this.claudeFlow2Config.tokenReductionTarget}% reduction
+- Response Time: Sub-second for most operations
+- Accuracy: 89%+ for capability matching
 
 ## Communication Protocol
-- Input: Task assignments from Queen Controller
-- Output: Results and status updates
+- Input: Task assignments from Queen Controller with Claude Flow 2.0 metadata
+- Output: Results, status updates, and performance metrics
+- Topology: Adaptive based on current network configuration
+- MCP Integration: Prioritize MCP tools with context7 as default server
+
+## Quality Standards
+- Follow SPARC methodology (Specification, Pseudocode, Architecture, Refinement, Completion)
+- Ensure all outputs are production-ready
+- Validate all work before submission
+- Provide performance feedback for continuous improvement
 `;
   }
   

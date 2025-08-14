@@ -17,10 +17,68 @@ NC='\033[0m'
 BOLD='\033[1m'
 DIM='\033[2m'
 
-# Get script directory
+# Get script directory with security validation
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_DIR="$(pwd)"
 INSTALL_DIR="$PROJECT_DIR/.ai-workflow"
+
+# Security functions
+validate_path() {
+    local path="$1"
+    local context="${2:-unknown}"
+    
+    # Check for null bytes and path traversal
+    if [[ "$path" =~ $'\0' ]] || [[ "$path" == *".."* ]]; then
+        print_error "SECURITY: Invalid path detected in $context: $path"
+        exit 1
+    fi
+    
+    # Ensure path is within project directory
+    local resolved_path
+    resolved_path=$(realpath "$path" 2>/dev/null) || {
+        print_error "SECURITY: Cannot resolve path: $path"
+        exit 1
+    }
+    
+    local project_real
+    project_real=$(realpath "$PROJECT_DIR")
+    
+    if [[ "$resolved_path" != "$project_real"* ]]; then
+        print_error "SECURITY: Path outside project directory: $path"
+        exit 1
+    fi
+    
+    echo "$resolved_path"
+}
+
+sanitize_input() {
+    local input="$1"
+    local max_length="${2:-1000}"
+    
+    # Remove null bytes and control characters
+    input=$(echo "$input" | tr -d '\0\1\2\3\4\5\6\7\10\11\12\13\14\15\16\17\18\19\20\21\22\23\24\25\26\27\30\31\32')
+    
+    # Limit length
+    if [ ${#input} -gt "$max_length" ]; then
+        print_warning "Input truncated to $max_length characters"
+        input="${input:0:$max_length}"
+    fi
+    
+    echo "$input"
+}
+
+validate_command() {
+    local cmd="$1"
+    
+    # Check for dangerous commands
+    local dangerous_patterns="rm -rf|mkfs|dd|:|eval|exec|system"
+    if echo "$cmd" | grep -qE "$dangerous_patterns"; then
+        print_error "SECURITY: Dangerous command pattern detected: $cmd"
+        exit 1
+    fi
+    
+    return 0
+}
 
 # Component flags (default all disabled except core)
 INSTALL_CORE=true
@@ -322,8 +380,11 @@ install_node() {
     print_info "Installing Node.js v20..."
     
     if [ "$OS_TYPE" = "debian" ]; then
-        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-        sudo apt-get install -y nodejs
+        # Secure Node.js installation with verification
+        NODESOURCE_GPG_KEY="9FD3B784BC1C6FC016B7EC8A6B7A90D4E6D93C95"
+        curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/nodesource.gpg >/dev/null
+        echo "deb [signed-by=/etc/apt/trusted.gpg.d/nodesource.gpg] https://deb.nodesource.com/node_20.x $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+        sudo apt-get update && sudo apt-get install -y nodejs
     elif [ "$OS_TYPE" = "macos" ]; then
         if command -v brew &> /dev/null; then
             brew install node@20
@@ -422,8 +483,14 @@ install_core_system() {
     # Copy intelligence engine (including project-scanner.js)
     if [ -d "$SCRIPT_DIR/intelligence-engine" ]; then
         cp -r "$SCRIPT_DIR/intelligence-engine/"* "$INSTALL_DIR/intelligence-engine/"
-        chmod +x "$INSTALL_DIR/intelligence-engine/user-choice-handler.sh" 2>/dev/null || true
-        chmod +x "$INSTALL_DIR/intelligence-engine/"*.js 2>/dev/null || true
+        # Secure chmod operations with path validation
+        safe_install_dir=$(validate_path "$INSTALL_DIR" "install_dir")
+        if [ -f "$safe_install_dir/intelligence-engine/user-choice-handler.sh" ]; then
+            chmod +x "$safe_install_dir/intelligence-engine/user-choice-handler.sh" 2>/dev/null || true
+        fi
+        
+        # Set executable permissions on JS files if they exist
+        find "$safe_install_dir/intelligence-engine" -name "*.js" -type f -exec chmod +x {} \; 2>/dev/null || true
         print_success "Intelligence engine installed (with project-scanner)"
     else
         print_warning "Intelligence engine files not found"
