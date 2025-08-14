@@ -24,14 +24,130 @@ const EventEmitter = require('events');
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
+const DatabaseConnectionManager = require('./database-connection-manager');
+const DatabaseSchemaManager = require('./database-schema-manager');
 
 class SharedMemoryStore extends EventEmitter {
+  /**
+   * Security: Validate project root path to prevent traversal attacks
+   */
+  validateProjectRoot(projectRoot) {
+    if (!projectRoot || typeof projectRoot !== 'string') {
+      throw new Error('Project root must be a valid string path');
+    }
+    
+    try {
+      const resolvedRoot = path.resolve(projectRoot);
+      const currentDir = process.cwd();
+      
+      // Ensure the project root is either current directory or a subdirectory
+      // This prevents accessing parent directories or system paths
+      if (!resolvedRoot.startsWith(path.resolve(currentDir)) && resolvedRoot !== path.resolve(currentDir)) {
+        // Allow specific safe directories for testing/development
+        const allowedRoots = [
+          path.resolve('/tmp'),
+          path.resolve('/var/tmp'),
+          path.resolve(require('os').tmpdir())
+        ];
+        
+        const isAllowed = allowedRoots.some(allowed => resolvedRoot.startsWith(allowed));
+        if (!isAllowed) {
+          throw new Error('Project root must be within current working directory or allowed temporary directories');
+        }
+      }
+      
+      // Validate path format
+      if (resolvedRoot.includes('\0') || resolvedRoot.includes('..')) {
+        throw new Error('Invalid characters in project root path');
+      }
+      
+      return resolvedRoot;
+    } catch (error) {
+      console.error('[SECURITY] Project root validation failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Security: Safe path joining to prevent traversal
+   */
+  securePathJoin(...segments) {
+    try {
+      // Filter out dangerous segments
+      const safeSegments = segments.filter(segment => {
+        if (!segment || typeof segment !== 'string') return false;
+        if (segment.includes('\0')) return false;
+        if (segment.includes('..')) return false;
+        if (path.isAbsolute(segment) && segment !== segments[0]) return false; // Only first segment can be absolute
+        return true;
+      });
+      
+      if (safeSegments.length !== segments.length) {
+        throw new Error('Dangerous path segments detected');
+      }
+      
+      const joinedPath = path.join(...safeSegments);
+      const resolvedPath = path.resolve(joinedPath);
+      
+      // Ensure the resolved path is still within the project root
+      if (!resolvedPath.startsWith(path.resolve(this.projectRoot || process.cwd()))) {
+        throw new Error('Path traversal attempt detected');
+      }
+      
+      return resolvedPath;
+    } catch (error) {
+      console.error('[SECURITY] Secure path join failed:', error.message, { segments });
+      throw error;
+    }
+  }
+
+  /**
+   * Security: Validate file path before any file operation
+   */
+  validateFilePath(filePath, operation = 'unknown') {
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('File path must be a valid string');
+    }
+    
+    try {
+      const resolvedPath = path.resolve(filePath);
+      const allowedBasePath = path.resolve(this.hiveMindPath);
+      
+      // Ensure file is within the hive-mind directory
+      if (!resolvedPath.startsWith(allowedBasePath)) {
+        console.error(`[SECURITY] Blocked ${operation}: File access outside allowed directory`, {
+          requestedPath: filePath,
+          resolvedPath: resolvedPath,
+          allowedBasePath: allowedBasePath
+        });
+        throw new Error('File access outside allowed directory');
+      }
+      
+      // Check for dangerous characters
+      if (resolvedPath.includes('\0')) {
+        throw new Error('Null bytes in file path');
+      }
+      
+      // Validate file extension for specific operations
+      const allowedExtensions = ['.json', '.db', '.log', '.tmp', '.sqlite', '.sqlite3'];
+      const ext = path.extname(resolvedPath).toLowerCase();
+      if (ext && !allowedExtensions.includes(ext)) {
+        console.warn(`[SECURITY] Warning: Unusual file extension ${ext} for ${operation}`);
+      }
+      
+      return resolvedPath;
+    } catch (error) {
+      console.error(`[SECURITY] File path validation failed for ${operation}:`, error.message);
+      throw error;
+    }
+  }
+
   constructor(options = {}) {
     super();
     
-    // Core configuration
-    this.projectRoot = options.projectRoot || process.cwd();
-    this.hiveMindPath = path.join(this.projectRoot, '.hive-mind');
+    // Security: Validate and sanitize projectRoot to prevent path traversal
+    this.projectRoot = this.validateProjectRoot(options.projectRoot || process.cwd());
+    this.hiveMindPath = this.securePathJoin(this.projectRoot, '.hive-mind');
     this.maxMemorySize = options.maxMemorySize || 500 * 1024 * 1024; // 500MB default
     this.maxEntries = options.maxEntries || 100000;
     this.gcInterval = options.gcInterval || 300000; // 5 minutes
@@ -67,12 +183,25 @@ class SharedMemoryStore extends EventEmitter {
     this.operationQueue = [];
     this.processingQueue = false;
     
-    // SQLite integration paths
+    // SQLite integration paths with security validation
     this.dbPaths = {
-      hive: path.join(this.hiveMindPath, 'hive.db'),
-      memory: path.join(this.hiveMindPath, 'memory.db'),
-      sessions: path.join(this.hiveMindPath, 'sessions')
+      hive: this.securePathJoin(this.hiveMindPath, 'hive.db'),
+      memory: this.securePathJoin(this.hiveMindPath, 'memory.db'),
+      sessions: this.securePathJoin(this.hiveMindPath, 'sessions')
     };
+    
+    // Initialize database connection manager
+    this.dbManager = new DatabaseConnectionManager({
+      maxConnections: options.maxConnections || 10,
+      minConnections: options.minConnections || 2,
+      connectionTimeout: options.connectionTimeout || 10000,
+      queryTimeout: options.queryTimeout || 30000,
+      enableWAL: options.enableWAL !== false,
+      healthCheckInterval: options.healthCheckInterval || 60000
+    });
+    
+    // Initialize database schema manager
+    this.schemaManager = new DatabaseSchemaManager(this.dbManager);
     
     // Namespaces for different data types
     this.namespaces = {
@@ -137,38 +266,55 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Ensure directory structure exists
+   * Ensure directory structure exists with security validation
    */
   async ensureDirectoryStructure() {
     try {
-      await fs.mkdir(this.hiveMindPath, { recursive: true });
-      await fs.mkdir(this.dbPaths.sessions, { recursive: true });
+      // Validate and create hive-mind directory
+      const validatedHivePath = this.validateFilePath(this.hiveMindPath, 'directory_creation');
+      await fs.mkdir(validatedHivePath, { recursive: true, mode: 0o750 }); // Secure permissions
       
-      // Create backup directory
-      const backupPath = path.join(this.hiveMindPath, 'backups');
-      await fs.mkdir(backupPath, { recursive: true });
+      // Validate and create sessions directory
+      const validatedSessionsPath = this.validateFilePath(this.dbPaths.sessions, 'directory_creation');
+      await fs.mkdir(validatedSessionsPath, { recursive: true, mode: 0o750 });
+      
+      // Create backup directory with security validation
+      const backupPath = this.securePathJoin(this.hiveMindPath, 'backups');
+      const validatedBackupPath = this.validateFilePath(backupPath, 'directory_creation');
+      await fs.mkdir(validatedBackupPath, { recursive: true, mode: 0o750 });
+      
+      console.log('[SECURITY] Directory structure created with secure permissions');
       
     } catch (error) {
+      console.error('[SECURITY] Failed to create directory structure:', error.message);
       throw new Error(`Failed to create directory structure: ${error.message}`);
     }
   }
   
   /**
-   * Initialize SQLite integration (graceful fallback if SQLite unavailable)
+   * Initialize SQLite integration with advanced connection management
    */
   async initializeSQLiteIntegration() {
     this.dbStatus = { available: false, reason: 'not_initialized' };
     
     try {
-      // Try to load sqlite3 module
-      const sqlite3 = require('sqlite3');
-      this.sqlite3 = sqlite3;
+      // Initialize connection pools for both databases
+      await this.dbManager.createPool(this.dbPaths.memory, 'memory');
+      await this.dbManager.createPool(this.dbPaths.hive, 'hive');
       
-      // Initialize databases
-      await this.initializeMemoryDB();
-      await this.initializeHiveDB();
+      // Set up database schemas
+      await this.initializeSchemas();
       
-      this.dbStatus = { available: true, version: sqlite3.VERSION };
+      // Set up event listeners for database monitoring
+      this.setupDatabaseEventListeners();
+      
+      this.dbStatus = { 
+        available: true, 
+        connectionManager: 'active',
+        pools: ['memory', 'hive']
+      };
+      
+      console.log('[DATABASE] SQLite integration initialized with connection management');
       
     } catch (error) {
       // Fallback to file-based persistence
@@ -184,17 +330,77 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Initialize memory-specific SQLite database
+   * Initialize database schemas using the schema manager
+   */
+  async initializeSchemas() {
+    if (!this.schemaManager) {
+      throw new Error('Schema manager not initialized');
+    }
+    
+    try {
+      await this.schemaManager.initializeSchemas();
+      console.log('[DATABASE] Schemas initialized successfully');
+    } catch (error) {
+      console.error('[DATABASE] Schema initialization failed:', error.message);
+      throw error;
+    }
+  }
+  
+  /**
+   * Setup database event listeners for monitoring
+   */
+  setupDatabaseEventListeners() {
+    if (!this.dbManager) {
+      return;
+    }
+    
+    // Listen to connection events
+    this.dbManager.on('query-success', (event) => {
+      this.stats.totalMemoryUsed = this.memoryUsage;
+    });
+    
+    this.dbManager.on('query-error', (event) => {
+      console.error('[DATABASE] Query error:', event.error.message);
+      this.emit('database-error', event);
+    });
+    
+    this.dbManager.on('health-check', (metrics) => {
+      this.emit('database-health', metrics);
+    });
+    
+    this.dbManager.on('connection-released', (event) => {
+      // Update connection statistics
+    });
+    
+    console.log('[DATABASE] Event listeners configured');
+  }
+  
+  /**
+   * Start connection health monitoring
+   */
+  startConnectionHealthMonitoring() {
+    if (!this.dbManager) {
+      return;
+    }
+    
+    // Health monitoring is handled by the DatabaseConnectionManager
+    console.log('[DATABASE] Connection health monitoring started');
+  }
+  
+  /**
+   * Initialize memory-specific SQLite database with path validation
    */
   async initializeMemoryDB() {
     return new Promise((resolve, reject) => {
-      this.memoryDB = new this.sqlite3.Database(this.dbPaths.memory, (err) => {
-        if (err) {
-          reject(new Error(`Failed to open memory.db: ${err.message}`));
-          return;
-        }
-        
-        // Create tables if they don't exist
+      try {
+        const validatedMemoryPath = this.validateFilePath(this.dbPaths.memory, 'database_creation');
+        this.memoryDB = new this.sqlite3.Database(validatedMemoryPath, (err) => {
+          if (err) {
+            reject(new Error(`Failed to open memory.db: ${err.message}`));
+            return;
+          }
+          
+          // Create tables if they don't exist
         const createTables = `
           CREATE TABLE IF NOT EXISTS shared_memory (
             key TEXT PRIMARY KEY,
@@ -234,29 +440,36 @@ class SharedMemoryStore extends EventEmitter {
           CREATE INDEX IF NOT EXISTS idx_last_accessed ON shared_memory(last_accessed);
         `;
         
-        this.memoryDB.exec(createTables, (err) => {
-          if (err) {
-            reject(new Error(`Failed to create memory tables: ${err.message}`));
-            return;
-          }
-          resolve();
+          this.memoryDB.exec(createTables, (err) => {
+            if (err) {
+              reject(new Error(`Failed to create memory tables: ${err.message}`));
+              return;
+            }
+            console.log('[SECURITY] Memory database initialized with secure path');
+            resolve();
+          });
         });
-      });
+      } catch (error) {
+        console.error('[SECURITY] Memory database initialization failed:', error.message);
+        reject(error);
+      }
     });
   }
   
   /**
-   * Initialize hive-specific SQLite database
+   * Initialize hive-specific SQLite database with path validation
    */
   async initializeHiveDB() {
     return new Promise((resolve, reject) => {
-      this.hiveDB = new this.sqlite3.Database(this.dbPaths.hive, (err) => {
-        if (err) {
-          reject(new Error(`Failed to open hive.db: ${err.message}`));
-          return;
-        }
-        
-        // Create additional tables for cross-agent coordination
+      try {
+        const validatedHivePath = this.validateFilePath(this.dbPaths.hive, 'database_creation');
+        this.hiveDB = new this.sqlite3.Database(validatedHivePath, (err) => {
+          if (err) {
+            reject(new Error(`Failed to open hive.db: ${err.message}`));
+            return;
+          }
+          
+          // Create additional tables for cross-agent coordination
         const createTables = `
           CREATE TABLE IF NOT EXISTS agent_memory (
             agent_id TEXT NOT NULL,
@@ -280,14 +493,19 @@ class SharedMemoryStore extends EventEmitter {
           CREATE INDEX IF NOT EXISTS idx_memory_events_timestamp ON memory_events(timestamp);
         `;
         
-        this.hiveDB.exec(createTables, (err) => {
-          if (err) {
-            reject(new Error(`Failed to create hive tables: ${err.message}`));
-            return;
-          }
-          resolve();
+          this.hiveDB.exec(createTables, (err) => {
+            if (err) {
+              reject(new Error(`Failed to create hive tables: ${err.message}`));
+              return;
+            }
+            console.log('[SECURITY] Hive database initialized with secure path');
+            resolve();
+          });
         });
-      });
+      } catch (error) {
+        console.error('[SECURITY] Hive database initialization failed:', error.message);
+        reject(error);
+      }
     });
   }
   
@@ -373,14 +591,16 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Load data from files (fallback)
+   * Load data from files (fallback) with secure path validation
    */
   async loadFromFiles() {
     try {
-      const memoryFile = path.join(this.hiveMindPath, 'shared-memory.json');
+      const memoryFile = this.securePathJoin(this.hiveMindPath, 'shared-memory.json');
+      const validatedMemoryFile = this.validateFilePath(memoryFile, 'file_read');
       
       try {
-        const data = await fs.readFile(memoryFile, 'utf-8');
+        console.log('[SECURITY] Loading memory data from validated path:', validatedMemoryFile);
+        const data = await fs.readFile(validatedMemoryFile, 'utf-8');
         const parsed = JSON.parse(data);
         
         if (parsed.entries && parsed.metadata) {
@@ -1280,20 +1500,24 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Persist data to SQLite
+   * Persist data to SQLite using connection manager
    */
   async persistToSQLite(key, serializedValue, metadata) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      const stmt = this.memoryDB.prepare(`
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
+      const sql = `
         INSERT OR REPLACE INTO shared_memory 
         (key, namespace, data_type, value, metadata, version, 
          created_at, updated_at, expires_at, size_bytes, access_count, last_accessed) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
+      `;
       
-      stmt.run([
+      const params = [
         key,
         metadata.namespace,
         metadata.dataType,
@@ -1306,25 +1530,39 @@ class SharedMemoryStore extends EventEmitter {
         metadata.size,
         metadata.accessCount,
         metadata.lastAccessed
-      ], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+      ];
+      
+      return new Promise((resolve, reject) => {
+        connection.run(sql, params, function(err) {
+          if (err) {
+            reject(new Error(`Failed to persist data for key ${key}: ${err.message}`));
+          } else {
+            resolve({ lastID: this.lastID, changes: this.changes });
+          }
+        });
       });
       
-      stmt.finalize();
-    });
+    } catch (error) {
+      console.error('[DATABASE] Persist error:', error.message);
+      throw error;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Get data from SQLite
+   * Get data from SQLite using connection manager
    */
   async getFromSQLite(key, version = null) {
-    if (!this.memoryDB) return null;
+    if (!this.dbStatus.available || !this.dbManager) return null;
     
-    return new Promise((resolve, reject) => {
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
       let query = 'SELECT * FROM shared_memory WHERE key = ?';
       const params = [key];
       
@@ -1333,27 +1571,37 @@ class SharedMemoryStore extends EventEmitter {
         params.push(version);
       }
       
-      this.memoryDB.get(query, params, (err, row) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        
-        if (!row) {
-          resolve(null);
-          return;
-        }
-        
-        try {
-          const value = JSON.parse(row.value);
-          const metadata = row.metadata ? JSON.parse(row.metadata) : {};
+      return new Promise((resolve, reject) => {
+        connection.get(query, params, (err, row) => {
+          if (err) {
+            reject(new Error(`Failed to get data for key ${key}: ${err.message}`));
+            return;
+          }
           
-          resolve({ value, metadata });
-        } catch (parseError) {
-          reject(parseError);
-        }
+          if (!row) {
+            resolve(null);
+            return;
+          }
+          
+          try {
+            const value = JSON.parse(row.value);
+            const metadata = row.metadata ? JSON.parse(row.metadata) : {};
+            
+            resolve({ value, metadata });
+          } catch (parseError) {
+            reject(new Error(`Failed to parse data for key ${key}: ${parseError.message}`));
+          }
+        });
       });
-    });
+      
+    } catch (error) {
+      console.error('[DATABASE] Get error:', error.message);
+      return null;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
@@ -1449,7 +1697,7 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Save current state to files (backup and fallback)
+   * Save current state to files (backup and fallback) with secure path validation
    */
   async saveToFiles() {
     try {
@@ -1461,19 +1709,22 @@ class SharedMemoryStore extends EventEmitter {
         stats: this.stats
       };
       
-      const memoryFile = path.join(this.hiveMindPath, 'shared-memory.json');
-      const backupFile = path.join(this.hiveMindPath, 'backups', `shared-memory-${Date.now()}.json`);
+      const memoryFile = this.securePathJoin(this.hiveMindPath, 'shared-memory.json');
+      const backupFile = this.securePathJoin(this.hiveMindPath, 'backups', `shared-memory-${Date.now()}.json`);
       
-      // Save current state
-      await fs.writeFile(memoryFile, JSON.stringify(data, null, 2));
+      const validatedMemoryFile = this.validateFilePath(memoryFile, 'file_write');
+      const validatedBackupFile = this.validateFilePath(backupFile, 'file_write');
       
-      // Create backup
-      await fs.writeFile(backupFile, JSON.stringify(data, null, 2));
+      // Save current state with secure path
+      await fs.writeFile(validatedMemoryFile, JSON.stringify(data, null, 2));
       
-      console.log('Memory state saved to files');
+      // Create backup with secure path
+      await fs.writeFile(validatedBackupFile, JSON.stringify(data, null, 2));
+      
+      console.log('[SECURITY] Memory state saved to files with validated paths');
       
     } catch (error) {
-      console.error('Failed to save memory state:', error);
+      console.error('[SECURITY] Failed to save memory state:', error);
       throw error;
     }
   }
@@ -1829,17 +2080,9 @@ class SharedMemoryStore extends EventEmitter {
       // Save current state
       await this.saveToFiles();
       
-      // Close SQLite databases
-      if (this.memoryDB) {
-        await new Promise((resolve) => {
-          this.memoryDB.close(resolve);
-        });
-      }
-      
-      if (this.hiveDB) {
-        await new Promise((resolve) => {
-          this.hiveDB.close(resolve);
-        });
+      // Shutdown database connection manager
+      if (this.dbManager) {
+        await this.dbManager.shutdown();
       }
       
       // Clear all data
