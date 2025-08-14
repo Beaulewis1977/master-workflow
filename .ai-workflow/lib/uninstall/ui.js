@@ -316,6 +316,7 @@ SAFETY FEATURES:
         console.log('  [B] Create backup');
         console.log('  [K] Adjust keep/remove rules');
         console.log('  [D] Show detailed plan');
+        console.log('  [P] Show process information');
         console.log('  [C] Continue with uninstall');
         console.log('  [Q] Quit');
         console.log('─'.repeat(60));
