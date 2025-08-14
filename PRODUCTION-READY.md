@@ -6,6 +6,22 @@ The Intelligent Workflow Decision System is **100% production-ready** with all r
 
 ## 🚀 What's Been Built
 
+### 0. ✅ **Specialized Sub-Agent Architecture** (PRODUCTION-READY)
+- **Queen Controller Architect** (`1-queen-controller-architect.md`)
+  - Supreme orchestrator managing 10 concurrent agents with 200k context each
+  - Neural integration for intelligent task distribution
+  - System-wide performance optimization and fault recovery
+- **Neural Swarm Architect** (`1-neural-swarm-architect.md`) 
+  - Collective intelligence and emergent behavior systems
+  - Swarm optimization algorithms (PSO, ACO, genetic)
+  - Distributed learning and self-organizing networks
+- **Specialized Domain Agents** (13 specialized agents total)
+  - Code Analyzer, Test Automation Engineer, Documentation Generator
+  - Security Compliance Auditor, Performance Optimization Engineer
+  - Deployment Pipeline Engineer, Error Recovery Specialist
+  - SPARC Methodology Implementer, MCP Integration Specialist
+  - And more - all with 200k context windows and specialized capabilities
+
 ### 1. ✅ **Deep Codebase Analysis** (FULLY IMPLEMENTED)
 - **complexity-analyzer.js** (639 lines)
   - Analyzes 8 dimensions: size, dependencies, architecture, tech stack, features, team, deployment, testing

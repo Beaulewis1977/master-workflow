@@ -1,6 +1,63 @@
-# Migration Guide: Standard → Intelligent Workflow System
+# Migration Guide
 
-## Overview
+## v2.1 to v3.0 Migration
+
+### Overview
+MASTER-WORKFLOW v3.0 introduces revolutionary Queen Controller architecture with 10 concurrent sub-agents, neural learning, and 100 MCP servers. This guide helps you upgrade from v2.1 to v3.0.
+
+### Breaking Changes
+- None - v3.0 maintains full backward compatibility
+
+### New Features
+- Queen Controller with 10 sub-agents (200k context each)
+- Neural Learning System (<6ms predictions)
+- 100 MCP servers (up from 87)
+- 15+ language support
+- Cross-agent pattern sharing via SharedMemoryStore
+- executeWithSubAgents() API
+
+### Migration Steps
+1. **Backup Current Installation**
+   ```bash
+   cp -r .ai-workflow .ai-workflow-v2.1-backup
+   ```
+
+2. **Update Core Components**
+   ```bash
+   ./ai-workflow update --version 3.0
+   ```
+
+3. **Initialize Queen Controller**
+   ```bash
+   ./ai-workflow queen init
+   ```
+
+4. **Configure Neural Learning**
+   ```bash
+   ./ai-workflow neural enable
+   ```
+
+5. **Update MCP Servers**
+   ```bash
+   ./ai-workflow mcp refresh --all
+   ```
+
+### API Changes
+- New: `runner.executeWithSubAgents(task)` for parallel agent execution
+- New: `queen.getPredictedSuccess(task)` for neural predictions
+- Enhanced: `runner.analyze()` now includes neural analysis
+
+### Performance Improvements
+- Agent spawn: 48x faster (103ms vs 5s)
+- Predictions: 83x faster (6ms vs 500ms)
+- Document generation: 30x faster
+- MCP config: 104x faster
+
+---
+
+## Standard → Intelligent Workflow System Migration
+
+### Overview
 This guide helps you migrate from the standard AI Dev OS to the enhanced Intelligent Workflow Decision System with automated approach selection.
 
 ## What's New

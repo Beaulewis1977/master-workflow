@@ -20,7 +20,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:buildermethods.com)",
       "mcp__sequential-thinking__sequentialthinking",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(npm test:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

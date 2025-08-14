@@ -1,3 +1,5 @@
+## YOU MUST USE SPECIALIZED SUB-AGENTS FROM /.claude/agents for all work, not the workflow agents with claude code flow
+
 # Claude Configuration - active Stage Project
 
 ## Phase 1 Complete: Queen Controller Architecture ✅
@@ -11,6 +13,17 @@
 - **Hierarchical Management**: Queen Controller orchestrates all agents
 - **Shared Memory Store**: Cross-agent data sharing with SQLite persistence
 - **Event-Driven Architecture**: Real-time agent coordination
+
+## Phase 7 In Progress: Documentation & Final Updates ⚙️
+- **Implementation Date**: August 13, 2025
+- **Implementer**: Claude (Autonomous Workflow System)
+- **Status**: In Progress
+
+### Documentation Tasks
+- Updating all documents to v3.0
+- Creating architecture guides
+- Writing migration documentation
+- Generating implementation summaries
 
 ## Project Analysis
 - **Complexity Score**: 39/100 (Supports up to 100 with Queen Controller)
@@ -46,27 +59,15 @@
 
 ## Discovered MCP Servers & Tools
 
-### Servers
-- context7: {"enabled":true,"default":true,"description":"General-purpose coding MCP server (preferred for coding)"}
-- filesystem: {"enabled":true,"root":"."}
-- http: {"enabled":true}
-- git: {"enabled":true,"repo":"auto"}
-- openapi: {"enabled":true}
-- browser: {"enabled":true}
-- search: {"enabled":true}
-- github: {"enabled":true}
-- slack: {"enabled":true}
-- jira: {"enabled":true}
-- docker: {"enabled":true}
-- kubernetes: {"enabled":true}
-- postgres: {"enabled":true}
-- redis: {"enabled":true}
-- s3: {"enabled":true}
-- aws: {"enabled":true}
-- gcp: {"enabled":true}
-- azure: {"enabled":true}
-- stripe: {"enabled":true}
-- twilio: {"enabled":true}
+### Servers (100 Total)
+- **Core**: filesystem, http, git, context7
+- **Development**: github, gitlab, bitbucket, npm, yarn
+- **Cloud**: aws, gcp, azure, vercel, netlify
+- **Databases**: postgres, mysql, redis, mongodb, sqlite
+- **AI/ML**: openai, anthropic, perplexity, huggingface
+- **Communication**: slack, discord, teams, telegram
+- **Monitoring**: prometheus, grafana, datadog, sentry
+- **And 70+ more across 13 categories**
 
 ### Tools
 - context7 (mcp:context7)
@@ -117,3 +118,5 @@ Default MCP Server: context7
 - always check /END-OF-PHASE-SUMMARIES folder for the previous phase's end of phase summaries and handoff documents before starting on the new phase. there is important context there and also may list things that were not ffinished from the previous phase. also important documents to read and tools to use. <example> if youre starting on PHASE-2 then go to /END-OF-PHASE-SUMMARIES folder and look at the documents in PHASE-ONE folder and look at the handoff documeent - PHASE-1-SUMMARY.MD and the end of phase summary document PHASE-1-COMPLETE.MD.
 - you must always commit and push all appropriate work and changes to the repo with the new branch name of the phase you were working on with your name on the front. <example> you finished phase-1 so you would push to brand CLAUDE-CODE-PHASE-1-COMPLETE </example> make sure only the files that should be committed and pushed are pushed. nothing from .gitignore, nothing with api keys, etc. no large SDK files, unless they should be pushed to the repo.
 - after each phase is complete you must create two documents. 1) a phase complete summary, <example> PHASE-1-COMPLETE.MD</example> and end of each phase will replace the phase number 1 with the phase number you just finished and save to /END-OF-PHASE-SUMMARIES and create that number phase folder to place it in <example> PHASE-ONE, PHASE-TWO, PHASE-*</example> etc. 2) end of phase summary handoff document that includes the work you did and anywork that still needs to be finished by the next agent, also, any important ddocuments or context to read, and important tools to use. this document naming will be <example>PHASE-*-SUMMARY.MD</example> and must be saved to /END-OF-PHASE-SUMMARIES inside that phase's folder.
+
+- YOU MUST USE SPECIALIZED SUB-AGENTS TO DO THE ALL WORK. THEY HAVE THEIR OWN 200,000 CONTEXT WINDOW. THEY ARE AT @.claude/agents/

@@ -32,10 +32,23 @@
 
 #### ✅ "Does it install the sub agents and custom slash commands?"
 **YES** - The `install-production.sh` script:
-- Installs agents to `.claude/agents/` (lines 244-254)
+- Installs 13+ specialized agents to `.claude/agents/` (lines 244-254)
+  - **Queen Controller Architect**: Supreme orchestrator managing 10 concurrent agents
+  - **Neural Swarm Architect**: Collective intelligence and emergent behavior systems
+  - **Test Automation Engineer**: Comprehensive testing and validation
+  - **Security Compliance Auditor**: Security and compliance management
+  - **Performance Optimization Engineer**: System performance optimization
+  - **Deployment Pipeline Engineer**: Advanced CI/CD automation
+  - **Error Recovery Specialist**: Advanced error handling and recovery
+  - **Code Analyzer Agent**: Deep code analysis and pattern detection
+  - **Documentation Generator**: Intelligent documentation creation
+  - **SPARC Methodology Implementer**: Enterprise methodology implementation
+  - **MCP Integration Specialist**: Model Context Protocol optimization
+  - **Integration Coordinator**: Cross-system integration management
+  - And more specialized domain agents
 - Installs commands to `.claude/commands/` (lines 287-297)
 - Creates recovery specialist agent automatically
-- Configures Claude Code settings.json with hooks
+- Configures Claude Code settings.json with hooks and agent specifications
 
 #### ✅ "Does it check for dependencies and install them?"
 **YES** - Complete dependency management:

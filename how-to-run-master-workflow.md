@@ -7,7 +7,16 @@
 
 npx claude-flow@alpha hive-mind spawn "your objective" --agents 6 --claude
 
+
+TTY
 npx --yes claude-flow@latest hive-mind spawn "MASTER-WORKFLOW" --sparc --agents 10 --claude
+
+./ai-workflow init --hive
+
+non tty
+export CF_DB_DIR="$HOME/.claude-flow-db"
+mkdir -p "$CF_DB_DIR"
+./ai-workflow init --sparc
 
 ./ai-workflow init --sparc
 ./ai-workflow init --hive
@@ -22,6 +31,24 @@ npx --yes claude-flow@latest hive-mind spawn "your objective" --claude
 claude-flow hive-mind spawn "your objective" --claude
 
 ./ai-workflow status-dashboard 8787
+
+
+./ai-workflow init --swarm "Small task"
+./ai-workflow init --hive "Feature work"
+./ai-workflow init --sparc
+# or automatic selection
+./ai-workflow init --auto "Objective"
+
+CLAUDE_FLOW_VERSION=stable npx claude-flow@stable hive-mind spawn "Feature X" --agents 6
+
+# Swarm (no Claude Code)
+npx claude-flow@alpha swarm "Fix auth bug"
+
+# Hive-Mind (no Claude Code)
+npx claude-flow@latest hive-mind spawn "Add user profiles" --agents 6
+
+# SPARC (no Claude Code)
+npx claude-flow@latest hive-mind spawn "MASTER-WORKFLOW" --sparc --agents 10
 
 
 

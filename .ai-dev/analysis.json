@@ -73,7 +73,7 @@
     },
     "testing": {
       "hasTests": true,
-      "testFileCount": 64,
+      "testFileCount": 65,
       "testTypes": {
         "unit": false,
         "integration": true,
