@@ -1,6 +1,7 @@
 /**
- * Manifest Management Module
+ * Manifest Management Module - Phase 1 Enhanced Version
  * Handles loading and writing of installation and generation manifests
+ * with deduplication, versioning, and atomic operations
  */
 
 const fs = require('fs').promises;
@@ -11,6 +12,7 @@ class ManifestManager {
         this.projectRoot = projectRoot;
         this.installManifestPath = path.join(projectRoot, '.ai-workflow', 'installation-record.json');
         this.generationManifestPath = path.join(projectRoot, '.ai-workflow', 'generation-record.json');
+        this.lockFile = path.join(projectRoot, '.ai-workflow', '.manifest.lock');
     }
 
     /**
@@ -61,28 +63,76 @@ class ManifestManager {
     }
 
     /**
+     * Ensure .ai-workflow directory exists
+     */
+    async ensureAiWorkflowDirectory() {
+        const aiWorkflowDir = path.dirname(this.installManifestPath);
+        try {
+            await fs.mkdir(aiWorkflowDir, { recursive: true });
+        } catch (error) {
+            // Directory might already exist, ignore EEXIST errors
+            if (error.code !== 'EEXIST') {
+                throw error;
+            }
+        }
+    }
+
+    /**
+     * Atomic write with lock file
+     */
+    async atomicWrite(filePath, data) {
+        // Ensure the directory exists before writing
+        await this.ensureAiWorkflowDirectory();
+        
+        const tempPath = `${filePath}.tmp`;
+        await fs.writeFile(tempPath, JSON.stringify(data, null, 2), 'utf8');
+        await fs.rename(tempPath, filePath);
+    }
+
+    /**
      * Write installation manifest (for installer integration)
      */
     async writeInstallationManifest(items, version = '3.0.0') {
+        // Add timestamps to items if not present
+        const timestampedItems = items.map(item => ({
+            ...item,
+            timestamp: item.timestamp || new Date().toISOString(),
+            version: version
+        }));
+
         const manifest = {
             installerVersion: version,
             installedAt: new Date().toISOString(),
-            items: items
+            items: timestampedItems
         };
 
-        // If manifest exists, merge items (avoid duplicates)
+        // If manifest exists, merge items with deduplication
         let existingManifest = await this.loadInstallationManifest();
         if (existingManifest) {
-            const existingPaths = new Set(existingManifest.items.map(i => i.path));
-            const newItems = items.filter(item => !existingPaths.has(item.path));
-            manifest.items = [...existingManifest.items, ...newItems];
+            // Create a map for efficient deduplication
+            const itemMap = new Map();
+            
+            // Add existing items
+            existingManifest.items.forEach(item => {
+                itemMap.set(item.path, item);
+            });
+            
+            // Add new items (will overwrite if path exists)
+            timestampedItems.forEach(item => {
+                itemMap.set(item.path, {
+                    ...item,
+                    timestamp: new Date().toISOString(),
+                    version: version
+                });
+            });
+            
+            manifest.items = Array.from(itemMap.values());
+            manifest.installerVersion = version;
+            manifest.lastUpdated = new Date().toISOString();
+            manifest.installedAt = existingManifest.installedAt;
         }
 
-        await fs.writeFile(
-            this.installManifestPath,
-            JSON.stringify(manifest, null, 2),
-            'utf8'
-        );
+        await this.atomicWrite(this.installManifestPath, manifest);
         
         return manifest;
     }
@@ -92,22 +142,41 @@ class ManifestManager {
      */
     async writeGenerationManifest(updates) {
         let manifest = {
+            generatedAt: new Date().toISOString(),
             updates: []
         };
 
-        // If manifest exists, append updates
+        // If manifest exists, merge with deduplication based on path and timestamp
         let existingManifest = await this.loadGenerationManifest();
         if (existingManifest) {
-            manifest.updates = [...existingManifest.updates, ...updates];
+            // Use map for deduplication, keeping latest update per path
+            const updateMap = new Map();
+            
+            // Add existing updates
+            if (existingManifest.updates) {
+                existingManifest.updates.forEach(update => {
+                    const key = update.path;
+                    updateMap.set(key, update);
+                });
+            }
+            
+            // Add new updates (will overwrite if path exists)
+            updates.forEach(update => {
+                const key = update.path;
+                updateMap.set(key, {
+                    ...update,
+                    timestamp: new Date().toISOString()
+                });
+            });
+            
+            manifest.updates = Array.from(updateMap.values());
+            manifest.generatedAt = existingManifest.generatedAt || new Date().toISOString();
+            manifest.lastUpdated = new Date().toISOString();
         } else {
             manifest.updates = updates;
         }
 
-        await fs.writeFile(
-            this.generationManifestPath,
-            JSON.stringify(manifest, null, 2),
-            'utf8'
-        );
+        await this.atomicWrite(this.generationManifestPath, manifest);
         
         return manifest;
     }
@@ -131,17 +200,17 @@ class ManifestManager {
             };
         }
 
-        // Check if item already exists
-        const exists = manifest.items.find(i => i.path === path);
-        if (!exists) {
+        // Check if item already exists and update it, or add new
+        const existingIndex = manifest.items.findIndex(i => i.path === path);
+        if (existingIndex >= 0) {
+            // Update existing item with new timestamp
+            manifest.items[existingIndex] = { ...manifest.items[existingIndex], ...item };
+        } else {
+            // Add new item
             manifest.items.push(item);
-            await fs.writeFile(
-                this.installManifestPath,
-                JSON.stringify(manifest, null, 2),
-                'utf8'
-            );
         }
 
+        await this.atomicWrite(this.installManifestPath, manifest);
         return manifest;
     }
 
@@ -159,16 +228,21 @@ class ManifestManager {
 
         let manifest = await this.loadGenerationManifest();
         if (!manifest) {
-            manifest = { updates: [] };
+            manifest = { 
+                generatedAt: new Date().toISOString(),
+                updates: [] 
+            };
         }
 
-        manifest.updates.push(item);
-        await fs.writeFile(
-            this.generationManifestPath,
-            JSON.stringify(manifest, null, 2),
-            'utf8'
-        );
+        // Check for existing item and update or add
+        const existingIndex = manifest.updates.findIndex(u => u.path === path);
+        if (existingIndex >= 0) {
+            manifest.updates[existingIndex] = { ...manifest.updates[existingIndex], ...item };
+        } else {
+            manifest.updates.push(item);
+        }
 
+        await this.atomicWrite(this.generationManifestPath, manifest);
         return manifest;
     }
 }
