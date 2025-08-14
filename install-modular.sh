@@ -2393,6 +2393,72 @@ EOF
     print_success "Modular CLI created"
 }
 
+# Record installed files to manifest (Phase 1 Implementation)
+record_installation_manifest() {
+    print_header "Recording Installation Manifest"
+    
+    # Check if manifest writer exists
+    local manifest_writer="$INSTALL_DIR/lib/uninstall/manifest-writer.sh"
+    if [ ! -f "$manifest_writer" ]; then
+        print_warning "Manifest writer not found, skipping manifest recording"
+        return 0
+    fi
+    
+    # Prepare items list for bulk recording
+    local items=""
+    
+    # Record core system files
+    if [ -d "$INSTALL_DIR/lib" ]; then
+        find "$INSTALL_DIR/lib" -type f | while read -r file; do
+            "$manifest_writer" file "$file" "installed_system_asset" 2>/dev/null || true
+        done
+    fi
+    
+    # Record intelligence engine files
+    if [ -d "$INSTALL_DIR/intelligence-engine" ]; then
+        find "$INSTALL_DIR/intelligence-engine" -type f | while read -r file; do
+            "$manifest_writer" file "$file" "installed_system_asset" 2>/dev/null || true
+        done
+    fi
+    
+    # Record config files
+    if [ -d "$INSTALL_DIR/configs" ]; then
+        find "$INSTALL_DIR/configs" -type f | while read -r file; do
+            "$manifest_writer" file "$file" "installed_system_asset" 2>/dev/null || true
+        done
+    fi
+    
+    # Record tmux scripts if installed
+    if [ "$INSTALL_TMUX" = true ] && [ -d "$INSTALL_DIR/tmux-scripts" ]; then
+        find "$INSTALL_DIR/tmux-scripts" -type f | while read -r file; do
+            "$manifest_writer" file "$file" "installed_system_asset" 2>/dev/null || true
+        done
+    fi
+    
+    # Record bin scripts
+    if [ -d "$INSTALL_DIR/bin" ]; then
+        find "$INSTALL_DIR/bin" -type f | while read -r file; do
+            "$manifest_writer" file "$file" "installed_system_asset" 2>/dev/null || true
+        done
+    fi
+    
+    # Record symlink
+    if [ -L "$PROJECT_DIR/ai-workflow" ]; then
+        "$manifest_writer" file "$PROJECT_DIR/ai-workflow" "symlink_executable" 2>/dev/null || true
+    fi
+    
+    # Record cache and log directories as ephemeral
+    if [ -d "$INSTALL_DIR/logs" ]; then
+        "$manifest_writer" directory "$INSTALL_DIR/logs" "ephemeral_cache_log" 2>/dev/null || true
+    fi
+    
+    if [ -d "$INSTALL_DIR/supervisor" ]; then
+        "$manifest_writer" directory "$INSTALL_DIR/supervisor" "ephemeral_cache_log" 2>/dev/null || true
+    fi
+    
+    print_success "Installation manifest recorded"
+}
+
 # Save installation configuration
 save_installation_config() {
     cat > "$CONFIG_FILE" << EOF
@@ -2510,7 +2576,10 @@ main() {
     # Step 7: Create CLI
     create_modular_cli
     
-    # Step 8: Save configuration
+    # Step 8: Record installed files to manifest
+    record_installation_manifest
+    
+    # Step 9: Save configuration
 
     # Generate MCP registry
     node "$INSTALL_DIR/lib/mcp-discover.js" "$INSTALL_DIR/configs/mcp-registry.json" >/dev/null 2>&1 || true

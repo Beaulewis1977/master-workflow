@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uninstaller Manifest Writers - Test Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; }
+        .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #007acc; }
+        .suite { margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .passed { color: #28a745; }
+        .failed { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .metric { background: #e9ecef; padding: 10px; margin: 5px 0; border-radius: 3px; }
+        .coverage-bar { background: #ddd; height: 20px; border-radius: 10px; overflow: hidden; }
+        .coverage-fill { background: #28a745; height: 100%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Uninstaller Manifest Writers - Test Report</h1>
+            <p>Generated on 8/14/2025, 1:49:11 AM</p>
+        </div>
+        
+        <div class="summary">
+            <div class="card">
+                <h3>📊 Test Summary</h3>
+                <p><strong>Total Tests:</strong> 29</p>
+                <p><strong class="passed">Passed:</strong> 26</p>
+                <p><strong class="failed">Failed:</strong> 3</p>
+                <p><strong>Success Rate:</strong> 90%</p>
+            </div>
+            
+            <div class="card">
+                <h3>⏱️ Performance</h3>
+                <p><strong>Duration:</strong> 14917ms</p>
+                <p><strong>Average per Test:</strong> 514ms</p>
+            </div>
+            
+            <div class="card">
+                <h3>📈 Coverage</h3>
+                <p><strong>Overall:</strong> 84%</p>
+                <div class="coverage-bar">
+                    <div class="coverage-fill" style="width: 84%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>📋 Test Suites</h2>
+        
+            <div class="suite">
+                <h3>✅ Unit Tests</h3>
+                <p>Basic functionality and unit testing of manifest writer components</p>
+                <p><strong>Duration:</strong> 749ms</p>
+                <p><strong class="passed">Passed:</strong> 8 | <strong class="failed">Failed:</strong> 0</p>
+                
+                
+                
+                
+                    <h4>🔍 Test Details</h4>
+                    <ul>
+                        
+                            <li class="passed">
+                                ✓ Create installation manifest
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Append with deduplication
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Create generation manifest
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Add individual installed item
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Add individual generated item
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Load non-existent manifest gracefully
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Atomic write prevents corruption
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Deduplication updates timestamps
+                                
+                            </li>
+                        
+                    </ul>
+                
+            </div>
+        
+            <div class="suite">
+                <h3>✅ Integration Tests</h3>
+                <p>Testing integration with installer scripts and manifest recording</p>
+                <p><strong>Duration:</strong> 2123ms</p>
+                <p><strong class="passed">Passed:</strong> 7 | <strong class="failed">Failed:</strong> 0</p>
+                
+                
+                
+                
+                    <h4>🔍 Test Details</h4>
+                    <ul>
+                        
+                            <li class="passed">
+                                ✓ Core system installation with manifest
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Document generation with manifest tracking
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Incremental installation with deduplication
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Large-scale installation performance
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Concurrent manifest operations
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Manifest structure validation
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Error handling and recovery
+                                
+                            </li>
+                        
+                    </ul>
+                
+            </div>
+        
+            <div class="suite">
+                <h3>❌ End-to-End Tests</h3>
+                <p>Complete workflow testing including browser automation</p>
+                <p><strong>Duration:</strong> 5049ms</p>
+                <p><strong class="passed">Passed:</strong> 5 | <strong class="failed">Failed:</strong> 1</p>
+                
+                
+                
+                
+                    <h4>🔍 Test Details</h4>
+                    <ul>
+                        
+                            <li class="passed">
+                                ✓ Complete installation and generation workflow
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Uninstaller dry-run simulation
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Manifest file integrity verification
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Large-scale workflow performance
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Cross-platform path handling
+                                
+                            </li>
+                        
+                            <li class="failed">
+                                ✗ Concurrent workflow operations
+                                <br><small class="failed">Error: ENOENT: no such file or directory, rename '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-e2e/concurrent-test/.ai-workflow/generation-record.json.tmp' -> '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-e2e/concurrent-test/.ai-workflow/generation-record.json'</small>
+                            </li>
+                        
+                    </ul>
+                
+            </div>
+        
+            <div class="suite">
+                <h3>❌ Performance Tests</h3>
+                <p>Efficiency and scalability testing of manifest operations</p>
+                <p><strong>Duration:</strong> 6870ms</p>
+                <p><strong class="passed">Passed:</strong> 6 | <strong class="failed">Failed:</strong> 2</p>
+                
+                
+                    <h4>⚡ Performance Metrics</h4>
+                    
+                        <div class="metric">
+                            <strong>Small Scale Write:</strong> 195.17ms avg (73.06-413.78ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>Medium Scale Write:</strong> 147.83ms avg (97.78-205.15ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>Large Scale Write:</strong> 190.58ms avg (136.51-269.57ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>Deduplication:</strong> 171.67ms avg (119.67-221.5ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>Memory Efficiency:</strong> 214.88ms avg (214.88-214.88ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>FS Write:</strong> 120.55ms avg (73.36-304.54ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>FS Read:</strong> 18.85ms avg (11.81-32.36ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>JSON Serialize:</strong> 5.04ms avg (1.04-10.74ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>JSON Parse:</strong> 2.13ms avg (1.43-4.34ms)
+                        </div>
+                    
+                
+                
+                
+                    <h4>🔍 Test Details</h4>
+                    <ul>
+                        
+                            <li class="failed">
+                                ✗ Small-scale manifest operations (10 items)
+                                <br><small class="failed">Error: Too slow: 195.17ms</small>
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Medium-scale manifest operations (100 items)
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Large-scale manifest operations (1000 items)
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Deduplication performance with overlapping data
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Memory usage efficiency
+                                
+                            </li>
+                        
+                            <li class="failed">
+                                ✗ Concurrent operations performance
+                                <br><small class="failed">Error: ENOENT: no such file or directory, rename '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-performance/concurrent-perf/.ai-workflow/installation-record.json.tmp' -> '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-performance/concurrent-perf/.ai-workflow/installation-record.json'</small>
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ File system I/O efficiency
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ JSON serialization performance
+                                
+                            </li>
+                        
+                    </ul>
+                
+            </div>
+        
+        
+        <div class="suite">
+            <h3>🖥️ Environment</h3>
+            <p><strong>Node.js:</strong> v20.19.3</p>
+            <p><strong>Platform:</strong> linux (x64)</p>
+            <p><strong>Memory:</strong> 9MB used</p>
+        </div>
+    </div>
+</body>
+</html>

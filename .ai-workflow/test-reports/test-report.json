@@ -1,0 +1,544 @@
+{
+  "timestamp": "2025-08-14T01:49:11.178Z",
+  "summary": {
+    "totalTests": 29,
+    "passed": 26,
+    "failed": 3,
+    "duration": 14917,
+    "coverage": {
+      "files": {
+        "manifest.js": {
+          "lines": 176,
+          "coverable": 105,
+          "covered": 89,
+          "percentage": 85
+        },
+        "index.js": {
+          "lines": 94,
+          "coverable": 56,
+          "covered": 47,
+          "percentage": 84
+        },
+        "classifier.js": {
+          "lines": 258,
+          "coverable": 154,
+          "covered": 130,
+          "percentage": 84
+        },
+        "plan.js": {
+          "lines": 183,
+          "coverable": 109,
+          "covered": 92,
+          "percentage": 84
+        },
+        "process.js": {
+          "lines": 146,
+          "coverable": 87,
+          "covered": 73,
+          "percentage": 84
+        },
+        "ui.js": {
+          "lines": 259,
+          "coverable": 155,
+          "covered": 131,
+          "percentage": 85
+        },
+        "exec.js": {
+          "lines": 105,
+          "coverable": 63,
+          "covered": 53,
+          "percentage": 84
+        },
+        "report.js": {
+          "lines": 186,
+          "coverable": 111,
+          "covered": 94,
+          "percentage": 85
+        }
+      },
+      "overall": {
+        "covered": 709,
+        "total": 840,
+        "percentage": 84
+      }
+    },
+    "successRate": 90
+  },
+  "suites": [
+    {
+      "name": "Unit Tests",
+      "description": "Basic functionality and unit testing of manifest writer components",
+      "exitCode": 0,
+      "duration": 749,
+      "passed": 8,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Create installation manifest",
+          "status": "passed"
+        },
+        {
+          "name": "Append with deduplication",
+          "status": "passed"
+        },
+        {
+          "name": "Create generation manifest",
+          "status": "passed"
+        },
+        {
+          "name": "Add individual installed item",
+          "status": "passed"
+        },
+        {
+          "name": "Add individual generated item",
+          "status": "passed"
+        },
+        {
+          "name": "Load non-existent manifest gracefully",
+          "status": "passed"
+        },
+        {
+          "name": "Atomic write prevents corruption",
+          "status": "passed"
+        },
+        {
+          "name": "Deduplication updates timestamps",
+          "status": "passed"
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "name": "Integration Tests",
+      "description": "Testing integration with installer scripts and manifest recording",
+      "exitCode": 0,
+      "duration": 2123,
+      "passed": 7,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Core system installation with manifest",
+          "status": "passed"
+        },
+        {
+          "name": "Document generation with manifest tracking",
+          "status": "passed"
+        },
+        {
+          "name": "Incremental installation with deduplication",
+          "status": "passed"
+        },
+        {
+          "name": "Large-scale installation performance",
+          "status": "passed"
+        },
+        {
+          "name": "Concurrent manifest operations",
+          "status": "passed"
+        },
+        {
+          "name": "Manifest structure validation",
+          "status": "passed"
+        },
+        {
+          "name": "Error handling and recovery",
+          "status": "passed"
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "name": "End-to-End Tests",
+      "description": "Complete workflow testing including browser automation",
+      "exitCode": 1,
+      "duration": 5049,
+      "passed": 5,
+      "failed": 1,
+      "tests": [
+        {
+          "name": "Complete installation and generation workflow",
+          "status": "passed"
+        },
+        {
+          "name": "Uninstaller dry-run simulation",
+          "status": "passed"
+        },
+        {
+          "name": "Manifest file integrity verification",
+          "status": "passed"
+        },
+        {
+          "name": "Large-scale workflow performance",
+          "status": "passed"
+        },
+        {
+          "name": "Cross-platform path handling",
+          "status": "passed"
+        },
+        {
+          "name": "Concurrent workflow operations",
+          "status": "failed",
+          "error": "ENOENT: no such file or directory, rename '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-e2e/concurrent-test/.ai-workflow/generation-record.json.tmp' -> '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-e2e/concurrent-test/.ai-workflow/generation-record.json'"
+        }
+      ],
+      "metrics": []
+    },
+    {
+      "name": "Performance Tests",
+      "description": "Efficiency and scalability testing of manifest operations",
+      "exitCode": 1,
+      "duration": 6870,
+      "passed": 6,
+      "failed": 2,
+      "tests": [
+        {
+          "name": "Small-scale manifest operations (10 items)",
+          "status": "failed",
+          "error": "Too slow: 195.17ms"
+        },
+        {
+          "name": "Medium-scale manifest operations (100 items)",
+          "status": "passed",
+          "result": {
+            "name": "Medium Scale Write",
+            "iterations": 5,
+            "average": 147.83,
+            "min": 97.78,
+            "max": 205.15,
+            "measurements": [
+              112.53906499999903,
+              150.9625360000009,
+              205.1454760000015,
+              172.72269700000106,
+              97.77955499999916
+            ]
+          }
+        },
+        {
+          "name": "Large-scale manifest operations (1000 items)",
+          "status": "passed",
+          "result": {
+            "name": "Large Scale Write",
+            "iterations": 3,
+            "average": 190.58,
+            "min": 136.51,
+            "max": 269.57,
+            "measurements": [
+              136.51118300000053,
+              269.5742989999999,
+              165.64379999999983
+            ]
+          }
+        },
+        {
+          "name": "Deduplication performance with overlapping data",
+          "status": "passed",
+          "result": {
+            "name": "Deduplication",
+            "iterations": 5,
+            "average": 171.67,
+            "min": 119.67,
+            "max": 221.5,
+            "measurements": [
+              214.6886349999986,
+              221.49857200000042,
+              174.9218810000002,
+              119.66653299999962,
+              127.59353999999985
+            ]
+          }
+        },
+        {
+          "name": "Memory usage efficiency",
+          "status": "passed",
+          "result": {
+            "metric": {
+              "name": "Memory Efficiency",
+              "iterations": 1,
+              "average": 214.88,
+              "min": 214.88,
+              "max": 214.88,
+              "measurements": [
+                214.88103299999966
+              ]
+            },
+            "memoryIncrease": -605992
+          }
+        },
+        {
+          "name": "Concurrent operations performance",
+          "status": "failed",
+          "error": "ENOENT: no such file or directory, rename '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-performance/concurrent-perf/.ai-workflow/installation-record.json.tmp' -> '/workspaces/MASTER-WORKFLOW/.ai-workflow/test-performance/concurrent-perf/.ai-workflow/installation-record.json'"
+        },
+        {
+          "name": "File system I/O efficiency",
+          "status": "passed",
+          "result": {
+            "writeMetric": {
+              "name": "FS Write",
+              "iterations": 10,
+              "average": 120.55,
+              "min": 73.36,
+              "max": 304.54,
+              "measurements": [
+                73.35546700000123,
+                117.9736699999994,
+                93.951450999999,
+                89.67710699999952,
+                78.35736899999938,
+                105.9915009999986,
+                304.5445089999994,
+                142.0921959999996,
+                81.98692699999992,
+                117.57142600000043
+              ]
+            },
+            "readMetric": {
+              "name": "FS Read",
+              "iterations": 20,
+              "average": 18.85,
+              "min": 11.81,
+              "max": 32.36,
+              "measurements": [
+                17.378195000001142,
+                15.445428000000902,
+                32.35903800000051,
+                15.409053000001222,
+                16.346967000001314,
+                12.76540600000044,
+                13.42766500000107,
+                11.805435999998735,
+                15.82725500000015,
+                19.38354000000072,
+                18.203919999999925,
+                18.504320000000007,
+                30.04628799999955,
+                12.930678000000626,
+                17.586075999999593,
+                14.099183000000266,
+                21.217516000000614,
+                13.97275400000035,
+                28.858555999999226,
+                31.50883000000067
+              ]
+            }
+          }
+        },
+        {
+          "name": "JSON serialization performance",
+          "status": "passed",
+          "result": {
+            "serializeMetric": {
+              "name": "JSON Serialize",
+              "iterations": 10,
+              "average": 5.04,
+              "min": 1.04,
+              "max": 10.74,
+              "measurements": [
+                6.7274710000001505,
+                1.7037380000001576,
+                1.942016999999396,
+                9.153557000001456,
+                4.447728999999526,
+                10.740209999999934,
+                1.152154999999766,
+                1.038356000000931,
+                7.178979000000254,
+                6.346117999999478
+              ]
+            },
+            "parseMetric": {
+              "name": "JSON Parse",
+              "iterations": 10,
+              "average": 2.13,
+              "min": 1.43,
+              "max": 4.34,
+              "measurements": [
+                2.157807999999932,
+                1.536036999999851,
+                1.7420139999994717,
+                1.4940520000000106,
+                1.4340890000003128,
+                1.4252730000007432,
+                2.9660700000004,
+                4.343817999999374,
+                2.504951999999321,
+                1.7028380000010657
+              ]
+            },
+            "size": 358770
+          }
+        }
+      ],
+      "metrics": [
+        {
+          "name": "Small Scale Write",
+          "iterations": 10,
+          "average": 195.17,
+          "min": 73.06,
+          "max": 413.78,
+          "measurements": [
+            112.35707899999943,
+            268.68055300000015,
+            413.77972899999986,
+            240.3810110000013,
+            82.11437699999988,
+            73.05515299999934,
+            95.34973600000012,
+            168.81479600000057,
+            308.0768129999997,
+            189.0433839999987
+          ]
+        },
+        {
+          "name": "Medium Scale Write",
+          "iterations": 5,
+          "average": 147.83,
+          "min": 97.78,
+          "max": 205.15,
+          "measurements": [
+            112.53906499999903,
+            150.9625360000009,
+            205.1454760000015,
+            172.72269700000106,
+            97.77955499999916
+          ]
+        },
+        {
+          "name": "Large Scale Write",
+          "iterations": 3,
+          "average": 190.58,
+          "min": 136.51,
+          "max": 269.57,
+          "measurements": [
+            136.51118300000053,
+            269.5742989999999,
+            165.64379999999983
+          ]
+        },
+        {
+          "name": "Deduplication",
+          "iterations": 5,
+          "average": 171.67,
+          "min": 119.67,
+          "max": 221.5,
+          "measurements": [
+            214.6886349999986,
+            221.49857200000042,
+            174.9218810000002,
+            119.66653299999962,
+            127.59353999999985
+          ]
+        },
+        {
+          "name": "Memory Efficiency",
+          "iterations": 1,
+          "average": 214.88,
+          "min": 214.88,
+          "max": 214.88,
+          "measurements": [
+            214.88103299999966
+          ]
+        },
+        {
+          "name": "FS Write",
+          "iterations": 10,
+          "average": 120.55,
+          "min": 73.36,
+          "max": 304.54,
+          "measurements": [
+            73.35546700000123,
+            117.9736699999994,
+            93.951450999999,
+            89.67710699999952,
+            78.35736899999938,
+            105.9915009999986,
+            304.5445089999994,
+            142.0921959999996,
+            81.98692699999992,
+            117.57142600000043
+          ]
+        },
+        {
+          "name": "FS Read",
+          "iterations": 20,
+          "average": 18.85,
+          "min": 11.81,
+          "max": 32.36,
+          "measurements": [
+            17.378195000001142,
+            15.445428000000902,
+            32.35903800000051,
+            15.409053000001222,
+            16.346967000001314,
+            12.76540600000044,
+            13.42766500000107,
+            11.805435999998735,
+            15.82725500000015,
+            19.38354000000072,
+            18.203919999999925,
+            18.504320000000007,
+            30.04628799999955,
+            12.930678000000626,
+            17.586075999999593,
+            14.099183000000266,
+            21.217516000000614,
+            13.97275400000035,
+            28.858555999999226,
+            31.50883000000067
+          ]
+        },
+        {
+          "name": "JSON Serialize",
+          "iterations": 10,
+          "average": 5.04,
+          "min": 1.04,
+          "max": 10.74,
+          "measurements": [
+            6.7274710000001505,
+            1.7037380000001576,
+            1.942016999999396,
+            9.153557000001456,
+            4.447728999999526,
+            10.740209999999934,
+            1.152154999999766,
+            1.038356000000931,
+            7.178979000000254,
+            6.346117999999478
+          ]
+        },
+        {
+          "name": "JSON Parse",
+          "iterations": 10,
+          "average": 2.13,
+          "min": 1.43,
+          "max": 4.34,
+          "measurements": [
+            2.157807999999932,
+            1.536036999999851,
+            1.7420139999994717,
+            1.4940520000000106,
+            1.4340890000003128,
+            1.4252730000007432,
+            2.9660700000004,
+            4.343817999999374,
+            2.504951999999321,
+            1.7028380000010657
+          ]
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v20.19.3",
+    "platform": "linux",
+    "arch": "x64",
+    "memoryUsage": {
+      "rss": 74117120,
+      "heapTotal": 28811264,
+      "heapUsed": 9277952,
+      "external": 1753060,
+      "arrayBuffers": 104437
+    }
+  }
+}

@@ -579,6 +579,34 @@ class DocumentGeneratorV2 extends EventEmitter {
     await fs.mkdir(path.dirname(fullPath), { recursive: true });
     
     await fs.writeFile(fullPath, content, 'utf8');
+    
+    // Phase 1: Record to generation manifest
+    await this.recordToGenerationManifest(fullPath);
+  }
+  
+  /**
+   * Record generated document to generation manifest
+   * Phase 1 Implementation
+   */
+  async recordToGenerationManifest(filePath) {
+    try {
+      const ManifestManager = require('../.ai-workflow/lib/uninstall/manifest');
+      const projectRoot = path.resolve(this.projectPath || process.cwd());
+      const manager = new ManifestManager.ManifestManager(projectRoot);
+      
+      // Determine strategy based on file path
+      let strategy = 'replace';
+      if (filePath.includes('CLAUDE.md')) {
+        strategy = 'intelligent';
+      } else if (filePath.includes('.agent-os') || filePath.includes('.ai-dev')) {
+        strategy = 'merge';
+      }
+      
+      await manager.addGeneratedItem(filePath, strategy, null);
+    } catch (error) {
+      // Silent fail if manifest system not available
+      console.log(`  ⚠ Could not record to manifest: ${error.message}`);
+    }
   }
   
   /**

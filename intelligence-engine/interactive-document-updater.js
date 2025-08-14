@@ -1243,8 +1243,42 @@ class InteractiveDocumentUpdater extends EventEmitter {
   async writeFileContent(filePath, content) {
     try {
       await fs.writeFile(filePath, content, 'utf-8');
+      
+      // Phase 1: Record to generation manifest
+      await this.recordToGenerationManifest(filePath);
     } catch (error) {
       throw new Error(`Failed to write file ${filePath}: ${error.message}`);
+    }
+  }
+  
+  /**
+   * Record generated document to generation manifest
+   * Phase 1 Implementation
+   */
+  async recordToGenerationManifest(filePath) {
+    try {
+      const ManifestManager = require('../.ai-workflow/lib/uninstall/manifest');
+      const projectRoot = path.resolve(this.options.projectPath);
+      const manager = new ManifestManager.ManifestManager(projectRoot);
+      
+      // Determine strategy based on file path
+      let strategy = 'replace';
+      if (filePath.includes('CLAUDE.md')) {
+        strategy = 'intelligent';
+      } else if (filePath.includes('.agent-os') || filePath.includes('.ai-dev')) {
+        strategy = 'merge';
+      }
+      
+      // Check if backup exists
+      const backupPath = this.backup && this.backup[filePath] 
+        ? path.join(projectRoot, '.ai-workflow/backups', path.basename(filePath))
+        : null;
+      
+      await manager.addGeneratedItem(filePath, strategy, backupPath);
+      console.log(chalk.dim(`  ✓ Recorded to generation manifest: ${path.basename(filePath)}`));
+    } catch (error) {
+      // Silent fail if manifest system not available
+      console.log(chalk.dim(`  ⚠ Could not record to manifest: ${error.message}`));
     }
   }
   
