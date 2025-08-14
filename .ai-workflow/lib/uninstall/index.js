@@ -18,6 +18,7 @@ const { buildPlan, PlanBuilder } = require('./plan');
 const { detectProcesses } = require('./process');
 const { executeRemoval } = require('./exec');
 const { generateReport } = require('./report');
+const { BackupManager } = require('./backup');
 
 const FEATURE_FLAG = process.env.AIWF_UNINSTALLER === 'true';
 
@@ -38,6 +39,7 @@ class AIWorkflowUninstaller {
         this.plan = null;
         this.classification = null;
         this.ui = new UIManager();
+        this.backupManager = new BackupManager(this.ui);
     }
 
     async init(args) {
@@ -177,10 +179,49 @@ class AIWorkflowUninstaller {
     async handleBackupCreation() {
         const backupConfig = await this.ui.createBackupPrompt();
         if (backupConfig) {
-            console.log(`\n💾 Backup will be created at: ${backupConfig.path}`);
-            console.log(`📦 Options: ${backupConfig.options.join(', ')}`);
-            this.config.backup = backupConfig.path;
-            this.config.backupOptions = backupConfig.options;
+            try {
+                console.log(`\n💾 Creating backup...`);
+                console.log(`📦 Options: ${backupConfig.options.join(', ')}`);
+                
+                // Add project name to config for backup path generation
+                const enhancedConfig = {
+                    ...backupConfig,
+                    projectName: path.basename(this.projectRoot)
+                };
+
+                // Create the backup
+                const backupResult = await this.backupManager.createBackup(
+                    enhancedConfig,
+                    this.classification,
+                    this.plan
+                );
+
+                console.log(`\n✅ Backup created successfully!`);
+                console.log(`📁 Location: ${backupResult.path}`);
+                console.log(`📊 Size: ${this.formatFileSize(backupResult.size)}`);
+                console.log(`🗜️  Format: ${backupResult.archiveType}`);
+                
+                // Store backup info in config for report generation
+                this.config.backup = backupResult.path;
+                this.config.backupOptions = backupConfig.options;
+                this.config.backupMetadata = backupResult.metadata;
+                
+                await this.ui.pressEnterToContinue('\nPress Enter to continue...');
+                
+            } catch (error) {
+                console.error(`\n❌ Backup creation failed: ${error.message}`);
+                console.log('\n⚠️  Continuing without backup. This is not recommended!');
+                
+                const continueWithoutBackup = await this.ui.confirmAction(
+                    'Continue without backup? (This could result in data loss)',
+                    false
+                );
+                
+                if (!continueWithoutBackup) {
+                    console.log('\n🛑 Uninstall cancelled by user.');
+                    process.exit(0);
+                }
+            }
         }
     }
 
@@ -271,7 +312,12 @@ class AIWorkflowUninstaller {
                 shouldContinue = await this.interactivePhase();
             }
             
-            // Phase 4: Execute (if confirmed and not dry-run)
+            // Phase 4: Backup (if requested and not already done)
+            if (shouldContinue && this.config.backup && !this.config.backupMetadata) {
+                await this.performCommandLineBackup();
+            }
+            
+            // Phase 5: Execute (if confirmed and not dry-run)
             if (shouldContinue) {
                 await this.execute();
             }
@@ -293,6 +339,79 @@ class AIWorkflowUninstaller {
             }
             process.exit(1);
         }
+    }
+
+    /**
+     * Perform backup when requested via command line
+     * @private
+     */
+    async performCommandLineBackup() {
+        try {
+            if (!this.config.nonInteractive) {
+                console.log('\n💾 Creating backup as requested...');
+            }
+
+            // Prepare backup configuration
+            const backupConfig = {
+                path: this.config.backup === 'auto' ? null : this.config.backup,
+                options: ['config', 'compress'], // Default options for command line
+                projectName: path.basename(this.projectRoot)
+            };
+
+            // Create the backup
+            const backupResult = await this.backupManager.createBackup(
+                backupConfig,
+                this.classification,
+                this.plan
+            );
+
+            if (!this.config.nonInteractive) {
+                console.log(`✅ Backup created successfully!`);
+                console.log(`📁 Location: ${backupResult.path}`);
+                console.log(`📊 Size: ${this.formatFileSize(backupResult.size)}`);
+                console.log(`🗜️  Format: ${backupResult.archiveType}`);
+            }
+
+            // Store backup info in config for report generation
+            this.config.backup = backupResult.path;
+            this.config.backupMetadata = backupResult.metadata;
+
+        } catch (error) {
+            console.error(`❌ Backup creation failed: ${error.message}`);
+            
+            if (this.config.nonInteractive) {
+                // In non-interactive mode, fail the operation
+                throw new Error(`Backup creation failed: ${error.message}`);
+            } else {
+                // In interactive mode, ask user if they want to continue
+                console.log('\n⚠️  Continuing without backup. This is not recommended!');
+                
+                const continueWithoutBackup = await this.ui.confirmAction(
+                    'Continue without backup? (This could result in data loss)',
+                    false
+                );
+                
+                if (!continueWithoutBackup) {
+                    console.log('\n🛑 Uninstall cancelled by user.');
+                    process.exit(0);
+                }
+            }
+        }
+    }
+
+    /**
+     * Format file size in human-readable format
+     * @param {number} bytes - Size in bytes
+     * @returns {string} Formatted size string
+     */
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 }
 

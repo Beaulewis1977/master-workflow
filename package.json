@@ -17,9 +17,11 @@
   },
   "dependencies": {
     "@babel/parser": "^7.28.0",
+    "archiver": "^7.0.1",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "diff": "^8.0.2",
-    "inquirer": "^9.3.7"
+    "inquirer": "^9.3.7",
+    "tar": "^7.4.3"
   }
 }
