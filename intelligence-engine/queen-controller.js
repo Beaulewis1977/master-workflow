@@ -1,16 +1,19 @@
 /**
- * Queen Controller - Hierarchical Sub-Agent Architecture
+ * Queen Controller - Unlimited Sub-Agent Architecture
  * 
- * This is the master controller for managing multiple sub-agents with independent 
+ * This is the master controller for managing unlimited sub-agents with independent 
  * context windows. It orchestrates task distribution, monitors agent health,
  * and aggregates results from concurrent agent operations.
  * 
  * Features:
- * - Manages up to 10 concurrent sub-agents
+ * - UNLIMITED concurrent sub-agents (resource-constrained)
+ * - Dynamic agent scaling based on system resources
  * - Tracks 200k token context windows per agent
+ * - Intelligent conflict detection and resolution
  * - Handles inter-agent communication
  * - Provides shared memory for cross-agent data
- * - Monitors resource usage and performance
+ * - Advanced resource monitoring and optimization
+ * - Support for 42+ specialized agent types
  */
 
 const EventEmitter = require('events');
@@ -20,15 +23,30 @@ const { NeuralLearningSystem } = require('./neural-learning');
 const { WasmCoreModule } = require('./wasm-core-module');
 const { TopologyManager } = require('./topology-manager');
 const { CapabilityMatcher } = require('./capability-matcher');
+const ResourceMonitor = require('./resource-monitor');
+const DynamicScaler = require('./dynamic-scaler');
+const DynamicAgentRegistry = require('./dynamic-agent-registry');
+const ConflictDetector = require('./conflict-detector');
 
 class QueenController extends EventEmitter {
   constructor(options = {}) {
     super();
     
-    // Core configuration
-    this.maxConcurrent = options.maxConcurrent || 10;
+    // Core configuration - UNLIMITED SCALING ENABLED
+    this.maxConcurrent = null; // Removed hard-coded limit - now dynamically calculated
     this.contextWindowSize = options.contextWindowSize || 200000; // 200k tokens
     this.projectRoot = options.projectRoot || process.cwd();
+    
+    // Unlimited scaling configuration
+    this.unlimitedScaling = {
+      enabled: options.unlimitedScaling !== false,
+      safetyLimit: options.safetyLimit || 1000, // Soft safety limit
+      resourceThresholds: {
+        memory: options.memoryThreshold || 0.85,
+        cpu: options.cpuThreshold || 0.80
+      },
+      dynamicCalculation: true
+    };
     
     // Claude Flow 2.0 Configuration
     this.claudeFlow2Config = {
@@ -74,19 +92,18 @@ class QueenController extends EventEmitter {
       errors: []
     };
     
-    // Agent type registry - FIXED: Point to actual specialized agent templates
-    this.agentTypes = new Map([
-      ['code-analyzer', { template: 'code-analyzer-agent.md', capabilities: ['analysis', 'pattern-detection'], contextWindow: 200000 }],
-      ['test-runner', { template: 'testing-validation-agent.md', capabilities: ['testing', 'validation'], contextWindow: 200000 }],
-      ['doc-generator', { template: 'doc-generator-agent.md', capabilities: ['documentation', 'markdown'], contextWindow: 200000 }],
-      ['api-builder', { template: 'api-builder-agent.md', capabilities: ['api', 'endpoints'], contextWindow: 200000 }],
-      ['database-architect', { template: 'database-architect-agent.md', capabilities: ['database', 'schema'], contextWindow: 200000 }],
-      ['security-scanner', { template: 'security-auditor.md', capabilities: ['security', 'audit'], contextWindow: 200000 }],
-      ['performance-optimizer', { template: 'performance-optimizer-agent.md', capabilities: ['performance', 'optimization'], contextWindow: 200000 }],
-      ['deployment-engineer', { template: 'deployment-engineer-agent.md', capabilities: ['deployment', 'ci-cd'], contextWindow: 200000 }],
-      ['frontend-specialist', { template: 'frontend-specialist-agent.md', capabilities: ['frontend', 'ui'], contextWindow: 200000 }],
-      ['recovery-specialist', { template: 'recovery-specialist.md', capabilities: ['recovery', 'fixes'], contextWindow: 200000 }]
-    ]);
+    // REMOVED: Hard-coded agent type registry - now using Dynamic Agent Registry
+    // This enables unlimited agent types from /.claude/agents/ directory
+    this.agentTypes = null; // Will be replaced by dynamic registry
+    
+    // Unlimited scaling system components
+    this.resourceMonitor = null;
+    this.dynamicScaler = null;
+    this.dynamicAgentRegistry = null;
+    this.conflictDetector = null;
+    
+    // Initialize unlimited scaling components
+    this.initializeUnlimitedScaling();
     
     // Initialize Claude Flow 2.0 components
     this.initializeClaudeFlow2Components();
@@ -99,18 +116,163 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Spawn a new sub-agent with specific type and context
-   * @param {string} type - Agent type from registry
+   * Initialize unlimited scaling system
+   */
+  async initializeUnlimitedScaling() {
+    if (!this.unlimitedScaling.enabled) {
+      console.log('Unlimited scaling disabled - using legacy 10-agent limit');
+      this.maxConcurrent = 10;
+      return;
+    }
+    
+    console.log('Initializing Unlimited Agent Scaling System...');
+    
+    try {
+      // Initialize Resource Monitor
+      this.resourceMonitor = new ResourceMonitor({
+        projectRoot: this.projectRoot,
+        targetMemoryUtilization: this.unlimitedScaling.resourceThresholds.memory,
+        targetCpuUtilization: this.unlimitedScaling.resourceThresholds.cpu
+      });
+      
+      // Initialize Dynamic Scaler
+      this.dynamicScaler = new DynamicScaler({
+        minAgents: 1,
+        maxAgents: this.unlimitedScaling.safetyLimit,
+        projectRoot: this.projectRoot
+      });
+      
+      // Initialize Dynamic Agent Registry
+      this.dynamicAgentRegistry = new DynamicAgentRegistry({
+        agentsDirectory: path.join(this.projectRoot, '.claude/agents'),
+        fallbackDirectory: path.join(this.projectRoot, 'sub-agent-documentation/agents'),
+        contextWindowDefault: this.contextWindowSize
+      });
+      
+      // Initialize Conflict Detector
+      this.conflictDetector = new ConflictDetector({
+        projectRoot: this.projectRoot
+      });
+      
+      // Start components
+      await this.resourceMonitor.start();
+      await this.dynamicAgentRegistry.initialize();
+      await this.conflictDetector.initialize();
+      
+      // Setup event handlers
+      this.setupUnlimitedScalingEventHandlers();
+      
+      console.log(`Unlimited Scaling System initialized - discovered ${this.dynamicAgentRegistry.getStats().totalAgentTypes} agent types`);
+      
+      this.emit('unlimited-scaling-initialized', {
+        agentTypes: this.dynamicAgentRegistry.getStats().totalAgentTypes,
+        resourceMonitoring: true,
+        conflictDetection: true,
+        dynamicScaling: true
+      });
+      
+    } catch (error) {
+      console.error('Failed to initialize unlimited scaling system:', error);
+      this.unlimitedScaling.enabled = false;
+      this.maxConcurrent = 10; // Fallback to legacy limit
+      this.emit('unlimited-scaling-error', error);
+    }
+  }
+  
+  /**
+   * Setup event handlers for unlimited scaling components
+   */
+  setupUnlimitedScalingEventHandlers() {
+    // Resource monitor events
+    this.resourceMonitor.on('threshold-exceeded', (alert) => {
+      console.warn(`RESOURCE ALERT: ${alert.type} threshold exceeded (${(alert.current * 100).toFixed(1)}%)`);
+      this.emit('resource-alert', alert);
+    });
+    
+    // Dynamic scaler events
+    this.dynamicScaler.on('scaling-executed', (event) => {
+      console.log(`SCALING: ${event.direction} to ${event.targetCount} agents (${event.reason})`);
+      this.emit('scaling-event', event);
+    });
+    
+    // Agent registry events
+    this.dynamicAgentRegistry.on('agent-registered', (event) => {
+      console.log(`AGENT REGISTERED: ${event.agentType}`);
+    });
+    
+    // Conflict detector events
+    this.conflictDetector.on('conflict-analysis-completed', (event) => {
+      if (event.analysis.hasConflicts) {
+        console.warn(`CONFLICT DETECTED: Task ${event.taskId} has ${event.analysis.conflicts.length} conflicts`);
+      }
+    });
+  }
+  
+  /**
+   * Calculate dynamic agent limit based on current resources
+   */
+  async calculateDynamicAgentLimit() {
+    if (!this.unlimitedScaling.enabled || !this.resourceMonitor) {
+      return this.maxConcurrent || 10;
+    }
+    
+    try {
+      const resourceMetrics = this.resourceMonitor.getMetrics();
+      const scaling = resourceMetrics.current.scaling;
+      
+      return Math.min(scaling.optimalAgentCount, this.unlimitedScaling.safetyLimit);
+    } catch (error) {
+      console.error('Failed to calculate dynamic agent limit:', error);
+      return this.maxConcurrent || 10;
+    }
+  }
+  
+  /**
+   * Get agent configuration from dynamic registry
+   */
+  async getAgentConfigFromRegistry(type) {
+    if (!this.dynamicAgentRegistry) {
+      // Fallback to legacy agent types if registry not available
+      const legacyTypes = new Map([
+        ['code-analyzer', { template: 'code-analyzer-agent.md', capabilities: ['analysis', 'pattern-detection'], contextWindow: 200000 }],
+        ['test-runner', { template: 'testing-validation-agent.md', capabilities: ['testing', 'validation'], contextWindow: 200000 }],
+        ['doc-generator', { template: 'doc-generator-agent.md', capabilities: ['documentation', 'markdown'], contextWindow: 200000 }]
+      ]);
+      return legacyTypes.get(type);
+    }
+    
+    return this.dynamicAgentRegistry.getAgentConfig(type);
+  }
+  
+  /**
+   * Get available agent types
+   */
+  async getAvailableAgentTypes() {
+    if (!this.dynamicAgentRegistry) {
+      return ['code-analyzer', 'test-runner', 'doc-generator'];
+    }
+    
+    const agentTypes = this.dynamicAgentRegistry.getAgentTypes();
+    return Array.from(agentTypes.keys()).slice(0, 10).join(', ') + 
+           (agentTypes.size > 10 ? ` (and ${agentTypes.size - 10} more)` : '');
+  }
+  
+  /**
+   * Spawn a new sub-agent with specific type and context - UNLIMITED SCALING
+   * @param {string} type - Agent type from dynamic registry
    * @param {object} task - Task to assign to agent
    * @param {object} context - Initial context for agent
    */
   async spawnSubAgent(type, task, context = {}) {
-    // Check concurrent limit
-    if (this.activeAgents.size >= this.maxConcurrent) {
-      this.emit('queue-full', { 
+    // Dynamic concurrent limit calculation
+    const optimalLimit = await this.calculateDynamicAgentLimit();
+    
+    if (this.activeAgents.size >= optimalLimit) {
+      this.emit('dynamic-limit-reached', { 
         active: this.activeAgents.size, 
-        max: this.maxConcurrent,
-        queued: this.taskQueue.length 
+        optimalLimit: optimalLimit,
+        queued: this.taskQueue.length,
+        reason: 'resource_constraints'
       });
       
       // Queue the task for later
@@ -118,13 +280,29 @@ class QueenController extends EventEmitter {
       return null;
     }
     
+    // Conflict detection for unlimited scaling
+    if (this.conflictDetector && task) {
+      const conflictAnalysis = await this.conflictDetector.analyzeTaskConflicts(task, `temp-${Date.now()}`);
+      if (conflictAnalysis.hasConflicts && conflictAnalysis.riskLevel === 'critical') {
+        this.emit('task-conflict-detected', {
+          taskId: task.id,
+          conflicts: conflictAnalysis.conflicts,
+          recommendations: conflictAnalysis.recommendations
+        });
+        
+        // Queue task for conflict resolution
+        this.taskQueue.push({ type, task, context, conflictAnalysis });
+        return null;
+      }
+    }
+    
     // Generate unique agent ID
     const agentId = `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // Get agent configuration
-    const agentConfig = this.agentTypes.get(type);
+    // Get agent configuration from dynamic registry
+    const agentConfig = await this.getAgentConfigFromRegistry(type);
     if (!agentConfig) {
-      throw new Error(`Unknown agent type: ${type}`);
+      throw new Error(`Unknown agent type: ${type}. Available types: ${await this.getAvailableAgentTypes()}`);
     }
     
     // Create agent instance with explicit 200k context window - FIXED
@@ -1657,12 +1835,31 @@ context_window: 200000
   }
 
   /**
-   * Shutdown Queen Controller with Claude Flow 2.0 cleanup
+   * Shutdown Queen Controller with unlimited scaling cleanup
    */
   async shutdown() {
+    console.log('Shutting down Queen Controller with unlimited scaling system...');
+    
     // Stop monitoring
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
+    }
+    
+    // Shutdown unlimited scaling components
+    if (this.unlimitedScaling.enabled) {
+      if (this.resourceMonitor) {
+        this.resourceMonitor.stop();
+      }
+      
+      if (this.conflictDetector) {
+        await this.conflictDetector.shutdown();
+      }
+      
+      if (this.dynamicAgentRegistry) {
+        await this.dynamicAgentRegistry.shutdown();
+      }
+      
+      console.log('Unlimited scaling components shutdown completed');
     }
     
     // Shutdown Claude Flow 2.0 components
@@ -1716,7 +1913,7 @@ context_window: 200000
   }
 
   /**
-   * Get current status with neural learning metrics
+   * Get current status with unlimited scaling metrics
    */
   getStatus() {
     const status = {
@@ -1735,6 +1932,39 @@ context_window: 200000
         runtime: agent.endTime ? agent.endTime - agent.startTime : Date.now() - agent.startTime
       }))
     };
+
+    // Add unlimited scaling status
+    if (this.unlimitedScaling.enabled) {
+      status.unlimitedScaling = {
+        enabled: true,
+        dynamicLimit: null,
+        resourceStatus: null,
+        agentTypesAvailable: 0,
+        conflictDetection: !!this.conflictDetector
+      };
+      
+      // Get dynamic limit if resource monitor is available
+      if (this.resourceMonitor) {
+        try {
+          const resourceMetrics = this.resourceMonitor.getMetrics();
+          status.unlimitedScaling.dynamicLimit = resourceMetrics.current.scaling.optimalAgentCount;
+          status.unlimitedScaling.resourceStatus = this.resourceMonitor.getResourceStatus();
+        } catch (error) {
+          status.unlimitedScaling.resourceError = error.message;
+        }
+      }
+      
+      // Get agent types count
+      if (this.dynamicAgentRegistry) {
+        status.unlimitedScaling.agentTypesAvailable = this.dynamicAgentRegistry.getStats().totalAgentTypes;
+      }
+    } else {
+      status.unlimitedScaling = {
+        enabled: false,
+        legacyMode: true,
+        fixedLimit: this.maxConcurrent
+      };
+    }
 
     // Add neural learning system status if available
     try {

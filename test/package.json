@@ -1,9 +1,31 @@
 {
-  "name": "ai-workflow-tests",
-  "version": "0.1.0",
+  "name": "enhanced-mcp-testing-system",
+  "version": "3.0.0",
+  "description": "Comprehensive testing and validation system for Enhanced MCP Ecosystem v3.0",
   "private": true,
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "test": "node test-runner.js"
+    "test": "node enhanced-mcp-test-orchestrator.js",
+    "test:integration": "node mcp-integration-test-suite.js",
+    "test:scaling": "node unlimited-scaling-load-test.js",
+    "test:performance": "node performance-regression-test.js",
+    "test:e2e": "node e2e-integration-test.js",
+    "test:cicd": "node ci-cd-pipeline-test.js",
+    "test:mocks": "node mock-server-infrastructure.js",
+    "test:all": "./run-enhanced-mcp-tests.sh",
+    "test:quick": "node mcp-integration-test-suite.js && node performance-regression-test.js",
+    "test:production": "MCP_TEST_MODE=production node enhanced-mcp-test-orchestrator.js"
+  },
+  "keywords": [
+    "mcp",
+    "testing",
+    "validation",
+    "scaling",
+    "performance",
+    "integration",
+    "automation"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

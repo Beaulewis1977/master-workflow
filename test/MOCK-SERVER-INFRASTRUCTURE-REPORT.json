@@ -1,0 +1,86 @@
+{
+  "startTime": 1755198364907,
+  "endTime": 1755198365894,
+  "mockServerTests": [],
+  "dataGenerationTests": [
+    {
+      "name": "Realistic Data Generation",
+      "status": "passed",
+      "realisticDataTypes": 5,
+      "totalDataTypes": 5,
+      "qualityScore": 1
+    },
+    {
+      "name": "Synthetic Data Generation",
+      "status": "passed",
+      "generatedSchemas": 3,
+      "totalSchemas": 3
+    },
+    {
+      "name": "Data Consistency",
+      "status": "passed",
+      "consistencyScore": 0.9933577744231183,
+      "dataSet1Size": 100,
+      "dataSet2Size": 100
+    },
+    {
+      "name": "Data Relationships",
+      "status": "passed",
+      "relationshipIntegrity": 1,
+      "usersCount": 50,
+      "ordersCount": 200
+    }
+  ],
+  "behaviorTests": [
+    {
+      "name": "Response Time Variations",
+      "status": "failed",
+      "responseTimes": [
+        {
+          "behavior": "fast",
+          "avgTime": 2.180441200000496,
+          "minTime": 1.1374050000013085,
+          "maxTime": 3.206021999998484
+        },
+        {
+          "behavior": "normal",
+          "avgTime": 13.083914499999446,
+          "minTime": 5.292632999997295,
+          "maxTime": 19.435179000000062
+        },
+        {
+          "behavior": "slow",
+          "avgTime": 68.3137918999997,
+          "minTime": 23.415775000001304,
+          "maxTime": 98.39782500000001
+        }
+      ]
+    },
+    {
+      "name": "Failure Scenarios",
+      "status": "passed",
+      "handledFailures": 3,
+      "totalFailureTypes": 4
+    },
+    {
+      "name": "Load Handling",
+      "status": "passed",
+      "handledLoads": 4,
+      "totalLoadTests": 4
+    },
+    {
+      "name": "State Persistence",
+      "status": "passed",
+      "stateKeys": 2,
+      "statePersisted": true
+    }
+  ],
+  "summary": {
+    "totalMockServers": 0,
+    "workingMockServers": 0,
+    "testsPassed": 7,
+    "testsFailed": 1,
+    "successRate": "87.5",
+    "duration": 987
+  }
+}

@@ -1,0 +1,4474 @@
+{
+  "version": "3.0.0",
+  "generatedAt": "2025-08-14T17:51:33.576Z",
+  "totalAgents": 46,
+  "bindings": {
+    "agent-communication-bridge": {
+      "agentName": "agent-communication-bridge",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "ceo-quality-control": {
+      "agentName": "ceo-quality-control",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "context-flattener-specialist": {
+      "agentName": "context-flattener-specialist",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "deployment-pipeline-engineer": {
+      "agentName": "deployment-pipeline-engineer",
+      "role": "deployment-specialist",
+      "priority": 8,
+      "maxConnections": 10,
+      "servers": [
+        "terraform",
+        "kubernetes",
+        "docker",
+        "aws",
+        "gcp",
+        "vercel"
+      ],
+      "capabilities": [
+        "infrastructure-management",
+        "provisioning",
+        "state-management",
+        "pod-management",
+        "service-discovery",
+        "scaling",
+        "container-management",
+        "image-building",
+        "networking",
+        "cloud-management",
+        "infrastructure",
+        "deployment",
+        "ml-services"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "kubernetes",
+          "priority": 8,
+          "capabilities": [
+            "pod-management",
+            "service-discovery",
+            "scaling"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "docker",
+          "priority": 8,
+          "capabilities": [
+            "container-management",
+            "image-building",
+            "networking"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "aws",
+          "priority": 8,
+          "capabilities": [
+            "cloud-management",
+            "infrastructure",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "gcp",
+          "priority": 8,
+          "capabilities": [
+            "cloud-management",
+            "ml-services",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "terraform",
+          "priority": 7,
+          "capabilities": [
+            "infrastructure-management",
+            "provisioning",
+            "state-management"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "vercel",
+          "priority": 7,
+          "capabilities": [
+            "deployment",
+            "serverless",
+            "frontend"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        }
+      ]
+    },
+    "documentation-generator": {
+      "agentName": "documentation-generator",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "engine-architect": {
+      "agentName": "engine-architect",
+      "role": "system-developer",
+      "priority": 8,
+      "maxConnections": 10,
+      "servers": [
+        "context7",
+        "github",
+        "githubactions",
+        "git",
+        "gitlab",
+        "circleci"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "repository-management",
+        "pull-requests",
+        "issues",
+        "workflow-automation",
+        "ci-cd",
+        "deployment"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "git",
+          "priority": 9,
+          "capabilities": [
+            "version-control",
+            "repository-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "github",
+          "priority": 8,
+          "capabilities": [
+            "repository-management",
+            "pull-requests",
+            "issues"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "githubactions",
+          "priority": 7,
+          "capabilities": [
+            "workflow-automation",
+            "ci-cd",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "gitlab",
+          "priority": 7,
+          "capabilities": [
+            "repository-management",
+            "merge-requests",
+            "ci-cd"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "circleci",
+          "priority": 5,
+          "capabilities": [
+            "ci-cd",
+            "testing",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        }
+      ]
+    },
+    "error-recovery-specialist": {
+      "agentName": "error-recovery-specialist",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "intelligence-analyzer": {
+      "agentName": "intelligence-analyzer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "mcp-integration-specialist": {
+      "agentName": "mcp-integration-specialist",
+      "role": "mcp-coordinator",
+      "priority": 10,
+      "maxConnections": 20,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http",
+        "git",
+        "github",
+        "gitlab",
+        "bitbucket",
+        "vscode",
+        "jetbrains",
+        "vim",
+        "emacs",
+        "npm",
+        "yarn",
+        "pip",
+        "conda",
+        "cargo",
+        "composer",
+        "maven",
+        "gradle",
+        "aws",
+        "gcp",
+        "azure",
+        "digitalocean",
+        "linode",
+        "vultr",
+        "vercel",
+        "netlify",
+        "heroku",
+        "railway",
+        "postgres",
+        "mysql",
+        "mongodb",
+        "redis",
+        "sqlite",
+        "cassandra",
+        "elasticsearch",
+        "couchdb",
+        "neo4j",
+        "influxdb",
+        "docker",
+        "kubernetes",
+        "podman",
+        "rancher",
+        "openshift",
+        "openai",
+        "anthropic",
+        "huggingface",
+        "ollama",
+        "cohere",
+        "replicate",
+        "stability",
+        "midjourney",
+        "tensorflow",
+        "pytorch",
+        "perplexity",
+        "slack",
+        "discord",
+        "teams",
+        "telegram",
+        "whatsapp",
+        "email",
+        "twilio",
+        "sendgrid",
+        "prometheus",
+        "grafana",
+        "datadog",
+        "newrelic",
+        "sentry",
+        "jaeger",
+        "zipkin",
+        "elk",
+        "vault",
+        "1password",
+        "bitwarden",
+        "snyk",
+        "sonarqube",
+        "veracode",
+        "qualys",
+        "jira",
+        "asana",
+        "trello",
+        "notion",
+        "confluence",
+        "monday",
+        "clickup",
+        "linear",
+        "stripe",
+        "paypal",
+        "shopify",
+        "salesforce",
+        "hubspot",
+        "zendesk",
+        "intercom",
+        "figma",
+        "airtable",
+        "zapier",
+        "browser",
+        "puppeteer",
+        "playwright",
+        "selenium",
+        "search",
+        "tableau",
+        "powerbi",
+        "looker",
+        "databricks",
+        "snowflake",
+        "gemini",
+        "claude_projects",
+        "langchain",
+        "llamaindex",
+        "vectordb",
+        "terraform",
+        "ansible",
+        "jenkins",
+        "circleci",
+        "githubactions",
+        "openapi",
+        "json",
+        "xml",
+        "yaml",
+        "csv",
+        "encryption",
+        "compression",
+        "qr",
+        "pdf",
+        "imagemagick",
+        "ffmpeg",
+        "s3"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls",
+        "version-control",
+        "repository-management",
+        "pull-requests",
+        "issues",
+        "merge-requests",
+        "ci-cd",
+        "pipelines",
+        "editor-integration",
+        "debugging",
+        "extensions",
+        "ide-integration",
+        "text-editing",
+        "configuration",
+        "extensibility",
+        "package-management",
+        "dependency-resolution",
+        "workspace-management",
+        "virtual-environments",
+        "environment-management",
+        "build-system",
+        "autoloading",
+        "build-management",
+        "dependency-management",
+        "multi-project-builds",
+        "cloud-management",
+        "infrastructure",
+        "deployment",
+        "ml-services",
+        "enterprise-services",
+        "droplet-management",
+        "kubernetes",
+        "server-management",
+        "networking",
+        "compute-instances",
+        "block-storage",
+        "serverless",
+        "frontend",
+        "static-hosting",
+        "continuous-deployment",
+        "app-deployment",
+        "add-ons",
+        "scaling",
+        "databases",
+        "monitoring",
+        "sql-operations",
+        "schema-management",
+        "migrations",
+        "replication",
+        "clustering",
+        "document-operations",
+        "aggregation",
+        "indexing",
+        "caching",
+        "pub-sub",
+        "data-structures",
+        "embedded-sql",
+        "file-based",
+        "distributed-database",
+        "high-availability",
+        "full-text-search",
+        "analytics",
+        "document-storage",
+        "http-api",
+        "graph-queries",
+        "relationships",
+        "cypher",
+        "time-series",
+        "metrics",
+        "container-management",
+        "image-building",
+        "pod-management",
+        "service-discovery",
+        "rootless-containers",
+        "cluster-management",
+        "multi-cluster",
+        "enterprise-kubernetes",
+        "developer-tools",
+        "text-generation",
+        "embeddings",
+        "fine-tuning",
+        "conversation",
+        "analysis",
+        "reasoning",
+        "model-inference",
+        "model-download",
+        "datasets",
+        "local-inference",
+        "model-management",
+        "classification",
+        "image-generation",
+        "stable-diffusion",
+        "artistic-creation",
+        "model-training",
+        "inference",
+        "research",
+        "web-search",
+        "citations",
+        "messaging",
+        "channels",
+        "notifications",
+        "voice",
+        "communities",
+        "meetings",
+        "chat",
+        "collaboration",
+        "bot-messaging",
+        "groups",
+        "business-messaging",
+        "templates",
+        "smtp",
+        "imap",
+        "sms",
+        "video",
+        "transactional-email",
+        "marketing",
+        "metrics-collection",
+        "alerting",
+        "dashboards",
+        "visualization",
+        "apm",
+        "infrastructure-monitoring",
+        "logs",
+        "browser-monitoring",
+        "alerts",
+        "error-tracking",
+        "performance-monitoring",
+        "distributed-tracing",
+        "performance-analysis",
+        "latency-analysis",
+        "log-aggregation",
+        "search",
+        "secrets-management",
+        "encryption",
+        "access-control",
+        "password-management",
+        "secrets-automation",
+        "secure-sharing",
+        "vulnerability-scanning",
+        "dependency-analysis",
+        "code-quality",
+        "security-analysis",
+        "technical-debt",
+        "static-analysis",
+        "dynamic-testing",
+        "vulnerability-assessment",
+        "compliance",
+        "issue-tracking",
+        "project-management",
+        "workflows",
+        "task-management",
+        "team-collaboration",
+        "projects",
+        "kanban-boards",
+        "card-management",
+        "knowledge-base",
+        "project-tracking",
+        "workflow-automation",
+        "time-tracking",
+        "goals",
+        "roadmaps",
+        "team-management",
+        "payments",
+        "subscriptions",
+        "webhooks",
+        "invoicing",
+        "store-management",
+        "products",
+        "orders",
+        "crm",
+        "lead-management",
+        "automation",
+        "sales",
+        "customer-service",
+        "ticketing",
+        "customer-support",
+        "live-chat",
+        "customer-messaging",
+        "design-files",
+        "prototypes",
+        "integrations",
+        "web-scraping",
+        "testing",
+        "headless-browser",
+        "pdf-generation",
+        "screenshots",
+        "cross-browser",
+        "mobile-emulation",
+        "web-testing",
+        "browser-automation",
+        "results-parsing",
+        "data-visualization",
+        "business-intelligence",
+        "reporting",
+        "data-modeling",
+        "big-data",
+        "machine-learning",
+        "data-engineering",
+        "data-warehouse",
+        "cloud-storage",
+        "multimodal-ai",
+        "code-generation",
+        "project-context",
+        "long-context",
+        "chain-management",
+        "agent-orchestration",
+        "tool-calling",
+        "data-indexing",
+        "retrieval",
+        "knowledge-graphs",
+        "vector-search",
+        "similarity",
+        "infrastructure-management",
+        "provisioning",
+        "state-management",
+        "configuration-management",
+        "continuous-integration",
+        "build-automation",
+        "api-documentation",
+        "schema-validation",
+        "json-parsing",
+        "validation",
+        "transformation",
+        "xml-parsing",
+        "yaml-parsing",
+        "conversion",
+        "csv-parsing",
+        "data-transformation",
+        "hashing",
+        "key-generation",
+        "compression",
+        "archiving",
+        "extraction",
+        "qr-generation",
+        "qr-reading",
+        "pdf-parsing",
+        "document-processing",
+        "image-processing",
+        "format-conversion",
+        "image-manipulation",
+        "video-processing",
+        "audio-processing"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "git",
+          "priority": 9,
+          "capabilities": [
+            "version-control",
+            "repository-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "openai",
+          "priority": 9,
+          "capabilities": [
+            "text-generation",
+            "embeddings",
+            "fine-tuning"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "anthropic",
+          "priority": 9,
+          "capabilities": [
+            "conversation",
+            "analysis",
+            "reasoning"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "claude_projects",
+          "priority": 9,
+          "capabilities": [
+            "project-context",
+            "long-context",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "github",
+          "priority": 8,
+          "capabilities": [
+            "repository-management",
+            "pull-requests",
+            "issues"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "npm",
+          "priority": 8,
+          "capabilities": [
+            "package-management",
+            "dependency-resolution"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "yarn",
+          "priority": 8,
+          "capabilities": [
+            "package-management",
+            "workspace-management"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "aws",
+          "priority": 8,
+          "capabilities": [
+            "cloud-management",
+            "infrastructure",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "gcp",
+          "priority": 8,
+          "capabilities": [
+            "cloud-management",
+            "ml-services",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "azure",
+          "priority": 8,
+          "capabilities": [
+            "cloud-management",
+            "enterprise-services"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "postgres",
+          "priority": 8,
+          "capabilities": [
+            "sql-operations",
+            "schema-management",
+            "migrations"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "docker",
+          "priority": 8,
+          "capabilities": [
+            "container-management",
+            "image-building",
+            "networking"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "kubernetes",
+          "priority": 8,
+          "capabilities": [
+            "pod-management",
+            "service-discovery",
+            "scaling"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "vault",
+          "priority": 8,
+          "capabilities": [
+            "secrets-management",
+            "encryption",
+            "access-control"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "gemini",
+          "priority": 8,
+          "capabilities": [
+            "multimodal-ai",
+            "reasoning",
+            "code-generation"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "gitlab",
+          "priority": 7,
+          "capabilities": [
+            "repository-management",
+            "merge-requests",
+            "ci-cd"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "vscode",
+          "priority": 7,
+          "capabilities": [
+            "editor-integration",
+            "debugging",
+            "extensions"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "jetbrains",
+          "priority": 7,
+          "capabilities": [
+            "ide-integration",
+            "debugging",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "pip",
+          "priority": 7,
+          "capabilities": [
+            "package-management",
+            "virtual-environments"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "conda",
+          "priority": 7,
+          "capabilities": [
+            "package-management",
+            "environment-management"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "vercel",
+          "priority": 7,
+          "capabilities": [
+            "deployment",
+            "serverless",
+            "frontend"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "netlify",
+          "priority": 7,
+          "capabilities": [
+            "static-hosting",
+            "continuous-deployment"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "mysql",
+          "priority": 7,
+          "capabilities": [
+            "sql-operations",
+            "replication",
+            "clustering"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "mongodb",
+          "priority": 7,
+          "capabilities": [
+            "document-operations",
+            "aggregation",
+            "indexing"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "redis",
+          "priority": 7,
+          "capabilities": [
+            "caching",
+            "pub-sub",
+            "data-structures"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "huggingface",
+          "priority": 7,
+          "capabilities": [
+            "model-inference",
+            "model-download",
+            "datasets"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "ollama",
+          "priority": 7,
+          "capabilities": [
+            "local-inference",
+            "model-management"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "perplexity",
+          "priority": 7,
+          "capabilities": [
+            "web-search",
+            "reasoning",
+            "citations"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "slack",
+          "priority": 7,
+          "capabilities": [
+            "messaging",
+            "channels",
+            "notifications"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "email",
+          "priority": 7,
+          "capabilities": [
+            "smtp",
+            "imap",
+            "templates"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "prometheus",
+          "priority": 7,
+          "capabilities": [
+            "metrics-collection",
+            "alerting",
+            "time-series"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "grafana",
+          "priority": 7,
+          "capabilities": [
+            "dashboards",
+            "visualization",
+            "alerting"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "1password",
+          "priority": 7,
+          "capabilities": [
+            "password-management",
+            "secrets-automation"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "jira",
+          "priority": 7,
+          "capabilities": [
+            "issue-tracking",
+            "project-management",
+            "workflows"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "stripe",
+          "priority": 7,
+          "capabilities": [
+            "payments",
+            "subscriptions",
+            "webhooks"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "browser",
+          "priority": 7,
+          "capabilities": [
+            "web-scraping",
+            "automation",
+            "testing"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "puppeteer",
+          "priority": 7,
+          "capabilities": [
+            "headless-browser",
+            "pdf-generation",
+            "screenshots"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "playwright",
+          "priority": 7,
+          "capabilities": [
+            "cross-browser",
+            "testing",
+            "mobile-emulation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "databricks",
+          "priority": 7,
+          "capabilities": [
+            "big-data",
+            "machine-learning",
+            "data-engineering"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "snowflake",
+          "priority": 7,
+          "capabilities": [
+            "data-warehouse",
+            "analytics",
+            "cloud-storage"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "langchain",
+          "priority": 7,
+          "capabilities": [
+            "chain-management",
+            "agent-orchestration",
+            "tool-calling"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "llamaindex",
+          "priority": 7,
+          "capabilities": [
+            "data-indexing",
+            "retrieval",
+            "knowledge-graphs"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "terraform",
+          "priority": 7,
+          "capabilities": [
+            "infrastructure-management",
+            "provisioning",
+            "state-management"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "githubactions",
+          "priority": 7,
+          "capabilities": [
+            "workflow-automation",
+            "ci-cd",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "openapi",
+          "priority": 7,
+          "capabilities": [
+            "api-documentation",
+            "schema-validation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "bitbucket",
+          "priority": 6,
+          "capabilities": [
+            "repository-management",
+            "pull-requests",
+            "pipelines"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "vim",
+          "priority": 6,
+          "capabilities": [
+            "text-editing",
+            "configuration"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "emacs",
+          "priority": 6,
+          "capabilities": [
+            "text-editing",
+            "configuration",
+            "extensibility"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "cargo",
+          "priority": 6,
+          "capabilities": [
+            "package-management",
+            "build-system"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "composer",
+          "priority": 6,
+          "capabilities": [
+            "package-management",
+            "autoloading"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "maven",
+          "priority": 6,
+          "capabilities": [
+            "build-management",
+            "dependency-management"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "gradle",
+          "priority": 6,
+          "capabilities": [
+            "build-management",
+            "multi-project-builds"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "digitalocean",
+          "priority": 6,
+          "capabilities": [
+            "droplet-management",
+            "kubernetes"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "heroku",
+          "priority": 6,
+          "capabilities": [
+            "app-deployment",
+            "add-ons",
+            "scaling"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "sqlite",
+          "priority": 6,
+          "capabilities": [
+            "embedded-sql",
+            "file-based"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "elasticsearch",
+          "priority": 6,
+          "capabilities": [
+            "full-text-search",
+            "analytics",
+            "indexing"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "podman",
+          "priority": 6,
+          "capabilities": [
+            "rootless-containers",
+            "pod-management"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "cohere",
+          "priority": 6,
+          "capabilities": [
+            "text-generation",
+            "embeddings",
+            "classification"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "replicate",
+          "priority": 6,
+          "capabilities": [
+            "model-inference",
+            "image-generation"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "stability",
+          "priority": 6,
+          "capabilities": [
+            "image-generation",
+            "stable-diffusion"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "tensorflow",
+          "priority": 6,
+          "capabilities": [
+            "model-training",
+            "inference",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "pytorch",
+          "priority": 6,
+          "capabilities": [
+            "model-training",
+            "research",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "discord",
+          "priority": 6,
+          "capabilities": [
+            "messaging",
+            "voice",
+            "communities"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "teams",
+          "priority": 6,
+          "capabilities": [
+            "meetings",
+            "chat",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "twilio",
+          "priority": 6,
+          "capabilities": [
+            "sms",
+            "voice",
+            "video"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "datadog",
+          "priority": 6,
+          "capabilities": [
+            "apm",
+            "infrastructure-monitoring",
+            "logs"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "newrelic",
+          "priority": 6,
+          "capabilities": [
+            "apm",
+            "browser-monitoring",
+            "alerts"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "sentry",
+          "priority": 6,
+          "capabilities": [
+            "error-tracking",
+            "performance-monitoring"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "elk",
+          "priority": 6,
+          "capabilities": [
+            "log-aggregation",
+            "search",
+            "visualization"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "bitwarden",
+          "priority": 6,
+          "capabilities": [
+            "password-management",
+            "secure-sharing"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "snyk",
+          "priority": 6,
+          "capabilities": [
+            "vulnerability-scanning",
+            "dependency-analysis"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "asana",
+          "priority": 6,
+          "capabilities": [
+            "task-management",
+            "team-collaboration",
+            "projects"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "trello",
+          "priority": 6,
+          "capabilities": [
+            "kanban-boards",
+            "card-management",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "notion",
+          "priority": 6,
+          "capabilities": [
+            "documentation",
+            "databases",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "paypal",
+          "priority": 6,
+          "capabilities": [
+            "payments",
+            "invoicing",
+            "subscriptions"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "shopify",
+          "priority": 6,
+          "capabilities": [
+            "store-management",
+            "products",
+            "orders"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "salesforce",
+          "priority": 6,
+          "capabilities": [
+            "crm",
+            "lead-management",
+            "automation"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "selenium",
+          "priority": 6,
+          "capabilities": [
+            "web-testing",
+            "browser-automation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "search",
+          "priority": 6,
+          "capabilities": [
+            "web-search",
+            "results-parsing"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "tableau",
+          "priority": 6,
+          "capabilities": [
+            "data-visualization",
+            "business-intelligence",
+            "dashboards"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "powerbi",
+          "priority": 6,
+          "capabilities": [
+            "data-visualization",
+            "reporting",
+            "analytics"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "vectordb",
+          "priority": 6,
+          "capabilities": [
+            "vector-search",
+            "embeddings",
+            "similarity"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "ansible",
+          "priority": 6,
+          "capabilities": [
+            "configuration-management",
+            "deployment",
+            "automation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "jenkins",
+          "priority": 6,
+          "capabilities": [
+            "continuous-integration",
+            "build-automation",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "json",
+          "priority": 6,
+          "capabilities": [
+            "json-parsing",
+            "validation",
+            "transformation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "yaml",
+          "priority": 6,
+          "capabilities": [
+            "yaml-parsing",
+            "validation",
+            "conversion"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "encryption",
+          "priority": 6,
+          "capabilities": [
+            "encryption",
+            "hashing",
+            "key-generation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "pdf",
+          "priority": 6,
+          "capabilities": [
+            "pdf-generation",
+            "pdf-parsing",
+            "document-processing"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "linode",
+          "priority": 5,
+          "capabilities": [
+            "server-management",
+            "networking"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "vultr",
+          "priority": 5,
+          "capabilities": [
+            "compute-instances",
+            "block-storage"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "railway",
+          "priority": 5,
+          "capabilities": [
+            "deployment",
+            "databases",
+            "monitoring"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "cassandra",
+          "priority": 5,
+          "capabilities": [
+            "distributed-database",
+            "high-availability"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "neo4j",
+          "priority": 5,
+          "capabilities": [
+            "graph-queries",
+            "relationships",
+            "cypher"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "influxdb",
+          "priority": 5,
+          "capabilities": [
+            "time-series",
+            "metrics",
+            "monitoring"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "rancher",
+          "priority": 5,
+          "capabilities": [
+            "cluster-management",
+            "multi-cluster"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "openshift",
+          "priority": 5,
+          "capabilities": [
+            "enterprise-kubernetes",
+            "developer-tools"
+          ],
+          "status": "initializing",
+          "template": "container_server"
+        },
+        {
+          "serverName": "midjourney",
+          "priority": 5,
+          "capabilities": [
+            "image-generation",
+            "artistic-creation"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "telegram",
+          "priority": 5,
+          "capabilities": [
+            "bot-messaging",
+            "channels",
+            "groups"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "whatsapp",
+          "priority": 5,
+          "capabilities": [
+            "business-messaging",
+            "templates"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "sendgrid",
+          "priority": 5,
+          "capabilities": [
+            "transactional-email",
+            "marketing"
+          ],
+          "status": "initializing",
+          "template": "communication_server"
+        },
+        {
+          "serverName": "jaeger",
+          "priority": 5,
+          "capabilities": [
+            "distributed-tracing",
+            "performance-analysis"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "zipkin",
+          "priority": 5,
+          "capabilities": [
+            "distributed-tracing",
+            "latency-analysis"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "sonarqube",
+          "priority": 5,
+          "capabilities": [
+            "code-quality",
+            "security-analysis",
+            "technical-debt"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "veracode",
+          "priority": 5,
+          "capabilities": [
+            "static-analysis",
+            "dynamic-testing"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "confluence",
+          "priority": 5,
+          "capabilities": [
+            "documentation",
+            "knowledge-base",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "monday",
+          "priority": 5,
+          "capabilities": [
+            "project-tracking",
+            "workflow-automation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "clickup",
+          "priority": 5,
+          "capabilities": [
+            "task-management",
+            "time-tracking",
+            "goals"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "linear",
+          "priority": 5,
+          "capabilities": [
+            "issue-tracking",
+            "roadmaps",
+            "team-management"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "hubspot",
+          "priority": 5,
+          "capabilities": [
+            "marketing",
+            "sales",
+            "customer-service"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "zendesk",
+          "priority": 5,
+          "capabilities": [
+            "ticketing",
+            "customer-support",
+            "knowledge-base"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "intercom",
+          "priority": 5,
+          "capabilities": [
+            "live-chat",
+            "customer-messaging",
+            "automation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "figma",
+          "priority": 5,
+          "capabilities": [
+            "design-files",
+            "prototypes",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "airtable",
+          "priority": 5,
+          "capabilities": [
+            "databases",
+            "automation",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "zapier",
+          "priority": 5,
+          "capabilities": [
+            "workflow-automation",
+            "integrations"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "looker",
+          "priority": 5,
+          "capabilities": [
+            "data-modeling",
+            "analytics",
+            "reporting"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "circleci",
+          "priority": 5,
+          "capabilities": [
+            "ci-cd",
+            "testing",
+            "deployment"
+          ],
+          "status": "initializing",
+          "template": "auth_required_server"
+        },
+        {
+          "serverName": "xml",
+          "priority": 5,
+          "capabilities": [
+            "xml-parsing",
+            "validation",
+            "transformation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "csv",
+          "priority": 5,
+          "capabilities": [
+            "csv-parsing",
+            "data-transformation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "compression",
+          "priority": 5,
+          "capabilities": [
+            "compression",
+            "archiving",
+            "extraction"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "imagemagick",
+          "priority": 5,
+          "capabilities": [
+            "image-processing",
+            "format-conversion",
+            "image-manipulation"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "ffmpeg",
+          "priority": 5,
+          "capabilities": [
+            "video-processing",
+            "audio-processing",
+            "format-conversion"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "s3",
+          "priority": 5,
+          "capabilities": [],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "couchdb",
+          "priority": 4,
+          "capabilities": [
+            "document-storage",
+            "replication",
+            "http-api"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        },
+        {
+          "serverName": "qualys",
+          "priority": 4,
+          "capabilities": [
+            "vulnerability-assessment",
+            "compliance"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "qr",
+          "priority": 4,
+          "capabilities": [
+            "qr-generation",
+            "qr-reading"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        }
+      ]
+    },
+    "metrics-monitoring-engineer": {
+      "agentName": "metrics-monitoring-engineer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "neural-swarm-architect": {
+      "agentName": "neural-swarm-architect",
+      "role": "ai-coordinator",
+      "priority": 9,
+      "maxConnections": 12,
+      "servers": [
+        "openai",
+        "anthropic",
+        "gemini",
+        "claude_projects",
+        "cohere",
+        "perplexity",
+        "huggingface",
+        "replicate"
+      ],
+      "capabilities": [
+        "text-generation",
+        "embeddings",
+        "fine-tuning",
+        "conversation",
+        "analysis",
+        "reasoning",
+        "multimodal-ai",
+        "code-generation",
+        "project-context",
+        "long-context",
+        "collaboration",
+        "model-inference"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "openai",
+          "priority": 9,
+          "capabilities": [
+            "text-generation",
+            "embeddings",
+            "fine-tuning"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "anthropic",
+          "priority": 9,
+          "capabilities": [
+            "conversation",
+            "analysis",
+            "reasoning"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "claude_projects",
+          "priority": 9,
+          "capabilities": [
+            "project-context",
+            "long-context",
+            "collaboration"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "gemini",
+          "priority": 8,
+          "capabilities": [
+            "multimodal-ai",
+            "reasoning",
+            "code-generation"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "perplexity",
+          "priority": 7,
+          "capabilities": [
+            "web-search",
+            "reasoning",
+            "citations"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "huggingface",
+          "priority": 7,
+          "capabilities": [
+            "model-inference",
+            "model-download",
+            "datasets"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "cohere",
+          "priority": 6,
+          "capabilities": [
+            "text-generation",
+            "embeddings",
+            "classification"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        },
+        {
+          "serverName": "replicate",
+          "priority": 6,
+          "capabilities": [
+            "model-inference",
+            "image-generation"
+          ],
+          "status": "initializing",
+          "template": "ai_model_server"
+        }
+      ]
+    },
+    "orchestration-coordinator": {
+      "agentName": "orchestration-coordinator",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "performance-optimization-engineer": {
+      "agentName": "performance-optimization-engineer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "queen-controller-architect": {
+      "agentName": "queen-controller-architect",
+      "role": "system-coordinator",
+      "priority": 10,
+      "maxConnections": 15,
+      "servers": [
+        "prometheus",
+        "grafana",
+        "vault",
+        "context7",
+        "railway",
+        "influxdb"
+      ],
+      "capabilities": [
+        "metrics-collection",
+        "alerting",
+        "time-series",
+        "dashboards",
+        "visualization",
+        "secrets-management",
+        "encryption",
+        "access-control",
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "monitoring"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "vault",
+          "priority": 8,
+          "capabilities": [
+            "secrets-management",
+            "encryption",
+            "access-control"
+          ],
+          "status": "initializing",
+          "template": "utility_server"
+        },
+        {
+          "serverName": "prometheus",
+          "priority": 7,
+          "capabilities": [
+            "metrics-collection",
+            "alerting",
+            "time-series"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "grafana",
+          "priority": 7,
+          "capabilities": [
+            "dashboards",
+            "visualization",
+            "alerting"
+          ],
+          "status": "initializing",
+          "template": "monitoring_server"
+        },
+        {
+          "serverName": "railway",
+          "priority": 5,
+          "capabilities": [
+            "deployment",
+            "databases",
+            "monitoring"
+          ],
+          "status": "initializing",
+          "template": "cloud_server"
+        },
+        {
+          "serverName": "influxdb",
+          "priority": 5,
+          "capabilities": [
+            "time-series",
+            "metrics",
+            "monitoring"
+          ],
+          "status": "initializing",
+          "template": "database_server"
+        }
+      ]
+    },
+    "resource-scheduler": {
+      "agentName": "resource-scheduler",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "security-compliance-auditor": {
+      "agentName": "security-compliance-auditor",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "sparc-methodology-implementer": {
+      "agentName": "sparc-methodology-implementer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "state-persistence-manager": {
+      "agentName": "state-persistence-manager",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "system-integration-specialist": {
+      "agentName": "system-integration-specialist",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "test-automation-engineer": {
+      "agentName": "test-automation-engineer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "tmux-session-manager": {
+      "agentName": "tmux-session-manager",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "workflow-language-designer": {
+      "agentName": "workflow-language-designer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "agent-config-generator": {
+      "agentName": "agent-config-generator",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "api-builder": {
+      "agentName": "api-builder",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "approach-selector": {
+      "agentName": "approach-selector",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "code-analyzer": {
+      "agentName": "code-analyzer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "complexity-analyzer": {
+      "agentName": "complexity-analyzer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "configuration-pipeline": {
+      "agentName": "configuration-pipeline",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "database-architect": {
+      "agentName": "database-architect",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "deployment-engineer": {
+      "agentName": "deployment-engineer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "doc-generator": {
+      "agentName": "doc-generator",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "document-customizer": {
+      "agentName": "document-customizer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "frontend-specialist": {
+      "agentName": "frontend-specialist",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "github-git-specialist": {
+      "agentName": "github-git-specialist",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "integration-coordinator": {
+      "agentName": "integration-coordinator",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "mcp-workflow-integration": {
+      "agentName": "mcp-workflow-integration",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "pattern-sharing": {
+      "agentName": "pattern-sharing",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "performance-optimizer": {
+      "agentName": "performance-optimizer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "recovery-specialist": {
+      "agentName": "recovery-specialist",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "security-auditor": {
+      "agentName": "security-auditor",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "security-scanner": {
+      "agentName": "security-scanner",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "sparc-methodology": {
+      "agentName": "sparc-methodology",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "test-engineer": {
+      "agentName": "test-engineer",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "test-runner": {
+      "agentName": "test-runner",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "testing-validation": {
+      "agentName": "testing-validation",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    },
+    "workflow-orchestrator": {
+      "agentName": "workflow-orchestrator",
+      "role": "general-agent",
+      "priority": 5,
+      "maxConnections": 6,
+      "servers": [
+        "context7",
+        "filesystem",
+        "http"
+      ],
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring",
+        "file-operations",
+        "directory-management",
+        "http-requests",
+        "api-calls"
+      ],
+      "serverBindings": [
+        {
+          "serverName": "context7",
+          "priority": 10,
+          "capabilities": [
+            "code-analysis",
+            "documentation",
+            "refactoring"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "filesystem",
+          "priority": 10,
+          "capabilities": [
+            "file-operations",
+            "directory-management"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        },
+        {
+          "serverName": "http",
+          "priority": 9,
+          "capabilities": [
+            "http-requests",
+            "api-calls"
+          ],
+          "status": "initializing",
+          "template": "core_server"
+        }
+      ]
+    }
+  },
+  "stats": {
+    "totalBindings": 277,
+    "agentsByRole": {
+      "general-agent": 41,
+      "deployment-specialist": 1,
+      "system-developer": 1,
+      "mcp-coordinator": 1,
+      "ai-coordinator": 1,
+      "system-coordinator": 1
+    },
+    "serverUsage": {
+      "context7": 44,
+      "filesystem": 42,
+      "http": 42,
+      "terraform": 2,
+      "kubernetes": 2,
+      "docker": 2,
+      "aws": 2,
+      "gcp": 2,
+      "vercel": 2,
+      "github": 2,
+      "githubactions": 2,
+      "git": 2,
+      "gitlab": 2,
+      "circleci": 2,
+      "bitbucket": 1,
+      "vscode": 1,
+      "jetbrains": 1,
+      "vim": 1,
+      "emacs": 1,
+      "npm": 1,
+      "yarn": 1,
+      "pip": 1,
+      "conda": 1,
+      "cargo": 1,
+      "composer": 1,
+      "maven": 1,
+      "gradle": 1,
+      "azure": 1,
+      "digitalocean": 1,
+      "linode": 1,
+      "vultr": 1,
+      "netlify": 1,
+      "heroku": 1,
+      "railway": 2,
+      "postgres": 1,
+      "mysql": 1,
+      "mongodb": 1,
+      "redis": 1,
+      "sqlite": 1,
+      "cassandra": 1,
+      "elasticsearch": 1,
+      "couchdb": 1,
+      "neo4j": 1,
+      "influxdb": 2,
+      "podman": 1,
+      "rancher": 1,
+      "openshift": 1,
+      "openai": 2,
+      "anthropic": 2,
+      "huggingface": 2,
+      "ollama": 1,
+      "cohere": 2,
+      "replicate": 2,
+      "stability": 1,
+      "midjourney": 1,
+      "tensorflow": 1,
+      "pytorch": 1,
+      "perplexity": 2,
+      "slack": 1,
+      "discord": 1,
+      "teams": 1,
+      "telegram": 1,
+      "whatsapp": 1,
+      "email": 1,
+      "twilio": 1,
+      "sendgrid": 1,
+      "prometheus": 2,
+      "grafana": 2,
+      "datadog": 1,
+      "newrelic": 1,
+      "sentry": 1,
+      "jaeger": 1,
+      "zipkin": 1,
+      "elk": 1,
+      "vault": 2,
+      "1password": 1,
+      "bitwarden": 1,
+      "snyk": 1,
+      "sonarqube": 1,
+      "veracode": 1,
+      "qualys": 1,
+      "jira": 1,
+      "asana": 1,
+      "trello": 1,
+      "notion": 1,
+      "confluence": 1,
+      "monday": 1,
+      "clickup": 1,
+      "linear": 1,
+      "stripe": 1,
+      "paypal": 1,
+      "shopify": 1,
+      "salesforce": 1,
+      "hubspot": 1,
+      "zendesk": 1,
+      "intercom": 1,
+      "figma": 1,
+      "airtable": 1,
+      "zapier": 1,
+      "browser": 1,
+      "puppeteer": 1,
+      "playwright": 1,
+      "selenium": 1,
+      "search": 1,
+      "tableau": 1,
+      "powerbi": 1,
+      "looker": 1,
+      "databricks": 1,
+      "snowflake": 1,
+      "gemini": 2,
+      "claude_projects": 2,
+      "langchain": 1,
+      "llamaindex": 1,
+      "vectordb": 1,
+      "ansible": 1,
+      "jenkins": 1,
+      "openapi": 1,
+      "json": 1,
+      "xml": 1,
+      "yaml": 1,
+      "csv": 1,
+      "encryption": 1,
+      "compression": 1,
+      "qr": 1,
+      "pdf": 1,
+      "imagemagick": 1,
+      "ffmpeg": 1,
+      "s3": 1
+    }
+  }
+}

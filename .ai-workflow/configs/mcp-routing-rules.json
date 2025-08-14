@@ -1,0 +1,291 @@
+{
+  "version": "3.0.0",
+  "description": "MCP Server Routing Rules for Intelligent Task Distribution",
+  "lastUpdated": "2025-08-14T00:00:00.000Z",
+  "rules": [
+    {
+      "id": "code-analysis",
+      "pattern": "code.*analysis|analyze.*code|review.*code|refactor|lint",
+      "capabilities": ["code-analysis", "documentation", "refactoring"],
+      "preferredServers": ["context7", "sonarqube", "github"],
+      "priority": 10,
+      "description": "Route code analysis and review tasks"
+    },
+    {
+      "id": "database-operations",
+      "pattern": "database|sql|query|migration|schema|postgres|mysql|mongo",
+      "capabilities": ["sql-operations", "schema-management", "migrations"],
+      "preferredServers": ["postgres", "mysql", "mongodb", "redis"],
+      "priority": 9,
+      "description": "Route database-related operations"
+    },
+    {
+      "id": "cloud-deployment",
+      "pattern": "deploy|cloud|infrastructure|provision|aws|azure|gcp",
+      "capabilities": ["deployment", "cloud-management", "infrastructure"],
+      "preferredServers": ["aws", "gcp", "azure", "vercel", "netlify"],
+      "priority": 9,
+      "description": "Route cloud deployment and infrastructure tasks"
+    },
+    {
+      "id": "container-management",
+      "pattern": "docker|container|kubernetes|orchestration|pod|k8s",
+      "capabilities": ["container-management", "orchestration", "scaling"],
+      "preferredServers": ["docker", "kubernetes", "rancher", "openshift"],
+      "priority": 8,
+      "description": "Route containerization and orchestration tasks"
+    },
+    {
+      "id": "ai-ml-operations",
+      "pattern": "ai|ml|machine learning|model|inference|openai|claude",
+      "capabilities": ["text-generation", "model-inference", "embeddings"],
+      "preferredServers": ["openai", "anthropic", "huggingface", "ollama"],
+      "priority": 8,
+      "description": "Route AI and machine learning operations"
+    },
+    {
+      "id": "web-automation",
+      "pattern": "browser|scrape|web.*automation|selenium|puppeteer|playwright",
+      "capabilities": ["web-scraping", "automation", "testing"],
+      "preferredServers": ["browser", "puppeteer", "playwright", "selenium"],
+      "priority": 7,
+      "description": "Route web automation and testing tasks"
+    },
+    {
+      "id": "frontend-deployment",
+      "pattern": "frontend|react|vue|angular|static.*site|vercel|netlify",
+      "capabilities": ["deployment", "frontend", "static-hosting"],
+      "preferredServers": ["vercel", "netlify", "aws", "gcp"],
+      "priority": 7,
+      "description": "Route frontend deployment tasks"
+    },
+    {
+      "id": "communication",
+      "pattern": "message|notify|email|slack|discord|sms|alert",
+      "capabilities": ["messaging", "notifications", "communication"],
+      "preferredServers": ["slack", "discord", "email", "twilio"],
+      "priority": 7,
+      "description": "Route communication and notification tasks"
+    },
+    {
+      "id": "monitoring-observability",
+      "pattern": "monitor|metrics|logs|observability|grafana|prometheus",
+      "capabilities": ["metrics-collection", "monitoring", "alerting"],
+      "preferredServers": ["prometheus", "grafana", "datadog", "sentry"],
+      "priority": 6,
+      "description": "Route monitoring and observability tasks"
+    },
+    {
+      "id": "security-scanning",
+      "pattern": "security|vulnerability|scan|secrets|encryption|audit",
+      "capabilities": ["security-analysis", "secrets-management", "vulnerability-scanning"],
+      "preferredServers": ["vault", "snyk", "sonarqube", "1password"],
+      "priority": 8,
+      "description": "Route security and vulnerability tasks"
+    },
+    {
+      "id": "file-operations",
+      "pattern": "file|directory|filesystem|storage|upload|download",
+      "capabilities": ["file-operations", "directory-management"],
+      "preferredServers": ["filesystem", "s3", "gcp"],
+      "priority": 6,
+      "description": "Route file and storage operations"
+    },
+    {
+      "id": "api-development",
+      "pattern": "api|rest|graphql|openapi|swagger|endpoint",
+      "capabilities": ["api-documentation", "schema-validation", "http-requests"],
+      "preferredServers": ["openapi", "http", "context7"],
+      "priority": 7,
+      "description": "Route API development and documentation tasks"
+    },
+    {
+      "id": "package-management",
+      "pattern": "package|dependency|npm|pip|cargo|composer|maven",
+      "capabilities": ["package-management", "dependency-resolution"],
+      "preferredServers": ["npm", "pip", "cargo", "composer"],
+      "priority": 6,
+      "description": "Route package and dependency management"
+    },
+    {
+      "id": "project-management",
+      "pattern": "project|task|issue|jira|trello|asana|ticket",
+      "capabilities": ["issue-tracking", "project-management", "task-management"],
+      "preferredServers": ["jira", "asana", "trello", "linear"],
+      "priority": 5,
+      "description": "Route project and task management operations"
+    },
+    {
+      "id": "documentation",
+      "pattern": "document|doc|readme|guide|manual|wiki|markdown",
+      "capabilities": ["documentation", "content-generation"],
+      "preferredServers": ["context7", "notion", "confluence", "openapi"],
+      "priority": 6,
+      "description": "Route documentation generation tasks"
+    },
+    {
+      "id": "data-processing",
+      "pattern": "json|xml|yaml|csv|parse|transform|convert",
+      "capabilities": ["json-parsing", "xml-parsing", "yaml-parsing", "csv-parsing"],
+      "preferredServers": ["json", "xml", "yaml", "csv"],
+      "priority": 5,
+      "description": "Route data processing and transformation tasks"
+    },
+    {
+      "id": "payment-processing",
+      "pattern": "payment|stripe|paypal|billing|subscription|checkout",
+      "capabilities": ["payments", "subscriptions", "invoicing"],
+      "preferredServers": ["stripe", "paypal"],
+      "priority": 7,
+      "description": "Route payment and billing operations"
+    },
+    {
+      "id": "image-generation",
+      "pattern": "image|generate.*image|stable.*diffusion|midjourney|dall.*e",
+      "capabilities": ["image-generation", "artistic-creation"],
+      "preferredServers": ["stability", "midjourney", "replicate"],
+      "priority": 6,
+      "description": "Route image generation tasks"
+    },
+    {
+      "id": "search-operations",
+      "pattern": "search|find|query|elasticsearch|index",
+      "capabilities": ["web-search", "full-text-search", "results-parsing"],
+      "preferredServers": ["search", "elasticsearch", "perplexity"],
+      "priority": 6,
+      "description": "Route search and query operations"
+    },
+    {
+      "id": "encryption-security",
+      "pattern": "encrypt|decrypt|hash|crypto|ssl|tls|certificate",
+      "capabilities": ["encryption", "hashing", "key-generation"],
+      "preferredServers": ["encryption", "vault", "1password"],
+      "priority": 8,
+      "description": "Route encryption and cryptographic operations"
+    }
+  ],
+  "agentProfiles": {
+    "frontend-specialist-agent": {
+      "description": "Frontend development and deployment specialist",
+      "preferredCapabilities": ["frontend", "deployment", "web-automation", "static-hosting"],
+      "preferredServers": ["vercel", "netlify", "browser", "puppeteer"],
+      "fallbackServers": ["context7", "github", "aws"],
+      "complexity": "medium",
+      "specializations": ["react", "vue", "angular", "web-components"]
+    },
+    "database-architect-agent": {
+      "description": "Database design and management specialist",
+      "preferredCapabilities": ["sql-operations", "schema-management", "migrations"],
+      "preferredServers": ["postgres", "mysql", "mongodb", "redis"],
+      "fallbackServers": ["sqlite", "elasticsearch"],
+      "complexity": "high",
+      "specializations": ["postgresql", "mysql", "mongodb", "redis"]
+    },
+    "deployment-engineer-agent": {
+      "description": "Cloud deployment and infrastructure specialist",
+      "preferredCapabilities": ["deployment", "cloud-management", "infrastructure", "container-management"],
+      "preferredServers": ["aws", "gcp", "azure", "docker", "kubernetes"],
+      "fallbackServers": ["vercel", "netlify", "heroku"],
+      "complexity": "high",
+      "specializations": ["aws", "kubernetes", "docker", "terraform"]
+    },
+    "security-auditor-agent": {
+      "description": "Security analysis and vulnerability management specialist",
+      "preferredCapabilities": ["security-analysis", "vulnerability-scanning", "secrets-management"],
+      "preferredServers": ["vault", "snyk", "sonarqube", "1password"],
+      "fallbackServers": ["github", "gitlab"],
+      "complexity": "high",
+      "specializations": ["security-scanning", "penetration-testing", "compliance"]
+    },
+    "performance-optimizer-agent": {
+      "description": "Performance monitoring and optimization specialist",
+      "preferredCapabilities": ["monitoring", "metrics-collection", "performance-analysis"],
+      "preferredServers": ["prometheus", "grafana", "datadog", "newrelic"],
+      "fallbackServers": ["sentry", "elasticsearch"],
+      "complexity": "medium",
+      "specializations": ["apm", "monitoring", "observability"]
+    },
+    "mcp-integration-specialist": {
+      "description": "MCP server integration and orchestration specialist",
+      "preferredCapabilities": ["all"],
+      "preferredServers": ["context7", "filesystem", "http", "git"],
+      "fallbackServers": ["all"],
+      "complexity": "high",
+      "specializations": ["mcp-servers", "tool-orchestration", "system-integration"]
+    },
+    "api-builder-agent": {
+      "description": "API development and documentation specialist",
+      "preferredCapabilities": ["api-documentation", "schema-validation", "http-requests"],
+      "preferredServers": ["openapi", "context7", "http"],
+      "fallbackServers": ["github", "gitlab"],
+      "complexity": "medium",
+      "specializations": ["rest-api", "graphql", "openapi", "microservices"]
+    },
+    "testing-validation-agent": {
+      "description": "Testing and quality assurance specialist",
+      "preferredCapabilities": ["testing", "automation", "web-testing"],
+      "preferredServers": ["browser", "puppeteer", "playwright", "selenium"],
+      "fallbackServers": ["context7", "sonarqube"],
+      "complexity": "medium",
+      "specializations": ["e2e-testing", "unit-testing", "integration-testing"]
+    },
+    "documentation-generator-agent": {
+      "description": "Documentation generation and content creation specialist",
+      "preferredCapabilities": ["documentation", "content-generation"],
+      "preferredServers": ["context7", "openapi", "notion", "confluence"],
+      "fallbackServers": ["github", "gitlab"],
+      "complexity": "low",
+      "specializations": ["technical-writing", "api-docs", "user-guides"]
+    },
+    "workflow-orchestrator-agent": {
+      "description": "Workflow automation and orchestration specialist",
+      "preferredCapabilities": ["workflow-automation", "integrations", "orchestration"],
+      "preferredServers": ["zapier", "kubernetes", "github"],
+      "fallbackServers": ["context7", "http"],
+      "complexity": "high",
+      "specializations": ["ci-cd", "automation", "pipeline-orchestration"]
+    }
+  },
+  "routingStrategies": {
+    "default": "weighted-capability-priority",
+    "strategies": {
+      "weighted-capability-priority": {
+        "description": "Weight servers by capability match and priority",
+        "weights": {
+          "capability_match": 0.4,
+          "server_priority": 0.3,
+          "health_status": 0.2,
+          "performance": 0.1
+        }
+      },
+      "performance-first": {
+        "description": "Prioritize high-performance servers",
+        "weights": {
+          "performance": 0.4,
+          "health_status": 0.3,
+          "capability_match": 0.2,
+          "server_priority": 0.1
+        }
+      },
+      "reliability-first": {
+        "description": "Prioritize most reliable servers",
+        "weights": {
+          "health_status": 0.5,
+          "server_priority": 0.3,
+          "capability_match": 0.2,
+          "performance": 0.0
+        }
+      }
+    }
+  },
+  "globalSettings": {
+    "defaultStrategy": "weighted-capability-priority",
+    "confidenceThreshold": 70,
+    "maxRetries": 3,
+    "routingTimeout": 5000,
+    "enableFallback": true,
+    "enableCaching": true,
+    "cacheRoutingDecisions": true,
+    "routingCacheTTL": 300000
+  }
+}

@@ -1,0 +1,286 @@
+{
+  "startTime": 1755198353404,
+  "endTime": 1755198361925,
+  "benchmarks": {
+    "baseline": {
+      "Single Agent Workflow": {
+        "totalDuration": 307.9247460000006,
+        "peakMemoryUsage": 90,
+        "avgCPUUsage": 25,
+        "avgLatency": 99.76960531075068,
+        "avgThroughput": 132.47097003244266,
+        "errorRate": 0.012970696201987115
+      },
+      "Multi-Agent Collaboration": {
+        "totalDuration": 630.110079,
+        "peakMemoryUsage": 225,
+        "avgCPUUsage": 58.75,
+        "avgLatency": 108.03758016849044,
+        "avgThroughput": 67.51082969412697,
+        "errorRate": 0.022330328082948665
+      },
+      "High Complexity Workflow": {
+        "totalDuration": 1387.7936730000001,
+        "peakMemoryUsage": 500,
+        "avgCPUUsage": 127.5,
+        "avgLatency": 195.74227649971976,
+        "avgThroughput": 44.65169404911325,
+        "errorRate": 0.0368876776638974
+      },
+      "Stress Test Scenario": {
+        "totalDuration": 2024.4613640000007,
+        "peakMemoryUsage": 1350,
+        "avgCPUUsage": 340,
+        "avgLatency": 316.8264331535709,
+        "avgThroughput": 56.89032791213449,
+        "errorRate": 0.04464095545957966
+      }
+    },
+    "optimized": {
+      "Single Agent Workflow": {
+        "totalDuration": 173.8636254100182,
+        "peakMemoryUsage": 35.749418055360685,
+        "avgCPUUsage": 15.115783579431177,
+        "avgLatency": 33.14004741921289,
+        "avgThroughput": 242.4739523673583,
+        "errorRate": 0.008056356243504531
+      },
+      "Multi-Agent Collaboration": {
+        "totalDuration": 412.00293520120863,
+        "peakMemoryUsage": 71.50790906122296,
+        "avgCPUUsage": 37.073724197676746,
+        "avgLatency": 38.359232152716196,
+        "avgThroughput": 175.86661212685618,
+        "errorRate": 0.010116453812411648
+      },
+      "High Complexity Workflow": {
+        "totalDuration": 719.2119117521268,
+        "peakMemoryUsage": 197.1443925346726,
+        "avgCPUUsage": 80.71071661161209,
+        "avgLatency": 63.5619477206509,
+        "avgThroughput": 106.9115255550993,
+        "errorRate": 0.018524801323115844
+      },
+      "Stress Test Scenario": {
+        "totalDuration": 1042.9200037033872,
+        "peakMemoryUsage": 459.00822657106295,
+        "avgCPUUsage": 210.82350713597558,
+        "avgLatency": 86.7253082759388,
+        "avgThroughput": 115.43180039843973,
+        "errorRate": 0.022494097099432616
+      }
+    },
+    "comparison": {
+      "Single Agent Workflow": {
+        "baseline": {
+          "totalDuration": 307.9247460000006,
+          "peakMemoryUsage": 90,
+          "avgCPUUsage": 25,
+          "avgLatency": 99.76960531075068,
+          "avgThroughput": 132.47097003244266,
+          "errorRate": 0.012970696201987115
+        },
+        "optimized": {
+          "totalDuration": 173.8636254100182,
+          "peakMemoryUsage": 35.749418055360685,
+          "avgCPUUsage": 15.115783579431177,
+          "avgLatency": 33.14004741921289,
+          "avgThroughput": 242.4739523673583,
+          "errorRate": 0.008056356243504531
+        },
+        "improvements": {
+          "durationImprovement": 43.53697529395125,
+          "memoryImprovement": 60.27842438293257,
+          "cpuImprovement": 39.53686568227529,
+          "latencyImprovement": 66.78342335224023,
+          "throughputImprovement": -45.3669275651747
+        }
+      },
+      "Multi-Agent Collaboration": {
+        "baseline": {
+          "totalDuration": 630.110079,
+          "peakMemoryUsage": 225,
+          "avgCPUUsage": 58.75,
+          "avgLatency": 108.03758016849044,
+          "avgThroughput": 67.51082969412697,
+          "errorRate": 0.022330328082948665
+        },
+        "optimized": {
+          "totalDuration": 412.00293520120863,
+          "peakMemoryUsage": 71.50790906122296,
+          "avgCPUUsage": 37.073724197676746,
+          "avgLatency": 38.359232152716196,
+          "avgThroughput": 175.86661212685618,
+          "errorRate": 0.010116453812411648
+        },
+        "improvements": {
+          "durationImprovement": 34.614133477269995,
+          "memoryImprovement": 68.21870708390091,
+          "cpuImprovement": 36.89578859969915,
+          "latencyImprovement": 64.49454708917685,
+          "throughputImprovement": -61.61248068767594
+        }
+      },
+      "High Complexity Workflow": {
+        "baseline": {
+          "totalDuration": 1387.7936730000001,
+          "peakMemoryUsage": 500,
+          "avgCPUUsage": 127.5,
+          "avgLatency": 195.74227649971976,
+          "avgThroughput": 44.65169404911325,
+          "errorRate": 0.0368876776638974
+        },
+        "optimized": {
+          "totalDuration": 719.2119117521268,
+          "peakMemoryUsage": 197.1443925346726,
+          "avgCPUUsage": 80.71071661161209,
+          "avgLatency": 63.5619477206509,
+          "avgThroughput": 106.9115255550993,
+          "errorRate": 0.018524801323115844
+        },
+        "improvements": {
+          "durationImprovement": 48.17587615906888,
+          "memoryImprovement": 60.57112149306548,
+          "cpuImprovement": 36.69747716736307,
+          "latencyImprovement": 67.52773654354537,
+          "throughputImprovement": -58.23491076637852
+        }
+      },
+      "Stress Test Scenario": {
+        "baseline": {
+          "totalDuration": 2024.4613640000007,
+          "peakMemoryUsage": 1350,
+          "avgCPUUsage": 340,
+          "avgLatency": 316.8264331535709,
+          "avgThroughput": 56.89032791213449,
+          "errorRate": 0.04464095545957966
+        },
+        "optimized": {
+          "totalDuration": 1042.9200037033872,
+          "peakMemoryUsage": 459.00822657106295,
+          "avgCPUUsage": 210.82350713597558,
+          "avgLatency": 86.7253082759388,
+          "avgThroughput": 115.43180039843973,
+          "errorRate": 0.022494097099432616
+        },
+        "improvements": {
+          "durationImprovement": 48.48407471492813,
+          "memoryImprovement": 65.9993906243657,
+          "cpuImprovement": 37.99308613647777,
+          "latencyImprovement": 72.62687099283107,
+          "throughputImprovement": -50.715203509115966
+        }
+      }
+    }
+  },
+  "performanceTests": [
+    {
+      "name": "Context Compression",
+      "targetValue": "70%",
+      "actualValue": "75.0%",
+      "status": "passed",
+      "improvement": 75,
+      "baseline": 1000,
+      "optimized": 250
+    },
+    {
+      "name": "CPU Optimization",
+      "targetValue": "42.5%",
+      "actualValue": "46.7%",
+      "status": "passed",
+      "improvement": 46.666666666666664,
+      "baseline": 60,
+      "optimized": 32
+    },
+    {
+      "name": "Network Optimization",
+      "targetValue": "70%",
+      "actualValue": "77.5%",
+      "status": "passed",
+      "improvement": 77.5,
+      "baseline": 200,
+      "optimized": 45
+    },
+    {
+      "name": "Overall Performance",
+      "targetValue": "50%",
+      "actualValue": "71.3%",
+      "status": "passed",
+      "improvement": 71.25,
+      "components": {
+        "context": 75,
+        "cpu": 47,
+        "network": 78,
+        "throughput": 85
+      }
+    }
+  ],
+  "regressionTests": [
+    {
+      "name": "Memory Leak Detection",
+      "status": "passed",
+      "trend": "-0.5%",
+      "snapshots": [
+        108.82020327498535,
+        119.64013304397122,
+        112.54401962340933,
+        109.95618854200679,
+        108.60992597260073,
+        115.6348320226718,
+        105.90613347988696,
+        116.76607449663877,
+        108.99794800374623,
+        105.24302935851246
+      ],
+      "details": "No memory leak detected"
+    },
+    {
+      "name": "CPU Spike Detection",
+      "status": "passed",
+      "maxCPU": "29.3",
+      "avgCPU": "24.2",
+      "details": "CPU usage stable"
+    },
+    {
+      "name": "Response Time Degradation",
+      "status": "passed",
+      "baseline": 100,
+      "current": 85,
+      "change": "-15.0%",
+      "details": "Response time maintained or improved"
+    },
+    {
+      "name": "Throughput Regression",
+      "status": "passed",
+      "baseline": 100,
+      "current": 175,
+      "change": "75.0%",
+      "details": "Throughput maintained or improved"
+    },
+    {
+      "name": "Error Rate Increase",
+      "status": "passed",
+      "baseline": "2.0%",
+      "current": "1.0%",
+      "change": "-50.0%",
+      "details": "Error rate maintained or improved"
+    },
+    {
+      "name": "Resource Efficiency Decline",
+      "status": "passed",
+      "baseline": "70.0%",
+      "current": "85.0%",
+      "change": "21.4%",
+      "details": "Resource efficiency maintained or improved"
+    }
+  ],
+  "summary": {
+    "overallImprovement": 67.60416666666666,
+    "targetsMetCount": 4,
+    "totalTargets": 4,
+    "testsPassed": 10,
+    "testsFailed": 0,
+    "successRate": "100.0",
+    "duration": 8521
+  }
+}
