@@ -23,5 +23,10 @@
     "diff": "^8.0.2",
     "inquirer": "^9.3.7",
     "tar": "^7.4.3"
+  },
+  "devDependencies": {
+    "chart.js": "^4.5.0",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.18.3"
   }
 }
