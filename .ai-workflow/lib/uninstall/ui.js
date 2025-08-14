@@ -50,6 +50,10 @@ class UIManager {
                     config.yes = true;
                     config.nonInteractive = true;
                     break;
+                case '--interactive':
+                    config.interactive = true;
+                    config.nonInteractive = false;
+                    break;
                 case '--non-interactive':
                     config.nonInteractive = true;
                     config.interactive = false;
@@ -123,6 +127,7 @@ OPTIONS:
     --dry-run              Preview what would be removed (default)
     --no-dry-run           Actually perform the uninstallation
     --yes, -y              Skip all prompts (non-interactive mode)
+    --interactive          Enable interactive mode with enhanced UI
     --non-interactive      Run without prompts
     
     --keep-generated       Keep generated documents (default)
