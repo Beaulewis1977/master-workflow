@@ -3,14 +3,25 @@
   "autoSave": true,
   "maxConcurrentTools": 10,
   "defaultMcpServer": "context7",
+  "claudeFlow2Config": {
+    "enabled": true,
+    "wasmAcceleration": true,
+    "simdOptimization": true,
+    "topologyType": "hierarchical",
+    "neuralLiveTraining": true,
+    "targetSpeedupFactor": 3.6,
+    "tokenReductionTarget": 32.3,
+    "adaptiveTopology": true,
+    "capabilityMatchingAccuracy": 0.89
+  },
   "autoDelegation": {
-    "enabled": false,
+    "enabled": true,
     "rules": [
       {
         "id": "delegate-tests-to-test-engineer",
         "when": {
-          "taskKeywords": ["test", "failing tests", "coverage", "e2e", "spec"],
-          "filePatterns": ["*.test.*", "*.spec.*", "tests/**"]
+          "taskKeywords": ["test", "failing tests", "coverage", "e2e", "spec", "jest", "mocha", "pytest"],
+          "filePatterns": ["*.test.*", "*.spec.*", "tests/**", "__tests__/**"]
         },
         "delegateTo": "test-engineer",
         "confidenceThreshold": 0.6
@@ -18,10 +29,82 @@
       {
         "id": "delegate-security-to-security-auditor",
         "when": {
-          "taskKeywords": ["security", "vuln", "xss", "csrf", "secret", "audit", "authz", "sso"]
+          "taskKeywords": ["security", "vuln", "vulnerability", "xss", "csrf", "secret", "audit", "authz", "sso", "penetration", "compliance"]
         },
         "delegateTo": "security-auditor",
         "confidenceThreshold": 0.5
+      },
+      {
+        "id": "delegate-recovery-to-recovery-specialist",
+        "when": {
+          "taskKeywords": ["recover", "recovery", "fix", "error", "failure", "crash", "restore", "rollback", "critical", "incident"],
+          "errorConditions": ["system_failure", "service_down", "data_corruption"]
+        },
+        "delegateTo": "recovery-specialist",
+        "confidenceThreshold": 0.7
+      },
+      {
+        "id": "delegate-performance-to-performance-optimizer",
+        "when": {
+          "taskKeywords": ["performance", "optimization", "slow", "memory", "cpu", "bottleneck", "profiling", "benchmark"],
+          "performanceMetrics": ["high_latency", "memory_usage", "cpu_usage"]
+        },
+        "delegateTo": "performance-optimizer",
+        "confidenceThreshold": 0.6
+      },
+      {
+        "id": "delegate-database-to-database-architect",
+        "when": {
+          "taskKeywords": ["database", "sql", "query", "schema", "migration", "postgres", "mysql", "sqlite", "mongodb"],
+          "filePatterns": ["*.sql", "migrations/**", "db/**", "database/**"]
+        },
+        "delegateTo": "database-architect",
+        "confidenceThreshold": 0.7
+      },
+      {
+        "id": "delegate-deployment-to-deployment-engineer",
+        "when": {
+          "taskKeywords": ["deploy", "deployment", "ci/cd", "docker", "kubernetes", "build", "release", "pipeline"],
+          "filePatterns": ["Dockerfile", "docker-compose.*", "*.yml", "*.yaml", ".github/workflows/**"]
+        },
+        "delegateTo": "deployment-engineer",
+        "confidenceThreshold": 0.7
+      },
+      {
+        "id": "delegate-documentation-to-doc-generator",
+        "when": {
+          "taskKeywords": ["documentation", "docs", "readme", "guide", "api docs", "markdown", "generate docs"],
+          "filePatterns": ["*.md", "docs/**", "documentation/**", "README.*"]
+        },
+        "delegateTo": "doc-generator-agent",
+        "confidenceThreshold": 0.6
+      },
+      {
+        "id": "delegate-wasm-optimization-to-performance-optimizer",
+        "when": {
+          "taskKeywords": ["wasm", "simd", "optimization", "performance", "acceleration", "vector"],
+          "performanceMetrics": ["high_cpu_usage", "slow_execution"]
+        },
+        "delegateTo": "performance-optimizer",
+        "confidenceThreshold": 0.8
+      },
+      {
+        "id": "delegate-topology-management-to-neural-swarm-architect",
+        "when": {
+          "taskKeywords": ["topology", "communication", "mesh", "ring", "star", "hierarchical", "network"],
+          "systemConditions": ["topology_switch_needed", "communication_bottleneck"]
+        },
+        "delegateTo": "neural-swarm-architect", 
+        "confidenceThreshold": 0.75
+      },
+      {
+        "id": "delegate-capability-matching-to-queen-controller-architect",
+        "when": {
+          "taskKeywords": ["capability", "agent selection", "matching", "neural prediction", "accuracy"],
+          "qualityMetrics": ["low_matching_accuracy", "poor_agent_selection"]
+        },
+        "delegateTo": "queen-controller-architect",
+        "confidenceThreshold": 0.85
       }
     ]
   },

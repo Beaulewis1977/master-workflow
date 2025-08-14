@@ -35,6 +35,10 @@ class DatabaseConnectionManager extends EventEmitter {
       enableWAL: options.enableWAL !== false, // Default true
       cacheSize: options.cacheSize || 10000, // 10MB
       busyTimeout: options.busyTimeout || 5000,
+      // Connection recycling settings - FIXED
+      maxConnectionAge: options.maxConnectionAge || 3600000, // 1 hour
+      maxConnectionUse: options.maxConnectionUse || 1000, // Recycle after 1000 uses
+      connectionRecycleInterval: options.connectionRecycleInterval || 300000, // 5 minutes
       ...options
     };
     
@@ -70,8 +74,14 @@ class DatabaseConnectionManager extends EventEmitter {
     this.activeTransactions = new Map();
     this.transactionTimeouts = new Map();
     
+    // Connection recycling timer - FIXED
+    this.recycleTimer = null;
+    
     // Initialize SQLite module
     this.initializeSQLite();
+    
+    // Start connection recycling
+    this.startConnectionRecycling();
   }
   
   /**
@@ -762,14 +772,107 @@ class DatabaseConnectionManager extends EventEmitter {
   }
   
   /**
-   * Gracefully shutdown all connections
+   * Start connection recycling to prevent connection exhaustion - FIXED
+   */
+  startConnectionRecycling() {
+    this.recycleTimer = setInterval(() => {
+      this.recycleConnections();
+    }, this.options.connectionRecycleInterval);
+    
+    console.log('[DATABASE] Connection recycling started');
+  }
+  
+  /**
+   * Recycle aged and overused connections - FIXED
+   */
+  async recycleConnections() {
+    const now = Date.now();
+    let recycledCount = 0;
+    
+    for (const [poolName, pool] of this.pools) {
+      const connectionsToRecycle = [];
+      
+      for (let i = 0; i < pool.connections.length; i++) {
+        const connection = pool.connections[i];
+        
+        // Check if connection should be recycled
+        const shouldRecycle = 
+          (now - connection.createdAt > this.options.maxConnectionAge) ||
+          (connection.queryCount > this.options.maxConnectionUse);
+        
+        if (shouldRecycle && !connection.inUse) {
+          connectionsToRecycle.push({ connection, index: i });
+        }
+      }
+      
+      // Recycle connections but maintain minimum pool size
+      const minToKeep = Math.max(this.options.minConnections, pool.activeCount);
+      const canRecycle = Math.max(0, pool.connections.length - minToKeep);
+      const toRecycle = Math.min(connectionsToRecycle.length, canRecycle);
+      
+      for (let j = 0; j < toRecycle; j++) {
+        const { connection, index } = connectionsToRecycle[j];
+        
+        try {
+          // Close old connection
+          await new Promise(resolve => {
+            connection.close((err) => {
+              if (err) {
+                console.warn(`[DATABASE] Error closing recycled connection: ${err.message}`);
+              }
+              resolve();
+            });
+          });
+          
+          // Remove from pool
+          pool.connections.splice(index - j, 1); // Adjust index for removed items
+          
+          // Create new connection
+          const newConnection = await this.createConnection(pool.path, poolName);
+          pool.connections.push(newConnection);
+          pool.totalCreated++;
+          recycledCount++;
+          
+        } catch (error) {
+          console.error(`[DATABASE] Error recycling connection in pool '${poolName}':`, error.message);
+        }
+      }
+    }
+    
+    if (recycledCount > 0) {
+      console.log(`[DATABASE] Recycled ${recycledCount} connections`);
+      this.emit('connections-recycled', { count: recycledCount });
+    }
+  }
+  
+  /**
+   * Enhanced connection creation with recycling metadata - FIXED
+   */
+  async createConnectionWithMetadata(databasePath, poolName) {
+    const connection = await this.createConnection(databasePath, poolName);
+    
+    // Add recycling metadata
+    connection.createdAt = Date.now();
+    connection.queryCount = 0;
+    connection.inUse = false;
+    connection.lastUsed = Date.now();
+    
+    return connection;
+  }
+  
+  /**
+   * Gracefully shutdown all connections - FIXED: Added recycling timer cleanup
    */
   async shutdown() {
     console.log('[DATABASE] Starting graceful shutdown...');
     
-    // Stop health monitoring
+    // Stop health monitoring and recycling
     if (this.healthMonitor) {
       clearInterval(this.healthMonitor);
+    }
+    
+    if (this.recycleTimer) {
+      clearInterval(this.recycleTimer);
     }
     
     // Rollback all active transactions
@@ -779,13 +882,19 @@ class DatabaseConnectionManager extends EventEmitter {
     
     await Promise.all(transactionPromises);
     
-    // Close all connections
+    // Close all connections with timeout handling
     const closePromises = [];
     for (const [poolName, pool] of this.pools) {
       for (const connection of pool.connections) {
         closePromises.push(
           new Promise(resolve => {
+            const timeout = setTimeout(() => {
+              console.warn(`[DATABASE] Connection close timeout for pool '${poolName}'`);
+              resolve();
+            }, 5000);
+            
             connection.close((err) => {
+              clearTimeout(timeout);
               if (err) {
                 console.error(`[DATABASE] Error closing connection in pool '${poolName}':`, err.message);
               }
@@ -796,7 +905,7 @@ class DatabaseConnectionManager extends EventEmitter {
       }
     }
     
-    await Promise.all(closePromises);
+    await Promise.allSettled(closePromises);
     
     // Clear all data structures
     this.pools.clear();

@@ -1,25 +1,86 @@
 {
-  "version": "1.0",
-  "integration": "intelligent-workflow",
+  "version": "2.0",
+  "integration": "claude-flow-workflow",
   "projectAnalysis": {
-    "score": $SCORE,
-    "stage": "$STAGE",
-    "languages": [${LANGUAGES:+\"$LANGUAGES\"}],
-    "frameworks": [${FRAMEWORKS:+\"$FRAMEWORKS\"}],
-    "databases": [${DATABASES:+\"$DATABASES\"}]
+    "score": 39,
+    "stage": "active",
+    "complexity": "medium",
+    "languages": ["JavaScript", "TypeScript"],
+    "frameworks": ["Node.js", "Express"],
+    "databases": ["SQLite"],
+    "architecture": "microservices"
+  },
+  "contextArchitecture": {
+    "threeLayers": {
+      "standards": {
+        "path": ".agent-os/standards/",
+        "purpose": "Global coding preferences and standards",
+        "scope": "project-wide",
+        "priority": "high"
+      },
+      "product": {
+        "path": ".agent-os/product/",
+        "purpose": "Product-specific details and configuration",
+        "scope": "product-level",
+        "priority": "medium"
+      },
+      "specifications": {
+        "path": ".agent-os/specs/",
+        "purpose": "Feature breakdowns and specifications",
+        "scope": "feature-level",
+        "priority": "high"
+      }
+    },
+    "contextReduction": {
+      "enabled": true,
+      "targetReduction": 75,
+      "conditionalLoading": true,
+      "memoryOptimization": true
+    }
+  },
+  "claudeFlowIntegration": {
+    "version": "2.0",
+    "queenController": true,
+    "subAgents": {
+      "path": ".claude/agents/",
+      "contextWindow": 200000,
+      "maxConcurrent": 10
+    },
+    "workflow": "hive-mind-sparc"
   },
   "features": {
+    "specDrivenDevelopment": true,
+    "conditionalFileLoading": true,
+    "contextOptimization": true,
+    "agentIntegration": true,
     "planning": true,
     "specifications": true,
     "taskManagement": true,
     "documentation": true,
     "customization": true
   },
-  "commands": [
-    "/plan-product",
-    "/create-spec",
-    "/analyze-product",
-    "/execute-tasks"
-  ],
-  "generatedAt": "$(date -Iseconds)"
+  "commands": {
+    "planProduct": {
+      "command": "/plan-product",
+      "agent": "1-orchestration-coordinator.md",
+      "purpose": "Initialize product structure and planning"
+    },
+    "createSpec": {
+      "command": "/create-spec",
+      "agent": "1-documentation-generator.md",
+      "purpose": "Generate feature specifications"
+    },
+    "executeTasks": {
+      "command": "/execute-tasks",
+      "agent": "1-neural-swarm-architect.md",
+      "purpose": "Complete development tasks"
+    },
+    "analyzeProduct": {
+      "command": "/analyze-product",
+      "agent": "1-intelligence-analyzer.md",
+      "purpose": "Analyze existing codebase"
+    }
+  },
+  "generatedAt": "2025-08-14T16:55:00Z",
+  "lastUpdated": "2025-08-14T16:55:00Z"
 }
