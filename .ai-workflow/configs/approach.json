@@ -5,7 +5,7 @@
   "commands": [
     "npx claude-flow@latest hive-mind spawn \"MASTER-WORKFLOW\" --agents 5 --claude"
   ],
-  "score": 51,
+  "score": 54,
   "stage": "active",
   "description": "Intelligent multi-agent coordination with specialized roles",
   "timeEstimate": "30 minutes - 4 hours",
@@ -18,19 +18,19 @@
     "Medium-scale projects"
   ],
   "reasoning": [
-    "Medium complexity score (51/100) requires coordinated approach",
+    "Medium complexity score (54/100) requires coordinated approach",
     "Active development requires efficient feature delivery"
   ],
-  "matchScore": 99,
+  "matchScore": 96,
   "alternatives": [
     {
       "name": "Hive-Mind + SPARC",
-      "matchScore": 60,
+      "matchScore": 66,
       "command": "npx claude-flow hive-mind spawn --sparc"
     },
     {
       "name": "Simple Swarm",
-      "matchScore": 58,
+      "matchScore": 52,
       "command": "npx claude-flow swarm"
     }
   ],
