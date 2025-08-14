@@ -63,90 +63,156 @@ class SubAgentManager extends EventEmitter {
   }
   
   /**
-   * Spawn a new sub-agent with lifecycle management
+   * Spawn a new sub-agent with lifecycle management - FIXED: Enhanced error handling and validation
    * @param {string} agentId - Unique agent identifier
    * @param {string} type - Agent type/role
    * @param {object} config - Agent configuration
    */
   async spawnAgent(agentId, type, config = {}) {
-    // Check resource limits
-    if (this.agents.size >= this.maxAgents) {
-      throw new Error(`Maximum agent limit reached: ${this.maxAgents}`);
-    }
-    
-    // Create agent metadata
-    const agent = {
-      id: agentId,
-      type: type,
-      status: 'spawning',
-      config: {
-        ...config,
-        contextWindow: config.contextWindow || this.contextWindowLimit,
-        timeout: config.timeout || 300000, // 5 minutes default
-        retries: config.retries || 3
-      },
-      spawnTime: Date.now(),
-      pid: null,
-      sessionId: null,
-      tokenUsage: 0,
-      messageCount: 0
-    };
-    
-    // Register agent
-    this.agents.set(agentId, agent);
-    this.resources.tokens.set(agentId, 0);
-    this.resources.startTimes.set(agentId, Date.now());
+    const startTime = Date.now();
     
     try {
-      // Load agent template
-      const template = await this.loadAgentTemplate(type);
-      agent.template = template;
-      
-      // Create TMux session if enabled
-      if (this.tmuxEnabled) {
-        agent.sessionId = await this.createTmuxSession(agentId, type);
-        this.sessions.set(agentId, agent.sessionId);
+      // Enhanced input validation
+      if (!agentId || typeof agentId !== 'string') {
+        throw new Error('Agent ID must be a non-empty string');
       }
       
-      // Spawn agent process
-      const process = await this.spawnAgentProcess(agent);
-      agent.pid = process.pid;
-      this.processes.set(agentId, process);
-      
-      // Initialize resource tracking
-      this.initializeResourceTracking(agentId, process.pid);
-      
-      // Update status
-      agent.status = 'active';
-      this.metrics.totalSpawned++;
-      
-      // Update peak concurrent
-      if (this.agents.size > this.metrics.peakConcurrent) {
-        this.metrics.peakConcurrent = this.agents.size;
+      if (!type || typeof type !== 'string') {
+        throw new Error('Agent type must be a non-empty string');
       }
       
-      // Emit spawn event
-      this.emit('agent-spawned', {
-        agentId,
-        type,
-        pid: process.pid,
-        sessionId: agent.sessionId
-      });
+      // Check if agent already exists
+      if (this.agents.has(agentId)) {
+        throw new Error(`Agent ${agentId} already exists`);
+      }
       
-      // Set up lifecycle monitoring
-      this.monitorAgentLifecycle(agentId);
+      // Check resource limits with detailed error
+      if (this.agents.size >= this.maxAgents) {
+        throw new Error(`Maximum agent limit reached: ${this.maxAgents}. Active agents: ${this.agents.size}`);
+      }
       
-      return agent;
+      console.log(`SUB-AGENT MANAGER FIX: Spawning agent ${agentId} of type ${type}`);
+      
+      // Create agent metadata with enhanced properties
+      const agent = {
+        id: agentId,
+        type: type,
+        status: 'spawning',
+        config: {
+          ...config,
+          contextWindow: config.contextWindow || this.contextWindowLimit,
+          timeout: config.timeout || 300000, // 5 minutes default
+          retries: config.retries || 3,
+          healthCheckInterval: config.healthCheckInterval || 30000, // 30 seconds
+          maxMemoryUsage: config.maxMemoryUsage || 512 * 1024 * 1024 // 512MB
+        },
+        spawnTime: Date.now(),
+        pid: null,
+        sessionId: null,
+        tokenUsage: 0,
+        messageCount: 0,
+        lastHealthCheck: Date.now(),
+        healthStatus: 'spawning',
+        errorCount: 0,
+        lastActivity: Date.now()
+      };
+      
+      // Register agent early for tracking
+      this.agents.set(agentId, agent);
+      this.resources.tokens.set(agentId, 0);
+      this.resources.startTimes.set(agentId, Date.now());
+      
+      try {
+        // Load agent template with retry mechanism
+        const template = await this.loadAgentTemplateWithRetry(type);
+        agent.template = template;
+        
+        // Validate template loaded successfully
+        if (!template || !template.content) {
+          throw new Error(`Failed to load template for agent type: ${type}`);
+        }
+        
+        // Create TMux session if enabled (with error handling)
+        if (this.tmuxEnabled) {
+          try {
+            agent.sessionId = await this.createTmuxSession(agentId, type);
+            if (agent.sessionId) {
+              this.sessions.set(agentId, agent.sessionId);
+            }
+          } catch (tmuxError) {
+            console.warn(`SUB-AGENT MANAGER FIX: TMux session creation failed for ${agentId}:`, tmuxError.message);
+            // Continue without TMux - not critical
+          }
+        }
+        
+        // Spawn agent process with enhanced error handling
+        const process = await this.spawnAgentProcessWithRetry(agent);
+        agent.pid = process.pid;
+        this.processes.set(agentId, process);
+        
+        // Validate process spawned successfully
+        if (!process.pid) {
+          throw new Error('Agent process spawned without valid PID');
+        }
+        
+        // Initialize resource tracking with validation
+        await this.initializeResourceTrackingEnhanced(agentId, process.pid);
+        
+        // Update status to active
+        agent.status = 'active';
+        agent.healthStatus = 'healthy';
+        this.metrics.totalSpawned++;
+        
+        // Update peak concurrent tracking
+        if (this.agents.size > this.metrics.peakConcurrent) {
+          this.metrics.peakConcurrent = this.agents.size;
+        }
+        
+        const spawnDuration = Date.now() - startTime;
+        
+        // Emit successful spawn event
+        this.emit('agent-spawned', {
+          agentId,
+          type,
+          pid: process.pid,
+          sessionId: agent.sessionId,
+          spawnDuration,
+          timestamp: Date.now()
+        });
+        
+        // Set up enhanced lifecycle monitoring
+        this.monitorAgentLifecycleEnhanced(agentId);
+        
+        console.log(`SUB-AGENT MANAGER FIX: Agent ${agentId} spawned successfully in ${spawnDuration}ms (PID: ${process.pid})`);
+        
+        return agent;
+        
+      } catch (spawnError) {
+        // Enhanced cleanup on spawn failure
+        await this.cleanupFailedAgent(agentId, spawnError);
+        throw spawnError;
+      }
       
     } catch (error) {
-      // Clean up on error
-      agent.status = 'error';
-      agent.error = error.message;
-      this.agents.delete(agentId);
+      const spawnDuration = Date.now() - startTime;
       
+      console.error(`SUB-AGENT MANAGER FIX: Failed to spawn agent ${agentId} after ${spawnDuration}ms:`, error.message);
+      
+      // Record detailed error metrics
       this.metrics.errors.push({
         agentId,
+        type,
         error: error.message,
+        timestamp: Date.now(),
+        spawnDuration,
+        phase: 'spawn'
+      });
+      
+      this.emit('agent-spawn-failed', {
+        agentId,
+        type,
+        error: error.message,
+        spawnDuration,
         timestamp: Date.now()
       });
       
@@ -670,6 +736,325 @@ You are a specialized ${type} agent.
 `;
   }
   
+  /**
+   * Load agent template with retry mechanism - NEW FIX
+   */
+  async loadAgentTemplateWithRetry(type, maxRetries = 3) {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const template = await this.loadAgentTemplate(type);
+        if (template && template.content) {
+          return template;
+        }
+      } catch (error) {
+        lastError = error;
+        console.warn(`SUB-AGENT MANAGER FIX: Template load attempt ${attempt}/${maxRetries} failed for ${type}:`, error.message);
+        
+        if (attempt < maxRetries) {
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+      }
+    }
+    
+    // If all attempts failed, create default template
+    console.warn(`SUB-AGENT MANAGER FIX: Using default template for ${type} after ${maxRetries} failed attempts`);
+    return {
+      type: type,
+      content: this.getDefaultTemplate(type),
+      isDefault: true,
+      loadError: lastError?.message
+    };
+  }
+  
+  /**
+   * Spawn agent process with retry mechanism - NEW FIX
+   */
+  async spawnAgentProcessWithRetry(agent, maxRetries = 3) {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const process = await this.spawnAgentProcess(agent);
+        
+        // Validate process health
+        if (process && process.pid) {
+          // Give process time to initialize
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Check if process is still running
+          try {
+            process.kill(0); // Check if process exists without killing it
+            return process;
+          } catch (processError) {
+            throw new Error(`Process ${process.pid} died immediately after spawn`);
+          }
+        }
+        
+        throw new Error('Process spawned without valid PID');
+        
+      } catch (error) {
+        lastError = error;
+        console.warn(`SUB-AGENT MANAGER FIX: Process spawn attempt ${attempt}/${maxRetries} failed for ${agent.id}:`, error.message);
+        
+        if (attempt < maxRetries) {
+          // Clean up any partial spawn
+          try {
+            if (agent.sessionId) {
+              await this.execCommand(`tmux kill-session -t ${agent.sessionId}`);
+            }
+          } catch (cleanupError) {
+            // Ignore cleanup errors
+          }
+          
+          // Wait before retry with exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
+        }
+      }
+    }
+    
+    throw new Error(`Failed to spawn agent process after ${maxRetries} attempts: ${lastError?.message}`);
+  }
+  
+  /**
+   * Initialize resource tracking with enhanced validation - NEW FIX
+   */
+  async initializeResourceTrackingEnhanced(agentId, pid) {
+    try {
+      // Initialize with validation
+      this.initializeResourceTracking(agentId, pid);
+      
+      // Validate tracking started successfully
+      const memTracking = this.resources.memory.get(agentId);
+      const cpuTracking = this.resources.cpu.get(agentId);
+      
+      if (!memTracking || !cpuTracking) {
+        throw new Error('Resource tracking initialization failed');
+      }
+      
+      console.log(`SUB-AGENT MANAGER FIX: Resource tracking initialized for agent ${agentId} (PID: ${pid})`);
+      
+    } catch (error) {
+      console.error(`SUB-AGENT MANAGER FIX: Resource tracking initialization failed for ${agentId}:`, error.message);
+      throw error;
+    }
+  }
+  
+  /**
+   * Enhanced lifecycle monitoring with health checks - NEW FIX
+   */
+  monitorAgentLifecycleEnhanced(agentId) {
+    const agent = this.agents.get(agentId);
+    if (!agent) return;
+    
+    // Set up standard lifecycle monitoring
+    this.monitorAgentLifecycle(agentId);
+    
+    // Add enhanced health monitoring
+    const healthCheckInterval = setInterval(async () => {
+      if (!this.agents.has(agentId)) {
+        clearInterval(healthCheckInterval);
+        return;
+      }
+      
+      try {
+        const currentAgent = this.agents.get(agentId);
+        const healthStatus = await this.performHealthCheck(agentId);
+        
+        currentAgent.lastHealthCheck = Date.now();
+        currentAgent.healthStatus = healthStatus.status;
+        
+        if (healthStatus.status === 'unhealthy') {
+          console.warn(`SUB-AGENT MANAGER FIX: Agent ${agentId} is unhealthy:`, healthStatus.issues);
+          
+          this.emit('agent-unhealthy', {
+            agentId,
+            issues: healthStatus.issues,
+            timestamp: Date.now()
+          });
+          
+          // Auto-recovery for critical issues
+          if (healthStatus.critical) {
+            console.log(`SUB-AGENT MANAGER FIX: Attempting recovery for critical issues in agent ${agentId}`);
+            await this.attemptAgentRecovery(agentId);
+          }
+        }
+        
+      } catch (error) {
+        console.error(`SUB-AGENT MANAGER FIX: Health check failed for agent ${agentId}:`, error.message);
+      }
+    }, agent.config.healthCheckInterval || 30000);
+    
+    // Store interval reference for cleanup
+    if (!agent.intervals) {
+      agent.intervals = [];
+    }
+    agent.intervals.push(healthCheckInterval);
+  }
+  
+  /**
+   * Perform comprehensive health check - NEW FIX
+   */
+  async performHealthCheck(agentId) {
+    const agent = this.agents.get(agentId);
+    if (!agent) {
+      return { status: 'unknown', issues: ['Agent not found'] };
+    }
+    
+    const issues = [];
+    let critical = false;
+    
+    try {
+      // Check process health
+      if (agent.pid) {
+        try {
+          process.kill(agent.pid, 0); // Check if process exists
+        } catch (processError) {
+          issues.push('Process not running');
+          critical = true;
+        }
+      } else {
+        issues.push('No process ID');
+        critical = true;
+      }
+      
+      // Check memory usage
+      const memoryData = this.resources.memory.get(agentId);
+      if (memoryData && memoryData.current > agent.config.maxMemoryUsage) {
+        issues.push('Memory usage exceeded limit');
+      }
+      
+      // Check token usage
+      const tokenUsage = this.resources.tokens.get(agentId) || 0;
+      if (tokenUsage > agent.config.contextWindow * 0.95) {
+        issues.push('Context window nearly full');
+        critical = true;
+      }
+      
+      // Check activity
+      const inactiveTime = Date.now() - agent.lastActivity;
+      if (inactiveTime > 600000) { // 10 minutes
+        issues.push('Agent inactive for extended period');
+      }
+      
+      // Check error count
+      if (agent.errorCount > 5) {
+        issues.push('High error count');
+      }
+      
+      const status = critical ? 'critical' : issues.length > 0 ? 'unhealthy' : 'healthy';
+      
+      return {
+        status,
+        issues,
+        critical,
+        timestamp: Date.now()
+      };
+      
+    } catch (error) {
+      return {
+        status: 'error',
+        issues: ['Health check failed: ' + error.message],
+        critical: true
+      };
+    }
+  }
+  
+  /**
+   * Attempt agent recovery - NEW FIX
+   */
+  async attemptAgentRecovery(agentId) {
+    const agent = this.agents.get(agentId);
+    if (!agent) return false;
+    
+    console.log(`SUB-AGENT MANAGER FIX: Attempting recovery for agent ${agentId}`);
+    
+    try {
+      // Try graceful restart first
+      if (agent.pid) {
+        const process = this.processes.get(agentId);
+        if (process) {
+          process.kill('SIGTERM');
+          
+          // Wait for graceful shutdown
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          
+          // Force kill if still running
+          try {
+            process.kill('SIGKILL');
+          } catch (error) {
+            // Process may have already exited
+          }
+        }
+      }
+      
+      // Clean up resources
+      this.cleanupAgent(agentId);
+      
+      // Respawn with same configuration
+      const newAgent = await this.spawnAgent(agentId, agent.type, agent.config);
+      
+      this.emit('agent-recovered', {
+        agentId,
+        oldPid: agent.pid,
+        newPid: newAgent.pid,
+        timestamp: Date.now()
+      });
+      
+      console.log(`SUB-AGENT MANAGER FIX: Agent ${agentId} recovered successfully`);
+      return true;
+      
+    } catch (error) {
+      console.error(`SUB-AGENT MANAGER FIX: Agent recovery failed for ${agentId}:`, error.message);
+      return false;
+    }
+  }
+  
+  /**
+   * Clean up failed agent spawn - NEW FIX
+   */
+  async cleanupFailedAgent(agentId, error) {
+    try {
+      console.log(`SUB-AGENT MANAGER FIX: Cleaning up failed agent ${agentId}`);
+      
+      // Remove from registries
+      this.agents.delete(agentId);
+      this.resources.tokens.delete(agentId);
+      this.resources.startTimes.delete(agentId);
+      this.resources.memory.delete(agentId);
+      this.resources.cpu.delete(agentId);
+      
+      // Clean up process if it exists
+      const process = this.processes.get(agentId);
+      if (process && process.pid) {
+        try {
+          process.kill('SIGKILL');
+        } catch (killError) {
+          // Process may not exist
+        }
+        this.processes.delete(agentId);
+      }
+      
+      // Clean up TMux session
+      const sessionId = this.sessions.get(agentId);
+      if (sessionId) {
+        try {
+          await this.execCommand(`tmux kill-session -t ${sessionId}`);
+        } catch (tmuxError) {
+          // TMux session may not exist
+        }
+        this.sessions.delete(agentId);
+      }
+      
+      console.log(`SUB-AGENT MANAGER FIX: Cleanup completed for failed agent ${agentId}`);
+      
+    } catch (cleanupError) {
+      console.error(`SUB-AGENT MANAGER FIX: Cleanup failed for agent ${agentId}:`, cleanupError.message);
+    }
+  }
+
   /**
    * Shutdown manager
    */

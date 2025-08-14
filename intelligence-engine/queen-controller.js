@@ -176,58 +176,104 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Distribute a task to appropriate agents with dependency management and neural predictions
+   * Distribute a task to appropriate agents with dependency management and neural predictions - FIXED: Enhanced load balancing
    * @param {object} task - Task to distribute
    * @param {array} dependencies - Task dependencies
    */
   async distributeTask(task, dependencies = []) {
-    // Validate dependencies are complete
-    for (const dep of dependencies) {
-      if (!this.completedTasks.has(dep)) {
-        this.pendingTasks.set(task.id, { task, dependencies });
-        this.emit('task-pending', { 
-          taskId: task.id, 
-          waitingFor: dependencies.filter(d => !this.completedTasks.has(d))
+    try {
+      // Validate task input
+      if (!task || !task.id) {
+        throw new Error('Task must have a valid ID');
+      }
+      
+      // Validate dependencies are complete
+      for (const dep of dependencies) {
+        if (!this.completedTasks.has(dep)) {
+          this.pendingTasks.set(task.id, { task, dependencies });
+          this.emit('task-pending', { 
+            taskId: task.id, 
+            waitingFor: dependencies.filter(d => !this.completedTasks.has(d))
+          });
+          console.log(`QUEEN CONTROLLER FIX: Task ${task.id} waiting for dependencies: ${dependencies.filter(d => !this.completedTasks.has(d)).join(', ')}`);
+          return null;
+        }
+      }
+      
+      // Check if we're at the concurrent agent limit
+      if (this.activeAgents.size >= this.maxConcurrent) {
+        // Queue the task for later
+        this.taskQueue.push({ 
+          task, 
+          dependencies, 
+          queuedAt: Date.now(),
+          priority: task.priority || 'normal'
         });
+        
+        this.emit('task-queued', {
+          taskId: task.id,
+          queuePosition: this.taskQueue.length,
+          activeAgents: this.activeAgents.size,
+          maxConcurrent: this.maxConcurrent
+        });
+        
+        console.log(`QUEEN CONTROLLER FIX: Task ${task.id} queued - ${this.activeAgents.size}/${this.maxConcurrent} agents active`);
         return null;
       }
-    }
-    
-    // Use neural learning to select optimal agent type
-    const agentSelection = await this.selectOptimalAgent(task);
-    const agentType = agentSelection.agentType;
-    
-    // Gather dependency results as context
-    const dependencyContext = {};
-    for (const dep of dependencies) {
-      const result = this.completedTasks.get(dep);
-      if (result) {
-        dependencyContext[dep] = result;
+      
+      // Use neural learning to select optimal agent type with load balancing
+      const agentSelection = await this.selectOptimalAgentWithLoadBalancing(task);
+      const agentType = agentSelection.agentType;
+      
+      // Gather dependency results as context
+      const dependencyContext = {};
+      for (const dep of dependencies) {
+        const result = this.completedTasks.get(dep);
+        if (result) {
+          dependencyContext[dep] = result;
+        }
       }
-    }
-    
-    // Spawn agent for task with neural predictions
-    const agentId = await this.spawnSubAgent(agentType, task, {
-      dependencies: dependencyContext,
-      taskMetadata: {
-        priority: task.priority || 'normal',
-        estimatedTokens: task.estimatedTokens || 50000,
-        timeout: task.timeout || 300000 // 5 minutes default
-      },
-      neuralPredictions: agentSelection.prediction,
-      selectionReasoning: agentSelection.reasoning
-    });
-    
-    if (agentId) {
-      this.metrics.tasksDistributed++;
-      this.emit('task-distributed', {
-        taskId: task.id,
-        agentId,
-        agentType
+      
+      // Spawn agent for task with neural predictions and load balancing
+      const agentId = await this.spawnSubAgent(agentType, task, {
+        dependencies: dependencyContext,
+        taskMetadata: {
+          priority: task.priority || 'normal',
+          estimatedTokens: task.estimatedTokens || 50000,
+          timeout: task.timeout || 300000, // 5 minutes default
+          distributedAt: Date.now(),
+          loadBalancingScore: agentSelection.loadBalancingScore
+        },
+        neuralPredictions: agentSelection.prediction,
+        selectionReasoning: agentSelection.reasoning,
+        loadBalancing: agentSelection.loadBalancing
       });
+      
+      if (agentId) {
+        this.metrics.tasksDistributed++;
+        this.emit('task-distributed', {
+          taskId: task.id,
+          agentId,
+          agentType,
+          loadBalancingScore: agentSelection.loadBalancingScore,
+          activeAgents: this.activeAgents.size,
+          timestamp: Date.now()
+        });
+        
+        console.log(`QUEEN CONTROLLER FIX: Task ${task.id} distributed to ${agentId} (${agentType}) with load balancing score ${agentSelection.loadBalancingScore}`);
+      }
+      
+      return agentId;
+      
+    } catch (error) {
+      console.error(`QUEEN CONTROLLER FIX: Task distribution failed for ${task.id}:`, error.message);
+      this.emit('task-distribution-error', {
+        taskId: task.id,
+        error: error.message,
+        timestamp: Date.now()
+      });
+      return null;
     }
-    
-    return agentId;
   }
   
   /**
@@ -355,7 +401,7 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Handle inter-agent communication
+   * Handle inter-agent communication - FIXED: Enhanced validation and error handling
    * @param {string} fromAgent - Source agent ID
    * @param {string} toAgent - Target agent ID (or 'broadcast')
    * @param {object} message - Message to send
@@ -363,73 +409,242 @@ class QueenController extends EventEmitter {
   async handleInterAgentCommunication(fromAgent, toAgent, message) {
     const timestamp = Date.now();
     
-    // Validate source agent
-    if (!this.subAgents.has(fromAgent)) {
-      throw new Error(`Unknown source agent: ${fromAgent}`);
-    }
-    
-    // Create message envelope
-    const envelope = {
-      id: `msg-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
-      from: fromAgent,
-      to: toAgent,
-      timestamp,
-      type: message.type || 'data',
-      payload: message.payload || message,
-      routing: message.routing || 'direct'
-    };
-    
-    // Handle broadcast
-    if (toAgent === 'broadcast' || toAgent === '*') {
-      for (const agentId of this.activeAgents) {
-        if (agentId !== fromAgent) {
-          await this.deliverMessage(agentId, envelope);
-        }
+    try {
+      // Enhanced source agent validation
+      if (!fromAgent || (fromAgent !== 'system' && fromAgent !== 'queen-controller' && !this.subAgents.has(fromAgent))) {
+        throw new Error(`Invalid source agent: ${fromAgent}`);
       }
-      this.emit('message-broadcast', envelope);
-    } 
-    // Handle targeted message
-    else if (this.subAgents.has(toAgent)) {
-      await this.deliverMessage(toAgent, envelope);
-      this.emit('message-sent', envelope);
-    }
-    // Handle unknown target
-    else {
-      this.emit('message-failed', { 
-        ...envelope, 
-        error: `Unknown target agent: ${toAgent}` 
+      
+      // Create message envelope with enhanced metadata
+      const envelope = {
+        id: `msg-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
+        from: fromAgent,
+        to: toAgent,
+        timestamp,
+        type: message.type || 'data',
+        payload: message.payload || message,
+        routing: message.routing || 'direct',
+        priority: message.priority || 'normal',
+        requiresResponse: message.requiresResponse || false,
+        timeout: message.timeout || 30000
+      };
+      
+      // Handle broadcast with improved error handling
+      if (toAgent === 'broadcast' || toAgent === '*' || toAgent === 'all') {
+        return await this.handleBroadcastCommunication(envelope);
+      } 
+      // Handle targeted message with validation
+      else if (this.subAgents.has(toAgent)) {
+        const targetAgent = this.subAgents.get(toAgent);
+        
+        // Check if target agent is active and healthy
+        if (targetAgent.status !== 'active') {
+          console.warn(`QUEEN CONTROLLER FIX: Target agent ${toAgent} is not active (status: ${targetAgent.status})`);
+          this.emit('message-failed', { 
+            ...envelope, 
+            error: `Target agent ${toAgent} is not active`,
+            targetStatus: targetAgent.status
+          });
+          return false;
+        }
+        
+        await this.deliverMessage(toAgent, envelope);
+        this.emit('message-sent', envelope);
+      }
+      // Handle unknown target with suggestion
+      else {
+        // Try to find similar agent IDs for helpful error message
+        const similarAgents = Array.from(this.subAgents.keys())
+          .filter(id => id.includes(toAgent) || toAgent.includes(id))
+          .slice(0, 3);
+        
+        const errorMsg = `Unknown target agent: ${toAgent}` + 
+          (similarAgents.length > 0 ? `. Did you mean: ${similarAgents.join(', ')}?` : '');
+        
+        this.emit('message-failed', { 
+          ...envelope, 
+          error: errorMsg,
+          suggestedAgents: similarAgents
+        });
+        
+        console.error(`QUEEN CONTROLLER FIX: ${errorMsg}`);
+        return false;
+      }
+      
+      // Store in shared memory for persistence with TTL
+      if (this.sharedMemoryStore) {
+        await this.sharedMemoryStore.set(`message_${envelope.id}`, envelope, {
+          namespace: this.sharedMemoryStore.namespaces.CROSS_AGENT,
+          ttl: 3600000 // 1 hour
+        });
+      } else {
+        // Fallback to in-memory storage
+        const messageHistory = this.sharedMemory.get('message_history') || [];
+        messageHistory.push(envelope);
+        // Keep only recent messages to prevent memory bloat
+        if (messageHistory.length > 1000) {
+          messageHistory.splice(0, messageHistory.length - 1000);
+        }
+        this.sharedMemory.set('message_history', messageHistory);
+      }
+      
+      return true;
+      
+    } catch (error) {
+      console.error('QUEEN CONTROLLER FIX: Inter-agent communication failed:', error.message);
+      this.emit('communication-error', {
+        fromAgent,
+        toAgent,
+        error: error.message,
+        timestamp
       });
       return false;
     }
-    
-    // Store in shared memory for persistence
-    const messageHistory = this.sharedMemory.get('message_history') || [];
-    messageHistory.push(envelope);
-    this.sharedMemory.set('message_history', messageHistory);
-    
-    return true;
   }
   
   /**
-   * Deliver message to specific agent
+   * Handle broadcast communication with load balancing - NEW FIX
+   */
+  async handleBroadcastCommunication(envelope) {
+    const startTime = Date.now();
+    const deliveryResults = [];
+    
+    try {
+      // Get active agents excluding sender
+      const targetAgents = Array.from(this.activeAgents)
+        .filter(agentId => agentId !== envelope.from);
+      
+      if (targetAgents.length === 0) {
+        console.warn('QUEEN CONTROLLER FIX: No target agents available for broadcast');
+        this.emit('message-broadcast', { 
+          ...envelope, 
+          targetCount: 0,
+          deliveredCount: 0,
+          warning: 'No target agents available'
+        });
+        return true;
+      }
+      
+      console.log(`QUEEN CONTROLLER FIX: Broadcasting to ${targetAgents.length} agents`);
+      
+      // Deliver to agents in parallel batches to avoid overwhelming the system
+      const batchSize = 5; // Process 5 agents at a time
+      const batches = [];
+      
+      for (let i = 0; i < targetAgents.length; i += batchSize) {
+        batches.push(targetAgents.slice(i, i + batchSize));
+      }
+      
+      for (const batch of batches) {
+        const batchPromises = batch.map(async (agentId) => {
+          try {
+            await this.deliverMessage(agentId, envelope);
+            return { agentId, success: true };
+          } catch (error) {
+            console.error(`QUEEN CONTROLLER FIX: Failed to deliver broadcast to ${agentId}:`, error.message);
+            return { agentId, success: false, error: error.message };
+          }
+        });
+        
+        const batchResults = await Promise.allSettled(batchPromises);
+        deliveryResults.push(...batchResults.map(result => 
+          result.status === 'fulfilled' ? result.value : 
+          { agentId: 'unknown', success: false, error: result.reason.message }
+        ));
+      }
+      
+      const successfulDeliveries = deliveryResults.filter(result => result.success);
+      const failedDeliveries = deliveryResults.filter(result => !result.success);
+      
+      const broadcastTime = Date.now() - startTime;
+      
+      this.emit('message-broadcast', { 
+        ...envelope,
+        targetCount: targetAgents.length,
+        deliveredCount: successfulDeliveries.length,
+        failedCount: failedDeliveries.length,
+        deliveryTime: broadcastTime,
+        failedAgents: failedDeliveries
+      });
+      
+      console.log(`QUEEN CONTROLLER FIX: Broadcast completed in ${broadcastTime}ms - ${successfulDeliveries.length}/${targetAgents.length} successful`);
+      
+      return true;
+      
+    } catch (error) {
+      console.error('QUEEN CONTROLLER FIX: Broadcast communication failed:', error.message);
+      this.emit('broadcast-error', {
+        envelope,
+        error: error.message,
+        deliveryResults
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Deliver message to specific agent - FIXED: Enhanced validation and queuing
    */
   async deliverMessage(agentId, message) {
-    const agent = this.subAgents.get(agentId);
-    if (!agent) return;
-    
-    // Add to agent's message queue
-    if (!agent.messageQueue) {
-      agent.messageQueue = [];
+    try {
+      const agent = this.subAgents.get(agentId);
+      if (!agent) {
+        throw new Error(`Agent ${agentId} not found`);
+      }
+      
+      // Check agent health before delivery
+      if (agent.status !== 'active') {
+        throw new Error(`Agent ${agentId} is not active (status: ${agent.status})`);
+      }
+      
+      // Initialize message queue if it doesn't exist
+      if (!agent.messageQueue) {
+        agent.messageQueue = [];
+      }
+      
+      // Check queue size to prevent overflow
+      const maxQueueSize = 100;
+      if (agent.messageQueue.length >= maxQueueSize) {
+        console.warn(`QUEEN CONTROLLER FIX: Message queue full for agent ${agentId}, removing oldest message`);
+        agent.messageQueue.shift(); // Remove oldest message
+      }
+      
+      // Add message to queue with metadata
+      const queuedMessage = {
+        ...message,
+        queuedAt: Date.now(),
+        retryCount: message.retryCount || 0
+      };
+      
+      agent.messageQueue.push(queuedMessage);
+      
+      // Update agent context with new message
+      agent.context.latestMessage = message;
+      agent.context.lastMessageTime = Date.now();
+      
+      // Update agent activity timestamp
+      agent.lastActivity = Date.now();
+      
+      // Emit successful delivery
+      this.emit('message-delivered', {
+        agentId,
+        messageId: message.id,
+        queueSize: agent.messageQueue.length,
+        timestamp: Date.now()
+      });
+      
+      console.log(`QUEEN CONTROLLER FIX: Message ${message.id} delivered to agent ${agentId}`);
+      
+    } catch (error) {
+      console.error(`QUEEN CONTROLLER FIX: Failed to deliver message to ${agentId}:`, error.message);
+      this.emit('message-delivery-failed', {
+        agentId,
+        messageId: message.id,
+        error: error.message,
+        timestamp: Date.now()
+      });
+      throw error;
     }
-    agent.messageQueue.push(message);
-    
-    // Update agent context with new message
-    agent.context.latestMessage = message;
-    
-    this.emit('message-delivered', {
-      agentId,
-      messageId: message.id
-    });
   }
   
   /**
@@ -883,6 +1098,98 @@ class QueenController extends EventEmitter {
         confidence: 0.1,
         error: error.message
       };
+    }
+  }
+
+  /**
+   * Select optimal agent with load balancing - NEW FIX
+   * @param {object} task - Task to find optimal agent for
+   */
+  async selectOptimalAgentWithLoadBalancing(task) {
+    try {
+      // Get neural prediction first
+      const neuralSelection = await this.selectOptimalAgent(task);
+      
+      // Calculate load balancing scores for each agent type
+      const loadBalancingScores = new Map();
+      const agentTypeLoads = new Map();
+      
+      // Calculate current load per agent type
+      for (const [agentId, agent] of this.subAgents) {
+        if (agent.status === 'active') {
+          const agentType = agent.type;
+          const currentLoad = agentTypeLoads.get(agentType) || 0;
+          
+          // Calculate agent load based on context usage, message queue, and runtime
+          const contextLoad = (agent.tokenUsage || 0) / this.contextWindowSize;
+          const queueLoad = (agent.messageQueue?.length || 0) / 100; // Normalize queue size
+          const runtimeLoad = agent.startTime ? Math.min((Date.now() - agent.startTime) / 300000, 1) : 0; // Normalize to 5 minutes max
+          
+          const agentLoad = (contextLoad * 0.5 + queueLoad * 0.3 + runtimeLoad * 0.2);
+          agentTypeLoads.set(agentType, currentLoad + agentLoad);
+        }
+      }
+      
+      // Calculate scores for candidate agent types
+      const candidateTypes = this.getAgentTypesForTask(task);
+      
+      for (const agentType of candidateTypes) {
+        const currentLoad = agentTypeLoads.get(agentType) || 0;
+        const neuralScore = neuralSelection.agentType === agentType ? 
+          (neuralSelection.prediction?.successProbability || 0.5) : 0.3;
+        
+        // Invert load (lower load = higher score) and combine with neural score
+        const loadScore = Math.max(0, 1 - currentLoad);
+        const combinedScore = neuralScore * 0.7 + loadScore * 0.3;
+        
+        loadBalancingScores.set(agentType, {
+          combinedScore,
+          neuralScore,
+          loadScore,
+          currentLoad
+        });
+      }
+      
+      // Select agent type with highest combined score
+      let bestAgentType = neuralSelection.agentType;
+      let bestScore = 0;
+      
+      for (const [agentType, scores] of loadBalancingScores) {
+        if (scores.combinedScore > bestScore) {
+          bestScore = scores.combinedScore;
+          bestAgentType = agentType;
+        }
+      }
+      
+      const selectedScores = loadBalancingScores.get(bestAgentType) || {
+        combinedScore: 0.5,
+        neuralScore: 0.5,
+        loadScore: 0.5,
+        currentLoad: 0
+      };
+      
+      console.log(`QUEEN CONTROLLER FIX: Load balancing selected ${bestAgentType} (score: ${selectedScores.combinedScore.toFixed(3)}, load: ${selectedScores.currentLoad.toFixed(3)})`);
+      
+      return {
+        agentType: bestAgentType,
+        prediction: neuralSelection.prediction,
+        reasoning: neuralSelection.reasoning,
+        loadBalancingScore: selectedScores.combinedScore,
+        loadBalancing: {
+          neuralScore: selectedScores.neuralScore,
+          loadScore: selectedScores.loadScore,
+          currentLoad: selectedScores.currentLoad,
+          alternativeTypes: Array.from(loadBalancingScores.entries())
+            .sort((a, b) => b[1].combinedScore - a[1].combinedScore)
+            .slice(0, 3)
+            .map(([type, scores]) => ({ type, score: scores.combinedScore }))
+        }
+      };
+      
+    } catch (error) {
+      console.error('QUEEN CONTROLLER FIX: Load balancing selection failed:', error.message);
+      // Fallback to original selection
+      return await this.selectOptimalAgent(task);
     }
   }
 
