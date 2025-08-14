@@ -292,43 +292,116 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Initialize SQLite integration with advanced connection management
+   * Initialize SQLite integration with advanced connection management - FIXED
    */
   async initializeSQLiteIntegration() {
     this.dbStatus = { available: false, reason: 'not_initialized' };
     
     try {
-      // Initialize connection pools for both databases
+      // Check if SQLite3 module is available
+      if (!this.dbManager.sqlite3) {
+        throw new Error('SQLite3 module not available');
+      }
+      
+      // Ensure database files directory exists
+      const dbDir = path.dirname(this.dbPaths.memory);
+      await fs.mkdir(dbDir, { recursive: true });
+      
+      // Initialize connection pools for both databases with retry logic
+      console.log('[DATABASE FIX] Creating connection pool for memory database...');
       await this.dbManager.createPool(this.dbPaths.memory, 'memory');
+      
+      console.log('[DATABASE FIX] Creating connection pool for hive database...');
       await this.dbManager.createPool(this.dbPaths.hive, 'hive');
       
-      // Set up database schemas
+      // Set up database schemas with error handling
+      console.log('[DATABASE FIX] Initializing schemas...');
       await this.initializeSchemas();
       
       // Set up event listeners for database monitoring
       this.setupDatabaseEventListeners();
       
+      // Test connections to ensure they work
+      await this.testDatabaseConnections();
+      
       this.dbStatus = { 
         available: true, 
         connectionManager: 'active',
-        pools: ['memory', 'hive']
+        pools: ['memory', 'hive'],
+        initialized: Date.now()
       };
       
-      console.log('[DATABASE] SQLite integration initialized with connection management');
+      console.log('[DATABASE FIX] SQLite integration initialized successfully');
       
     } catch (error) {
-      // Fallback to file-based persistence
+      // Enhanced fallback to file-based persistence
       this.dbStatus = { 
         available: false, 
         reason: 'sqlite_unavailable',
         fallback: 'file_based',
-        error: error.message
+        error: error.message,
+        timestamp: Date.now()
       };
       
-      console.warn('SQLite unavailable, using file-based persistence:', error.message);
+      console.warn('[DATABASE FIX] SQLite unavailable, using file-based persistence:', error.message);
+      
+      // Try to initialize basic file-based operations
+      try {
+        await this.ensureDirectoryStructure();
+        console.log('[DATABASE FIX] File-based persistence initialized as fallback');
+      } catch (fileError) {
+        console.error('[DATABASE FIX] Failed to initialize file-based persistence:', fileError.message);
+      }
     }
   }
   
+  /**
+   * Test database connections to ensure they're working - NEW FIX
+   */
+  async testDatabaseConnections() {
+    const testPromises = [];
+    
+    for (const poolName of ['memory', 'hive']) {
+      testPromises.push(this.testSingleConnection(poolName));
+    }
+    
+    await Promise.all(testPromises);
+    console.log('[DATABASE FIX] All database connections tested successfully');
+  }
+  
+  /**
+   * Test a single database connection
+   */
+  async testSingleConnection(poolName) {
+    let connection = null;
+    try {
+      connection = await this.dbManager.getConnection(poolName);
+      
+      // Simple test query
+      await new Promise((resolve, reject) => {
+        connection.get('SELECT 1 as test', [], (err, row) => {
+          if (err) {
+            reject(new Error(`Connection test failed for ${poolName}: ${err.message}`));
+          } else if (row && row.test === 1) {
+            resolve();
+          } else {
+            reject(new Error(`Unexpected result from connection test for ${poolName}`));
+          }
+        });
+      });
+      
+      console.log(`[DATABASE FIX] Connection test passed for ${poolName}`);
+      
+    } catch (error) {
+      console.error(`[DATABASE FIX] Connection test failed for ${poolName}:`, error.message);
+      throw error;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
   /**
    * Initialize database schemas using the schema manager
    */
@@ -339,9 +412,9 @@ class SharedMemoryStore extends EventEmitter {
     
     try {
       await this.schemaManager.initializeSchemas();
-      console.log('[DATABASE] Schemas initialized successfully');
+      console.log('[DATABASE FIX] Schemas initialized successfully');
     } catch (error) {
-      console.error('[DATABASE] Schema initialization failed:', error.message);
+      console.error('[DATABASE FIX] Schema initialization failed:', error.message);
       throw error;
     }
   }
@@ -1353,22 +1426,89 @@ class SharedMemoryStore extends EventEmitter {
   }
 
   /**
-   * Start garbage collection process
+   * Start garbage collection process - FIXED: Enhanced with memory threshold triggers
    */
   startGarbageCollection() {
     if (this.gcTimer) {
       clearInterval(this.gcTimer);
     }
     
+    // Main periodic garbage collection
     this.gcTimer = setInterval(async () => {
       try {
         await this.runGarbageCollection();
       } catch (error) {
+        console.error('[GC FIX] Scheduled garbage collection failed:', error.message);
         this.emit('error', new Error(`Garbage collection failed: ${error.message}`));
       }
     }, this.gcInterval);
     
-    console.log(`Garbage collection started with ${this.gcInterval}ms interval`);
+    // Add memory pressure trigger - NEW FIX
+    this.memoryPressureTimer = setInterval(async () => {
+      try {
+        await this.checkMemoryPressure();
+      } catch (error) {
+        console.error('[GC FIX] Memory pressure check failed:', error.message);
+      }
+    }, 30000); // Check every 30 seconds
+    
+    // Add immediate cleanup trigger for expired items - NEW FIX
+    this.expiredCleanupTimer = setInterval(async () => {
+      try {
+        await this.cleanupExpiredEntries();
+      } catch (error) {
+        console.error('[GC FIX] Expired cleanup failed:', error.message);
+      }
+    }, 60000); // Check every minute
+    
+    console.log(`[GC FIX] Enhanced garbage collection started with ${this.gcInterval}ms interval + memory pressure monitoring`);
+  }
+  
+  /**
+   * Check for memory pressure and trigger early GC if needed - NEW FIX
+   */
+  async checkMemoryPressure() {
+    const memoryUsageRatio = this.memoryUsage / this.maxMemorySize;
+    const entryCountRatio = this.entryCount / this.maxEntries;
+    
+    // Trigger early GC if memory usage exceeds thresholds
+    if (memoryUsageRatio > 0.8 || entryCountRatio > 0.8) {
+      console.log(`[GC FIX] Memory pressure detected - Memory: ${(memoryUsageRatio * 100).toFixed(1)}%, Entries: ${(entryCountRatio * 100).toFixed(1)}%`);
+      await this.runGarbageCollection();
+    }
+  }
+  
+  /**
+   * Quick cleanup of expired entries - NEW FIX
+   */
+  async cleanupExpiredEntries() {
+    const now = Date.now();
+    let expiredCount = 0;
+    
+    // Check for expired entries and clean them up immediately
+    const expiredKeys = [];
+    
+    for (const [key, metadata] of this.metadataStore) {
+      if (metadata.expiresAt && metadata.expiresAt < now) {
+        expiredKeys.push(key);
+      }
+    }
+    
+    // Clean up expired entries
+    for (const key of expiredKeys) {
+      try {
+        await this.delete(key);
+        expiredCount++;
+      } catch (error) {
+        console.warn(`[GC FIX] Failed to cleanup expired key ${key}:`, error.message);
+      }
+    }
+    
+    if (expiredCount > 0) {
+      console.log(`[GC FIX] Quick cleanup removed ${expiredCount} expired entries`);
+    }
+    
+    return expiredCount;
   }
   
   /**
@@ -1693,95 +1833,157 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Delete data from SQLite
+   * Delete data from SQLite - FIXED to use connection manager
    */
   async deleteFromSQLite(key, deleteVersions = false) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      this.memoryDB.serialize(() => {
-        this.memoryDB.run('DELETE FROM shared_memory WHERE key = ?', [key]);
-        
-        if (deleteVersions) {
-          this.memoryDB.run('DELETE FROM memory_versions WHERE key = ?', [key]);
-        }
-        
-        resolve();
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
+      // Delete from shared_memory table
+      await new Promise((resolve, reject) => {
+        connection.run('DELETE FROM shared_memory WHERE key = ?', [key], (err) => {
+          if (err) {
+            reject(new Error(`Failed to delete from shared_memory: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+      
+      // Delete versions if requested
+      if (deleteVersions) {
+        await new Promise((resolve, reject) => {
+          connection.run('DELETE FROM memory_versions WHERE key = ?', [key], (err) => {
+            if (err) {
+              reject(new Error(`Failed to delete versions: ${err.message}`));
+            } else {
+              resolve();
+            }
+          });
+        });
+      }
+      
+      console.log(`[DATABASE FIX] Successfully deleted key ${key} from SQLite`);
+      
+    } catch (error) {
+      console.error('[DATABASE FIX] Delete error:', error.message);
+      throw error;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Update access statistics in SQLite
+   * Update access statistics in SQLite - FIXED to use connection manager
    */
   async updateAccessStats(key, accessCount, lastAccessed) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      const stmt = this.memoryDB.prepare(`
-        UPDATE shared_memory 
-        SET access_count = ?, last_accessed = ? 
-        WHERE key = ?
-      `);
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
       
-      stmt.run([accessCount, lastAccessed, key], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+      await new Promise((resolve, reject) => {
+        connection.run(`
+          UPDATE shared_memory 
+          SET access_count = ?, last_accessed = ? 
+          WHERE key = ?
+        `, [accessCount, lastAccessed, key], (err) => {
+          if (err) {
+            reject(new Error(`Failed to update access stats: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
       
-      stmt.finalize();
-    });
+    } catch (error) {
+      console.error('[DATABASE FIX] Access stats update error:', error.message);
+      // Don't throw, this is non-critical
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Persist lock to SQLite
+   * Persist lock to SQLite - FIXED to use connection manager
    */
   async persistLockToSQLite(lock) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      const stmt = this.memoryDB.prepare(`
-        INSERT OR REPLACE INTO memory_locks 
-        (key, agent_id, lock_type, acquired_at, expires_at) 
-        VALUES (?, ?, ?, ?, ?)
-      `);
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
       
-      stmt.run([
-        lock.key,
-        lock.agentId,
-        lock.lockType,
-        lock.acquiredAt,
-        lock.expiresAt
-      ], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+      await new Promise((resolve, reject) => {
+        connection.run(`
+          INSERT OR REPLACE INTO memory_locks 
+          (key, agent_id, lock_type, acquired_at, expires_at) 
+          VALUES (?, ?, ?, ?, ?)
+        `, [
+          lock.key,
+          lock.agentId,
+          lock.lockType,
+          lock.acquiredAt,
+          lock.expiresAt
+        ], (err) => {
+          if (err) {
+            reject(new Error(`Failed to persist lock: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
       
-      stmt.finalize();
-    });
+    } catch (error) {
+      console.error('[DATABASE FIX] Lock persistence error:', error.message);
+      // Don't throw, locks are also stored in memory
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Remove lock from SQLite
+   * Remove lock from SQLite - FIXED to use connection manager
    */
   async removeLockFromSQLite(key) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      this.memoryDB.run('DELETE FROM memory_locks WHERE key = ?', [key], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
+      await new Promise((resolve, reject) => {
+        connection.run('DELETE FROM memory_locks WHERE key = ?', [key], (err) => {
+          if (err) {
+            reject(new Error(`Failed to remove lock: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+      
+    } catch (error) {
+      console.error('[DATABASE FIX] Lock removal error:', error.message);
+      // Don't throw, locks are also managed in memory
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
@@ -2154,26 +2356,47 @@ class SharedMemoryStore extends EventEmitter {
   }
 
   /**
-   * Shutdown the shared memory store gracefully
+   * Shutdown the shared memory store gracefully - FIXED: Clean up all timers
    */
   async shutdown() {
     try {
-      console.log('Shutting down SharedMemoryStore...');
+      console.log('[GC FIX] Shutting down SharedMemoryStore...');
       
-      // Stop garbage collection
+      // Stop all garbage collection timers
       if (this.gcTimer) {
         clearInterval(this.gcTimer);
+        console.log('[GC FIX] Main garbage collection timer stopped');
+      }
+      
+      if (this.memoryPressureTimer) {
+        clearInterval(this.memoryPressureTimer);
+        console.log('[GC FIX] Memory pressure timer stopped');
+      }
+      
+      if (this.expiredCleanupTimer) {
+        clearInterval(this.expiredCleanupTimer);
+        console.log('[GC FIX] Expired cleanup timer stopped');
+      }
+      
+      // Run final cleanup
+      try {
+        await this.runGarbageCollection();
+        console.log('[GC FIX] Final garbage collection completed');
+      } catch (error) {
+        console.warn('[GC FIX] Final garbage collection failed:', error.message);
       }
       
       // Save current state
       await this.saveToFiles();
+      console.log('[GC FIX] Memory state saved to files');
       
       // Shutdown database connection manager
       if (this.dbManager) {
         await this.dbManager.shutdown();
+        console.log('[GC FIX] Database connection manager shut down');
       }
       
-      // Clear all data
+      // Clear all data structures
       this.memoryCache.clear();
       this.persistentStore.clear();
       this.metadataStore.clear();
@@ -2182,9 +2405,10 @@ class SharedMemoryStore extends EventEmitter {
       this.lockStore.clear();
       
       this.emit('shutdown-complete');
-      console.log('SharedMemoryStore shutdown complete');
+      console.log('[GC FIX] SharedMemoryStore shutdown complete');
       
     } catch (error) {
+      console.error('[GC FIX] Shutdown error:', error.message);
       this.emit('error', error);
       throw error;
     }

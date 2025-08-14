@@ -712,7 +712,7 @@ NODE_ENV=production
       content += `REDIS_URL=redis://localhost:6379\n`;
     }
     if (this.analysis.factors?.features?.detected?.authentication) {
-      content += `JWT_SECRET=${JWT_SECRET:-$(openssl rand -hex 32)}\n`;
+      content += `JWT_SECRET=\${JWT_SECRET:-$(openssl rand -hex 32)}\n`;
     }
 
     content += `\`\`\`

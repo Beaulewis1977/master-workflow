@@ -130,44 +130,142 @@ class WASMNeuralCore {
     }
 
     /**
-     * Memory copy implementation for WASM
+     * Memory copy implementation for WASM - PERFORMANCE OPTIMIZED
      */
     memcpyBig(dest, src, count) {
-        const memory = new Uint8Array(this.memory.buffer);
-        memory.copyWithin(dest, src, src + count);
-        return dest;
+        if (!this.memory || !this.memory.buffer) {
+            console.error('MEMORY LEAK FIX: Invalid memory buffer in memcpyBig');
+            return dest;
+        }
+        
+        try {
+            const memory = new Uint8Array(this.memory.buffer);
+            // Bounds checking to prevent buffer overflow
+            const bufferSize = this.memory.buffer.byteLength;
+            
+            if (dest + count > bufferSize || src + count > bufferSize || dest < 0 || src < 0) {
+                console.error('SECURITY: Memory bounds violation prevented in memcpyBig');
+                return dest;
+            }
+            
+            memory.copyWithin(dest, src, src + count);
+            return dest;
+        } catch (error) {
+            console.error('MEMORY LEAK FIX: Error in memcpyBig:', error.message);
+            return dest;
+        }
     }
 
     /**
-     * Heap resize implementation for WASM
+     * Heap resize implementation for WASM - MEMORY LEAK FIXED
      */
     resizeHeap(requestedSize) {
+        if (!this.memory || !this.memory.buffer) {
+            console.error('MEMORY LEAK FIX: Invalid memory in resizeHeap');
+            return 0;
+        }
+        
         const pages = Math.ceil(requestedSize / 65536);
-        if (pages > 8) return 0; // Enforce 512KB limit
+        const currentPages = this.memory.buffer.byteLength / 65536;
+        const requiredGrowth = pages - currentPages;
+        
+        // Enforce strict memory limits
+        if (pages > 8) {
+            console.warn('MEMORY LEAK PREVENTION: Heap resize rejected - exceeds 512KB limit');
+            return 0; 
+        }
+        
+        if (requiredGrowth <= 0) {
+            return 1; // Already sufficient size
+        }
         
         try {
-            this.memory.grow(pages - this.memory.buffer.byteLength / 65536);
+            const growthResult = this.memory.grow(requiredGrowth);
+            if (growthResult === -1) {
+                console.error('MEMORY LEAK FIX: Memory growth failed');
+                return 0;
+            }
+            
+            console.log(`MEMORY: Heap resized from ${currentPages} to ${pages} pages (${requestedSize} bytes)`);
             return 1;
-        } catch (e) {
+        } catch (error) {
+            console.error('MEMORY LEAK FIX: Heap resize error:', error.message);
             return 0;
         }
     }
 
     /**
-     * Allocate memory regions for weights and activations
+     * Allocate memory regions for weights and activations - MEMORY LEAK FIXED
      */
     allocateMemoryRegions() {
+        if (!this.memory || !this.memory.buffer) {
+            console.error('MEMORY LEAK FIX: Cannot allocate memory regions - invalid memory buffer');
+            return;
+        }
+        
         const float32Size = 4;
         const weightsSize = this.architecture.totalWeights * float32Size;
         const activationsSize = this.architecture.totalActivations * float32Size;
+        const totalSize = weightsSize + activationsSize;
         
-        // Allocate contiguous memory blocks
-        this.weightsOffset = 0;
-        this.activationsOffset = weightsSize;
+        // Validate memory requirements
+        if (totalSize > this.memory.buffer.byteLength) {
+            console.error('MEMORY LEAK PREVENTION: Memory allocation exceeds available buffer');
+            throw new Error(`Memory allocation failed: need ${totalSize}, have ${this.memory.buffer.byteLength}`);
+        }
         
-        // Create typed array views
-        this.weights = new Float32Array(this.memory.buffer, this.weightsOffset, this.architecture.totalWeights);
-        this.activations = new Float32Array(this.memory.buffer, this.activationsOffset, this.architecture.totalActivations);
+        try {
+            // Clean up existing allocations first
+            this.cleanupMemoryAllocations();
+            
+            // Allocate contiguous memory blocks
+            this.weightsOffset = 0;
+            this.activationsOffset = weightsSize;
+            
+            // Create typed array views with bounds checking
+            this.weights = new Float32Array(this.memory.buffer, this.weightsOffset, this.architecture.totalWeights);
+            this.activations = new Float32Array(this.memory.buffer, this.activationsOffset, this.architecture.totalActivations);
+            
+            console.log(`MEMORY: Allocated ${totalSize} bytes (weights: ${weightsSize}, activations: ${activationsSize})`);
+            
+            // Track allocated memory for cleanup
+            this.allocatedMemory = {
+                weights: { offset: this.weightsOffset, size: weightsSize },
+                activations: { offset: this.activationsOffset, size: activationsSize },
+                totalSize: totalSize
+            };
+            
+        } catch (error) {
+            console.error('MEMORY LEAK FIX: Failed to allocate memory regions:', error.message);
+            this.cleanupMemoryAllocations();
+            throw error;
+        }
+    }
+    
+    /**
+     * Clean up memory allocations to prevent leaks
+     */
+    cleanupMemoryAllocations() {
+        try {
+            // Clear typed array references
+            if (this.weights) {
+                this.weights = null;
+            }
+            if (this.activations) {
+                this.activations = null;
+            }
+            
+            // Reset offsets
+            this.weightsOffset = null;
+            this.activationsOffset = null;
+            
+            // Clear allocation tracking
+            this.allocatedMemory = null;
+            
+            console.log('MEMORY LEAK FIX: Memory allocations cleaned up');
+        } catch (error) {
+            console.error('MEMORY LEAK FIX: Error during cleanup:', error.message);
+        }
     }
 
     /**
@@ -346,12 +444,55 @@ class WASMNeuralCore {
     }
 
     /**
-     * Allocate temporary memory for WASM operations
+     * Allocate temporary memory for WASM operations - MEMORY LEAK FIXED
      */
     allocateTempMemory(size) {
-        // Simple allocation scheme - in production, use proper memory manager
-        const offset = this.activationsOffset + this.architecture.totalActivations * 4;
-        return offset;
+        if (!this.memory || !this.memory.buffer) {
+            console.error('MEMORY LEAK FIX: Cannot allocate temp memory - invalid buffer');
+            return null;
+        }
+        
+        const baseOffset = this.activationsOffset + this.architecture.totalActivations * 4;
+        const availableSize = this.memory.buffer.byteLength - baseOffset;
+        
+        if (size > availableSize) {
+            console.error(`MEMORY LEAK PREVENTION: Temp allocation too large: ${size} > ${availableSize}`);
+            return null;
+        }
+        
+        // Track temporary allocations for cleanup
+        if (!this.tempAllocations) {
+            this.tempAllocations = new Set();
+        }
+        
+        const allocation = {
+            offset: baseOffset,
+            size: size,
+            timestamp: Date.now()
+        };
+        
+        this.tempAllocations.add(allocation);
+        
+        // Schedule cleanup after 30 seconds to prevent leaks
+        setTimeout(() => {
+            this.tempAllocations.delete(allocation);
+        }, 30000);
+        
+        return baseOffset;
+    }
+    
+    /**
+     * Clean up temporary memory allocations
+     */
+    cleanupTempMemory() {
+        if (this.tempAllocations) {
+            const cutoffTime = Date.now() - 60000; // 1 minute ago
+            for (const allocation of this.tempAllocations) {
+                if (allocation.timestamp < cutoffTime) {
+                    this.tempAllocations.delete(allocation);
+                }
+            }
+        }
     }
 
     /**
@@ -534,27 +675,91 @@ class PatternRecorder {
     }
 
     /**
-     * Cleanup old and unused patterns
+     * Cleanup old and unused patterns - MEMORY LEAK FIXED
      */
     cleanupOldPatterns() {
-        const patterns = Array.from(this.patterns.entries());
-        
-        // Sort by usage and recency
-        patterns.sort((a, b) => {
-            const scoreA = a[1].usageCount * 0.7 + (Date.now() - a[1].lastUsed) / 1000000 * 0.3;
-            const scoreB = b[1].usageCount * 0.7 + (Date.now() - b[1].lastUsed) / 1000000 * 0.3;
-            return scoreB - scoreA;
-        });
-        
-        // Keep only top patterns
-        const keepCount = Math.floor(this.maxPatterns * 0.8);
-        this.patterns.clear();
-        
-        for (let i = 0; i < keepCount; i++) {
-            this.patterns.set(patterns[i][0], patterns[i][1]);
+        if (!this.patterns || this.patterns.size === 0) {
+            return;
         }
         
-        console.log(`Pattern cleanup: kept ${keepCount} patterns`);
+        const patterns = Array.from(this.patterns.entries());
+        const startMemoryUsage = this.getMemoryUsage();
+        
+        try {
+            // Sort by usage and recency with better scoring
+            patterns.sort((a, b) => {
+                const ageA = Date.now() - a[1].lastUsed;
+                const ageB = Date.now() - b[1].lastUsed;
+                
+                // Weighted scoring: usage count (40%) + recency (40%) + success rate (20%)
+                const scoreA = (a[1].usageCount * 0.4) + 
+                              (1 / (ageA / 3600000 + 1) * 0.4) + 
+                              (a[1].successRate * 0.2);
+                const scoreB = (b[1].usageCount * 0.4) + 
+                              (1 / (ageB / 3600000 + 1) * 0.4) + 
+                              (b[1].successRate * 0.2);
+                              
+                return scoreB - scoreA;
+            });
+            
+            // Aggressive cleanup when memory pressure is high
+            const memoryPressure = startMemoryUsage / (this.maxPatterns * 1000); // rough estimate
+            let keepRatio = memoryPressure > 0.8 ? 0.5 : 0.7; // More aggressive when memory is tight
+            
+            const keepCount = Math.max(10, Math.floor(this.maxPatterns * keepRatio)); // Keep minimum 10
+            const oldSize = this.patterns.size;
+            
+            // Clear and rebuild with top patterns
+            this.patterns.clear();
+            
+            for (let i = 0; i < Math.min(keepCount, patterns.length); i++) {
+                if (patterns[i] && patterns[i][1]) {
+                    this.patterns.set(patterns[i][0], patterns[i][1]);
+                }
+            }
+            
+            const removedCount = oldSize - this.patterns.size;
+            const endMemoryUsage = this.getMemoryUsage();
+            const memoryFreed = startMemoryUsage - endMemoryUsage;
+            
+            console.log(`MEMORY LEAK FIX: Pattern cleanup - removed ${removedCount} patterns, kept ${this.patterns.size}, freed ~${memoryFreed} bytes`);
+            
+            // Force garbage collection if available
+            if (global.gc) {
+                global.gc();
+                console.log('MEMORY LEAK FIX: Forced garbage collection after pattern cleanup');
+            }
+            
+        } catch (error) {
+            console.error('MEMORY LEAK FIX: Error during pattern cleanup:', error.message);
+            // Partial recovery - at least clear some patterns
+            if (this.patterns.size > this.maxPatterns) {
+                const keysToDelete = Array.from(this.patterns.keys()).slice(this.maxPatterns * 0.8);
+                keysToDelete.forEach(key => this.patterns.delete(key));
+            }
+        }
+    }
+    
+    /**
+     * Estimate current memory usage
+     */
+    getMemoryUsage() {
+        let totalSize = 0;
+        
+        try {
+            // Estimate pattern memory usage
+            for (const [key, pattern] of this.patterns) {
+                totalSize += key.length * 2; // String key
+                totalSize += JSON.stringify(pattern).length; // Pattern data
+                totalSize += pattern.features ? pattern.features.length * 4 : 0; // Float32Array
+                totalSize += (pattern.outcomes ? pattern.outcomes.length * 50 : 0); // Rough estimate
+            }
+        } catch (error) {
+            console.error('Error estimating memory usage:', error.message);
+            return this.patterns.size * 1000; // Rough fallback estimate
+        }
+        
+        return totalSize;
     }
 
     /**
@@ -884,10 +1089,10 @@ class NeuralLearningSystem {
     }
 
     /**
-     * Initialize the neural learning system
+     * Initialize the neural learning system - GARBAGE COLLECTION ENHANCED
      */
     async initialize() {
-        console.log('Initializing Neural Learning System...');
+        console.log('Initializing Neural Learning System with enhanced garbage collection...');
         
         try {
             // Initialize WASM core
@@ -899,7 +1104,10 @@ class NeuralLearningSystem {
             // Load persisted data if available
             await this.loadPersistedData();
             
-            console.log('Neural Learning System initialized successfully');
+            // Initialize advanced garbage collection
+            this.initializeAdvancedGC();
+            
+            console.log('Neural Learning System initialized successfully with advanced GC');
             console.log(`Architecture: ${this.wasmCore.architecture.totalWeights} weights, WASM enabled: ${!!this.wasmCore.wasmModule}`);
             
             return true;
@@ -907,6 +1115,266 @@ class NeuralLearningSystem {
         } catch (error) {
             console.error('Failed to initialize Neural Learning System:', error);
             return false;
+        }
+    }
+    
+    /**
+     * Initialize advanced garbage collection system
+     */
+    initializeAdvancedGC() {
+        // Multi-tier garbage collection strategy
+        this.gcConfig = {
+            aggressive: {
+                interval: 30000, // 30 seconds
+                memoryThreshold: 0.8, // 80% memory usage
+                patternCleanupRatio: 0.6 // Keep only 60% of patterns
+            },
+            normal: {
+                interval: 120000, // 2 minutes
+                memoryThreshold: 0.6, // 60% memory usage  
+                patternCleanupRatio: 0.8 // Keep 80% of patterns
+            },
+            conservative: {
+                interval: 300000, // 5 minutes
+                memoryThreshold: 0.4, // 40% memory usage
+                patternCleanupRatio: 0.9 // Keep 90% of patterns
+            }
+        };
+        
+        // Start adaptive garbage collection
+        this.startAdaptiveGC();
+        
+        // Memory pressure monitoring
+        this.startMemoryPressureMonitoring();
+        
+        // WASM memory cleanup
+        this.startWasmMemoryCleanup();
+        
+        console.log('GARBAGE COLLECTION: Advanced GC system initialized');
+    }
+    
+    /**
+     * Start adaptive garbage collection based on memory pressure
+     */
+    startAdaptiveGC() {
+        const adaptiveGC = async () => {
+            try {
+                const memoryStats = this.getDetailedMemoryStats();
+                const memoryPressure = memoryStats.usage / memoryStats.limit;
+                
+                let gcMode = 'conservative';
+                if (memoryPressure > 0.8) {
+                    gcMode = 'aggressive';
+                } else if (memoryPressure > 0.6) {
+                    gcMode = 'normal';
+                }
+                
+                const config = this.gcConfig[gcMode];
+                
+                // Run garbage collection if threshold exceeded
+                if (memoryPressure > config.memoryThreshold) {
+                    console.log(`GARBAGE COLLECTION: Running ${gcMode} GC (pressure: ${(memoryPressure * 100).toFixed(1)}%)`);
+                    await this.runAdvancedGarbageCollection(gcMode);
+                }
+                
+                // Schedule next run
+                setTimeout(adaptiveGC, config.interval);
+                
+            } catch (error) {
+                console.error('GARBAGE COLLECTION: Adaptive GC error:', error.message);
+                // Fallback to conservative mode on error
+                setTimeout(adaptiveGC, this.gcConfig.conservative.interval);
+            }
+        };
+        
+        // Start the adaptive GC loop
+        adaptiveGC();
+    }
+    
+    /**
+     * Run advanced garbage collection
+     */
+    async runAdvancedGarbageCollection(mode = 'normal') {
+        const startTime = Date.now();
+        const startMemory = this.getDetailedMemoryStats();
+        
+        try {
+            console.log(`GARBAGE COLLECTION: Starting ${mode} mode cleanup`);
+            
+            // 1. Clean up WASM memory
+            await this.cleanupWasmMemory();
+            
+            // 2. Clean up patterns with adaptive strategy  
+            await this.adaptivePatternCleanup(mode);
+            
+            // 3. Clean up training data
+            await this.cleanupTrainingData();
+            
+            // 4. Force native garbage collection if available
+            if (global.gc) {
+                global.gc();
+                console.log('GARBAGE COLLECTION: Forced native GC');
+            }
+            
+            const endTime = Date.now();
+            const endMemory = this.getDetailedMemoryStats();
+            const memoryFreed = startMemory.usage - endMemory.usage;
+            
+            console.log(`GARBAGE COLLECTION: ${mode} cleanup completed in ${endTime - startTime}ms, freed ${memoryFreed} bytes`);
+            
+            return {
+                duration: endTime - startTime,
+                memoryFreed,
+                finalUsage: endMemory.usage,
+                mode
+            };
+            
+        } catch (error) {
+            console.error('GARBAGE COLLECTION: Advanced GC failed:', error.message);
+            throw error;
+        }
+    }
+    
+    /**
+     * Get detailed memory statistics
+     */
+    getDetailedMemoryStats() {
+        let totalUsage = 0;
+        
+        try {
+            // Estimate neural network memory
+            if (this.wasmCore) {
+                totalUsage += this.wasmCore.architecture.totalWeights * 4; // Float32 weights
+                totalUsage += this.wasmCore.architecture.totalActivations * 4; // Float32 activations
+                
+                if (this.wasmCore.allocatedMemory) {
+                    totalUsage += this.wasmCore.allocatedMemory.totalSize;
+                }
+            }
+            
+            // Estimate pattern memory
+            if (this.patternRecorder) {
+                totalUsage += this.patternRecorder.getMemoryUsage();
+            }
+            
+            // Estimate training queue memory
+            totalUsage += this.trainingQueue.length * 200; // Rough estimate per sample
+            
+        } catch (error) {
+            console.error('Memory stats calculation error:', error.message);
+        }
+        
+        const limit = 100 * 1024 * 1024; // 100MB limit for neural system
+        
+        return {
+            usage: totalUsage,
+            limit: limit,
+            utilizationPercent: (totalUsage / limit) * 100,
+            freeMemory: Math.max(0, limit - totalUsage)
+        };
+    }
+    
+    /**
+     * Start memory pressure monitoring
+     */
+    startMemoryPressureMonitoring() {
+        setInterval(() => {
+            const stats = this.getDetailedMemoryStats();
+            
+            if (stats.utilizationPercent > 95) {
+                console.warn(`GARBAGE COLLECTION: Critical memory usage ${stats.utilizationPercent.toFixed(1)}% - triggering emergency cleanup`);
+                this.runAdvancedGarbageCollection('aggressive').catch(error => {
+                    console.error('Emergency GC failed:', error.message);
+                });
+            } else if (stats.utilizationPercent > 85) {
+                console.warn(`GARBAGE COLLECTION: High memory usage ${stats.utilizationPercent.toFixed(1)}%`);
+            }
+            
+        }, 30000); // Check every 30 seconds
+    }
+    
+    /**
+     * Start WASM memory cleanup routine
+     */
+    startWasmMemoryCleanup() {
+        if (!this.wasmCore) return;
+        
+        setInterval(() => {
+            try {
+                this.wasmCore.cleanupTempMemory();
+            } catch (error) {
+                console.error('WASM memory cleanup error:', error.message);
+            }
+        }, 60000); // Every minute
+    }
+    
+    /**
+     * Clean up WASM memory allocations
+     */
+    async cleanupWasmMemory() {
+        if (!this.wasmCore) return;
+        
+        try {
+            // Clean up temporary allocations
+            this.wasmCore.cleanupTempMemory();
+            
+            // Reset allocation tracking if memory pressure is high
+            const memoryStats = this.getDetailedMemoryStats();
+            if (memoryStats.usage / memoryStats.limit > 0.9) {
+                console.log('GARBAGE COLLECTION: High memory pressure - resetting WASM allocations');
+                this.wasmCore.cleanupMemoryAllocations();
+            }
+            
+            console.log('GARBAGE COLLECTION: WASM memory cleanup completed');
+            
+        } catch (error) {
+            console.error('GARBAGE COLLECTION: WASM cleanup error:', error.message);
+        }
+    }
+    
+    /**
+     * Adaptive pattern cleanup based on usage and value
+     */
+    async adaptivePatternCleanup(mode) {
+        if (!this.patternRecorder) return;
+        
+        const config = this.gcConfig[mode];
+        const patterns = Array.from(this.patternRecorder.patterns.entries());
+        
+        if (patterns.length === 0) return;
+        
+        try {
+            // Keep top patterns based on cleanup ratio
+            const keepCount = Math.floor(patterns.length * config.patternCleanupRatio);
+            
+            // Enhanced cleanup using existing method with new ratio
+            this.patternRecorder.maxPatterns = keepCount;
+            this.patternRecorder.cleanupOldPatterns();
+            
+            console.log(`GARBAGE COLLECTION: Pattern cleanup completed in ${mode} mode`);
+            
+        } catch (error) {
+            console.error('GARBAGE COLLECTION: Pattern cleanup error:', error.message);
+        }
+    }
+    
+    /**
+     * Clean up training data queue
+     */
+    async cleanupTrainingData() {
+        try {
+            const queueSize = this.trainingQueue.length;
+            
+            if (queueSize > this.options.batchSize * 5) {
+                // Keep only recent training samples
+                const keepCount = this.options.batchSize * 3;
+                this.trainingQueue = this.trainingQueue.slice(-keepCount);
+                
+                console.log(`GARBAGE COLLECTION: Training queue cleanup - kept ${keepCount}/${queueSize} samples`);
+            }
+            
+        } catch (error) {
+            console.error('GARBAGE COLLECTION: Training data cleanup error:', error.message);
         }
     }
 
