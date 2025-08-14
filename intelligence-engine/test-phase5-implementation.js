@@ -176,11 +176,11 @@ module.exports = app;`
     `NODE_ENV=development
 DATABASE_URL=postgresql://localhost:5432/testdb
 REDIS_URL=redis://localhost:6379
-STRIPE_SECRET_KEY=sk_test_...
-OPENAI_API_KEY=sk-...
-SLACK_BOT_TOKEN=xoxb-...
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...`
+STRIPE_SECRET_KEY=\${STRIPE_SECRET_KEY:-sk_test_mock_key_for_testing}
+OPENAI_API_KEY=\${OPENAI_API_KEY:-sk-mock-key-for-testing}
+SLACK_BOT_TOKEN=\${SLACK_BOT_TOKEN:-xoxb-mock-token-for-testing}
+AWS_ACCESS_KEY_ID=\${AWS_ACCESS_KEY_ID:-mock_access_key}
+AWS_SECRET_ACCESS_KEY=\${AWS_SECRET_ACCESS_KEY:-mock_secret_key}`
   );
 
   // Create test directories

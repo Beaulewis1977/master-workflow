@@ -245,6 +245,19 @@ case "$1" in
                 ;;
         esac
         ;;
+    uninstall)
+        # Uninstall the AI Workflow system
+        shift
+        if [ -f "$INSTALL_DIR/.ai-workflow/bin/uninstall.sh" ]; then
+            bash "$INSTALL_DIR/.ai-workflow/bin/uninstall.sh" "$@"
+        elif [ -f ".ai-workflow/bin/uninstall.sh" ]; then
+            bash ".ai-workflow/bin/uninstall.sh" "$@"
+        else
+            echo "❌ Uninstaller not found."
+            echo "Please ensure the uninstaller is properly installed."
+            exit 1
+        fi
+        ;;
     bus)
         shift
         subcmd="$1"; shift || true
@@ -280,6 +293,7 @@ case "$1" in
         echo "  components              List installed components"
         echo "  verify                  Verify component integration"
         echo "  add [component]         Add component post-install"
+        echo "  uninstall [options]     Safely uninstall the workflow system"
         echo "  yolo [on|off|status]    Manage YOLO mode (skip permissions)"
         echo "  help                    Show this help"
         echo ""
