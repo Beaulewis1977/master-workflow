@@ -22,7 +22,8 @@
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(timeout:*)",
       "Bash(npm test:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm ls:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
