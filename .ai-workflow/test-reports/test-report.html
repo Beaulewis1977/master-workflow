@@ -24,29 +24,29 @@
     <div class="container">
         <div class="header">
             <h1>🧪 Uninstaller Manifest Writers - Test Report</h1>
-            <p>Generated on 8/14/2025, 1:49:11 AM</p>
+            <p>Generated on 8/14/2025, 2:59:12 AM</p>
         </div>
         
         <div class="summary">
             <div class="card">
                 <h3>📊 Test Summary</h3>
-                <p><strong>Total Tests:</strong> 29</p>
-                <p><strong class="passed">Passed:</strong> 26</p>
+                <p><strong>Total Tests:</strong> 43</p>
+                <p><strong class="passed">Passed:</strong> 40</p>
                 <p><strong class="failed">Failed:</strong> 3</p>
-                <p><strong>Success Rate:</strong> 90%</p>
+                <p><strong>Success Rate:</strong> 93%</p>
             </div>
             
             <div class="card">
                 <h3>⏱️ Performance</h3>
-                <p><strong>Duration:</strong> 14917ms</p>
-                <p><strong>Average per Test:</strong> 514ms</p>
+                <p><strong>Duration:</strong> 26907ms</p>
+                <p><strong>Average per Test:</strong> 626ms</p>
             </div>
             
             <div class="card">
                 <h3>📈 Coverage</h3>
-                <p><strong>Overall:</strong> 84%</p>
+                <p><strong>Overall:</strong> 85%</p>
                 <div class="coverage-bar">
-                    <div class="coverage-fill" style="width: 84%"></div>
+                    <div class="coverage-fill" style="width: 85%"></div>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
             <div class="suite">
                 <h3>✅ Unit Tests</h3>
                 <p>Basic functionality and unit testing of manifest writer components</p>
-                <p><strong>Duration:</strong> 749ms</p>
+                <p><strong>Duration:</strong> 1847ms</p>
                 <p><strong class="passed">Passed:</strong> 8 | <strong class="failed">Failed:</strong> 0</p>
                 
                 
@@ -110,9 +110,106 @@
             </div>
         
             <div class="suite">
+                <h3>✅ Phase 2 Tests</h3>
+                <p>Enhanced classifier and plan builder module testing</p>
+                <p><strong>Duration:</strong> 5730ms</p>
+                <p><strong class="passed">Passed:</strong> 14 | <strong class="failed">Failed:</strong> 0</p>
+                
+                
+                    <h4>⚡ Performance Metrics</h4>
+                    
+                        <div class="metric">
+                            <strong>Classification (100 files):</strong> 345ms avg (345-345ms)
+                        </div>
+                    
+                        <div class="metric">
+                            <strong>Plan Building (100 files):</strong> 11ms avg (11-11ms)
+                        </div>
+                    
+                
+                
+                
+                    <h4>🔍 Test Details</h4>
+                    <ul>
+                        
+                            <li class="passed">
+                                ✓ Classifier with manifests
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Classifier without manifests (heuristic)
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Git protection
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ File existence validation
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ User modification detection
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Plan builder basic functionality
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Size calculation
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Removal ordering
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Configuration notes
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ JSON output formatting
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Verbose mode
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Classifier + Plan Builder integration
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Edge cases (missing/corrupted manifests)
+                                
+                            </li>
+                        
+                            <li class="passed">
+                                ✓ Large file sets performance
+                                
+                            </li>
+                        
+                    </ul>
+                
+            </div>
+        
+            <div class="suite">
                 <h3>✅ Integration Tests</h3>
                 <p>Testing integration with installer scripts and manifest recording</p>
-                <p><strong>Duration:</strong> 2123ms</p>
+                <p><strong>Duration:</strong> 3443ms</p>
                 <p><strong class="passed">Passed:</strong> 7 | <strong class="failed">Failed:</strong> 0</p>
                 
                 
@@ -163,7 +260,7 @@
             <div class="suite">
                 <h3>❌ End-to-End Tests</h3>
                 <p>Complete workflow testing including browser automation</p>
-                <p><strong>Duration:</strong> 5049ms</p>
+                <p><strong>Duration:</strong> 6527ms</p>
                 <p><strong class="passed">Passed:</strong> 5 | <strong class="failed">Failed:</strong> 1</p>
                 
                 
@@ -209,46 +306,46 @@
             <div class="suite">
                 <h3>❌ Performance Tests</h3>
                 <p>Efficiency and scalability testing of manifest operations</p>
-                <p><strong>Duration:</strong> 6870ms</p>
+                <p><strong>Duration:</strong> 9045ms</p>
                 <p><strong class="passed">Passed:</strong> 6 | <strong class="failed">Failed:</strong> 2</p>
                 
                 
                     <h4>⚡ Performance Metrics</h4>
                     
                         <div class="metric">
-                            <strong>Small Scale Write:</strong> 195.17ms avg (73.06-413.78ms)
+                            <strong>Small Scale Write:</strong> 169.56ms avg (138.35-209.47ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>Medium Scale Write:</strong> 147.83ms avg (97.78-205.15ms)
+                            <strong>Medium Scale Write:</strong> 174.06ms avg (116.47-215.59ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>Large Scale Write:</strong> 190.58ms avg (136.51-269.57ms)
+                            <strong>Large Scale Write:</strong> 289.22ms avg (251.44-316.02ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>Deduplication:</strong> 171.67ms avg (119.67-221.5ms)
+                            <strong>Deduplication:</strong> 211.26ms avg (192.19-225.58ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>Memory Efficiency:</strong> 214.88ms avg (214.88-214.88ms)
+                            <strong>Memory Efficiency:</strong> 451.84ms avg (451.84-451.84ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>FS Write:</strong> 120.55ms avg (73.36-304.54ms)
+                            <strong>FS Write:</strong> 181.87ms avg (122.82-262.4ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>FS Read:</strong> 18.85ms avg (11.81-32.36ms)
+                            <strong>FS Read:</strong> 37.79ms avg (18.21-56.24ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>JSON Serialize:</strong> 5.04ms avg (1.04-10.74ms)
+                            <strong>JSON Serialize:</strong> 5.67ms avg (1.12-27.05ms)
                         </div>
                     
                         <div class="metric">
-                            <strong>JSON Parse:</strong> 2.13ms avg (1.43-4.34ms)
+                            <strong>JSON Parse:</strong> 2.99ms avg (1.76-4.89ms)
                         </div>
                     
                 
@@ -259,7 +356,7 @@
                         
                             <li class="failed">
                                 ✗ Small-scale manifest operations (10 items)
-                                <br><small class="failed">Error: Too slow: 195.17ms</small>
+                                <br><small class="failed">Error: Too slow: 169.56ms</small>
                             </li>
                         
                             <li class="passed">
@@ -306,7 +403,7 @@
             <h3>🖥️ Environment</h3>
             <p><strong>Node.js:</strong> v20.19.3</p>
             <p><strong>Platform:</strong> linux (x64)</p>
-            <p><strong>Memory:</strong> 9MB used</p>
+            <p><strong>Memory:</strong> 14MB used</p>
         </div>
     </div>
 </body>

@@ -12,6 +12,7 @@ const { spawn } = require('child_process');
 
 // Import test suites
 const ManifestWriterTests = require('./test-manifest-writers');
+const Phase2Tests = require('./test-phase2-classifier-plan');
 const IntegrationTests = require('./test-integration');
 const E2ETests = require('./test-e2e');
 const PerformanceTests = require('./test-performance');
@@ -420,6 +421,12 @@ ${(report.summary.coverage?.overall?.percentage || 0) >= 85 ? '✅ Coverage targ
         ManifestWriterTests,
         'Unit Tests',
         'Basic functionality and unit testing of manifest writer components'
+      );
+      
+      await this.runTestSuite(
+        Phase2Tests,
+        'Phase 2 Tests',
+        'Enhanced classifier and plan builder module testing'
       );
       
       await this.runTestSuite(

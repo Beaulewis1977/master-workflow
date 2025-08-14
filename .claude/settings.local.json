@@ -21,7 +21,8 @@
       "WebFetch(domain:buildermethods.com)",
       "mcp__sequential-thinking__sequentialthinking",
       "Bash(timeout:*)",
-      "Bash(npm test:*)"
+      "Bash(npm test:*)",
+      "Bash(grep:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
