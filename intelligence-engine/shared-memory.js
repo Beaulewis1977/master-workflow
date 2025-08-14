@@ -1222,48 +1222,136 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Perform atomic operations on memory values
+   * Perform atomic operations on memory values - FIXED: Enhanced concurrent access handling
    * @param {string} key - Key to operate on
    * @param {function} operation - Function to perform atomically
    * @param {object} options - Operation options
    */
   async atomic(key, operation, options = {}) {
     const agentId = options.agentId || 'system';
+    const maxRetries = options.maxRetries || 3;
+    const retryDelay = options.retryDelay || 100;
     let lock = null;
+    let attempt = 0;
     
-    try {
-      // Acquire lock
-      lock = await this.acquireLock(key, agentId, {
-        timeout: options.timeout || 10000
-      });
-      
-      // Get current value
-      const currentValue = await this.get(key, { agentId });
-      
-      // Perform operation
-      const newValue = await operation(currentValue);
-      
-      // Set new value if operation returned something
-      if (newValue !== undefined) {
-        await this.set(key, newValue, {
-          agentId,
-          ...options
+    while (attempt < maxRetries) {
+      try {
+        // Enhanced lock acquisition with retry logic
+        lock = await this.acquireLockWithRetry(key, agentId, {
+          timeout: options.timeout || 10000,
+          retryCount: attempt
         });
-      }
-      
-      return newValue;
-      
-    } catch (error) {
-      this.emit('error', error);
-      throw error;
-    } finally {
-      // Always release lock
-      if (lock) {
-        await this.releaseLock(key, agentId);
+        
+        if (!lock) {
+          throw new Error(`Failed to acquire lock for key: ${key} after ${attempt + 1} attempts`);
+        }
+        
+        // Get current value with validation
+        const currentValue = await this.get(key, { agentId });
+        
+        // Perform operation with timeout protection
+        const operationPromise = Promise.resolve(operation(currentValue));
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Operation timeout')), options.operationTimeout || 5000);
+        });
+        
+        const newValue = await Promise.race([operationPromise, timeoutPromise]);
+        
+        // Set new value if operation returned something
+        if (newValue !== undefined) {
+          await this.set(key, newValue, {
+            agentId,
+            ...options,
+            skipLockCheck: true // We already have the lock
+          });
+        }
+        
+        // Log successful atomic operation
+        console.log(`SHARED MEMORY FIX: Atomic operation completed for key ${key} by agent ${agentId}`);
+        
+        return newValue;
+        
+      } catch (error) {
+        attempt++;
+        
+        // Log the error
+        console.warn(`SHARED MEMORY FIX: Atomic operation attempt ${attempt}/${maxRetries} failed for key ${key}:`, error.message);
+        
+        // Release lock on error
+        if (lock) {
+          try {
+            await this.releaseLock(key, agentId);
+            lock = null;
+          } catch (releaseError) {
+            console.error(`SHARED MEMORY FIX: Failed to release lock on error:`, releaseError.message);
+          }
+        }
+        
+        // If this was the last attempt, throw the error
+        if (attempt >= maxRetries) {
+          this.emit('error', error);
+          throw new Error(`Atomic operation failed after ${maxRetries} attempts: ${error.message}`);
+        }
+        
+        // Wait before retry with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt - 1)));
+        
+      } finally {
+        // Always release lock if we still have it
+        if (lock) {
+          try {
+            await this.releaseLock(key, agentId);
+          } catch (releaseError) {
+            console.error(`SHARED MEMORY FIX: Failed to release lock in finally block:`, releaseError.message);
+          }
+        }
       }
     }
   }
   
+  /**
+   * Enhanced lock acquisition with retry mechanism - NEW FIX
+   */
+  async acquireLockWithRetry(key, agentId, options = {}) {
+    const maxLockRetries = options.maxLockRetries || 5;
+    const lockRetryDelay = options.lockRetryDelay || 100;
+    let lockAttempt = 0;
+    
+    while (lockAttempt < maxLockRetries) {
+      try {
+        const lock = await this.acquireLock(key, agentId, {
+          timeout: options.timeout || 10000
+        });
+        
+        if (lock) {
+          console.log(`SHARED MEMORY FIX: Lock acquired for key ${key} by agent ${agentId} on attempt ${lockAttempt + 1}`);
+          return lock;
+        }
+        
+      } catch (error) {
+        // Check if it's a "already locked" error
+        if (error.message.includes('already locked') || error.message.includes('SQLITE_MISUSE')) {
+          lockAttempt++;
+          
+          console.warn(`SHARED MEMORY FIX: Lock acquisition attempt ${lockAttempt}/${maxLockRetries} failed for key ${key}:`, error.message);
+          
+          if (lockAttempt < maxLockRetries) {
+            // Wait before retry with jitter to reduce thundering herd
+            const jitter = Math.random() * 50; // 0-50ms random jitter
+            await new Promise(resolve => 
+              setTimeout(resolve, lockRetryDelay * Math.pow(2, lockAttempt - 1) + jitter)
+            );
+            continue;
+          }
+        }
+        
+        throw error;
+      }
+    }
+    
+    throw new Error(`Failed to acquire lock for key ${key} after ${maxLockRetries} attempts`);
+  }
+
   /**
    * Start garbage collection process
    */

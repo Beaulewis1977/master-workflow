@@ -20,38 +20,64 @@ class AgentCommunication extends EventEmitter {
   constructor(sharedMemory = null) {
     super();
     
-    // Core messaging infrastructure
+    // Core messaging infrastructure - PERFORMANCE OPTIMIZED
     this.messageQueue = [];
-    this.maxQueueSize = 200;
+    this.priorityQueues = new Map(); // Separate queues by priority
+    this.maxQueueSize = 500; // Increased for better throughput
     this.chainedTasks = new Map();
     this.activeChannels = new Map();
     this.messageHistory = [];
-    this.maxHistorySize = 1000;
+    this.maxHistorySize = 500; // Reduced to save memory
     
-    // Agent registry
+    // Message batching for performance
+    this.batchSize = 20; // Process multiple messages at once
+    this.batchTimeout = 10; // Max wait time for batching (ms)
+    this.messageBatch = [];
+    this.batchTimer = null;
+    
+    // Connection pooling for agents
+    this.connectionPools = new Map();
+    this.maxConnectionsPerAgent = 5;
+    
+    // Agent registry with performance optimizations
     this.registeredAgents = new Map();
     this.agentSubscriptions = new Map();
+    this.agentChannelCache = new Map(); // Cache for faster lookups
     
-    // Performance tracking
+    // Enhanced performance tracking
     this.metrics = {
       messagesSent: 0,
       messagesReceived: 0,
       messagesDropped: 0,
       averageLatency: 0,
       taskChainsCompleted: 0,
-      parallelExecutions: 0
+      parallelExecutions: 0,
+      batchesProcessed: 0,
+      averageBatchSize: 0,
+      queueProcessingTime: 0,
+      peakQueueSize: 0,
+      throughputPerSecond: 0
     };
+    
+    // Performance monitoring
+    this.lastThroughputCheck = Date.now();
+    this.messagesInLastSecond = 0;
     
     // Shared memory integration
     this.sharedMemory = sharedMemory;
     
-    // Message priorities
+    // Enhanced message priorities with weights
     this.priorityLevels = {
-      CRITICAL: 0,
-      HIGH: 1,
-      NORMAL: 2,
-      LOW: 3
+      CRITICAL: { level: 0, weight: 100 },
+      HIGH: { level: 1, weight: 10 },
+      NORMAL: { level: 2, weight: 1 },
+      LOW: { level: 3, weight: 0.1 }
     };
+    
+    // Initialize priority queues
+    Object.keys(this.priorityLevels).forEach(priority => {
+      this.priorityQueues.set(priority, []);
+    });
     
     // Initialize event bus
     this.initializeEventBus();
@@ -75,35 +101,173 @@ class AgentCommunication extends EventEmitter {
   }
 
   /**
-   * Start the message processor for handling queued messages
+   * Start the message processor for handling queued messages - PERFORMANCE OPTIMIZED
    */
   startMessageProcessor() {
-    this.processorInterval = setInterval(() => {
-      this.processMessageQueue();
-    }, 100); // Process every 100ms
+    // Dynamic processing interval based on queue size and load
+    let processingInterval = 25; // Start with 25ms for better performance (was 100ms)
+    
+    const adaptiveProcessing = async () => {
+      const queueSize = this.getTotalQueueSize();
+      const startTime = Date.now();
+      
+      try {
+        // Adaptive interval: faster when busy, slower when idle
+        if (queueSize > 100) {
+          processingInterval = 5; // High load - process very frequently
+        } else if (queueSize > 50) {
+          processingInterval = 10; // Medium-high load
+        } else if (queueSize > 20) {
+          processingInterval = 15; // Medium load  
+        } else if (queueSize > 5) {
+          processingInterval = 25; // Normal load
+        } else if (queueSize === 0) {
+          processingInterval = 100; // Idle - save CPU (was 200ms, now 100ms)
+        } else {
+          processingInterval = 50; // Low load
+        }
+        
+        // Update peak queue size metric
+        if (queueSize > this.metrics.peakQueueSize) {
+          this.metrics.peakQueueSize = queueSize;
+        }
+        
+        // Process messages
+        await this.processMessageQueue();
+        
+        // Update processing time metric
+        const processingTime = Date.now() - startTime;
+        this.metrics.queueProcessingTime = 
+          (this.metrics.queueProcessingTime * 0.9) + (processingTime * 0.1); // Exponential moving average
+        
+        // Update throughput metric
+        this.updateThroughputMetrics();
+        
+      } catch (error) {
+        console.error('PERFORMANCE FIX: Message processing error:', error);
+        processingInterval = Math.min(processingInterval * 2, 1000); // Back off on error, max 1s
+      }
+      
+      // Schedule next run
+      this.processorTimeout = setTimeout(adaptiveProcessing, processingInterval);
+    };
+    
+    // Start adaptive processing
+    adaptiveProcessing();
+    
+    // Track processing metrics
+    this.processingMetrics = {
+      intervalAdjustments: 0,
+      avgProcessingTime: 0,
+      batchesProcessed: 0
+    };
+    
+    // Start throughput monitoring
+    this.startThroughputMonitoring();
+    
+    console.log('PERFORMANCE FIX: Adaptive message processor started with 25ms base interval (was 100ms)');
+  }
+  
+  /**
+   * Get total queue size across all priority levels
+   */
+  getTotalQueueSize() {
+    let total = this.messageQueue.length;
+    for (const queue of this.priorityQueues.values()) {
+      total += queue.length;
+    }
+    return total;
+  }
+  
+  /**
+   * Monitor throughput for performance tracking
+   */
+  startThroughputMonitoring() {
+    setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - this.lastThroughputCheck;
+      
+      if (elapsed >= 1000) { // Update every second
+        this.metrics.throughputPerSecond = 
+          Math.round((this.messagesInLastSecond * 1000) / elapsed);
+        
+        this.messagesInLastSecond = 0;
+        this.lastThroughputCheck = now;
+      }
+    }, 1000);
+  }
+  
+  /**
+   * Update throughput metrics
+   */
+  updateThroughputMetrics() {
+    this.messagesInLastSecond++;
   }
 
   /**
-   * Register an agent with the communication system
+   * Register an agent with the communication system - FIXED: Enhanced validation and caching
    */
   registerAgent(agentId, agentConfig) {
-    this.registeredAgents.set(agentId, {
+    // Validate agent registration data
+    if (!agentId || typeof agentId !== 'string') {
+      throw new Error('Agent ID must be a non-empty string');
+    }
+    
+    if (!agentConfig || typeof agentConfig !== 'object') {
+      throw new Error('Agent config must be a valid object');
+    }
+    
+    // Check if agent is already registered
+    if (this.registeredAgents.has(agentId)) {
+      console.warn(`REGISTRY FIX: Agent ${agentId} already registered, updating configuration`);
+      // Update existing registration instead of creating new one
+      const existingAgent = this.registeredAgents.get(agentId);
+      existingAgent.name = agentConfig.name || existingAgent.name;
+      existingAgent.type = agentConfig.type || existingAgent.type;
+      existingAgent.lastActivity = Date.now();
+      existingAgent.status = 'active';
+      
+      this.emit('agent.updated', { agentId, config: agentConfig });
+      return true;
+    }
+    
+    const agentData = {
       id: agentId,
-      name: agentConfig.name,
-      type: agentConfig.type,
+      name: agentConfig.name || agentId,
+      type: agentConfig.type || 'unknown',
       status: 'active',
       registeredAt: Date.now(),
       lastActivity: Date.now(),
-      messageCount: 0
+      messageCount: 0,
+      capabilities: agentConfig.capabilities || [],
+      contextWindow: agentConfig.contextWindow || 200000
+    };
+    
+    this.registeredAgents.set(agentId, agentData);
+    
+    // Create dedicated channel for agent with error handling
+    const agentChannel = new EventEmitter();
+    agentChannel.setMaxListeners(100); // Prevent memory leaks
+    agentChannel.on('error', (error) => {
+      console.error(`REGISTRY FIX: Channel error for agent ${agentId}:`, error);
+      this.emit('agent.channel.error', { agentId, error });
     });
     
-    // Create dedicated channel for agent
-    this.activeChannels.set(agentId, new EventEmitter());
+    this.activeChannels.set(agentId, agentChannel);
     
     // Initialize subscription list
     this.agentSubscriptions.set(agentId, new Set());
     
-    this.emit('agent.registered', { agentId, config: agentConfig });
+    // Update agent channel cache for faster lookups
+    this.agentChannelCache.set(agentId, agentChannel);
+    
+    console.log(`REGISTRY FIX: Agent ${agentId} registered successfully as ${agentConfig.type}`);
+    
+    this.emit('agent.registered', { 
+      agentId, 
+      config: agentConfig,
+      registeredAt: agentData.registeredAt
+    });
     
     return true;
   }
@@ -132,66 +296,158 @@ class AgentCommunication extends EventEmitter {
   }
 
   /**
-   * Send a message from one agent to another
+   * Send a message from one agent to another - PERFORMANCE OPTIMIZED
+   * FIXED: Enhanced agent validation and registry synchronization
    */
   async sendMessage(fromAgent, toAgent, message, options = {}) {
     const messageId = crypto.randomUUID();
     const timestamp = Date.now();
+    const startTime = performance.now();
     
-    // Validate agents
-    if (!this.registeredAgents.has(fromAgent) || !this.registeredAgents.has(toAgent)) {
-      throw new Error('Invalid agent ID(s)');
-    }
-    
-    // Construct message envelope
-    const envelope = {
-      id: messageId,
-      from: fromAgent,
-      to: toAgent,
-      timestamp,
-      priority: options.priority || this.priorityLevels.NORMAL,
-      type: message.type || 'generic',
-      payload: message,
-      requiresAck: options.requiresAck || false,
-      timeout: options.timeout || 30000,
-      retries: options.retries || 0
-    };
-    
-    // Add to queue if queue not full
-    if (this.messageQueue.length >= this.maxQueueSize) {
-      this.metrics.messagesDropped++;
-      this.emit('queue.full', { dropped: envelope });
+    try {
+      // Enhanced agent validation with registry synchronization
+      const fromAgentData = this.registeredAgents.get(fromAgent);
       
-      if (options.priority === this.priorityLevels.CRITICAL) {
-        // Force process critical messages
-        this.messageQueue.shift(); // Remove oldest
-        this.messageQueue.push(envelope);
-      } else {
-        throw new Error('Message queue full');
+      // Special handling for system/broadcast messages
+      if (fromAgent === 'system' || fromAgent === 'queen-controller') {
+        // Allow system messages even without registration
+      } else if (!fromAgentData) {
+        // Try to refresh registry before failing
+        await this.refreshAgentRegistry();
+        const refreshedFromAgent = this.registeredAgents.get(fromAgent);
+        if (!refreshedFromAgent) {
+          throw new Error(`Invalid source agent ID: ${fromAgent} not found in registry`);
+        }
       }
-    } else {
-      this.messageQueue.push(envelope);
+      
+      // Handle broadcast messages
+      if (toAgent === 'broadcast' || toAgent === '*' || toAgent === 'all') {
+        return await this.handleBroadcastMessage(fromAgent, message, options);
+      }
+      
+      // Validate target agent with retry
+      const toAgentData = this.registeredAgents.get(toAgent);
+      if (!toAgentData) {
+        // Try registry refresh for target agent
+        await this.refreshAgentRegistry();
+        const refreshedToAgent = this.registeredAgents.get(toAgent);
+        if (!refreshedToAgent) {
+          throw new Error(`Invalid target agent ID: ${toAgent} not found in registry`);
+        }
+      }
+    
+      // Construct optimized message envelope
+      const priority = options.priority !== undefined ? options.priority : this.priorityLevels.NORMAL.level;
+      const envelope = {
+        id: messageId,
+        from: fromAgent,
+        to: toAgent,
+        timestamp,
+        priority,
+        type: message.type || 'generic',
+        payload: message,
+        requiresAck: options.requiresAck || false,
+        timeout: options.timeout || 30000,
+        retries: options.retries || 0,
+        originalRetries: options.retries || 0,
+        size: JSON.stringify(message).length // Track message size
+      };
+    
+      // Enhanced queue management with priority-based queuing
+      const totalQueueSize = this.getTotalQueueSize();
+      
+      if (totalQueueSize >= this.maxQueueSize) {
+        // Handle queue overflow intelligently
+        if (priority === this.priorityLevels.CRITICAL.level) {
+          // Critical messages: evict lowest priority messages
+          this.evictLowPriorityMessages(1);
+        } else if (priority === this.priorityLevels.HIGH.level) {
+          // High priority: try to evict normal/low priority
+          const evicted = this.evictLowPriorityMessages(1, ['LOW', 'NORMAL']);
+          if (!evicted) {
+            this.metrics.messagesDropped++;
+            this.emit('queue.full', { dropped: envelope });
+            throw new Error('Message queue full - could not evict lower priority messages');
+          }
+        } else {
+          this.metrics.messagesDropped++;
+          this.emit('queue.full', { dropped: envelope });
+          throw new Error('Message queue full');
+        }
+      }
+      
+      // Add to appropriate priority queue
+      this.addMessageToQueue(envelope);
+    
+      // Update metrics and agent activity
+      this.metrics.messagesSent++;
+      this.updateAgentActivity(fromAgent);
+      
+      // Store in shared memory asynchronously for better performance
+      if (this.sharedMemory) {
+        // Don't await - store asynchronously to avoid blocking
+        this.sharedMemory.set(
+          `messages:${messageId}`,
+          envelope,
+          { ttl: 3600000 } // 1 hour TTL
+        ).catch(error => {
+          console.warn('PERFORMANCE FIX: Failed to store message in shared memory:', error.message);
+        });
+      }
+      
+      const sendTime = performance.now() - startTime;
+      
+      // Emit event with performance data
+      this.emit('message.sent', {
+        ...envelope,
+        sendTime,
+        queueSize: totalQueueSize
+      });
+      
+      // Track send performance
+      if (sendTime > 10) { // Log slow sends
+        console.log(`PERFORMANCE FIX: Message send took ${sendTime.toFixed(2)}ms for ${messageId}`);
+      }
+      
+      return messageId;
+      
+    } catch (error) {
+      const sendTime = performance.now() - startTime;
+      console.error(`PERFORMANCE FIX: Send message failed in ${sendTime.toFixed(2)}ms:`, error.message);
+      throw error;
+    }
+  }
+  
+  /**
+   * Evict low priority messages to make room
+   */
+  evictLowPriorityMessages(count, allowedPriorities = ['LOW', 'NORMAL']) {
+    let evicted = 0;
+    
+    for (const priority of allowedPriorities.reverse()) {
+      const queue = this.priorityQueues.get(priority);
+      if (queue && queue.length > 0) {
+        const toEvict = Math.min(count - evicted, queue.length);
+        const evictedMessages = queue.splice(-toEvict); // Remove from end (oldest)
+        
+        evictedMessages.forEach(msg => {
+          this.emit('message.evicted', { message: msg, reason: 'queue_full' });
+        });
+        
+        evicted += toEvict;
+        
+        if (evicted >= count) {
+          break;
+        }
+      }
     }
     
-    // Sort queue by priority
-    this.messageQueue.sort((a, b) => a.priority - b.priority);
-    
-    // Update metrics
-    this.metrics.messagesSent++;
-    this.updateAgentActivity(fromAgent);
-    
-    // Store in shared memory if available
-    if (this.sharedMemory) {
-      await this.sharedMemory.set(
-        `messages:${messageId}`,
-        envelope,
-        { ttl: 3600000 } // 1 hour TTL
-      );
+    if (evicted > 0) {
+      this.metrics.messagesDropped += evicted;
+      console.log(`PERFORMANCE FIX: Evicted ${evicted} low-priority messages`);
     }
     
-    this.emit('message.sent', envelope);
-    
-    return messageId;
+    return evicted > 0;
   }
 
   /**
@@ -445,32 +701,154 @@ class AgentCommunication extends EventEmitter {
   }
 
   /**
-   * Process the message queue
+   * Process the message queue - PERFORMANCE OPTIMIZED
    */
   async processMessageQueue() {
-    if (this.messageQueue.length === 0) return;
+    const startTime = Date.now();
     
-    // Process up to 10 messages per cycle
-    const messagesToProcess = Math.min(10, this.messageQueue.length);
+    // Process priority queues first, then main queue
+    const allMessages = this.collectMessagesForBatch();
     
-    for (let i = 0; i < messagesToProcess; i++) {
-      const message = this.messageQueue.shift();
-      if (!message) continue;
+    if (allMessages.length === 0) {
+      return;
+    }
+    
+    // Adaptive batch size based on queue load
+    const queueSize = this.getTotalQueueSize();
+    const adaptiveBatchSize = Math.min(
+      queueSize > 100 ? 50 : // High load - larger batches
+      queueSize > 50 ? 30 :  // Medium load
+      queueSize > 20 ? 20 :  // Normal load
+      15,                    // Low load
+      allMessages.length
+    );
+    
+    const messagesToProcess = allMessages.slice(0, adaptiveBatchSize);
+    
+    // Process messages in parallel batches for better performance
+    const batchPromises = [];
+    const concurrencyLimit = Math.min(10, messagesToProcess.length);
+    
+    for (let i = 0; i < messagesToProcess.length; i += concurrencyLimit) {
+      const batch = messagesToProcess.slice(i, i + concurrencyLimit);
+      batchPromises.push(this.processBatch(batch));
+    }
+    
+    try {
+      const batchResults = await Promise.allSettled(batchPromises);
       
-      try {
-        await this.deliverMessage(message);
-      } catch (error) {
-        console.error('Message delivery failed:', error);
-        
-        // Retry logic
-        if (message.retries > 0) {
-          message.retries--;
-          this.messageQueue.push(message);
-        } else {
-          this.emit('message.failed', { message, error });
+      // Update metrics
+      this.metrics.batchesProcessed++;
+      this.metrics.averageBatchSize = 
+        ((this.metrics.averageBatchSize * (this.metrics.batchesProcessed - 1)) + messagesToProcess.length) / 
+        this.metrics.batchesProcessed;
+      
+      // Handle failed batches
+      batchResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`PERFORMANCE FIX: Batch ${index} failed:`, result.reason);
         }
+      });
+      
+    } catch (error) {
+      console.error('PERFORMANCE FIX: Batch processing failed:', error);
+    }
+    
+    const processingTime = Date.now() - startTime;
+    console.log(`PERFORMANCE FIX: Processed ${messagesToProcess.length} messages in ${processingTime}ms (${Math.round(messagesToProcess.length / (processingTime / 1000))} msgs/sec)`);
+  }
+  
+  /**
+   * Collect messages from all queues for batch processing
+   */
+  collectMessagesForBatch() {
+    const messages = [];
+    
+    // Collect from priority queues in order (critical first)
+    const priorityOrder = ['CRITICAL', 'HIGH', 'NORMAL', 'LOW'];
+    
+    for (const priority of priorityOrder) {
+      const queue = this.priorityQueues.get(priority);
+      if (queue && queue.length > 0) {
+        // Take more messages from higher priority queues
+        const takeCount = priority === 'CRITICAL' ? queue.length : 
+                         priority === 'HIGH' ? Math.min(10, queue.length) :
+                         priority === 'NORMAL' ? Math.min(5, queue.length) :
+                         Math.min(2, queue.length);
+        
+        messages.push(...queue.splice(0, takeCount));
       }
     }
+    
+    // Add from main queue (for backward compatibility)
+    if (this.messageQueue.length > 0) {
+      const takeCount = Math.min(10, this.messageQueue.length);
+      messages.push(...this.messageQueue.splice(0, takeCount));
+    }
+    
+    return messages;
+  }
+  
+  /**
+   * Process a batch of messages concurrently
+   */
+  async processBatch(messages) {
+    const batchPromises = messages.map(async (message) => {
+      try {
+        await this.deliverMessage(message);
+        return { success: true, messageId: message.id };
+      } catch (error) {
+        // Retry logic with exponential backoff
+        if (message.retries > 0) {
+          message.retries--;
+          message.nextRetry = Date.now() + (Math.pow(2, (message.originalRetries || 3) - message.retries) * 100);
+          
+          // Add back to appropriate queue
+          this.addMessageToQueue(message);
+          
+          return { success: false, messageId: message.id, retry: true, error: error.message };
+        } else {
+          this.emit('message.failed', { message, error });
+          return { success: false, messageId: message.id, retry: false, error: error.message };
+        }
+      }
+    });
+    
+    return await Promise.allSettled(batchPromises);
+  }
+  
+  /**
+   * Add message to appropriate priority queue
+   */
+  addMessageToQueue(message) {
+    const priority = this.getPriorityName(message.priority);
+    const queue = this.priorityQueues.get(priority);
+    
+    if (queue) {
+      // Insert with delay consideration for retries
+      if (message.nextRetry && Date.now() < message.nextRetry) {
+        setTimeout(() => {
+          queue.push(message);
+        }, message.nextRetry - Date.now());
+      } else {
+        queue.push(message);
+      }
+    } else {
+      // Fallback to main queue
+      this.messageQueue.push(message);
+    }
+  }
+  
+  /**
+   * Get priority name from priority level
+   */
+  getPriorityName(priorityLevel) {
+    for (const [name, config] of Object.entries(this.priorityLevels)) {
+      if (config.level === priorityLevel) {
+        return name;
+      }
+    }
+    return 'NORMAL';
   }
 
   /**
@@ -648,6 +1026,153 @@ class AgentCommunication extends EventEmitter {
     this.metrics.messagesDropped += dropped;
     
     this.emit('queue.cleared', { dropped });
+  }
+
+  /**
+   * Handle broadcast messages with enhanced error handling - FIXED
+   */
+  async handleBroadcastMessage(fromAgent, message, options = {}) {
+    const broadcastId = crypto.randomUUID();
+    const messageIds = [];
+    const startTime = performance.now();
+    
+    try {
+      // Refresh registry to ensure we have latest agent list
+      await this.refreshAgentRegistry();
+      
+      const activeAgents = [];
+      for (const [agentId, agentData] of this.registeredAgents) {
+        if (agentId !== fromAgent && 
+            agentData.status === 'active' && 
+            Date.now() - agentData.lastActivity < 300000) { // 5 minutes
+          activeAgents.push(agentId);
+        }
+      }
+      
+      console.log(`BROADCAST FIX: Broadcasting from ${fromAgent} to ${activeAgents.length} active agents`);
+      
+      // Create message envelope for broadcast
+      const broadcastEnvelope = {
+        id: broadcastId,
+        from: fromAgent,
+        to: 'broadcast',
+        timestamp: Date.now(),
+        priority: options.priority || this.priorityLevels.NORMAL.level,
+        type: 'broadcast',
+        payload: message,
+        targetAgents: activeAgents,
+        requiresAck: options.requiresAck || false
+      };
+      
+      // Send to each active agent with individual tracking
+      for (const targetAgent of activeAgents) {
+        try {
+          const individualMessageId = await this.sendIndividualMessage(
+            fromAgent, targetAgent, message, {
+              ...options,
+              broadcastId,
+              isBroadcast: true
+            }
+          );
+          messageIds.push(individualMessageId);
+        } catch (error) {
+          console.error(`BROADCAST FIX: Failed to send to ${targetAgent}:`, error.message);
+        }
+      }
+      
+      // Store broadcast envelope for tracking
+      if (this.sharedMemory) {
+        this.sharedMemory.set(
+          `broadcast:${broadcastId}`,
+          broadcastEnvelope,
+          { ttl: 300000 } // 5 minutes TTL
+        ).catch(error => {
+          console.warn('BROADCAST FIX: Failed to store broadcast envelope:', error.message);
+        });
+      }
+      
+      const broadcastTime = performance.now() - startTime;
+      
+      this.emit('message.broadcast', {
+        broadcastId,
+        fromAgent,
+        targetCount: activeAgents.length,
+        successCount: messageIds.length,
+        broadcastTime,
+        messageIds
+      });
+      
+      console.log(`BROADCAST FIX: Broadcast complete in ${broadcastTime.toFixed(2)}ms - ${messageIds.length}/${activeAgents.length} successful`);
+      
+      return messageIds;
+      
+    } catch (error) {
+      const broadcastTime = performance.now() - startTime;
+      console.error(`BROADCAST FIX: Broadcast failed in ${broadcastTime.toFixed(2)}ms:`, error.message);
+      throw error;
+    }
+  }
+  
+  /**
+   * Send individual message with enhanced validation - FIXED
+   */
+  async sendIndividualMessage(fromAgent, toAgent, message, options = {}) {
+    const messageId = crypto.randomUUID();
+    const timestamp = Date.now();
+    
+    // Create message envelope with validation
+    const envelope = {
+      id: messageId,
+      from: fromAgent,
+      to: toAgent,
+      timestamp,
+      priority: options.priority || this.priorityLevels.NORMAL.level,
+      type: message.type || 'generic',
+      payload: message,
+      requiresAck: options.requiresAck || false,
+      timeout: options.timeout || 30000,
+      retries: options.retries || 0,
+      originalRetries: options.retries || 0,
+      size: JSON.stringify(message).length,
+      broadcastId: options.broadcastId,
+      isBroadcast: options.isBroadcast || false
+    };
+    
+    // Add to appropriate queue
+    this.addMessageToQueue(envelope);
+    
+    // Update metrics
+    this.metrics.messagesSent++;
+    this.updateAgentActivity(fromAgent);
+    
+    return messageId;
+  }
+  
+  /**
+   * Refresh agent registry to sync with current state - NEW FIX
+   */
+  async refreshAgentRegistry() {
+    try {
+      // Clean up inactive agents (haven't been active in 10 minutes)
+      const cutoffTime = Date.now() - 600000; // 10 minutes
+      const inactiveAgents = [];
+      
+      for (const [agentId, agentData] of this.registeredAgents) {
+        if (agentData.lastActivity < cutoffTime) {
+          inactiveAgents.push(agentId);
+        }
+      }
+      
+      for (const inactiveAgentId of inactiveAgents) {
+        console.log(`REGISTRY FIX: Removing inactive agent ${inactiveAgentId}`);
+        this.unregisterAgent(inactiveAgentId);
+      }
+      
+      console.log(`REGISTRY FIX: Registry refreshed - ${this.registeredAgents.size} active agents, removed ${inactiveAgents.length} inactive`);
+      
+    } catch (error) {
+      console.error('REGISTRY FIX: Failed to refresh agent registry:', error.message);
+    }
   }
 
   /**
