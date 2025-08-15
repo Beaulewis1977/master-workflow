@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const AgentGenerator = require('./intelligence-engine/agent-generator');
+const AgentGenerator = require('./agent-generator');
 
 async function testAgentGeneration() {
   console.log('🧪 Testing Sub-Agent Generation...\n');
