@@ -475,6 +475,37 @@ class WorkflowRunner {
     }
   }
 
+  async generateProjectAgents() {
+    this.log('info', 'Generating project-specific sub-agents...');
+    this.publishEvent('status', { phase: 'agents:generate' }).catch(() => {});
+    
+    try {
+      const AgentGenerator = require('./intelligence-engine/agent-generator');
+      const generator = new AgentGenerator({ projectRoot: this.projectDir });
+      
+      const generatedAgents = await generator.generateProjectAgents(this.analysis, this.approach);
+      
+      this.log('success', `Generated ${generatedAgents.length} project-specific sub-agents:`);
+      generatedAgents.forEach(agent => {
+        this.log('info', `  ✅ ${agent.name}: ${agent.description || 'Specialized agent'}`);
+      });
+      
+      // Store generated agents info
+      this.generatedAgents = generatedAgents;
+      
+      // Emit event for monitoring
+      this.publishEvent('agents:generated', {
+        count: generatedAgents.length,
+        agents: generatedAgents.map(a => ({ name: a.name, path: a.path }))
+      }).catch(() => {});
+      
+    } catch (error) {
+      this.log('warning', `Failed to generate project-specific agents: ${error.message}`);
+      // Continue without custom agents - not critical
+      this.generatedAgents = [];
+    }
+  }
+
   async initializeAgents() {
     this.log('info', 'Initializing agents...');
     this.publishEvent('status', { phase: 'agents:init' }).catch(() => {});
@@ -1252,6 +1283,9 @@ class WorkflowRunner {
       
       // Step 2: Select approach
       await this.selectApproach();
+      
+      // Step 2.5: Generate project-specific sub-agents
+      await this.generateProjectAgents();
       
       // Step 3: Initialize agents
       await this.initializeAgents();
