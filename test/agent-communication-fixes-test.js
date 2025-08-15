@@ -17,10 +17,10 @@ const path = require('path');
 const EventEmitter = require('events');
 
 // Import the fixed modules
-const AgentCommunication = require('../intelligence-engine/agent-communication');
-const QueenController = require('../intelligence-engine/queen-controller');
-const SubAgentManager = require('../intelligence-engine/sub-agent-manager');
-const SharedMemoryStore = require('../intelligence-engine/shared-memory');
+const AgentCommunication = require('../.ai-workflow/intelligence-engine/agent-communication');
+const QueenController = require('../.ai-workflow/intelligence-engine/queen-controller');
+const SubAgentManager = require('../.ai-workflow/intelligence-engine/sub-agent-manager');
+const SharedMemoryStore = require('../.ai-workflow/intelligence-engine/shared-memory');
 
 describe('Agent Communication Broadcasting Fixes - Comprehensive Test Suite', function() {
   this.timeout(30000); // 30 second timeout for integration tests

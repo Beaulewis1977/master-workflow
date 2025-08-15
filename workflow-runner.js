@@ -16,10 +16,10 @@ const versionPolicy = require('./lib/version-policy');
 const http = require('http');
 
 // Import Queen Controller for hierarchical sub-agent management
-const QueenController = require('./intelligence-engine/queen-controller');
-const SubAgentManager = require('./intelligence-engine/sub-agent-manager');
-const SharedMemoryStore = require('./intelligence-engine/shared-memory');
-const MCPFullConfigurator = require('./intelligence-engine/mcp-full-configurator');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
+const SubAgentManager = require('./.ai-workflow/intelligence-engine/sub-agent-manager');
+const SharedMemoryStore = require('./.ai-workflow/intelligence-engine/shared-memory');
+const MCPFullConfigurator = require('./.ai-workflow/intelligence-engine/mcp-full-configurator');
 
 class WorkflowRunner {
   constructor() {
@@ -480,7 +480,7 @@ class WorkflowRunner {
     this.publishEvent('status', { phase: 'agents:generate' }).catch(() => {});
     
     try {
-      const AgentGenerator = require('./intelligence-engine/agent-generator');
+      const AgentGenerator = require('./.ai-workflow/intelligence-engine/agent-generator');
       const generator = new AgentGenerator({ projectRoot: this.projectDir });
       
       const generatedAgents = await generator.generateProjectAgents(this.analysis, this.approach);

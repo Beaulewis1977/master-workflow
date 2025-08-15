@@ -14,10 +14,10 @@ const path = require('path');
 const { performance } = require('perf_hooks');
 
 // Import system components
-const SharedMemoryStore = require('./intelligence-engine/shared-memory');
-const AgentCommunication = require('./intelligence-engine/agent-communication');
-const BackupRecoverySystem = require('./intelligence-engine/backup-recovery-system');
-const ResourceManager = require('./intelligence-engine/resource-manager');
+const SharedMemoryStore = require('./.ai-workflow/intelligence-engine/shared-memory');
+const AgentCommunication = require('./.ai-workflow/intelligence-engine/agent-communication');
+const BackupRecoverySystem = require('./.ai-workflow/intelligence-engine/backup-recovery-system');
+const ResourceManager = require('./.ai-workflow/intelligence-engine/resource-manager');
 
 class SystemValidationTest {
   constructor() {

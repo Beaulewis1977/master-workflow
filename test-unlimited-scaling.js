@@ -7,10 +7,10 @@
  * can handle unlimited agent scaling up to 4000+ agents without crashing.
  */
 
-const QueenController = require('./intelligence-engine/queen-controller');
-const SharedMemory = require('./intelligence-engine/shared-memory');
-const ResourceMonitor = require('./intelligence-engine/resource-monitor');
-const AgentPoolManager = require('./intelligence-engine/agent-pool-manager');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
+const SharedMemory = require('./.ai-workflow/intelligence-engine/shared-memory');
+const ResourceMonitor = require('./.ai-workflow/intelligence-engine/resource-monitor');
+const AgentPoolManager = require('./.ai-workflow/intelligence-engine/agent-pool-manager');
 
 class UnlimitedScalingTest {
   constructor() {

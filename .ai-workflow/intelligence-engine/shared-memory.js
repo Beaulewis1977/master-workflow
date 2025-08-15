@@ -24,26 +24,151 @@ const EventEmitter = require('events');
 const fs = require('fs').promises;
 const path = require('path');
 const crypto = require('crypto');
+const DatabaseConnectionManager = require('./database-connection-manager');
+const DatabaseSchemaManager = require('./database-schema-manager');
 
 class SharedMemoryStore extends EventEmitter {
+  /**
+   * Security: Validate project root path to prevent traversal attacks
+   */
+  validateProjectRoot(projectRoot) {
+    if (!projectRoot || typeof projectRoot !== 'string') {
+      throw new Error('Project root must be a valid string path');
+    }
+    
+    try {
+      const resolvedRoot = path.resolve(projectRoot);
+      const currentDir = process.cwd();
+      
+      // Ensure the project root is either current directory or a subdirectory
+      // This prevents accessing parent directories or system paths
+      if (!resolvedRoot.startsWith(path.resolve(currentDir)) && resolvedRoot !== path.resolve(currentDir)) {
+        // Allow specific safe directories for testing/development
+        const allowedRoots = [
+          path.resolve('/tmp'),
+          path.resolve('/var/tmp'),
+          path.resolve(require('os').tmpdir())
+        ];
+        
+        const isAllowed = allowedRoots.some(allowed => resolvedRoot.startsWith(allowed));
+        if (!isAllowed) {
+          throw new Error('Project root must be within current working directory or allowed temporary directories');
+        }
+      }
+      
+      // Validate path format
+      if (resolvedRoot.includes('\0') || resolvedRoot.includes('..')) {
+        throw new Error('Invalid characters in project root path');
+      }
+      
+      return resolvedRoot;
+    } catch (error) {
+      console.error('[SECURITY] Project root validation failed:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Security: Safe path joining to prevent traversal
+   */
+  securePathJoin(...segments) {
+    try {
+      // Filter out dangerous segments
+      const safeSegments = segments.filter(segment => {
+        if (!segment || typeof segment !== 'string') return false;
+        if (segment.includes('\0')) return false;
+        if (segment.includes('..')) return false;
+        if (path.isAbsolute(segment) && segment !== segments[0]) return false; // Only first segment can be absolute
+        return true;
+      });
+      
+      if (safeSegments.length !== segments.length) {
+        throw new Error('Dangerous path segments detected');
+      }
+      
+      const joinedPath = path.join(...safeSegments);
+      const resolvedPath = path.resolve(joinedPath);
+      
+      // Ensure the resolved path is still within the project root
+      if (!resolvedPath.startsWith(path.resolve(this.projectRoot || process.cwd()))) {
+        throw new Error('Path traversal attempt detected');
+      }
+      
+      return resolvedPath;
+    } catch (error) {
+      console.error('[SECURITY] Secure path join failed:', error.message, { segments });
+      throw error;
+    }
+  }
+
+  /**
+   * Security: Validate file path before any file operation
+   */
+  validateFilePath(filePath, operation = 'unknown') {
+    if (!filePath || typeof filePath !== 'string') {
+      throw new Error('File path must be a valid string');
+    }
+    
+    try {
+      const resolvedPath = path.resolve(filePath);
+      const allowedBasePath = path.resolve(this.hiveMindPath);
+      
+      // Ensure file is within the hive-mind directory
+      if (!resolvedPath.startsWith(allowedBasePath)) {
+        console.error(`[SECURITY] Blocked ${operation}: File access outside allowed directory`, {
+          requestedPath: filePath,
+          resolvedPath: resolvedPath,
+          allowedBasePath: allowedBasePath
+        });
+        throw new Error('File access outside allowed directory');
+      }
+      
+      // Check for dangerous characters
+      if (resolvedPath.includes('\0')) {
+        throw new Error('Null bytes in file path');
+      }
+      
+      // Validate file extension for specific operations
+      const allowedExtensions = ['.json', '.db', '.log', '.tmp', '.sqlite', '.sqlite3'];
+      const ext = path.extname(resolvedPath).toLowerCase();
+      if (ext && !allowedExtensions.includes(ext)) {
+        console.warn(`[SECURITY] Warning: Unusual file extension ${ext} for ${operation}`);
+      }
+      
+      return resolvedPath;
+    } catch (error) {
+      console.error(`[SECURITY] File path validation failed for ${operation}:`, error.message);
+      throw error;
+    }
+  }
+
   constructor(options = {}) {
     super();
     
-    // Core configuration
-    this.projectRoot = options.projectRoot || process.cwd();
-    this.hiveMindPath = path.join(this.projectRoot, '.hive-mind');
-    this.maxMemorySize = options.maxMemorySize || 500 * 1024 * 1024; // 500MB default
-    this.maxEntries = options.maxEntries || 100000;
+    // Security: Validate and sanitize projectRoot to prevent path traversal
+    this.projectRoot = this.validateProjectRoot(options.projectRoot || process.cwd());
+    this.hiveMindPath = this.securePathJoin(this.projectRoot, '.hive-mind');
+    this.maxMemorySize = options.maxMemorySize || 2 * 1024 * 1024 * 1024; // 2GB default for 4000+ agents
+    this.maxEntries = options.maxEntries || 500000; // 500K entries to support 4000+ agents
     this.gcInterval = options.gcInterval || 300000; // 5 minutes
     this.compressionThreshold = options.compressionThreshold || 1024 * 1024; // 1MB
     
-    // In-memory storage layers
+    // In-memory storage layers optimized for 4000+ agents
     this.memoryCache = new Map(); // Fast access cache
     this.persistentStore = new Map(); // Persistent data store
     this.versionStore = new Map(); // Version tracking
     this.metadataStore = new Map(); // Entry metadata
     this.subscriberStore = new Map(); // Pub/Sub subscribers
     this.lockStore = new Map(); // Atomic operation locks
+    
+    // High-performance indexing for large agent counts
+    this.agentIndexes = {
+      byNamespace: new Map(), // Fast lookup by namespace
+      byDataType: new Map(),  // Fast lookup by data type
+      byAgent: new Map(),     // Fast lookup by agent ID
+      expirationQueue: [],    // Sorted array for efficient expiration
+      accessQueue: []         // LRU tracking for efficient eviction
+    };
     
     // Performance tracking
     this.stats = {
@@ -67,12 +192,25 @@ class SharedMemoryStore extends EventEmitter {
     this.operationQueue = [];
     this.processingQueue = false;
     
-    // SQLite integration paths
+    // SQLite integration paths with security validation
     this.dbPaths = {
-      hive: path.join(this.hiveMindPath, 'hive.db'),
-      memory: path.join(this.hiveMindPath, 'memory.db'),
-      sessions: path.join(this.hiveMindPath, 'sessions')
+      hive: this.securePathJoin(this.hiveMindPath, 'hive.db'),
+      memory: this.securePathJoin(this.hiveMindPath, 'memory.db'),
+      sessions: this.securePathJoin(this.hiveMindPath, 'sessions')
     };
+    
+    // Initialize database connection manager
+    this.dbManager = new DatabaseConnectionManager({
+      maxConnections: options.maxConnections || 10,
+      minConnections: options.minConnections || 2,
+      connectionTimeout: options.connectionTimeout || 10000,
+      queryTimeout: options.queryTimeout || 30000,
+      enableWAL: options.enableWAL !== false,
+      healthCheckInterval: options.healthCheckInterval || 60000
+    });
+    
+    // Initialize database schema manager
+    this.schemaManager = new DatabaseSchemaManager(this.dbManager);
     
     // Namespaces for different data types
     this.namespaces = {
@@ -137,64 +275,214 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Ensure directory structure exists
+   * Ensure directory structure exists with security validation
    */
   async ensureDirectoryStructure() {
     try {
-      await fs.mkdir(this.hiveMindPath, { recursive: true });
-      await fs.mkdir(this.dbPaths.sessions, { recursive: true });
+      // Validate and create hive-mind directory
+      const validatedHivePath = this.validateFilePath(this.hiveMindPath, 'directory_creation');
+      await fs.mkdir(validatedHivePath, { recursive: true, mode: 0o750 }); // Secure permissions
       
-      // Create backup directory
-      const backupPath = path.join(this.hiveMindPath, 'backups');
-      await fs.mkdir(backupPath, { recursive: true });
+      // Validate and create sessions directory
+      const validatedSessionsPath = this.validateFilePath(this.dbPaths.sessions, 'directory_creation');
+      await fs.mkdir(validatedSessionsPath, { recursive: true, mode: 0o750 });
+      
+      // Create backup directory with security validation
+      const backupPath = this.securePathJoin(this.hiveMindPath, 'backups');
+      const validatedBackupPath = this.validateFilePath(backupPath, 'directory_creation');
+      await fs.mkdir(validatedBackupPath, { recursive: true, mode: 0o750 });
+      
+      console.log('[SECURITY] Directory structure created with secure permissions');
       
     } catch (error) {
+      console.error('[SECURITY] Failed to create directory structure:', error.message);
       throw new Error(`Failed to create directory structure: ${error.message}`);
     }
   }
   
   /**
-   * Initialize SQLite integration (graceful fallback if SQLite unavailable)
+   * Initialize SQLite integration with advanced connection management - FIXED
    */
   async initializeSQLiteIntegration() {
     this.dbStatus = { available: false, reason: 'not_initialized' };
     
     try {
-      // Try to load sqlite3 module
-      const sqlite3 = require('sqlite3');
-      this.sqlite3 = sqlite3;
+      // Check if SQLite3 module is available
+      if (!this.dbManager.sqlite3) {
+        throw new Error('SQLite3 module not available');
+      }
       
-      // Initialize databases
-      await this.initializeMemoryDB();
-      await this.initializeHiveDB();
+      // Ensure database files directory exists
+      const dbDir = path.dirname(this.dbPaths.memory);
+      await fs.mkdir(dbDir, { recursive: true });
       
-      this.dbStatus = { available: true, version: sqlite3.VERSION };
+      // Initialize connection pools for both databases with retry logic
+      console.log('[DATABASE FIX] Creating connection pool for memory database...');
+      await this.dbManager.createPool(this.dbPaths.memory, 'memory');
+      
+      console.log('[DATABASE FIX] Creating connection pool for hive database...');
+      await this.dbManager.createPool(this.dbPaths.hive, 'hive');
+      
+      // Set up database schemas with error handling
+      console.log('[DATABASE FIX] Initializing schemas...');
+      await this.initializeSchemas();
+      
+      // Set up event listeners for database monitoring
+      this.setupDatabaseEventListeners();
+      
+      // Test connections to ensure they work
+      await this.testDatabaseConnections();
+      
+      this.dbStatus = { 
+        available: true, 
+        connectionManager: 'active',
+        pools: ['memory', 'hive'],
+        initialized: Date.now()
+      };
+      
+      console.log('[DATABASE FIX] SQLite integration initialized successfully');
       
     } catch (error) {
-      // Fallback to file-based persistence
+      // Enhanced fallback to file-based persistence
       this.dbStatus = { 
         available: false, 
         reason: 'sqlite_unavailable',
         fallback: 'file_based',
-        error: error.message
+        error: error.message,
+        timestamp: Date.now()
       };
       
-      console.warn('SQLite unavailable, using file-based persistence:', error.message);
+      console.warn('[DATABASE FIX] SQLite unavailable, using file-based persistence:', error.message);
+      
+      // Try to initialize basic file-based operations
+      try {
+        await this.ensureDirectoryStructure();
+        console.log('[DATABASE FIX] File-based persistence initialized as fallback');
+      } catch (fileError) {
+        console.error('[DATABASE FIX] Failed to initialize file-based persistence:', fileError.message);
+      }
     }
   }
   
   /**
-   * Initialize memory-specific SQLite database
+   * Test database connections to ensure they're working - NEW FIX
+   */
+  async testDatabaseConnections() {
+    const testPromises = [];
+    
+    for (const poolName of ['memory', 'hive']) {
+      testPromises.push(this.testSingleConnection(poolName));
+    }
+    
+    await Promise.all(testPromises);
+    console.log('[DATABASE FIX] All database connections tested successfully');
+  }
+  
+  /**
+   * Test a single database connection
+   */
+  async testSingleConnection(poolName) {
+    let connection = null;
+    try {
+      connection = await this.dbManager.getConnection(poolName);
+      
+      // Simple test query
+      await new Promise((resolve, reject) => {
+        connection.get('SELECT 1 as test', [], (err, row) => {
+          if (err) {
+            reject(new Error(`Connection test failed for ${poolName}: ${err.message}`));
+          } else if (row && row.test === 1) {
+            resolve();
+          } else {
+            reject(new Error(`Unexpected result from connection test for ${poolName}`));
+          }
+        });
+      });
+      
+      console.log(`[DATABASE FIX] Connection test passed for ${poolName}`);
+      
+    } catch (error) {
+      console.error(`[DATABASE FIX] Connection test failed for ${poolName}:`, error.message);
+      throw error;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+
+  /**
+   * Initialize database schemas using the schema manager
+   */
+  async initializeSchemas() {
+    if (!this.schemaManager) {
+      throw new Error('Schema manager not initialized');
+    }
+    
+    try {
+      await this.schemaManager.initializeSchemas();
+      console.log('[DATABASE FIX] Schemas initialized successfully');
+    } catch (error) {
+      console.error('[DATABASE FIX] Schema initialization failed:', error.message);
+      throw error;
+    }
+  }
+  
+  /**
+   * Setup database event listeners for monitoring
+   */
+  setupDatabaseEventListeners() {
+    if (!this.dbManager) {
+      return;
+    }
+    
+    // Listen to connection events
+    this.dbManager.on('query-success', (event) => {
+      this.stats.totalMemoryUsed = this.memoryUsage;
+    });
+    
+    this.dbManager.on('query-error', (event) => {
+      console.error('[DATABASE] Query error:', event.error.message);
+      this.emit('database-error', event);
+    });
+    
+    this.dbManager.on('health-check', (metrics) => {
+      this.emit('database-health', metrics);
+    });
+    
+    this.dbManager.on('connection-released', (event) => {
+      // Update connection statistics
+    });
+    
+    console.log('[DATABASE] Event listeners configured');
+  }
+  
+  /**
+   * Start connection health monitoring
+   */
+  startConnectionHealthMonitoring() {
+    if (!this.dbManager) {
+      return;
+    }
+    
+    // Health monitoring is handled by the DatabaseConnectionManager
+    console.log('[DATABASE] Connection health monitoring started');
+  }
+  
+  /**
+   * Initialize memory-specific SQLite database with path validation
    */
   async initializeMemoryDB() {
     return new Promise((resolve, reject) => {
-      this.memoryDB = new this.sqlite3.Database(this.dbPaths.memory, (err) => {
-        if (err) {
-          reject(new Error(`Failed to open memory.db: ${err.message}`));
-          return;
-        }
-        
-        // Create tables if they don't exist
+      try {
+        const validatedMemoryPath = this.validateFilePath(this.dbPaths.memory, 'database_creation');
+        this.memoryDB = new this.sqlite3.Database(validatedMemoryPath, (err) => {
+          if (err) {
+            reject(new Error(`Failed to open memory.db: ${err.message}`));
+            return;
+          }
+          
+          // Create tables if they don't exist
         const createTables = `
           CREATE TABLE IF NOT EXISTS shared_memory (
             key TEXT PRIMARY KEY,
@@ -234,29 +522,36 @@ class SharedMemoryStore extends EventEmitter {
           CREATE INDEX IF NOT EXISTS idx_last_accessed ON shared_memory(last_accessed);
         `;
         
-        this.memoryDB.exec(createTables, (err) => {
-          if (err) {
-            reject(new Error(`Failed to create memory tables: ${err.message}`));
-            return;
-          }
-          resolve();
+          this.memoryDB.exec(createTables, (err) => {
+            if (err) {
+              reject(new Error(`Failed to create memory tables: ${err.message}`));
+              return;
+            }
+            console.log('[SECURITY] Memory database initialized with secure path');
+            resolve();
+          });
         });
-      });
+      } catch (error) {
+        console.error('[SECURITY] Memory database initialization failed:', error.message);
+        reject(error);
+      }
     });
   }
   
   /**
-   * Initialize hive-specific SQLite database
+   * Initialize hive-specific SQLite database with path validation
    */
   async initializeHiveDB() {
     return new Promise((resolve, reject) => {
-      this.hiveDB = new this.sqlite3.Database(this.dbPaths.hive, (err) => {
-        if (err) {
-          reject(new Error(`Failed to open hive.db: ${err.message}`));
-          return;
-        }
-        
-        // Create additional tables for cross-agent coordination
+      try {
+        const validatedHivePath = this.validateFilePath(this.dbPaths.hive, 'database_creation');
+        this.hiveDB = new this.sqlite3.Database(validatedHivePath, (err) => {
+          if (err) {
+            reject(new Error(`Failed to open hive.db: ${err.message}`));
+            return;
+          }
+          
+          // Create additional tables for cross-agent coordination
         const createTables = `
           CREATE TABLE IF NOT EXISTS agent_memory (
             agent_id TEXT NOT NULL,
@@ -280,14 +575,19 @@ class SharedMemoryStore extends EventEmitter {
           CREATE INDEX IF NOT EXISTS idx_memory_events_timestamp ON memory_events(timestamp);
         `;
         
-        this.hiveDB.exec(createTables, (err) => {
-          if (err) {
-            reject(new Error(`Failed to create hive tables: ${err.message}`));
-            return;
-          }
-          resolve();
+          this.hiveDB.exec(createTables, (err) => {
+            if (err) {
+              reject(new Error(`Failed to create hive tables: ${err.message}`));
+              return;
+            }
+            console.log('[SECURITY] Hive database initialized with secure path');
+            resolve();
+          });
         });
-      });
+      } catch (error) {
+        console.error('[SECURITY] Hive database initialization failed:', error.message);
+        reject(error);
+      }
     });
   }
   
@@ -373,14 +673,16 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Load data from files (fallback)
+   * Load data from files (fallback) with secure path validation
    */
   async loadFromFiles() {
     try {
-      const memoryFile = path.join(this.hiveMindPath, 'shared-memory.json');
+      const memoryFile = this.securePathJoin(this.hiveMindPath, 'shared-memory.json');
+      const validatedMemoryFile = this.validateFilePath(memoryFile, 'file_read');
       
       try {
-        const data = await fs.readFile(memoryFile, 'utf-8');
+        console.log('[SECURITY] Loading memory data from validated path:', validatedMemoryFile);
+        const data = await fs.readFile(validatedMemoryFile, 'utf-8');
         const parsed = JSON.parse(data);
         
         if (parsed.entries && parsed.metadata) {
@@ -525,6 +827,9 @@ class SharedMemoryStore extends EventEmitter {
       // Update metadata and version tracking
       this.metadataStore.set(key, metadata);
       this.versionStore.set(key, newVersion);
+      
+      // Update high-performance indexes for fast lookups
+      this.updateIndexes(key, metadata, 'set');
       
       // Update memory usage
       this.memoryUsage += valueSize;
@@ -726,6 +1031,11 @@ class SharedMemoryStore extends EventEmitter {
         await this.deleteFromSQLite(key, opts.deleteVersions);
       }
       
+      // Update indexes
+      if (metadata) {
+        this.updateIndexes(key, metadata, 'delete');
+      }
+      
       // Update memory usage
       if (metadata) {
         this.memoryUsage -= metadata.size || 0;
@@ -756,7 +1066,7 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Get all keys matching a pattern or namespace
+   * Get all keys matching a pattern or namespace - OPTIMIZED FOR 4000+ AGENTS
    * @param {object} options - Search options
    */
   async keys(options = {}) {
@@ -765,18 +1075,33 @@ class SharedMemoryStore extends EventEmitter {
         namespace: options.namespace,
         pattern: options.pattern,
         dataType: options.dataType,
+        agentId: options.agentId,
         includeExpired: options.includeExpired || false
       };
       
-      const allKeys = new Set([
-        ...this.memoryCache.keys(),
-        ...this.persistentStore.keys()
-      ]);
+      let candidateKeys = null;
+      
+      // Use indexes for fast lookup when possible
+      if (opts.agentId) {
+        candidateKeys = this.agentIndexes.byAgent.get(opts.agentId);
+      } else if (opts.namespace) {
+        candidateKeys = this.agentIndexes.byNamespace.get(opts.namespace);
+      } else if (opts.dataType) {
+        candidateKeys = this.agentIndexes.byDataType.get(opts.dataType);
+      }
+      
+      // Fall back to full scan if no indexes match
+      if (!candidateKeys) {
+        candidateKeys = new Set([
+          ...this.memoryCache.keys(),
+          ...this.persistentStore.keys()
+        ]);
+      }
       
       const filteredKeys = [];
       const now = Date.now();
       
-      for (const key of allKeys) {
+      for (const key of candidateKeys) {
         const metadata = this.metadataStore.get(key);
         
         // Skip expired entries unless specifically requested
@@ -784,12 +1109,16 @@ class SharedMemoryStore extends EventEmitter {
           continue;
         }
         
-        // Apply filters
+        // Apply additional filters
         if (opts.namespace && metadata?.namespace !== opts.namespace) {
           continue;
         }
         
         if (opts.dataType && metadata?.dataType !== opts.dataType) {
+          continue;
+        }
+        
+        if (opts.agentId && metadata?.agentId !== opts.agentId) {
           continue;
         }
         
@@ -827,7 +1156,16 @@ class SharedMemoryStore extends EventEmitter {
       entryUtilization: `${(this.entryCount / this.maxEntries * 100).toFixed(2)}%`,
       dbStatus: this.dbStatus,
       activeSubscribers: this.subscriberStore.size,
-      activeLocks: this.lockStore.size
+      activeLocks: this.lockStore.size,
+      
+      // Index statistics for 4000+ agent optimization
+      indexes: {
+        namespaces: this.agentIndexes.byNamespace.size,
+        dataTypes: this.agentIndexes.byDataType.size,
+        agents: this.agentIndexes.byAgent.size,
+        expirationQueueSize: this.agentIndexes.expirationQueue.length,
+        accessQueueSize: this.agentIndexes.accessQueue.length
+      }
     };
   }
   
@@ -1002,65 +1340,220 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Perform atomic operations on memory values
+   * Perform atomic operations on memory values - FIXED: Enhanced concurrent access handling
    * @param {string} key - Key to operate on
    * @param {function} operation - Function to perform atomically
    * @param {object} options - Operation options
    */
   async atomic(key, operation, options = {}) {
     const agentId = options.agentId || 'system';
+    const maxRetries = options.maxRetries || 3;
+    const retryDelay = options.retryDelay || 100;
     let lock = null;
+    let attempt = 0;
     
-    try {
-      // Acquire lock
-      lock = await this.acquireLock(key, agentId, {
-        timeout: options.timeout || 10000
-      });
-      
-      // Get current value
-      const currentValue = await this.get(key, { agentId });
-      
-      // Perform operation
-      const newValue = await operation(currentValue);
-      
-      // Set new value if operation returned something
-      if (newValue !== undefined) {
-        await this.set(key, newValue, {
-          agentId,
-          ...options
+    while (attempt < maxRetries) {
+      try {
+        // Enhanced lock acquisition with retry logic
+        lock = await this.acquireLockWithRetry(key, agentId, {
+          timeout: options.timeout || 10000,
+          retryCount: attempt
         });
-      }
-      
-      return newValue;
-      
-    } catch (error) {
-      this.emit('error', error);
-      throw error;
-    } finally {
-      // Always release lock
-      if (lock) {
-        await this.releaseLock(key, agentId);
+        
+        if (!lock) {
+          throw new Error(`Failed to acquire lock for key: ${key} after ${attempt + 1} attempts`);
+        }
+        
+        // Get current value with validation
+        const currentValue = await this.get(key, { agentId });
+        
+        // Perform operation with timeout protection
+        const operationPromise = Promise.resolve(operation(currentValue));
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Operation timeout')), options.operationTimeout || 5000);
+        });
+        
+        const newValue = await Promise.race([operationPromise, timeoutPromise]);
+        
+        // Set new value if operation returned something
+        if (newValue !== undefined) {
+          await this.set(key, newValue, {
+            agentId,
+            ...options,
+            skipLockCheck: true // We already have the lock
+          });
+        }
+        
+        // Log successful atomic operation
+        console.log(`SHARED MEMORY FIX: Atomic operation completed for key ${key} by agent ${agentId}`);
+        
+        return newValue;
+        
+      } catch (error) {
+        attempt++;
+        
+        // Log the error
+        console.warn(`SHARED MEMORY FIX: Atomic operation attempt ${attempt}/${maxRetries} failed for key ${key}:`, error.message);
+        
+        // Release lock on error
+        if (lock) {
+          try {
+            await this.releaseLock(key, agentId);
+            lock = null;
+          } catch (releaseError) {
+            console.error(`SHARED MEMORY FIX: Failed to release lock on error:`, releaseError.message);
+          }
+        }
+        
+        // If this was the last attempt, throw the error
+        if (attempt >= maxRetries) {
+          this.emit('error', error);
+          throw new Error(`Atomic operation failed after ${maxRetries} attempts: ${error.message}`);
+        }
+        
+        // Wait before retry with exponential backoff
+        await new Promise(resolve => setTimeout(resolve, retryDelay * Math.pow(2, attempt - 1)));
+        
+      } finally {
+        // Always release lock if we still have it
+        if (lock) {
+          try {
+            await this.releaseLock(key, agentId);
+          } catch (releaseError) {
+            console.error(`SHARED MEMORY FIX: Failed to release lock in finally block:`, releaseError.message);
+          }
+        }
       }
     }
   }
   
   /**
-   * Start garbage collection process
+   * Enhanced lock acquisition with retry mechanism - NEW FIX
+   */
+  async acquireLockWithRetry(key, agentId, options = {}) {
+    const maxLockRetries = options.maxLockRetries || 5;
+    const lockRetryDelay = options.lockRetryDelay || 100;
+    let lockAttempt = 0;
+    
+    while (lockAttempt < maxLockRetries) {
+      try {
+        const lock = await this.acquireLock(key, agentId, {
+          timeout: options.timeout || 10000
+        });
+        
+        if (lock) {
+          console.log(`SHARED MEMORY FIX: Lock acquired for key ${key} by agent ${agentId} on attempt ${lockAttempt + 1}`);
+          return lock;
+        }
+        
+      } catch (error) {
+        // Check if it's a "already locked" error
+        if (error.message.includes('already locked') || error.message.includes('SQLITE_MISUSE')) {
+          lockAttempt++;
+          
+          console.warn(`SHARED MEMORY FIX: Lock acquisition attempt ${lockAttempt}/${maxLockRetries} failed for key ${key}:`, error.message);
+          
+          if (lockAttempt < maxLockRetries) {
+            // Wait before retry with jitter to reduce thundering herd
+            const jitter = Math.random() * 50; // 0-50ms random jitter
+            await new Promise(resolve => 
+              setTimeout(resolve, lockRetryDelay * Math.pow(2, lockAttempt - 1) + jitter)
+            );
+            continue;
+          }
+        }
+        
+        throw error;
+      }
+    }
+    
+    throw new Error(`Failed to acquire lock for key ${key} after ${maxLockRetries} attempts`);
+  }
+
+  /**
+   * Start garbage collection process - FIXED: Enhanced with memory threshold triggers
    */
   startGarbageCollection() {
     if (this.gcTimer) {
       clearInterval(this.gcTimer);
     }
     
+    // Main periodic garbage collection
     this.gcTimer = setInterval(async () => {
       try {
         await this.runGarbageCollection();
       } catch (error) {
+        console.error('[GC FIX] Scheduled garbage collection failed:', error.message);
         this.emit('error', new Error(`Garbage collection failed: ${error.message}`));
       }
     }, this.gcInterval);
     
-    console.log(`Garbage collection started with ${this.gcInterval}ms interval`);
+    // Add memory pressure trigger - NEW FIX
+    this.memoryPressureTimer = setInterval(async () => {
+      try {
+        await this.checkMemoryPressure();
+      } catch (error) {
+        console.error('[GC FIX] Memory pressure check failed:', error.message);
+      }
+    }, 30000); // Check every 30 seconds
+    
+    // Add immediate cleanup trigger for expired items - NEW FIX
+    this.expiredCleanupTimer = setInterval(async () => {
+      try {
+        await this.cleanupExpiredEntries();
+      } catch (error) {
+        console.error('[GC FIX] Expired cleanup failed:', error.message);
+      }
+    }, 60000); // Check every minute
+    
+    console.log(`[GC FIX] Enhanced garbage collection started with ${this.gcInterval}ms interval + memory pressure monitoring`);
+  }
+  
+  /**
+   * Check for memory pressure and trigger early GC if needed - NEW FIX
+   */
+  async checkMemoryPressure() {
+    const memoryUsageRatio = this.memoryUsage / this.maxMemorySize;
+    const entryCountRatio = this.entryCount / this.maxEntries;
+    
+    // Trigger early GC if memory usage exceeds thresholds
+    if (memoryUsageRatio > 0.8 || entryCountRatio > 0.8) {
+      console.log(`[GC FIX] Memory pressure detected - Memory: ${(memoryUsageRatio * 100).toFixed(1)}%, Entries: ${(entryCountRatio * 100).toFixed(1)}%`);
+      await this.runGarbageCollection();
+    }
+  }
+  
+  /**
+   * Quick cleanup of expired entries - NEW FIX
+   */
+  async cleanupExpiredEntries() {
+    const now = Date.now();
+    let expiredCount = 0;
+    
+    // Check for expired entries and clean them up immediately
+    const expiredKeys = [];
+    
+    for (const [key, metadata] of this.metadataStore) {
+      if (metadata.expiresAt && metadata.expiresAt < now) {
+        expiredKeys.push(key);
+      }
+    }
+    
+    // Clean up expired entries
+    for (const key of expiredKeys) {
+      try {
+        await this.delete(key);
+        expiredCount++;
+      } catch (error) {
+        console.warn(`[GC FIX] Failed to cleanup expired key ${key}:`, error.message);
+      }
+    }
+    
+    if (expiredCount > 0) {
+      console.log(`[GC FIX] Quick cleanup removed ${expiredCount} expired entries`);
+    }
+    
+    return expiredCount;
   }
   
   /**
@@ -1162,6 +1655,148 @@ class SharedMemoryStore extends EventEmitter {
     return evictedCount;
   }
   
+  /**
+   * Update high-performance indexes for fast lookups - OPTIMIZED FOR 4000+ AGENTS
+   */
+  updateIndexes(key, metadata, operation) {
+    try {
+      if (operation === 'set') {
+        // Update namespace index
+        if (!this.agentIndexes.byNamespace.has(metadata.namespace)) {
+          this.agentIndexes.byNamespace.set(metadata.namespace, new Set());
+        }
+        this.agentIndexes.byNamespace.get(metadata.namespace).add(key);
+        
+        // Update data type index
+        if (!this.agentIndexes.byDataType.has(metadata.dataType)) {
+          this.agentIndexes.byDataType.set(metadata.dataType, new Set());
+        }
+        this.agentIndexes.byDataType.get(metadata.dataType).add(key);
+        
+        // Update agent index
+        if (metadata.agentId) {
+          if (!this.agentIndexes.byAgent.has(metadata.agentId)) {
+            this.agentIndexes.byAgent.set(metadata.agentId, new Set());
+          }
+          this.agentIndexes.byAgent.get(metadata.agentId).add(key);
+        }
+        
+        // Update expiration queue (sorted insertion for efficiency)
+        if (metadata.expiresAt) {
+          this.insertIntoExpirationQueue(key, metadata.expiresAt);
+        }
+        
+        // Update access queue for LRU
+        this.updateAccessQueue(key);
+        
+      } else if (operation === 'delete') {
+        // Remove from all indexes
+        this.removeFromIndexes(key, metadata);
+      }
+    } catch (error) {
+      console.warn('Failed to update indexes for key', key, ':', error.message);
+    }
+  }
+  
+  /**
+   * Insert key into expiration queue maintaining sorted order
+   */
+  insertIntoExpirationQueue(key, expiresAt) {
+    const item = { key, expiresAt };
+    const queue = this.agentIndexes.expirationQueue;
+    
+    // Binary search for insertion point
+    let left = 0;
+    let right = queue.length;
+    
+    while (left < right) {
+      const mid = Math.floor((left + right) / 2);
+      if (queue[mid].expiresAt <= expiresAt) {
+        left = mid + 1;
+      } else {
+        right = mid;
+      }
+    }
+    
+    queue.splice(left, 0, item);
+    
+    // Maintain reasonable queue size for performance
+    if (queue.length > 10000) {
+      queue.splice(0, queue.length - 10000);
+    }
+  }
+  
+  /**
+   * Update access queue for LRU tracking
+   */
+  updateAccessQueue(key) {
+    const queue = this.agentIndexes.accessQueue;
+    
+    // Remove existing entry if present
+    const index = queue.indexOf(key);
+    if (index !== -1) {
+      queue.splice(index, 1);
+    }
+    
+    // Add to end (most recently used)
+    queue.push(key);
+    
+    // Maintain reasonable queue size
+    if (queue.length > 50000) {
+      queue.splice(0, queue.length - 50000);
+    }
+  }
+  
+  /**
+   * Remove key from all indexes
+   */
+  removeFromIndexes(key, metadata) {
+    if (metadata) {
+      // Remove from namespace index
+      const namespaceSet = this.agentIndexes.byNamespace.get(metadata.namespace);
+      if (namespaceSet) {
+        namespaceSet.delete(key);
+        if (namespaceSet.size === 0) {
+          this.agentIndexes.byNamespace.delete(metadata.namespace);
+        }
+      }
+      
+      // Remove from data type index
+      const dataTypeSet = this.agentIndexes.byDataType.get(metadata.dataType);
+      if (dataTypeSet) {
+        dataTypeSet.delete(key);
+        if (dataTypeSet.size === 0) {
+          this.agentIndexes.byDataType.delete(metadata.dataType);
+        }
+      }
+      
+      // Remove from agent index
+      if (metadata.agentId) {
+        const agentSet = this.agentIndexes.byAgent.get(metadata.agentId);
+        if (agentSet) {
+          agentSet.delete(key);
+          if (agentSet.size === 0) {
+            this.agentIndexes.byAgent.delete(metadata.agentId);
+          }
+        }
+      }
+    }
+    
+    // Remove from expiration queue
+    const expQueue = this.agentIndexes.expirationQueue;
+    const expIndex = expQueue.findIndex(item => item.key === key);
+    if (expIndex !== -1) {
+      expQueue.splice(expIndex, 1);
+    }
+    
+    // Remove from access queue
+    const accessQueue = this.agentIndexes.accessQueue;
+    const accessIndex = accessQueue.indexOf(key);
+    if (accessIndex !== -1) {
+      accessQueue.splice(accessIndex, 1);
+    }
+  }
+
   /**
    * Check memory limits before adding new data
    */
@@ -1280,20 +1915,24 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Persist data to SQLite
+   * Persist data to SQLite using connection manager
    */
   async persistToSQLite(key, serializedValue, metadata) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      const stmt = this.memoryDB.prepare(`
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
+      const sql = `
         INSERT OR REPLACE INTO shared_memory 
         (key, namespace, data_type, value, metadata, version, 
          created_at, updated_at, expires_at, size_bytes, access_count, last_accessed) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
+      `;
       
-      stmt.run([
+      const params = [
         key,
         metadata.namespace,
         metadata.dataType,
@@ -1306,25 +1945,39 @@ class SharedMemoryStore extends EventEmitter {
         metadata.size,
         metadata.accessCount,
         metadata.lastAccessed
-      ], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+      ];
+      
+      return new Promise((resolve, reject) => {
+        connection.run(sql, params, function(err) {
+          if (err) {
+            reject(new Error(`Failed to persist data for key ${key}: ${err.message}`));
+          } else {
+            resolve({ lastID: this.lastID, changes: this.changes });
+          }
+        });
       });
       
-      stmt.finalize();
-    });
+    } catch (error) {
+      console.error('[DATABASE] Persist error:', error.message);
+      throw error;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Get data from SQLite
+   * Get data from SQLite using connection manager
    */
   async getFromSQLite(key, version = null) {
-    if (!this.memoryDB) return null;
+    if (!this.dbStatus.available || !this.dbManager) return null;
     
-    return new Promise((resolve, reject) => {
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
       let query = 'SELECT * FROM shared_memory WHERE key = ?';
       const params = [key];
       
@@ -1333,123 +1986,195 @@ class SharedMemoryStore extends EventEmitter {
         params.push(version);
       }
       
-      this.memoryDB.get(query, params, (err, row) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        
-        if (!row) {
-          resolve(null);
-          return;
-        }
-        
-        try {
-          const value = JSON.parse(row.value);
-          const metadata = row.metadata ? JSON.parse(row.metadata) : {};
+      return new Promise((resolve, reject) => {
+        connection.get(query, params, (err, row) => {
+          if (err) {
+            reject(new Error(`Failed to get data for key ${key}: ${err.message}`));
+            return;
+          }
           
-          resolve({ value, metadata });
-        } catch (parseError) {
-          reject(parseError);
-        }
+          if (!row) {
+            resolve(null);
+            return;
+          }
+          
+          try {
+            const value = JSON.parse(row.value);
+            const metadata = row.metadata ? JSON.parse(row.metadata) : {};
+            
+            resolve({ value, metadata });
+          } catch (parseError) {
+            reject(new Error(`Failed to parse data for key ${key}: ${parseError.message}`));
+          }
+        });
       });
-    });
+      
+    } catch (error) {
+      console.error('[DATABASE] Get error:', error.message);
+      return null;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Delete data from SQLite
+   * Delete data from SQLite - FIXED to use connection manager
    */
   async deleteFromSQLite(key, deleteVersions = false) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      this.memoryDB.serialize(() => {
-        this.memoryDB.run('DELETE FROM shared_memory WHERE key = ?', [key]);
-        
-        if (deleteVersions) {
-          this.memoryDB.run('DELETE FROM memory_versions WHERE key = ?', [key]);
-        }
-        
-        resolve();
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
+      // Delete from shared_memory table
+      await new Promise((resolve, reject) => {
+        connection.run('DELETE FROM shared_memory WHERE key = ?', [key], (err) => {
+          if (err) {
+            reject(new Error(`Failed to delete from shared_memory: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+      
+      // Delete versions if requested
+      if (deleteVersions) {
+        await new Promise((resolve, reject) => {
+          connection.run('DELETE FROM memory_versions WHERE key = ?', [key], (err) => {
+            if (err) {
+              reject(new Error(`Failed to delete versions: ${err.message}`));
+            } else {
+              resolve();
+            }
+          });
+        });
+      }
+      
+      console.log(`[DATABASE FIX] Successfully deleted key ${key} from SQLite`);
+      
+    } catch (error) {
+      console.error('[DATABASE FIX] Delete error:', error.message);
+      throw error;
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Update access statistics in SQLite
+   * Update access statistics in SQLite - FIXED to use connection manager
    */
   async updateAccessStats(key, accessCount, lastAccessed) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      const stmt = this.memoryDB.prepare(`
-        UPDATE shared_memory 
-        SET access_count = ?, last_accessed = ? 
-        WHERE key = ?
-      `);
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
       
-      stmt.run([accessCount, lastAccessed, key], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+      await new Promise((resolve, reject) => {
+        connection.run(`
+          UPDATE shared_memory 
+          SET access_count = ?, last_accessed = ? 
+          WHERE key = ?
+        `, [accessCount, lastAccessed, key], (err) => {
+          if (err) {
+            reject(new Error(`Failed to update access stats: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
       
-      stmt.finalize();
-    });
+    } catch (error) {
+      console.error('[DATABASE FIX] Access stats update error:', error.message);
+      // Don't throw, this is non-critical
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Persist lock to SQLite
+   * Persist lock to SQLite - FIXED to use connection manager
    */
   async persistLockToSQLite(lock) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      const stmt = this.memoryDB.prepare(`
-        INSERT OR REPLACE INTO memory_locks 
-        (key, agent_id, lock_type, acquired_at, expires_at) 
-        VALUES (?, ?, ?, ?, ?)
-      `);
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
       
-      stmt.run([
-        lock.key,
-        lock.agentId,
-        lock.lockType,
-        lock.acquiredAt,
-        lock.expiresAt
-      ], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+      await new Promise((resolve, reject) => {
+        connection.run(`
+          INSERT OR REPLACE INTO memory_locks 
+          (key, agent_id, lock_type, acquired_at, expires_at) 
+          VALUES (?, ?, ?, ?, ?)
+        `, [
+          lock.key,
+          lock.agentId,
+          lock.lockType,
+          lock.acquiredAt,
+          lock.expiresAt
+        ], (err) => {
+          if (err) {
+            reject(new Error(`Failed to persist lock: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
       
-      stmt.finalize();
-    });
+    } catch (error) {
+      console.error('[DATABASE FIX] Lock persistence error:', error.message);
+      // Don't throw, locks are also stored in memory
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Remove lock from SQLite
+   * Remove lock from SQLite - FIXED to use connection manager
    */
   async removeLockFromSQLite(key) {
-    if (!this.memoryDB) return;
+    if (!this.dbStatus.available || !this.dbManager) return;
     
-    return new Promise((resolve, reject) => {
-      this.memoryDB.run('DELETE FROM memory_locks WHERE key = ?', [key], (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
+    let connection = null;
+    
+    try {
+      connection = await this.dbManager.getConnection('memory');
+      
+      await new Promise((resolve, reject) => {
+        connection.run('DELETE FROM memory_locks WHERE key = ?', [key], (err) => {
+          if (err) {
+            reject(new Error(`Failed to remove lock: ${err.message}`));
+          } else {
+            resolve();
+          }
+        });
       });
-    });
+      
+    } catch (error) {
+      console.error('[DATABASE FIX] Lock removal error:', error.message);
+      // Don't throw, locks are also managed in memory
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
   }
   
   /**
-   * Save current state to files (backup and fallback)
+   * Save current state to files (backup and fallback) with secure path validation
    */
   async saveToFiles() {
     try {
@@ -1461,19 +2186,22 @@ class SharedMemoryStore extends EventEmitter {
         stats: this.stats
       };
       
-      const memoryFile = path.join(this.hiveMindPath, 'shared-memory.json');
-      const backupFile = path.join(this.hiveMindPath, 'backups', `shared-memory-${Date.now()}.json`);
+      const memoryFile = this.securePathJoin(this.hiveMindPath, 'shared-memory.json');
+      const backupFile = this.securePathJoin(this.hiveMindPath, 'backups', `shared-memory-${Date.now()}.json`);
       
-      // Save current state
-      await fs.writeFile(memoryFile, JSON.stringify(data, null, 2));
+      const validatedMemoryFile = this.validateFilePath(memoryFile, 'file_write');
+      const validatedBackupFile = this.validateFilePath(backupFile, 'file_write');
       
-      // Create backup
-      await fs.writeFile(backupFile, JSON.stringify(data, null, 2));
+      // Save current state with secure path
+      await fs.writeFile(validatedMemoryFile, JSON.stringify(data, null, 2));
       
-      console.log('Memory state saved to files');
+      // Create backup with secure path
+      await fs.writeFile(validatedBackupFile, JSON.stringify(data, null, 2));
+      
+      console.log('[SECURITY] Memory state saved to files with validated paths');
       
     } catch (error) {
-      console.error('Failed to save memory state:', error);
+      console.error('[SECURITY] Failed to save memory state:', error);
       throw error;
     }
   }
@@ -1815,34 +2543,47 @@ class SharedMemoryStore extends EventEmitter {
   }
 
   /**
-   * Shutdown the shared memory store gracefully
+   * Shutdown the shared memory store gracefully - FIXED: Clean up all timers
    */
   async shutdown() {
     try {
-      console.log('Shutting down SharedMemoryStore...');
+      console.log('[GC FIX] Shutting down SharedMemoryStore...');
       
-      // Stop garbage collection
+      // Stop all garbage collection timers
       if (this.gcTimer) {
         clearInterval(this.gcTimer);
+        console.log('[GC FIX] Main garbage collection timer stopped');
+      }
+      
+      if (this.memoryPressureTimer) {
+        clearInterval(this.memoryPressureTimer);
+        console.log('[GC FIX] Memory pressure timer stopped');
+      }
+      
+      if (this.expiredCleanupTimer) {
+        clearInterval(this.expiredCleanupTimer);
+        console.log('[GC FIX] Expired cleanup timer stopped');
+      }
+      
+      // Run final cleanup
+      try {
+        await this.runGarbageCollection();
+        console.log('[GC FIX] Final garbage collection completed');
+      } catch (error) {
+        console.warn('[GC FIX] Final garbage collection failed:', error.message);
       }
       
       // Save current state
       await this.saveToFiles();
+      console.log('[GC FIX] Memory state saved to files');
       
-      // Close SQLite databases
-      if (this.memoryDB) {
-        await new Promise((resolve) => {
-          this.memoryDB.close(resolve);
-        });
+      // Shutdown database connection manager
+      if (this.dbManager) {
+        await this.dbManager.shutdown();
+        console.log('[GC FIX] Database connection manager shut down');
       }
       
-      if (this.hiveDB) {
-        await new Promise((resolve) => {
-          this.hiveDB.close(resolve);
-        });
-      }
-      
-      // Clear all data
+      // Clear all data structures
       this.memoryCache.clear();
       this.persistentStore.clear();
       this.metadataStore.clear();
@@ -1851,9 +2592,10 @@ class SharedMemoryStore extends EventEmitter {
       this.lockStore.clear();
       
       this.emit('shutdown-complete');
-      console.log('SharedMemoryStore shutdown complete');
+      console.log('[GC FIX] SharedMemoryStore shutdown complete');
       
     } catch (error) {
+      console.error('[GC FIX] Shutdown error:', error.message);
       this.emit('error', error);
       throw error;
     }

@@ -1,31 +1,64 @@
 /**
- * Queen Controller - Hierarchical Sub-Agent Architecture
+ * Queen Controller - Unlimited Sub-Agent Architecture
  * 
- * This is the master controller for managing multiple sub-agents with independent 
+ * This is the master controller for managing unlimited sub-agents with independent 
  * context windows. It orchestrates task distribution, monitors agent health,
  * and aggregates results from concurrent agent operations.
  * 
  * Features:
- * - Manages up to 10 concurrent sub-agents
+ * - UNLIMITED concurrent sub-agents (resource-constrained)
+ * - Dynamic agent scaling based on system resources
  * - Tracks 200k token context windows per agent
+ * - Intelligent conflict detection and resolution
  * - Handles inter-agent communication
  * - Provides shared memory for cross-agent data
- * - Monitors resource usage and performance
+ * - Advanced resource monitoring and optimization
+ * - Support for 42+ specialized agent types
  */
 
 const EventEmitter = require('events');
 const path = require('path');
 const fs = require('fs').promises;
 const { NeuralLearningSystem } = require('./neural-learning');
+const { WasmCoreModule } = require('./wasm-core-module');
+const { TopologyManager } = require('./topology-manager');
+const { CapabilityMatcher } = require('./capability-matcher');
+const ResourceMonitor = require('./resource-monitor');
+const DynamicScaler = require('./dynamic-scaler');
+const DynamicAgentRegistry = require('./dynamic-agent-registry');
+const ConflictDetector = require('./conflict-detector');
 
 class QueenController extends EventEmitter {
   constructor(options = {}) {
     super();
     
-    // Core configuration
-    this.maxConcurrent = options.maxConcurrent || 10;
+    // Core configuration - UNLIMITED SCALING ENABLED
+    this.maxConcurrent = null; // Removed hard-coded limit - now dynamically calculated
     this.contextWindowSize = options.contextWindowSize || 200000; // 200k tokens
     this.projectRoot = options.projectRoot || process.cwd();
+    
+    // Unlimited scaling configuration
+    this.unlimitedScaling = {
+      enabled: options.unlimitedScaling !== false,
+      safetyLimit: options.safetyLimit || null, // Removed hard safety limit - true unlimited scaling
+      resourceThresholds: {
+        memory: options.memoryThreshold || 0.90, // Increased threshold for more agents
+        cpu: options.cpuThreshold || 0.85 // Increased threshold for more agents
+      },
+      dynamicCalculation: true,
+      maxRecommendedAgents: 4000, // Guidance only, not enforced
+      emergencyThreshold: 0.98 // Emergency shutdown at 98% resource usage
+    };
+    
+    // Claude Flow 2.0 Configuration
+    this.claudeFlow2Config = {
+      wasmAcceleration: options.wasmAcceleration !== false,
+      simdOptimization: options.simdOptimization !== false,
+      topologyType: options.topologyType || 'hierarchical',
+      neuralLiveTraining: options.neuralLiveTraining !== false,
+      targetSpeedupFactor: options.targetSpeedupFactor || 3.6, // Average of 2.8-4.4x
+      tokenReductionTarget: options.tokenReductionTarget || 32.3 // 32.3% reduction
+    };
     
     // Neural Learning System integration
     this.neuralLearning = new NeuralLearningSystem({
@@ -61,19 +94,21 @@ class QueenController extends EventEmitter {
       errors: []
     };
     
-    // Agent type registry
-    this.agentTypes = new Map([
-      ['code-analyzer', { template: 'code-analyzer-agent.md', capabilities: ['analysis', 'pattern-detection'] }],
-      ['test-runner', { template: 'test-runner-agent.md', capabilities: ['testing', 'validation'] }],
-      ['doc-generator', { template: 'doc-generator-agent.md', capabilities: ['documentation', 'markdown'] }],
-      ['api-builder', { template: 'api-builder-agent.md', capabilities: ['api', 'endpoints'] }],
-      ['database-architect', { template: 'database-architect-agent.md', capabilities: ['database', 'schema'] }],
-      ['security-scanner', { template: 'security-scanner-agent.md', capabilities: ['security', 'audit'] }],
-      ['performance-optimizer', { template: 'performance-optimizer-agent.md', capabilities: ['performance', 'optimization'] }],
-      ['deployment-engineer', { template: 'deployment-engineer-agent.md', capabilities: ['deployment', 'ci-cd'] }],
-      ['frontend-specialist', { template: 'frontend-specialist-agent.md', capabilities: ['frontend', 'ui'] }],
-      ['recovery-specialist', { template: 'recovery-specialist-agent.md', capabilities: ['recovery', 'fixes'] }]
-    ]);
+    // REMOVED: Hard-coded agent type registry - now using Dynamic Agent Registry
+    // This enables unlimited agent types from /.claude/agents/ directory
+    this.agentTypes = null; // Will be replaced by dynamic registry
+    
+    // Unlimited scaling system components
+    this.resourceMonitor = null;
+    this.dynamicScaler = null;
+    this.dynamicAgentRegistry = null;
+    this.conflictDetector = null;
+    
+    // Initialize unlimited scaling components
+    this.initializeUnlimitedScaling();
+    
+    // Initialize Claude Flow 2.0 components
+    this.initializeClaudeFlow2Components();
     
     // Initialize monitoring
     this.startMonitoring();
@@ -83,18 +118,173 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Spawn a new sub-agent with specific type and context
-   * @param {string} type - Agent type from registry
+   * Initialize unlimited scaling system
+   */
+  async initializeUnlimitedScaling() {
+    if (!this.unlimitedScaling.enabled) {
+      console.log('Unlimited scaling disabled - using legacy 10-agent limit');
+      this.maxConcurrent = 10;
+      return;
+    }
+    
+    console.log('Initializing Unlimited Agent Scaling System...');
+    
+    try {
+      // Initialize Resource Monitor
+      this.resourceMonitor = new ResourceMonitor({
+        projectRoot: this.projectRoot,
+        targetMemoryUtilization: this.unlimitedScaling.resourceThresholds.memory,
+        targetCpuUtilization: this.unlimitedScaling.resourceThresholds.cpu
+      });
+      
+      // Initialize Dynamic Scaler
+      this.dynamicScaler = new DynamicScaler({
+        minAgents: 1,
+        maxAgents: null, // Removed hard limit for true unlimited scaling
+        recommendedMax: this.unlimitedScaling.maxRecommendedAgents,
+        emergencyThreshold: this.unlimitedScaling.emergencyThreshold,
+        projectRoot: this.projectRoot
+      });
+      
+      // Initialize Dynamic Agent Registry
+      this.dynamicAgentRegistry = new DynamicAgentRegistry({
+        agentsDirectory: path.join(this.projectRoot, '.claude/agents'),
+        fallbackDirectory: path.join(this.projectRoot, 'sub-agent-documentation/agents'),
+        contextWindowDefault: this.contextWindowSize
+      });
+      
+      // Initialize Conflict Detector
+      this.conflictDetector = new ConflictDetector({
+        projectRoot: this.projectRoot
+      });
+      
+      // Start components
+      await this.resourceMonitor.start();
+      await this.dynamicAgentRegistry.initialize();
+      await this.conflictDetector.initialize();
+      
+      // Setup event handlers
+      this.setupUnlimitedScalingEventHandlers();
+      
+      console.log(`Unlimited Scaling System initialized - discovered ${this.dynamicAgentRegistry.getStats().totalAgentTypes} agent types`);
+      
+      this.emit('unlimited-scaling-initialized', {
+        agentTypes: this.dynamicAgentRegistry.getStats().totalAgentTypes,
+        resourceMonitoring: true,
+        conflictDetection: true,
+        dynamicScaling: true
+      });
+      
+    } catch (error) {
+      console.error('Failed to initialize unlimited scaling system:', error);
+      this.unlimitedScaling.enabled = false;
+      this.maxConcurrent = 10; // Fallback to legacy limit
+      this.emit('unlimited-scaling-error', error);
+    }
+  }
+  
+  /**
+   * Setup event handlers for unlimited scaling components
+   */
+  setupUnlimitedScalingEventHandlers() {
+    // Resource monitor events
+    this.resourceMonitor.on('threshold-exceeded', (alert) => {
+      console.warn(`RESOURCE ALERT: ${alert.type} threshold exceeded (${(alert.current * 100).toFixed(1)}%)`);
+      this.emit('resource-alert', alert);
+    });
+    
+    // Dynamic scaler events
+    this.dynamicScaler.on('scaling-executed', (event) => {
+      console.log(`SCALING: ${event.direction} to ${event.targetCount} agents (${event.reason})`);
+      this.emit('scaling-event', event);
+    });
+    
+    // Agent registry events
+    this.dynamicAgentRegistry.on('agent-registered', (event) => {
+      console.log(`AGENT REGISTERED: ${event.agentType}`);
+    });
+    
+    // Conflict detector events
+    this.conflictDetector.on('conflict-analysis-completed', (event) => {
+      if (event.analysis.hasConflicts) {
+        console.warn(`CONFLICT DETECTED: Task ${event.taskId} has ${event.analysis.conflicts.length} conflicts`);
+      }
+    });
+  }
+  
+  /**
+   * Calculate dynamic agent limit based on current resources - UNLIMITED SCALING
+   */
+  async calculateDynamicAgentLimit() {
+    if (!this.unlimitedScaling.enabled || !this.resourceMonitor) {
+      return this.maxConcurrent || 10;
+    }
+    
+    try {
+      const resourceMetrics = this.resourceMonitor.getMetrics();
+      const scaling = resourceMetrics.current.scaling;
+      
+      // Check emergency threshold
+      if (resourceMetrics.current.memory > this.unlimitedScaling.emergencyThreshold ||
+          resourceMetrics.current.cpu > this.unlimitedScaling.emergencyThreshold) {
+        console.warn('UNLIMITED SCALING: Emergency threshold reached, limiting agent spawn');
+        return Math.max(this.activeAgents.size - 10, 10); // Scale down but don't go below 10
+      }
+      
+      // Return optimal count without hard limits
+      return scaling.optimalAgentCount;
+    } catch (error) {
+      console.error('Failed to calculate dynamic agent limit:', error);
+      return this.maxConcurrent || 10;
+    }
+  }
+  
+  /**
+   * Get agent configuration from dynamic registry
+   */
+  async getAgentConfigFromRegistry(type) {
+    if (!this.dynamicAgentRegistry) {
+      // Fallback to legacy agent types if registry not available
+      const legacyTypes = new Map([
+        ['code-analyzer', { template: 'code-analyzer-agent.md', capabilities: ['analysis', 'pattern-detection'], contextWindow: 200000 }],
+        ['test-runner', { template: 'testing-validation-agent.md', capabilities: ['testing', 'validation'], contextWindow: 200000 }],
+        ['doc-generator', { template: 'doc-generator-agent.md', capabilities: ['documentation', 'markdown'], contextWindow: 200000 }]
+      ]);
+      return legacyTypes.get(type);
+    }
+    
+    return this.dynamicAgentRegistry.getAgentConfig(type);
+  }
+  
+  /**
+   * Get available agent types
+   */
+  async getAvailableAgentTypes() {
+    if (!this.dynamicAgentRegistry) {
+      return ['code-analyzer', 'test-runner', 'doc-generator'];
+    }
+    
+    const agentTypes = this.dynamicAgentRegistry.getAgentTypes();
+    return Array.from(agentTypes.keys()).slice(0, 10).join(', ') + 
+           (agentTypes.size > 10 ? ` (and ${agentTypes.size - 10} more)` : '');
+  }
+  
+  /**
+   * Spawn a new sub-agent with specific type and context - UNLIMITED SCALING
+   * @param {string} type - Agent type from dynamic registry
    * @param {object} task - Task to assign to agent
    * @param {object} context - Initial context for agent
    */
   async spawnSubAgent(type, task, context = {}) {
-    // Check concurrent limit
-    if (this.activeAgents.size >= this.maxConcurrent) {
-      this.emit('queue-full', { 
+    // Dynamic concurrent limit calculation
+    const optimalLimit = await this.calculateDynamicAgentLimit();
+    
+    if (this.activeAgents.size >= optimalLimit) {
+      this.emit('dynamic-limit-reached', { 
         active: this.activeAgents.size, 
-        max: this.maxConcurrent,
-        queued: this.taskQueue.length 
+        optimalLimit: optimalLimit,
+        queued: this.taskQueue.length,
+        reason: 'resource_constraints'
       });
       
       // Queue the task for later
@@ -102,16 +292,32 @@ class QueenController extends EventEmitter {
       return null;
     }
     
+    // Conflict detection for unlimited scaling
+    if (this.conflictDetector && task) {
+      const conflictAnalysis = await this.conflictDetector.analyzeTaskConflicts(task, `temp-${Date.now()}`);
+      if (conflictAnalysis.hasConflicts && conflictAnalysis.riskLevel === 'critical') {
+        this.emit('task-conflict-detected', {
+          taskId: task.id,
+          conflicts: conflictAnalysis.conflicts,
+          recommendations: conflictAnalysis.recommendations
+        });
+        
+        // Queue task for conflict resolution
+        this.taskQueue.push({ type, task, context, conflictAnalysis });
+        return null;
+      }
+    }
+    
     // Generate unique agent ID
     const agentId = `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    // Get agent configuration
-    const agentConfig = this.agentTypes.get(type);
+    // Get agent configuration from dynamic registry
+    const agentConfig = await this.getAgentConfigFromRegistry(type);
     if (!agentConfig) {
-      throw new Error(`Unknown agent type: ${type}`);
+      throw new Error(`Unknown agent type: ${type}. Available types: ${await this.getAvailableAgentTypes()}`);
     }
     
-    // Create agent instance
+    // Create agent instance with explicit 200k context window - FIXED
     const agent = {
       id: agentId,
       type: type,
@@ -122,11 +328,15 @@ class QueenController extends EventEmitter {
         sharedMemoryStore: this.sharedMemoryStore,
         projectRoot: this.projectRoot,
         queenId: this.id,
-        maxTokens: this.contextWindowSize
+        maxTokens: agentConfig.contextWindow || 200000,
+        context_window: 200000, // Explicit 200k context window
+        agentTemplate: agentConfig.template
       },
       status: 'initializing',
       startTime: Date.now(),
       tokenUsage: 0,
+      maxTokens: agentConfig.contextWindow || 200000, // Enforce context limit
+      contextWarned: false,
       capabilities: agentConfig.capabilities,
       template: agentConfig.template
     };
@@ -147,87 +357,192 @@ class QueenController extends EventEmitter {
       timestamp: Date.now()
     });
     
-    // Initialize agent (simulate async spawn)
-    await this.initializeAgent(agent);
+    // Initialize agent with specialized template loading - FIXED
+    await this.initializeSpecializedAgent(agent);
     
     return agentId;
   }
   
   /**
-   * Initialize a spawned agent
+   * Initialize a spawned agent - LEGACY: Use initializeSpecializedAgent instead
    */
   async initializeAgent(agent) {
+    console.warn('DEPRECATED: Using legacy agent initialization. Use initializeSpecializedAgent for proper template loading.');
+    return await this.initializeSpecializedAgent(agent);
+  }
+  
+  /**
+   * Initialize a specialized agent with Claude Flow 2.0 enhancements - ENHANCED
+   */
+  async initializeSpecializedAgent(agent) {
     agent.status = 'active';
     
-    // Load agent template if exists
+    // Claude Flow 2.0: Register agent with topology manager
+    if (this.topologyManager && this.topologyManager.initialized) {
+      try {
+        await this.topologyManager.registerAgent(agent.id, {
+          type: agent.type,
+          capabilities: agent.capabilities,
+          contextWindow: agent.maxTokens,
+          status: 'active'
+        });
+        agent.topologyRegistered = true;
+      } catch (topologyError) {
+        console.warn(`Failed to register agent ${agent.id} with topology manager:`, topologyError.message);
+        agent.topologyRegistered = false;
+      }
+    }
+    
+    // Load specialized agent template from .claude/agents/
     const templatePath = path.join(this.projectRoot, '.claude/agents', agent.template);
     try {
       const templateContent = await fs.readFile(templatePath, 'utf-8');
       agent.instructions = templateContent;
+      agent.templateLoaded = true;
+      agent.templateSource = 'specialized';
+      
+      // Claude Flow 2.0: Enhance template with performance optimizations
+      const enhancedTemplate = this.enhanceTemplateWithClaudeFlow2(templateContent, agent);
+      agent.instructions = enhancedTemplate;
+      
+      // Validate template has required context window specification
+      if (!templateContent.includes('context_window') && !templateContent.includes('200000')) {
+        console.warn(`QUEEN CONTROLLER FIX: Template ${agent.template} missing context window specification`);
+        agent.instructions += '\n\n## Context Window\ncontext_window: 200000\n';
+      }
+      
     } catch (error) {
-      // Template doesn't exist yet, will be created in Phase 2
-      agent.instructions = this.generateDefaultInstructions(agent.type);
+      console.warn(`QUEEN CONTROLLER FIX: Failed to load specialized template for ${agent.type}: ${error.message}`);
+      
+      // Try to load from sub-agent-documentation/agents/ as fallback
+      const fallbackPath = path.join(this.projectRoot, 'sub-agent-documentation/agents', agent.template);
+      try {
+        const fallbackContent = await fs.readFile(fallbackPath, 'utf-8');
+        agent.instructions = fallbackContent;
+        agent.templateLoaded = true;
+        agent.templateSource = 'fallback';
+      } catch (fallbackError) {
+        // Use default instructions with 200k context enforcement
+        agent.instructions = this.generateSpecializedInstructions(agent.type);
+        agent.templateLoaded = false;
+        agent.templateSource = 'generated';
+      }
     }
+    
+    // Enforce context window monitoring
+    this.setupContextWindowMonitoring(agent);
     
     this.emit('agent-ready', {
       agentId: agent.id,
-      type: agent.type
+      type: agent.type,
+      templateLoaded: agent.templateLoaded,
+      templateSource: agent.templateSource,
+      contextWindow: agent.maxTokens,
+      claudeFlow2Enhanced: true,
+      topologyRegistered: agent.topologyRegistered,
+      wasmAcceleration: this.wasmCore?.isInitialized() || false
     });
   }
   
   /**
-   * Distribute a task to appropriate agents with dependency management and neural predictions
+   * Distribute a task to appropriate agents with dependency management and neural predictions - FIXED: Enhanced load balancing
    * @param {object} task - Task to distribute
    * @param {array} dependencies - Task dependencies
    */
   async distributeTask(task, dependencies = []) {
-    // Validate dependencies are complete
-    for (const dep of dependencies) {
-      if (!this.completedTasks.has(dep)) {
-        this.pendingTasks.set(task.id, { task, dependencies });
-        this.emit('task-pending', { 
-          taskId: task.id, 
-          waitingFor: dependencies.filter(d => !this.completedTasks.has(d))
+    try {
+      // Validate task input
+      if (!task || !task.id) {
+        throw new Error('Task must have a valid ID');
+      }
+      
+      // Validate dependencies are complete
+      for (const dep of dependencies) {
+        if (!this.completedTasks.has(dep)) {
+          this.pendingTasks.set(task.id, { task, dependencies });
+          this.emit('task-pending', { 
+            taskId: task.id, 
+            waitingFor: dependencies.filter(d => !this.completedTasks.has(d))
+          });
+          console.log(`QUEEN CONTROLLER FIX: Task ${task.id} waiting for dependencies: ${dependencies.filter(d => !this.completedTasks.has(d)).join(', ')}`);
+          return null;
+        }
+      }
+      
+      // Check if we're at the concurrent agent limit
+      if (this.activeAgents.size >= this.maxConcurrent) {
+        // Queue the task for later
+        this.taskQueue.push({ 
+          task, 
+          dependencies, 
+          queuedAt: Date.now(),
+          priority: task.priority || 'normal'
         });
+        
+        this.emit('task-queued', {
+          taskId: task.id,
+          queuePosition: this.taskQueue.length,
+          activeAgents: this.activeAgents.size,
+          maxConcurrent: this.maxConcurrent
+        });
+        
+        console.log(`QUEEN CONTROLLER FIX: Task ${task.id} queued - ${this.activeAgents.size}/${this.maxConcurrent} agents active`);
         return null;
       }
-    }
-    
-    // Use neural learning to select optimal agent type
-    const agentSelection = await this.selectOptimalAgent(task);
-    const agentType = agentSelection.agentType;
-    
-    // Gather dependency results as context
-    const dependencyContext = {};
-    for (const dep of dependencies) {
-      const result = this.completedTasks.get(dep);
-      if (result) {
-        dependencyContext[dep] = result;
+      
+      // Use neural learning to select optimal agent type with load balancing
+      const agentSelection = await this.selectOptimalAgentWithLoadBalancing(task);
+      const agentType = agentSelection.agentType;
+      
+      // Gather dependency results as context
+      const dependencyContext = {};
+      for (const dep of dependencies) {
+        const result = this.completedTasks.get(dep);
+        if (result) {
+          dependencyContext[dep] = result;
+        }
       }
-    }
-    
-    // Spawn agent for task with neural predictions
-    const agentId = await this.spawnSubAgent(agentType, task, {
-      dependencies: dependencyContext,
-      taskMetadata: {
-        priority: task.priority || 'normal',
-        estimatedTokens: task.estimatedTokens || 50000,
-        timeout: task.timeout || 300000 // 5 minutes default
-      },
-      neuralPredictions: agentSelection.prediction,
-      selectionReasoning: agentSelection.reasoning
-    });
-    
-    if (agentId) {
-      this.metrics.tasksDistributed++;
-      this.emit('task-distributed', {
-        taskId: task.id,
-        agentId,
-        agentType
+      
+      // Spawn agent for task with neural predictions and load balancing
+      const agentId = await this.spawnSubAgent(agentType, task, {
+        dependencies: dependencyContext,
+        taskMetadata: {
+          priority: task.priority || 'normal',
+          estimatedTokens: task.estimatedTokens || 50000,
+          timeout: task.timeout || 300000, // 5 minutes default
+          distributedAt: Date.now(),
+          loadBalancingScore: agentSelection.loadBalancingScore
+        },
+        neuralPredictions: agentSelection.prediction,
+        selectionReasoning: agentSelection.reasoning,
+        loadBalancing: agentSelection.loadBalancing
       });
+      
+      if (agentId) {
+        this.metrics.tasksDistributed++;
+        this.emit('task-distributed', {
+          taskId: task.id,
+          agentId,
+          agentType,
+          loadBalancingScore: agentSelection.loadBalancingScore,
+          activeAgents: this.activeAgents.size,
+          timestamp: Date.now()
+        });
+        
+        console.log(`QUEEN CONTROLLER FIX: Task ${task.id} distributed to ${agentId} (${agentType}) with load balancing score ${agentSelection.loadBalancingScore}`);
+      }
+      
+      return agentId;
+      
+    } catch (error) {
+      console.error(`QUEEN CONTROLLER FIX: Task distribution failed for ${task.id}:`, error.message);
+      this.emit('task-distribution-error', {
+        taskId: task.id,
+        error: error.message,
+        timestamp: Date.now()
+      });
+      return null;
     }
-    
-    return agentId;
   }
   
   /**
@@ -269,19 +584,30 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Check health status of an agent
+   * Check health status of an agent - FIXED: Enhanced context monitoring
    */
   async checkAgentHealth(agent) {
-    // Simulate health check - in production would check actual process
+    // Enhanced health check with context window monitoring
     const health = {
       status: agent.status,
       tokenUsage: agent.tokenUsage,
+      contextUtilization: (agent.tokenUsage / agent.maxTokens) * 100,
       memory: process.memoryUsage().heapUsed,
-      runtime: Date.now() - agent.startTime
+      runtime: Date.now() - agent.startTime,
+      contextOverflow: agent.tokenUsage >= agent.maxTokens,
+      contextWarning: agent.tokenUsage > (agent.maxTokens * 0.9)
     };
     
     // Update token usage tracking
     this.metrics.contextUsage.set(agent.id, health.tokenUsage);
+    
+    // Check for context window violations
+    if (health.contextOverflow) {
+      console.error(`QUEEN CONTROLLER FIX: Agent ${agent.id} exceeded context window: ${agent.tokenUsage}/${agent.maxTokens}`);
+      health.status = 'context_overflow';
+    } else if (health.contextWarning) {
+      console.warn(`QUEEN CONTROLLER FIX: Agent ${agent.id} approaching context limit: ${health.contextUtilization.toFixed(1)}%`);
+    }
     
     return health;
   }
@@ -355,7 +681,7 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Handle inter-agent communication
+   * Handle inter-agent communication - FIXED: Enhanced validation and error handling
    * @param {string} fromAgent - Source agent ID
    * @param {string} toAgent - Target agent ID (or 'broadcast')
    * @param {object} message - Message to send
@@ -363,73 +689,242 @@ class QueenController extends EventEmitter {
   async handleInterAgentCommunication(fromAgent, toAgent, message) {
     const timestamp = Date.now();
     
-    // Validate source agent
-    if (!this.subAgents.has(fromAgent)) {
-      throw new Error(`Unknown source agent: ${fromAgent}`);
-    }
-    
-    // Create message envelope
-    const envelope = {
-      id: `msg-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
-      from: fromAgent,
-      to: toAgent,
-      timestamp,
-      type: message.type || 'data',
-      payload: message.payload || message,
-      routing: message.routing || 'direct'
-    };
-    
-    // Handle broadcast
-    if (toAgent === 'broadcast' || toAgent === '*') {
-      for (const agentId of this.activeAgents) {
-        if (agentId !== fromAgent) {
-          await this.deliverMessage(agentId, envelope);
-        }
+    try {
+      // Enhanced source agent validation
+      if (!fromAgent || (fromAgent !== 'system' && fromAgent !== 'queen-controller' && !this.subAgents.has(fromAgent))) {
+        throw new Error(`Invalid source agent: ${fromAgent}`);
       }
-      this.emit('message-broadcast', envelope);
-    } 
-    // Handle targeted message
-    else if (this.subAgents.has(toAgent)) {
-      await this.deliverMessage(toAgent, envelope);
-      this.emit('message-sent', envelope);
-    }
-    // Handle unknown target
-    else {
-      this.emit('message-failed', { 
-        ...envelope, 
-        error: `Unknown target agent: ${toAgent}` 
+      
+      // Create message envelope with enhanced metadata
+      const envelope = {
+        id: `msg-${timestamp}-${Math.random().toString(36).substr(2, 9)}`,
+        from: fromAgent,
+        to: toAgent,
+        timestamp,
+        type: message.type || 'data',
+        payload: message.payload || message,
+        routing: message.routing || 'direct',
+        priority: message.priority || 'normal',
+        requiresResponse: message.requiresResponse || false,
+        timeout: message.timeout || 30000
+      };
+      
+      // Handle broadcast with improved error handling
+      if (toAgent === 'broadcast' || toAgent === '*' || toAgent === 'all') {
+        return await this.handleBroadcastCommunication(envelope);
+      } 
+      // Handle targeted message with validation
+      else if (this.subAgents.has(toAgent)) {
+        const targetAgent = this.subAgents.get(toAgent);
+        
+        // Check if target agent is active and healthy
+        if (targetAgent.status !== 'active') {
+          console.warn(`QUEEN CONTROLLER FIX: Target agent ${toAgent} is not active (status: ${targetAgent.status})`);
+          this.emit('message-failed', { 
+            ...envelope, 
+            error: `Target agent ${toAgent} is not active`,
+            targetStatus: targetAgent.status
+          });
+          return false;
+        }
+        
+        await this.deliverMessage(toAgent, envelope);
+        this.emit('message-sent', envelope);
+      }
+      // Handle unknown target with suggestion
+      else {
+        // Try to find similar agent IDs for helpful error message
+        const similarAgents = Array.from(this.subAgents.keys())
+          .filter(id => id.includes(toAgent) || toAgent.includes(id))
+          .slice(0, 3);
+        
+        const errorMsg = `Unknown target agent: ${toAgent}` + 
+          (similarAgents.length > 0 ? `. Did you mean: ${similarAgents.join(', ')}?` : '');
+        
+        this.emit('message-failed', { 
+          ...envelope, 
+          error: errorMsg,
+          suggestedAgents: similarAgents
+        });
+        
+        console.error(`QUEEN CONTROLLER FIX: ${errorMsg}`);
+        return false;
+      }
+      
+      // Store in shared memory for persistence with TTL
+      if (this.sharedMemoryStore) {
+        await this.sharedMemoryStore.set(`message_${envelope.id}`, envelope, {
+          namespace: this.sharedMemoryStore.namespaces.CROSS_AGENT,
+          ttl: 3600000 // 1 hour
+        });
+      } else {
+        // Fallback to in-memory storage
+        const messageHistory = this.sharedMemory.get('message_history') || [];
+        messageHistory.push(envelope);
+        // Keep only recent messages to prevent memory bloat
+        if (messageHistory.length > 1000) {
+          messageHistory.splice(0, messageHistory.length - 1000);
+        }
+        this.sharedMemory.set('message_history', messageHistory);
+      }
+      
+      return true;
+      
+    } catch (error) {
+      console.error('QUEEN CONTROLLER FIX: Inter-agent communication failed:', error.message);
+      this.emit('communication-error', {
+        fromAgent,
+        toAgent,
+        error: error.message,
+        timestamp
       });
       return false;
     }
-    
-    // Store in shared memory for persistence
-    const messageHistory = this.sharedMemory.get('message_history') || [];
-    messageHistory.push(envelope);
-    this.sharedMemory.set('message_history', messageHistory);
-    
-    return true;
   }
   
   /**
-   * Deliver message to specific agent
+   * Handle broadcast communication with load balancing - NEW FIX
+   */
+  async handleBroadcastCommunication(envelope) {
+    const startTime = Date.now();
+    const deliveryResults = [];
+    
+    try {
+      // Get active agents excluding sender
+      const targetAgents = Array.from(this.activeAgents)
+        .filter(agentId => agentId !== envelope.from);
+      
+      if (targetAgents.length === 0) {
+        console.warn('QUEEN CONTROLLER FIX: No target agents available for broadcast');
+        this.emit('message-broadcast', { 
+          ...envelope, 
+          targetCount: 0,
+          deliveredCount: 0,
+          warning: 'No target agents available'
+        });
+        return true;
+      }
+      
+      console.log(`QUEEN CONTROLLER FIX: Broadcasting to ${targetAgents.length} agents`);
+      
+      // Deliver to agents in parallel batches to avoid overwhelming the system
+      const batchSize = 5; // Process 5 agents at a time
+      const batches = [];
+      
+      for (let i = 0; i < targetAgents.length; i += batchSize) {
+        batches.push(targetAgents.slice(i, i + batchSize));
+      }
+      
+      for (const batch of batches) {
+        const batchPromises = batch.map(async (agentId) => {
+          try {
+            await this.deliverMessage(agentId, envelope);
+            return { agentId, success: true };
+          } catch (error) {
+            console.error(`QUEEN CONTROLLER FIX: Failed to deliver broadcast to ${agentId}:`, error.message);
+            return { agentId, success: false, error: error.message };
+          }
+        });
+        
+        const batchResults = await Promise.allSettled(batchPromises);
+        deliveryResults.push(...batchResults.map(result => 
+          result.status === 'fulfilled' ? result.value : 
+          { agentId: 'unknown', success: false, error: result.reason.message }
+        ));
+      }
+      
+      const successfulDeliveries = deliveryResults.filter(result => result.success);
+      const failedDeliveries = deliveryResults.filter(result => !result.success);
+      
+      const broadcastTime = Date.now() - startTime;
+      
+      this.emit('message-broadcast', { 
+        ...envelope,
+        targetCount: targetAgents.length,
+        deliveredCount: successfulDeliveries.length,
+        failedCount: failedDeliveries.length,
+        deliveryTime: broadcastTime,
+        failedAgents: failedDeliveries
+      });
+      
+      console.log(`QUEEN CONTROLLER FIX: Broadcast completed in ${broadcastTime}ms - ${successfulDeliveries.length}/${targetAgents.length} successful`);
+      
+      return true;
+      
+    } catch (error) {
+      console.error('QUEEN CONTROLLER FIX: Broadcast communication failed:', error.message);
+      this.emit('broadcast-error', {
+        envelope,
+        error: error.message,
+        deliveryResults
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Deliver message to specific agent - FIXED: Enhanced validation and queuing
    */
   async deliverMessage(agentId, message) {
-    const agent = this.subAgents.get(agentId);
-    if (!agent) return;
-    
-    // Add to agent's message queue
-    if (!agent.messageQueue) {
-      agent.messageQueue = [];
+    try {
+      const agent = this.subAgents.get(agentId);
+      if (!agent) {
+        throw new Error(`Agent ${agentId} not found`);
+      }
+      
+      // Check agent health before delivery
+      if (agent.status !== 'active') {
+        throw new Error(`Agent ${agentId} is not active (status: ${agent.status})`);
+      }
+      
+      // Initialize message queue if it doesn't exist
+      if (!agent.messageQueue) {
+        agent.messageQueue = [];
+      }
+      
+      // Check queue size to prevent overflow
+      const maxQueueSize = 100;
+      if (agent.messageQueue.length >= maxQueueSize) {
+        console.warn(`QUEEN CONTROLLER FIX: Message queue full for agent ${agentId}, removing oldest message`);
+        agent.messageQueue.shift(); // Remove oldest message
+      }
+      
+      // Add message to queue with metadata
+      const queuedMessage = {
+        ...message,
+        queuedAt: Date.now(),
+        retryCount: message.retryCount || 0
+      };
+      
+      agent.messageQueue.push(queuedMessage);
+      
+      // Update agent context with new message
+      agent.context.latestMessage = message;
+      agent.context.lastMessageTime = Date.now();
+      
+      // Update agent activity timestamp
+      agent.lastActivity = Date.now();
+      
+      // Emit successful delivery
+      this.emit('message-delivered', {
+        agentId,
+        messageId: message.id,
+        queueSize: agent.messageQueue.length,
+        timestamp: Date.now()
+      });
+      
+      console.log(`QUEEN CONTROLLER FIX: Message ${message.id} delivered to agent ${agentId}`);
+      
+    } catch (error) {
+      console.error(`QUEEN CONTROLLER FIX: Failed to deliver message to ${agentId}:`, error.message);
+      this.emit('message-delivery-failed', {
+        agentId,
+        messageId: message.id,
+        error: error.message,
+        timestamp: Date.now()
+      });
+      throw error;
     }
-    agent.messageQueue.push(message);
-    
-    // Update agent context with new message
-    agent.context.latestMessage = message;
-    
-    this.emit('message-delivered', {
-      agentId,
-      messageId: message.id
-    });
   }
   
   /**
@@ -579,6 +1074,54 @@ class QueenController extends EventEmitter {
     }
   }
   
+  /**
+   * Initialize Claude Flow 2.0 Components
+   */
+  async initializeClaudeFlow2Components() {
+    try {
+      console.log('Initializing Claude Flow 2.0 components...');
+      
+      // Initialize WASM Core Module
+      this.wasmCore = new WasmCoreModule({
+        simdEnabled: this.claudeFlow2Config.simdOptimization,
+        projectRoot: this.projectRoot,
+        maxAgents: this.maxConcurrent
+      });
+      
+      await this.wasmCore.initialize();
+      
+      // Initialize Topology Manager
+      this.topologyManager = new TopologyManager({
+        initialTopology: this.claudeFlow2Config.topologyType,
+        maxAgents: this.maxConcurrent,
+        adaptiveTopology: true
+      });
+      
+      await this.topologyManager.initialize();
+      
+      // Initialize Capability Matcher
+      this.capabilityMatcher = new CapabilityMatcher({
+        neuralPredictions: true,
+        agentTypes: this.agentTypes,
+        wasmAcceleration: this.claudeFlow2Config.wasmAcceleration
+      });
+      
+      await this.capabilityMatcher.initialize();
+      
+      console.log('Claude Flow 2.0 components initialized successfully');
+      
+      this.emit('claude-flow-2-ready', {
+        wasmEnabled: this.wasmCore.isInitialized(),
+        topologyType: this.topologyManager.getCurrentTopology(),
+        capabilityMatching: this.capabilityMatcher.isEnabled()
+      });
+      
+    } catch (error) {
+      console.error('Failed to initialize Claude Flow 2.0 components:', error);
+      this.emit('claude-flow-2-error', { error: error.message });
+    }
+  }
+
   /**
    * Initialize Neural Learning System
    */
@@ -887,6 +1430,98 @@ class QueenController extends EventEmitter {
   }
 
   /**
+   * Select optimal agent with load balancing - NEW FIX
+   * @param {object} task - Task to find optimal agent for
+   */
+  async selectOptimalAgentWithLoadBalancing(task) {
+    try {
+      // Get neural prediction first
+      const neuralSelection = await this.selectOptimalAgent(task);
+      
+      // Calculate load balancing scores for each agent type
+      const loadBalancingScores = new Map();
+      const agentTypeLoads = new Map();
+      
+      // Calculate current load per agent type
+      for (const [agentId, agent] of this.subAgents) {
+        if (agent.status === 'active') {
+          const agentType = agent.type;
+          const currentLoad = agentTypeLoads.get(agentType) || 0;
+          
+          // Calculate agent load based on context usage, message queue, and runtime
+          const contextLoad = (agent.tokenUsage || 0) / this.contextWindowSize;
+          const queueLoad = (agent.messageQueue?.length || 0) / 100; // Normalize queue size
+          const runtimeLoad = agent.startTime ? Math.min((Date.now() - agent.startTime) / 300000, 1) : 0; // Normalize to 5 minutes max
+          
+          const agentLoad = (contextLoad * 0.5 + queueLoad * 0.3 + runtimeLoad * 0.2);
+          agentTypeLoads.set(agentType, currentLoad + agentLoad);
+        }
+      }
+      
+      // Calculate scores for candidate agent types
+      const candidateTypes = this.getAgentTypesForTask(task);
+      
+      for (const agentType of candidateTypes) {
+        const currentLoad = agentTypeLoads.get(agentType) || 0;
+        const neuralScore = neuralSelection.agentType === agentType ? 
+          (neuralSelection.prediction?.successProbability || 0.5) : 0.3;
+        
+        // Invert load (lower load = higher score) and combine with neural score
+        const loadScore = Math.max(0, 1 - currentLoad);
+        const combinedScore = neuralScore * 0.7 + loadScore * 0.3;
+        
+        loadBalancingScores.set(agentType, {
+          combinedScore,
+          neuralScore,
+          loadScore,
+          currentLoad
+        });
+      }
+      
+      // Select agent type with highest combined score
+      let bestAgentType = neuralSelection.agentType;
+      let bestScore = 0;
+      
+      for (const [agentType, scores] of loadBalancingScores) {
+        if (scores.combinedScore > bestScore) {
+          bestScore = scores.combinedScore;
+          bestAgentType = agentType;
+        }
+      }
+      
+      const selectedScores = loadBalancingScores.get(bestAgentType) || {
+        combinedScore: 0.5,
+        neuralScore: 0.5,
+        loadScore: 0.5,
+        currentLoad: 0
+      };
+      
+      console.log(`QUEEN CONTROLLER FIX: Load balancing selected ${bestAgentType} (score: ${selectedScores.combinedScore.toFixed(3)}, load: ${selectedScores.currentLoad.toFixed(3)})`);
+      
+      return {
+        agentType: bestAgentType,
+        prediction: neuralSelection.prediction,
+        reasoning: neuralSelection.reasoning,
+        loadBalancingScore: selectedScores.combinedScore,
+        loadBalancing: {
+          neuralScore: selectedScores.neuralScore,
+          loadScore: selectedScores.loadScore,
+          currentLoad: selectedScores.currentLoad,
+          alternativeTypes: Array.from(loadBalancingScores.entries())
+            .sort((a, b) => b[1].combinedScore - a[1].combinedScore)
+            .slice(0, 3)
+            .map(([type, scores]) => ({ type, score: scores.combinedScore }))
+        }
+      };
+      
+    } catch (error) {
+      console.error('QUEEN CONTROLLER FIX: Load balancing selection failed:', error.message);
+      // Fallback to original selection
+      return await this.selectOptimalAgent(task);
+    }
+  }
+
+  /**
    * Select appropriate agent type for a task
    */
   selectAgentType(task) {
@@ -971,23 +1606,164 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Generate default instructions for agent types
+   * Generate default instructions for agent types - LEGACY
    */
   generateDefaultInstructions(type) {
-    const defaults = {
-      'code-analyzer': 'Analyze code structure, patterns, and quality.',
-      'test-runner': 'Execute tests and validate functionality.',
-      'doc-generator': 'Generate documentation and markdown files.',
-      'api-builder': 'Build and configure API endpoints.',
-      'database-architect': 'Design database schemas and queries.',
-      'security-scanner': 'Scan for security vulnerabilities.',
-      'performance-optimizer': 'Optimize performance and efficiency.',
-      'deployment-engineer': 'Handle deployment and CI/CD.',
-      'frontend-specialist': 'Build frontend components and UI.',
-      'recovery-specialist': 'Recover from errors and fix issues.'
+    console.warn('DEPRECATED: Use generateSpecializedInstructions for proper agent setup');
+    return this.generateSpecializedInstructions(type);
+  }
+  
+  /**
+   * Generate specialized instructions with proper context window enforcement - FIXED
+   */
+  generateSpecializedInstructions(type) {
+    const specializedTemplates = {
+      'code-analyzer': `You are a specialized Code Analyzer Agent with a 200,000 token context window.
+
+## Core Responsibilities
+- Analyze code structure, patterns, and quality
+- Identify performance bottlenecks and optimization opportunities
+- Detect anti-patterns and suggest improvements
+- Generate comprehensive code analysis reports
+
+## Context Window
+context_window: 200000
+
+## Communication Protocol
+- Input: Code files and analysis requests from Queen Controller
+- Output: Structured analysis reports and recommendations
+- Shared Memory: Store analysis results for cross-agent access`,
+      
+      'test-runner': `You are a specialized Test Runner Agent with a 200,000 token context window.
+
+## Core Responsibilities
+- Execute automated tests and validate functionality
+- Generate test reports and coverage analysis
+- Identify failing tests and suggest fixes
+- Coordinate with other agents for integration testing
+
+## Context Window
+context_window: 200000
+
+## Communication Protocol
+- Input: Test suites and execution requests from Queen Controller
+- Output: Test results, coverage reports, and failure analysis
+- Shared Memory: Store test results for cross-agent access`,
+      
+      'doc-generator': `You are a specialized Documentation Generator Agent with a 200,000 token context window.
+
+## Core Responsibilities
+- Generate comprehensive documentation and markdown files
+- Create API documentation and user guides
+- Maintain documentation consistency and quality
+- Coordinate with other agents for technical accuracy
+
+## Context Window
+context_window: 200000
+
+## Communication Protocol
+- Input: Code analysis and documentation requests from Queen Controller
+- Output: Generated documentation, guides, and technical content
+- Shared Memory: Store documentation templates for cross-agent access`,
+      
+      'security-scanner': `You are a specialized Security Scanner Agent with a 200,000 token context window.
+
+## Core Responsibilities
+- Scan for security vulnerabilities and compliance issues
+- Perform security audits and risk assessments
+- Generate security reports and remediation suggestions
+- Monitor for security best practices
+
+## Context Window
+context_window: 200000
+
+## Communication Protocol
+- Input: Code and security scan requests from Queen Controller
+- Output: Security reports, vulnerability assessments, and remediation plans
+- Shared Memory: Store security findings for cross-agent access`,
+      
+      'recovery-specialist': `You are a specialized Recovery Specialist Agent with a 200,000 token context window.
+
+## Core Responsibilities
+- Detect, diagnose, and recover from system failures
+- Implement intelligent recovery mechanisms
+- Maintain system stability and data integrity
+- Coordinate recovery operations across distributed systems
+
+## Context Window
+context_window: 200000
+
+## Communication Protocol
+- Input: Failure alerts and recovery requests from Queen Controller
+- Output: Recovery plans, system diagnostics, and restoration status
+- Shared Memory: Store recovery procedures for cross-agent access`
     };
     
-    return defaults[type] || 'Perform assigned tasks efficiently.';
+    const template = specializedTemplates[type];
+    if (template) {
+      return template;
+    }
+    
+    // Generic template with context enforcement
+    return `You are a specialized ${type} Agent with a 200,000 token context window.
+
+## Core Responsibilities
+- Perform ${type} tasks efficiently and accurately
+- Collaborate with other specialized agents
+- Report results to Queen Controller
+- Maintain high quality standards
+
+## Context Window
+context_window: 200000
+
+## Communication Protocol
+- Input: Task assignments from Queen Controller
+- Output: Results, status updates, and progress reports
+- Shared Memory: Store results for cross-agent access
+
+## Quality Standards
+- Follow SPARC methodology (Specification, Pseudocode, Architecture, Refinement, Completion)
+- Ensure all outputs are production-ready
+- Validate all work before submission
+- Collaborate effectively with other agents`;
+  }
+  
+  /**
+   * Setup context window monitoring for an agent - NEW
+   */
+  setupContextWindowMonitoring(agent) {
+    // Monitor context usage every 10 seconds
+    const monitoringInterval = setInterval(() => {
+      if (!this.subAgents.has(agent.id)) {
+        clearInterval(monitoringInterval);
+        return;
+      }
+      
+      const currentAgent = this.subAgents.get(agent.id);
+      const utilization = (currentAgent.tokenUsage / currentAgent.maxTokens) * 100;
+      
+      // Warn at 80% utilization
+      if (utilization > 80 && !currentAgent.contextWarned) {
+        currentAgent.contextWarned = true;
+        this.emit('context-warning', {
+          agentId: agent.id,
+          type: agent.type,
+          utilization: utilization,
+          tokens: currentAgent.tokenUsage,
+          limit: currentAgent.maxTokens
+        });
+      }
+      
+      // Emergency shutdown at 95% to prevent overflow
+      if (utilization > 95) {
+        console.error(`QUEEN CONTROLLER FIX: Emergency shutdown of agent ${agent.id} due to context overflow risk`);
+        this.terminateAgent(agent.id, 'context_overflow_prevention');
+        clearInterval(monitoringInterval);
+      }
+    }, 10000);
+    
+    // Store interval reference for cleanup
+    agent.contextMonitoringInterval = monitoringInterval;
   }
   
   /**
@@ -1029,12 +1805,86 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Shutdown Queen Controller with neural learning cleanup
+   * Enhance template with Claude Flow 2.0 optimizations
+   */
+  enhanceTemplateWithClaudeFlow2(templateContent, agent) {
+    let enhanced = templateContent;
+    
+    // Add Claude Flow 2.0 performance instructions
+    const performanceSection = `
+
+## Claude Flow 2.0 Performance Optimizations
+
+### WASM Acceleration
+- Leverage SIMD operations for vector calculations
+- Use optimized neural predictions for task routing
+- Target ${this.claudeFlow2Config.targetSpeedupFactor}x performance improvement
+
+### Token Efficiency
+- Optimize context window usage (200k tokens available)
+- Target ${this.claudeFlow2Config.tokenReductionTarget}% token reduction
+- Use intelligent context compression
+
+### Topology Awareness
+- Current topology: ${this.topologyManager?.getCurrentTopology() || 'hierarchical'}
+- Optimize communication patterns based on topology
+- Enable adaptive topology switching
+
+### Neural Predictions
+- Use capability matching for optimal task assignment
+- Provide feedback for continuous learning improvement
+- Target 89%+ matching accuracy
+
+### MCP Tool Integration
+- Prioritize MCP tools for enhanced functionality
+- Use context7 as default MCP server
+- Leverage tool chaining for complex operations
+`;
+    
+    enhanced += performanceSection;
+    
+    return enhanced;
+  }
+
+  /**
+   * Shutdown Queen Controller with unlimited scaling cleanup
    */
   async shutdown() {
+    console.log('Shutting down Queen Controller with unlimited scaling system...');
+    
     // Stop monitoring
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
+    }
+    
+    // Shutdown unlimited scaling components
+    if (this.unlimitedScaling.enabled) {
+      if (this.resourceMonitor) {
+        this.resourceMonitor.stop();
+      }
+      
+      if (this.conflictDetector) {
+        await this.conflictDetector.shutdown();
+      }
+      
+      if (this.dynamicAgentRegistry) {
+        await this.dynamicAgentRegistry.shutdown();
+      }
+      
+      console.log('Unlimited scaling components shutdown completed');
+    }
+    
+    // Shutdown Claude Flow 2.0 components
+    if (this.wasmCore) {
+      await this.wasmCore.shutdown();
+    }
+    
+    if (this.topologyManager) {
+      await this.topologyManager.shutdown();
+    }
+    
+    if (this.capabilityMatcher) {
+      await this.capabilityMatcher.shutdown();
     }
     
     // Terminate all active agents
@@ -1075,7 +1925,7 @@ class QueenController extends EventEmitter {
   }
 
   /**
-   * Get current status with neural learning metrics
+   * Get current status with unlimited scaling metrics
    */
   getStatus() {
     const status = {
@@ -1095,6 +1945,39 @@ class QueenController extends EventEmitter {
       }))
     };
 
+    // Add unlimited scaling status
+    if (this.unlimitedScaling.enabled) {
+      status.unlimitedScaling = {
+        enabled: true,
+        dynamicLimit: null,
+        resourceStatus: null,
+        agentTypesAvailable: 0,
+        conflictDetection: !!this.conflictDetector
+      };
+      
+      // Get dynamic limit if resource monitor is available
+      if (this.resourceMonitor) {
+        try {
+          const resourceMetrics = this.resourceMonitor.getMetrics();
+          status.unlimitedScaling.dynamicLimit = resourceMetrics.current.scaling.optimalAgentCount;
+          status.unlimitedScaling.resourceStatus = this.resourceMonitor.getResourceStatus();
+        } catch (error) {
+          status.unlimitedScaling.resourceError = error.message;
+        }
+      }
+      
+      // Get agent types count
+      if (this.dynamicAgentRegistry) {
+        status.unlimitedScaling.agentTypesAvailable = this.dynamicAgentRegistry.getStats().totalAgentTypes;
+      }
+    } else {
+      status.unlimitedScaling = {
+        enabled: false,
+        legacyMode: true,
+        fixedLimit: this.maxConcurrent
+      };
+    }
+
     // Add neural learning system status if available
     try {
       status.neuralLearning = this.neuralLearning.getSystemStatus();
@@ -1106,6 +1989,30 @@ class QueenController extends EventEmitter {
     }
 
     return status;
+  }
+  
+  /**
+   * Calculate average speedup factor across all agents
+   */
+  calculateAverageSpeedupFactor() {
+    if (!this.wasmCore) return 1.0;
+    
+    const wasmMetrics = this.wasmCore.getMetrics();
+    return wasmMetrics.speedupFactor || 1.0;
+  }
+  
+  /**
+   * Calculate token reduction achieved
+   */
+  calculateTokenReduction() {
+    const totalTokenUsage = Array.from(this.subAgents.values())
+      .reduce((sum, agent) => sum + (agent.tokenUsage || 0), 0);
+    
+    const expectedTokenUsage = this.subAgents.size * 100000; // Baseline expectation
+    
+    if (expectedTokenUsage === 0) return 0;
+    
+    return Math.max(0, ((expectedTokenUsage - totalTokenUsage) / expectedTokenUsage) * 100);
   }
 }
 

@@ -15,12 +15,12 @@ const path = require('path');
 const fs = require('fs').promises;
 
 // Import Claude Flow 2.0 components
-const QueenController = require('./intelligence-engine/queen-controller');
-const { WasmCoreModule } = require('./intelligence-engine/wasm-core-module');
-const { TopologyManager } = require('./intelligence-engine/topology-manager');
-const { CapabilityMatcher } = require('./intelligence-engine/capability-matcher');
-const { ClaudeFlow2PerformanceMonitor } = require('./intelligence-engine/claude-flow-2-performance-monitor');
-const { AgentCommunicationBus } = require('./intelligence-engine/agent-communication-bus');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
+const { WasmCoreModule } = require('./.ai-workflow/intelligence-engine/wasm-core-module');
+const { TopologyManager } = require('./.ai-workflow/intelligence-engine/topology-manager');
+const { CapabilityMatcher } = require('./.ai-workflow/intelligence-engine/capability-matcher');
+const { ClaudeFlow2PerformanceMonitor } = require('./.ai-workflow/intelligence-engine/claude-flow-2-performance-monitor');
+const { AgentCommunicationBus } = require('./.ai-workflow/intelligence-engine/agent-communication-bus');
 
 class ClaudeFlow2TestSuite {
   constructor() {

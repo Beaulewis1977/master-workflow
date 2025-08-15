@@ -3,8 +3,8 @@
  * Tests the three-layer context architecture and conditional file loading
  */
 
-const AgentOSIntegration = require('./intelligence-engine/agent-os-integration');
-const AgentOSQueenBridge = require('./intelligence-engine/agent-os-queen-bridge');
+const AgentOSIntegration = require('./.ai-workflow/intelligence-engine/agent-os-integration');
+const AgentOSQueenBridge = require('./.ai-workflow/intelligence-engine/agent-os-queen-bridge');
 const path = require('path');
 const fs = require('fs').promises;
 

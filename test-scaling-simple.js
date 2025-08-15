@@ -38,7 +38,7 @@ class SimpleScalingTest {
     console.log('\n📋 Test 1: Queen Controller Configuration');
     
     try {
-      const QueenController = require('./intelligence-engine/queen-controller');
+      const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
       
       // Test unlimited scaling configuration
       const queenController = new QueenController({
@@ -79,7 +79,7 @@ class SimpleScalingTest {
     console.log('\n📋 Test 2: Shared Memory Capacity');
     
     try {
-      const SharedMemory = require('./intelligence-engine/shared-memory');
+      const SharedMemory = require('./.ai-workflow/intelligence-engine/shared-memory');
       
       const sharedMemory = new SharedMemory({
         maxMemorySize: 2 * 1024 * 1024 * 1024, // 2GB
@@ -121,7 +121,7 @@ class SimpleScalingTest {
     console.log('\n📋 Test 3: Resource Monitor Scaling');
     
     try {
-      const ResourceMonitor = require('./intelligence-engine/resource-monitor');
+      const ResourceMonitor = require('./.ai-workflow/intelligence-engine/resource-monitor');
       
       const resourceMonitor = new ResourceMonitor({
         targetMemoryUtilization: 0.85,
