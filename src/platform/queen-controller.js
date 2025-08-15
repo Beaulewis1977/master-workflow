@@ -24,7 +24,8 @@ class QueenController extends EventEmitter {
     super();
     
     this.options = {
-      maxAgents: options.maxAgents || 4462, // Support up to 4,462 agents
+      maxAgents: options.maxAgents || null, // Unlimited agent support
+      recommendedMaxAgents: options.recommendedMaxAgents || 4000, // Guidance only
       agentPoolSize: options.agentPoolSize || 100, // Initial pool size
       scaleThreshold: options.scaleThreshold || 0.8, // 80% utilization triggers scaling
       scaleDownThreshold: options.scaleDownThreshold || 0.3, // 30% utilization triggers scale down
@@ -33,6 +34,7 @@ class QueenController extends EventEmitter {
       maxMemoryPerAgent: options.maxMemoryPerAgent || 512, // MB
       agentTimeout: options.agentTimeout || 300000, // 5 minutes
       clustered: options.clustered !== false, // Enable clustering by default
+      emergencyThreshold: options.emergencyThreshold || 0.95, // Emergency scaling threshold
       ...options
     };
 
@@ -90,7 +92,12 @@ class QueenController extends EventEmitter {
     
     this.isInitialized = true;
     console.log(`✅ Queen Controller initialized - Platform: ${this.platformDetector.getPlatformDisplay()}`);
-    console.log(`🔥 Ready to scale up to ${this.options.maxAgents} agents`);
+    
+    if (this.options.maxAgents === null) {
+      console.log(`🔥 Ready for UNLIMITED SCALING (recommended max: ${this.options.recommendedMaxAgents} agents)`);
+    } else {
+      console.log(`🔥 Ready to scale up to ${this.options.maxAgents} agents`);
+    }
     
     this.emit('initialized', {
       platform: this.platformDetector.getPlatformDisplay(),
@@ -108,11 +115,21 @@ class QueenController extends EventEmitter {
   async spawnAgents(count, config = {}) {
     await this.ensureInitialized();
     
-    if (this.agents.size + count > this.options.maxAgents) {
+    // Check for unlimited scaling mode
+    if (this.options.maxAgents !== null && this.agents.size + count > this.options.maxAgents) {
       throw new Error(`Cannot spawn ${count} agents. Would exceed maximum of ${this.options.maxAgents}`);
     }
 
-    console.log(`🚀 Spawning ${count} agents...`);
+    // Check emergency threshold for unlimited scaling
+    if (this.options.maxAgents === null) {
+      const currentUtilization = this.getCurrentUtilization();
+      if (currentUtilization > this.options.emergencyThreshold) {
+        console.warn(`🚨 UNLIMITED SCALING: Emergency threshold reached (${(currentUtilization * 100).toFixed(1)}%), limiting spawn to prevent system overload`);
+        count = Math.min(count, 10); // Limit spawn during emergency
+      }
+    }
+
+    console.log(`🚀 Spawning ${count} agents (unlimited scaling: ${this.options.maxAgents === null})...`);
     
     const agents = [];
     const batchSize = this.calculateOptimalBatchSize(count);
@@ -204,8 +221,11 @@ class QueenController extends EventEmitter {
       
       if (targetCount > currentCount) {
         // Scale up
-        const spawnCount = Math.min(targetCount - currentCount, this.options.maxAgents - currentCount);
-        console.log(`📈 Scaling up by ${spawnCount} agents`);
+        let spawnCount = targetCount - currentCount;
+        if (this.options.maxAgents !== null) {
+          spawnCount = Math.min(spawnCount, this.options.maxAgents - currentCount);
+        }
+        console.log(`📈 Scaling up by ${spawnCount} agents (unlimited: ${this.options.maxAgents === null})`);
         await this.spawnAgents(spawnCount);
       } else if (targetCount < currentCount) {
         // Scale down
@@ -240,7 +260,8 @@ class QueenController extends EventEmitter {
       agents: {
         active: this.agents.size,
         pooled: this.agentPool.size,
-        maximum: this.options.maxAgents,
+        maximum: this.options.maxAgents || 'unlimited',
+        recommended_max: this.options.recommendedMaxAgents,
         spawned: this.totalAgentsSpawned
       },
       
@@ -526,12 +547,24 @@ class QueenController extends EventEmitter {
   checkScaling() {
     const utilization = this.getCurrentUtilization();
     
-    if (utilization > this.options.scaleThreshold && this.agents.size < this.options.maxAgents) {
+    // Scale up logic for unlimited agents
+    const canScaleUp = this.options.maxAgents === null || this.agents.size < this.options.maxAgents;
+    
+    if (utilization > this.options.scaleThreshold && canScaleUp) {
       // Scale up
-      const targetAgents = Math.min(
-        Math.ceil(this.agents.size * 1.5), // 50% increase
-        this.options.maxAgents
-      );
+      let targetAgents = Math.ceil(this.agents.size * 1.5); // 50% increase
+      
+      // Apply limits if not unlimited
+      if (this.options.maxAgents !== null) {
+        targetAgents = Math.min(targetAgents, this.options.maxAgents);
+      }
+      
+      // Apply emergency threshold for unlimited scaling
+      if (this.options.maxAgents === null && utilization > this.options.emergencyThreshold) {
+        console.warn(`🚨 UNLIMITED SCALING: Emergency threshold reached, limiting scale up`);
+        targetAgents = Math.min(targetAgents, this.agents.size + 10); // Conservative scaling
+      }
+      
       this.scaleAgents(targetAgents);
     } else if (utilization < this.options.scaleDownThreshold && this.agents.size > this.options.agentPoolSize) {
       // Scale down
