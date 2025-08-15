@@ -1,0 +1,29 @@
+{
+  "lastCheck": 1755210907095,
+  "allDependenciesSatisfied": true,
+  "installationHistory": [],
+  "lastInstallation": {
+    "timestamp": 1755210907095,
+    "platform": "linux",
+    "results": {
+      "total": 2,
+      "successful": 0,
+      "failed": 0,
+      "skipped": 2,
+      "successfulDependencies": [],
+      "failedDependencies": [],
+      "skippedDependencies": [
+        {
+          "name": "Claude Flow 2.0",
+          "reason": "Skipped due to installation failure"
+        },
+        {
+          "name": "Agent-OS",
+          "reason": "Skipped due to installation failure"
+        }
+      ],
+      "success": true
+    },
+    "claudeFlowVersion": "2.0.0"
+  }
+}

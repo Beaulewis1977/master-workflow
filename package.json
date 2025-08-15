@@ -5,9 +5,18 @@
   "description": "Intelligent Workflow Decision System - governance and CI scaffolding",
   "scripts": {
     "test": "node test/test-runner.js",
+    "test:interactive": "node test/run-interactive-ai-tests.js",
+    "test:interactive:quick": "node test/run-interactive-ai-tests.js --mode quick",
+    "test:interactive:comprehensive": "node test/run-interactive-ai-tests.js --mode comprehensive",
+    "test:ai-enhancement": "node test/run-interactive-ai-tests.js --mode individual --suites ai-enhancement",
+    "test:fullstack-modern": "node test/run-interactive-ai-tests.js --mode individual --suites fullstack-modern",
     "lint": "node scripts/lint-if-available.js",
     "coverage": "echo 'No coverage tool configured; skipping'",
-    "install-sqlite": "npm install sqlite3 || echo 'SQLite3 installation failed, will use file-based fallback'"
+    "install-sqlite": "npm install sqlite3 || echo 'SQLite3 installation failed, will use file-based fallback'",
+    "check-deps": "node lib/dependency-manager/claude-flow-deps.js check",
+    "install-deps": "node lib/dependency-manager/claude-flow-deps.js install",
+    "verify-deps": "node lib/dependency-manager/claude-flow-deps.js verify",
+    "test-deps": "node lib/dependency-manager/test/dependency-manager-test.js"
   },
   "engines": {
     "node": ">=18"

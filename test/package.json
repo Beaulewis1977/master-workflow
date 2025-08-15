@@ -1,11 +1,12 @@
 {
-  "name": "enhanced-mcp-testing-system",
-  "version": "3.0.0",
-  "description": "Comprehensive testing and validation system for Enhanced MCP Ecosystem v3.0",
+  "name": "claude-flow-2-testing-system",
+  "version": "2.0.0",
+  "description": "Comprehensive testing and validation system for Claude Flow 2.0 complete workflow",
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "test": "node enhanced-mcp-test-orchestrator.js",
+    "test": "node claude-flow-2-test-runner.js",
+    "test:workflow": "node claude-flow-2-complete-workflow-test.js",
     "test:integration": "node mcp-integration-test-suite.js",
     "test:scaling": "node unlimited-scaling-load-test.js",
     "test:performance": "node performance-regression-test.js",
@@ -13,8 +14,25 @@
     "test:cicd": "node ci-cd-pipeline-test.js",
     "test:mocks": "node mock-server-infrastructure.js",
     "test:all": "./run-enhanced-mcp-tests.sh",
-    "test:quick": "node mcp-integration-test-suite.js && node performance-regression-test.js",
-    "test:production": "MCP_TEST_MODE=production node enhanced-mcp-test-orchestrator.js"
+    "test:quick": "node claude-flow-2-complete-workflow-test.js",
+    "test:production": "CF_TEST_MODE=production node claude-flow-2-test-runner.js",
+    "test:claude-flow": "node claude-flow-2-complete-workflow-test.js",
+    "test:runner": "node claude-flow-2-test-runner.js complete-workflow",
+    "test:parallel": "node claude-flow-2-test-runner.js --parallel --workers 4",
+    "test:template-generation": "node template-generation-test-runner.js",
+    "test:template-unit": "node template-generation-unit-tests.js",
+    "test:template-integration": "node template-generation-integration-tests.js",
+    "test:template-e2e": "node template-generation-e2e-tests.js",
+    "test:template-validation": "node template-file-validation-tests.js",
+    "test:template-customization": "node template-customization-tests.js",
+    "test:template-errors": "node template-error-handling-tests.js",
+    "test:template-dependencies": "node template-dependency-validation-tests.js",
+    "test:template-docker": "node template-docker-config-tests.js",
+    "test:template-critical": "node template-generation-test-runner.js --critical-only",
+    "test:template-parallel": "node template-generation-test-runner.js --parallel",
+    "test:template-quick": "node template-generation-test-runner.js --suites unit,integration",
+    "test:template-full": "./run-template-generation-tests.sh",
+    "test:template-ci": "./run-template-generation-tests.sh --mode critical --parallel"
   },
   "keywords": [
     "mcp",
@@ -27,5 +45,8 @@
   ],
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "yaml": "^2.3.4"
   }
 }

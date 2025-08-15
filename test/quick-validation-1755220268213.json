@@ -1,0 +1,117 @@
+{
+  "summary": {
+    "totalTests": 15,
+    "passedTests": 15,
+    "failedTests": 0,
+    "passRate": 100,
+    "assessment": "🎉 Excellent - Template is well configured"
+  },
+  "results": [
+    {
+      "category": "Structure",
+      "test": "frontend/package.json exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.206Z"
+    },
+    {
+      "category": "Structure",
+      "test": "frontend/next.config.js exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.207Z"
+    },
+    {
+      "category": "Structure",
+      "test": "frontend/tailwind.config.js exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.207Z"
+    },
+    {
+      "category": "Structure",
+      "test": "frontend/src/app/layout.tsx exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.207Z"
+    },
+    {
+      "category": "Structure",
+      "test": "frontend/src/app/page.tsx exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.208Z"
+    },
+    {
+      "category": "Structure",
+      "test": "frontend/src/store/app-store.ts exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.208Z"
+    },
+    {
+      "category": "Structure",
+      "test": "backend/Cargo.toml exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.208Z"
+    },
+    {
+      "category": "Structure",
+      "test": "backend/src/main.rs exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.209Z"
+    },
+    {
+      "category": "Structure",
+      "test": "template.config.json exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.209Z"
+    },
+    {
+      "category": "Structure",
+      "test": "README.md exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-08-15T01:11:08.209Z"
+    },
+    {
+      "category": "Config",
+      "test": "Next.js configuration",
+      "passed": true,
+      "details": "3/3 features configured",
+      "timestamp": "2025-08-15T01:11:08.211Z"
+    },
+    {
+      "category": "Config",
+      "test": "Tailwind CSS configuration",
+      "passed": true,
+      "details": "4/4 features configured",
+      "timestamp": "2025-08-15T01:11:08.212Z"
+    },
+    {
+      "category": "Config",
+      "test": "Rust backend configuration",
+      "passed": true,
+      "details": "4/4 dependencies configured",
+      "timestamp": "2025-08-15T01:11:08.212Z"
+    },
+    {
+      "category": "Dependencies",
+      "test": "Frontend dependencies",
+      "passed": true,
+      "details": "7/7 required dependencies found",
+      "timestamp": "2025-08-15T01:11:08.213Z"
+    },
+    {
+      "category": "Dependencies",
+      "test": "Modern versions",
+      "passed": true,
+      "details": "Next.js 14: true, React 18: true",
+      "timestamp": "2025-08-15T01:11:08.213Z"
+    }
+  ],
+  "timestamp": "2025-08-15T01:11:08.214Z"
+}

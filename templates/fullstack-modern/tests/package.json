@@ -1,0 +1,146 @@
+{
+  "name": "fullstack-modern-production-tests",
+  "version": "1.0.0",
+  "description": "Comprehensive production deployment testing suite for Fullstack Modern Template",
+  "main": "master-test-orchestrator.js",
+  "scripts": {
+    "test": "node run-comprehensive-tests.js",
+    "test:all": "node run-comprehensive-tests.js --parallel",
+    "test:parallel": "node run-comprehensive-tests.js --parallel",
+    "test:sequential": "node run-comprehensive-tests.js --sequential",
+    "test:production": "node run-comprehensive-tests.js --test-suites security,database,load --stop-on-failure",
+    "test:ci": "node run-comprehensive-tests.js --parallel --duration 60 --max-users 50 --output ./ci-reports",
+    
+    "test:comprehensive": "node run-comprehensive-tests.js",
+    "test:dataflow": "node run-comprehensive-tests.js --test-suites dataFlow",
+    "test:websocket": "node run-comprehensive-tests.js --test-suites websocket",
+    "test:database": "node run-comprehensive-tests.js --test-suites database",
+    "test:errors": "node run-comprehensive-tests.js --test-suites errorHandling",
+    "test:load": "node run-comprehensive-tests.js --test-suites load",
+    "test:quick": "node run-comprehensive-tests.js --duration 60 --max-users 20",
+    "test:stress": "node run-comprehensive-tests.js --test-suites load --max-users 500 --duration 300",
+    
+    "perf": "node performance/run-performance-tests.js",
+    "perf:comprehensive": "node performance/run-performance-tests.js --suite=comprehensive",
+    "perf:benchmark": "node performance/run-performance-tests.js --suite=benchmark",
+    "perf:load": "node performance/run-performance-tests.js --suite=load",
+    "perf:all": "node performance/run-performance-tests.js --suite=all",
+    "perf:ci": "node performance/run-performance-tests.js --suite=comprehensive --ci --fail-on-thresholds",
+    "perf:quick": "TEST_DURATION=60000 MAX_VIRTUAL_USERS=50 node performance/run-performance-tests.js --suite=benchmark",
+    "perf:stress": "MAX_VIRTUAL_USERS=1000 TEST_DURATION=300000 node performance/run-performance-tests.js --suite=load",
+    "perf:frontend": "node performance/run-performance-tests.js --suite=comprehensive --format=html",
+    "perf:backend": "node performance/run-performance-tests.js --suite=benchmark --format=html",
+    "perf:websocket": "node performance/run-performance-tests.js --suite=comprehensive --format=html",
+    "perf:database": "node performance/run-performance-tests.js --suite=comprehensive --format=html",
+    "perf:reports": "node performance/run-performance-tests.js --suite=all --format=all"
+    
+    "test:orchestrator": "node master-test-orchestrator.js",
+    "test:orchestrator:parallel": "node master-test-orchestrator.js --parallel --generate-reports",
+    
+    "test:vercel-config": "node vercel/vercel-config-validation-tests.js",
+    "test:vercel-deployment": "node vercel/vercel-deployment-tests.js",
+    "test:vercel": "npm run test:vercel-config && npm run test:vercel-deployment",
+    "test:cicd": "node ci-cd/github-actions-pipeline-tests.js",
+    "test:docker": "node docker/docker-production-build-tests.js",
+    "test:production-env": "node production/production-environment-validation-tests.js",
+    "test:deployment": "node deployment/deployment-automation-tests.js",
+    "test:monitoring": "node monitoring/performance-monitoring-tests.js",
+    "test:security": "node security/security-compliance-tests.js",
+    
+    "validate:production-ready": "node master-test-orchestrator.js --stop-on-critical --generate-reports",
+    "validate:security": "npm run test:security",
+    "validate:deployment": "npm run test:deployment && npm run test:docker",
+    "validate:monitoring": "npm run test:monitoring",
+    
+    "quick:security": "npm run test:security --timeout 300000",
+    "quick:config": "npm run test:vercel-config",
+    "quick:smoke": "npm run test:vercel-config && npm run test:security",
+    
+    "legacy:docker": "node docker/docker-compose-test-suite.js",
+    "legacy:hot-reload": "node development/hot-reload-test-suite.js", 
+    "legacy:env": "node environment/env-variable-test-suite.js",
+    "legacy:scripts": "node scripts/dev-scripts-test-suite.js",
+    "legacy:infrastructure": "node infrastructure/container-infrastructure-test-suite.js",
+    "legacy:platform": "node platform/cross-platform-test-suite.js",
+    "legacy:websocket": "node websocket/websocket-test-framework.js",
+    "legacy:state": "jest state-management/zustand-integration-tests.js",
+    "legacy:api": "node api/api-integration-test-suite.js",
+    "legacy:auth": "node auth/authentication-flow-tests.js",
+    "legacy:dataflow": "node full-stack/data-flow-integration-tests.js",
+    "legacy:performance": "node performance/performance-benchmark-suite.js",
+    
+    "reports:open": "open reports/master-test-report.html || start reports/master-test-report.html",
+    "reports:clean": "rm -rf reports/* || del /Q reports\\*",
+    "reports:summary": "cat reports/executive-summary.json || type reports\\executive-summary.json",
+    "setup": "npm install && echo 'Production test suite ready!'",
+    "setup:docker": "docker --version && echo 'Docker available'",
+    "setup:vercel": "vercel --version && echo 'Vercel CLI available'",
+    "setup:security": "echo 'Checking security tools...' && which trivy || echo 'Trivy not found'"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "axios": "^1.6.0",
+    "form-data": "^4.0.0",
+    "js-yaml": "^4.1.0",
+    "pg": "^8.11.0",
+    "uuid": "^9.0.0",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@octokit/rest": "^20.0.0",
+    "socket.io-client": "^4.7.4",
+    "ws": "^8.14.2",
+    "graphql-request": "^6.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "chokidar": "^3.5.3",
+    "puppeteer": "^21.0.0",
+    "@playwright/test": "^1.40.1",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/jest-dom": "^6.2.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "zustand": "^4.4.7",
+    "k6": "^0.47.0",
+    "lighthouse": "^11.4.0",
+    "clinic": "^13.0.0",
+    "autocannon": "^7.15.0",
+    "loadtest": "^8.0.9",
+    "artillery": "^2.0.3",
+    "0x": "^5.5.0",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "source-map-explorer": "^2.5.3"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "testMatch": [
+      "**/__tests__/**/*.(js|jsx|ts|tsx)",
+      "**/*.(test|spec).(js|jsx|ts|tsx)"
+    ],
+    "collectCoverageFrom": [
+      "**/*.{js,jsx,ts,tsx}",
+      "!**/*.d.ts",
+      "!**/node_modules/**",
+      "!**/test-reports/**"
+    ],
+    "coverageReporters": ["text", "lcov", "html"],
+    "coverageDirectory": "test-reports/coverage"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "testing",
+    "automation",
+    "fullstack",
+    "websocket",
+    "api",
+    "authentication",
+    "security",
+    "performance",
+    "ci-cd"
+  ],
+  "author": "Claude Test Automation Engineer",
+  "license": "MIT"
+}
