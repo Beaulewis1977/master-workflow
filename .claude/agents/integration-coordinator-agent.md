@@ -298,7 +298,7 @@ class ClaudeFlowVersionManager {
       sparc: ['2.0', 'stable'] // SPARC requires stable versions
     };
     
-    return compatibilityHive-Mind.includes(version);
+    return compatibility[approach].includes(version);
   }
 }
 ```

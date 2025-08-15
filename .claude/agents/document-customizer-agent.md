@@ -33,7 +33,7 @@ Generate project-specific Claude configuration based on detected stack:
 
 #### JavaScript/TypeScript Projects
 ```markdown
-# Claude Configuration - Project
+# Claude Configuration - [Project Name]
 
 ## Technology Stack
 - **Runtime**: Node.js v[version]
@@ -59,7 +59,7 @@ Generate project-specific Claude configuration based on detected stack:
 
 #### Python Projects
 ```markdown
-# Claude Configuration - Project
+# Claude Configuration - [Project Name]
 
 ## Technology Stack
 - **Python Version**: [3.8/3.9/3.10/3.11]
