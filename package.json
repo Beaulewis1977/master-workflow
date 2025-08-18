@@ -30,7 +30,7 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "diff": "^8.0.2",
-    "inquirer": "^9.3.7",
+    "inquirer": "^12.9.3",
     "tar": "^7.4.3"
   },
   "devDependencies": {
