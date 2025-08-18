@@ -42,8 +42,8 @@ const os = require('os');
 
 // Import Claude Flow 2.0 systems
 const ClaudeFlowInitSystem = require('../claude-flow-init-system.js');
-const ComplexityAnalyzer = require('../intelligence-engine/complexity-analyzer.js');
-const ApproachSelector = require('../intelligence-engine/approach-selector.js');
+const ComplexityAnalyzer = require('../.ai-workflow/intelligence-engine/complexity-analyzer.js');
+const ApproachSelector = require('../.ai-workflow/intelligence-engine/approach-selector.js');
 const UniversalMCPDiscovery = require('../universal-mcp-discovery.js');
 
 // Test Framework Configuration

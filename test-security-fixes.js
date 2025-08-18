@@ -27,7 +27,7 @@ const http = require('http');
 // Import our security modules
 const { SecurityValidator } = require('./lib/security-validator');
 const { SecurityLogger } = require('./lib/security-logger');
-const SharedMemoryStore = require('./intelligence-engine/shared-memory');
+const SharedMemoryStore = require('./.ai-workflow/intelligence-engine/shared-memory');
 
 class SecurityTestSuite {
   constructor() {

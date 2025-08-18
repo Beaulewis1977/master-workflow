@@ -16,10 +16,10 @@ const versionPolicy = require('./lib/version-policy');
 const http = require('http');
 
 // Import Queen Controller for hierarchical sub-agent management
-const QueenController = require('./intelligence-engine/queen-controller');
-const SubAgentManager = require('./intelligence-engine/sub-agent-manager');
-const SharedMemoryStore = require('./intelligence-engine/shared-memory');
-const MCPFullConfigurator = require('./intelligence-engine/mcp-full-configurator');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
+const SubAgentManager = require('./.ai-workflow/intelligence-engine/sub-agent-manager');
+const SharedMemoryStore = require('./.ai-workflow/intelligence-engine/shared-memory');
+const MCPFullConfigurator = require('./.ai-workflow/intelligence-engine/mcp-full-configurator');
 
 class WorkflowRunner {
   constructor() {
@@ -472,6 +472,37 @@ class WorkflowRunner {
       this.log('error', `Approach selection failed: ${error.message}`);
       this.publishEvent('status', { phase: 'approach:error', error: error.message }).catch(() => {});
       throw error;
+    }
+  }
+
+  async generateProjectAgents() {
+    this.log('info', 'Generating project-specific sub-agents...');
+    this.publishEvent('status', { phase: 'agents:generate' }).catch(() => {});
+    
+    try {
+      const AgentGenerator = require('./.ai-workflow/intelligence-engine/agent-generator');
+      const generator = new AgentGenerator({ projectRoot: this.projectDir });
+      
+      const generatedAgents = await generator.generateProjectAgents(this.analysis, this.approach);
+      
+      this.log('success', `Generated ${generatedAgents.length} project-specific sub-agents:`);
+      generatedAgents.forEach(agent => {
+        this.log('info', `  ✅ ${agent.name}: ${agent.description || 'Specialized agent'}`);
+      });
+      
+      // Store generated agents info
+      this.generatedAgents = generatedAgents;
+      
+      // Emit event for monitoring
+      this.publishEvent('agents:generated', {
+        count: generatedAgents.length,
+        agents: generatedAgents.map(a => ({ name: a.name, path: a.path }))
+      }).catch(() => {});
+      
+    } catch (error) {
+      this.log('warning', `Failed to generate project-specific agents: ${error.message}`);
+      // Continue without custom agents - not critical
+      this.generatedAgents = [];
     }
   }
 
@@ -1252,6 +1283,9 @@ class WorkflowRunner {
       
       // Step 2: Select approach
       await this.selectApproach();
+      
+      // Step 2.5: Generate project-specific sub-agents
+      await this.generateProjectAgents();
       
       // Step 3: Initialize agents
       await this.initializeAgents();

@@ -40,12 +40,14 @@ class QueenController extends EventEmitter {
     // Unlimited scaling configuration
     this.unlimitedScaling = {
       enabled: options.unlimitedScaling !== false,
-      safetyLimit: options.safetyLimit || 1000, // Soft safety limit
+      safetyLimit: options.safetyLimit || null, // Removed hard safety limit - true unlimited scaling
       resourceThresholds: {
-        memory: options.memoryThreshold || 0.85,
-        cpu: options.cpuThreshold || 0.80
+        memory: options.memoryThreshold || 0.90, // Increased threshold for more agents
+        cpu: options.cpuThreshold || 0.85 // Increased threshold for more agents
       },
-      dynamicCalculation: true
+      dynamicCalculation: true,
+      maxRecommendedAgents: 4000, // Guidance only, not enforced
+      emergencyThreshold: 0.98 // Emergency shutdown at 98% resource usage
     };
     
     // Claude Flow 2.0 Configuration
@@ -138,7 +140,9 @@ class QueenController extends EventEmitter {
       // Initialize Dynamic Scaler
       this.dynamicScaler = new DynamicScaler({
         minAgents: 1,
-        maxAgents: this.unlimitedScaling.safetyLimit,
+        maxAgents: null, // Removed hard limit for true unlimited scaling
+        recommendedMax: this.unlimitedScaling.maxRecommendedAgents,
+        emergencyThreshold: this.unlimitedScaling.emergencyThreshold,
         projectRoot: this.projectRoot
       });
       
@@ -209,7 +213,7 @@ class QueenController extends EventEmitter {
   }
   
   /**
-   * Calculate dynamic agent limit based on current resources
+   * Calculate dynamic agent limit based on current resources - UNLIMITED SCALING
    */
   async calculateDynamicAgentLimit() {
     if (!this.unlimitedScaling.enabled || !this.resourceMonitor) {
@@ -220,7 +224,15 @@ class QueenController extends EventEmitter {
       const resourceMetrics = this.resourceMonitor.getMetrics();
       const scaling = resourceMetrics.current.scaling;
       
-      return Math.min(scaling.optimalAgentCount, this.unlimitedScaling.safetyLimit);
+      // Check emergency threshold
+      if (resourceMetrics.current.memory > this.unlimitedScaling.emergencyThreshold ||
+          resourceMetrics.current.cpu > this.unlimitedScaling.emergencyThreshold) {
+        console.warn('UNLIMITED SCALING: Emergency threshold reached, limiting agent spawn');
+        return Math.max(this.activeAgents.size - 10, 10); // Scale down but don't go below 10
+      }
+      
+      // Return optimal count without hard limits
+      return scaling.optimalAgentCount;
     } catch (error) {
       console.error('Failed to calculate dynamic agent limit:', error);
       return this.maxConcurrent || 10;

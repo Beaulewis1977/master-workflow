@@ -232,18 +232,27 @@ class ComplexityAnalyzer {
       languages: [],
       frameworks: [],
       databases: [],
-      tools: []
+      tools: [],
+      containerized: false,
+      aiTools: []
     };
     
     const files = await this.getProjectFiles();
     
-    // Detect languages
-    if (files.some(f => /\.js$|\.jsx$/.test(f))) stack.languages.push('JavaScript');
+    // Detect languages - expanded support
+    if (files.some(f => /\.js$|\.jsx$|\.mjs$/.test(f))) stack.languages.push('JavaScript');
     if (files.some(f => /\.ts$|\.tsx$/.test(f))) stack.languages.push('TypeScript');
     if (files.some(f => /\.py$/.test(f))) stack.languages.push('Python');
     if (files.some(f => /\.go$/.test(f))) stack.languages.push('Go');
     if (files.some(f => /\.java$/.test(f))) stack.languages.push('Java');
     if (files.some(f => /\.rs$/.test(f))) stack.languages.push('Rust');
+    if (files.some(f => /\.rb$/.test(f))) stack.languages.push('Ruby');
+    if (files.some(f => /\.cs$/.test(f))) stack.languages.push('C#');
+    if (files.some(f => /\.swift$/.test(f))) stack.languages.push('Swift');
+    if (files.some(f => /\.kt$|\.kts$/.test(f))) stack.languages.push('Kotlin');
+    if (files.some(f => /\.php$/.test(f))) stack.languages.push('PHP');
+    if (files.some(f => /\.cpp$|\.cc$|\.cxx$/.test(f))) stack.languages.push('C++');
+    if (files.some(f => /\.c$|\.h$/.test(f))) stack.languages.push('C');
     
     // Check package.json for frameworks
     const packageJsonPath = path.join(this.projectPath, 'package.json');
@@ -264,9 +273,23 @@ class ComplexityAnalyzer {
     if (files.some(f => /postgres|pg/.test(f.toLowerCase()))) stack.databases.push('PostgreSQL');
     if (files.some(f => /mysql/.test(f.toLowerCase()))) stack.databases.push('MySQL');
     if (files.some(f => /redis/.test(f.toLowerCase()))) stack.databases.push('Redis');
+    if (files.some(f => /sqlite|\.db$/.test(f.toLowerCase()))) stack.databases.push('SQLite');
+    if (files.some(f => /elasticsearch/.test(f.toLowerCase()))) stack.databases.push('Elasticsearch');
+    
+    // Check for containerization
+    stack.containerized = files.some(f => /dockerfile|docker-compose|\.dockerignore/.test(f.toLowerCase()));
+    
+    // Check for AI/ML tools and frameworks
+    if (files.some(f => /\.claude|claude-code|claude\.md/i.test(f))) stack.aiTools.push('Claude Code');
+    if (files.some(f => /agent-os|agentOS/i.test(f))) stack.aiTools.push('Agent-OS');
+    if (files.some(f => /claude-flow|hive-mind/i.test(f))) stack.aiTools.push('Claude Flow');
+    if (files.some(f => /tmux-orchestrator/i.test(f))) stack.aiTools.push('TMux Orchestrator');
+    if (files.some(f => /tensorflow|keras/i.test(f))) stack.aiTools.push('TensorFlow');
+    if (files.some(f => /pytorch|torch/i.test(f))) stack.aiTools.push('PyTorch');
+    if (files.some(f => /openai|gpt/i.test(f))) stack.aiTools.push('OpenAI');
     
     // Calculate complexity based on tech diversity
-    const diversity = stack.languages.length + stack.frameworks.length + stack.databases.length;
+    const diversity = stack.languages.length + stack.frameworks.length + stack.databases.length + stack.aiTools.length;
     let score = diversity * 10;
     
     // Add complexity for certain technologies

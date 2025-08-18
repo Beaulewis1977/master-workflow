@@ -12,8 +12,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const QueenController = require('./intelligence-engine/queen-controller');
-const DatabaseConnectionManager = require('./intelligence-engine/database-connection-manager');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
+const DatabaseConnectionManager = require('./.ai-workflow/intelligence-engine/database-connection-manager');
 
 class CriticalFixesValidator {
   constructor() {
@@ -324,7 +324,7 @@ class CriticalFixesValidator {
     });
 
     await this.runTest('security', 'Path Validation in Shared Memory', async () => {
-      const SharedMemoryStore = require('./intelligence-engine/shared-memory');
+      const SharedMemoryStore = require('./.ai-workflow/intelligence-engine/shared-memory');
       
       try {
         // Test path traversal protection

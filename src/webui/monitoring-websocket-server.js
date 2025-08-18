@@ -312,9 +312,9 @@ class MonitoringWebSocketServer extends EventEmitter {
     async connectToQueenController() {
         try {
             // Import Queen Controller and related components
-            const QueenController = require('../../intelligence-engine/queen-controller');
-            const ResourceMonitor = require('../../intelligence-engine/resource-monitor');
-            const DynamicAgentRegistry = require('../../intelligence-engine/dynamic-agent-registry');
+            const QueenController = require('../../.ai-workflow/intelligence-engine/queen-controller');
+            const ResourceMonitor = require('../../.ai-workflow/intelligence-engine/resource-monitor');
+            const DynamicAgentRegistry = require('../../.ai-workflow/intelligence-engine/dynamic-agent-registry');
             
             // Initialize components
             this.queenController = new QueenController({

@@ -260,49 +260,52 @@ class ResourceMonitor extends EventEmitter {
   }
   
   /**
-   * Calculate optimal agent scaling recommendations
+   * Calculate optimal agent scaling recommendations - UNLIMITED SCALING OPTIMIZED
    */
   calculateScalingRecommendations() {
     const memory = this.currentMetrics.memory;
     const cpu = this.currentMetrics.cpu;
     const agents = this.currentMetrics.agents;
     
-    // Memory-based calculation
-    const estimatedMemoryPerAgent = 200 * 1024 * 1024; // 200MB per agent (conservative)
+    // More aggressive calculations for unlimited scaling
+    const estimatedMemoryPerAgent = 150 * 1024 * 1024; // 150MB per agent (optimized)
     const maxAgentsByMemory = Math.floor(
       (memory.available * this.config.targetMemoryUtilization) / estimatedMemoryPerAgent
     );
     
-    // CPU-based calculation
+    // More aggressive CPU calculation - up to 10 agents per core
     const maxAgentsByCpu = Math.floor(
-      cpu.cores * this.config.targetCpuUtilization * 5 // 5 agents per core at 80% utilization
+      cpu.cores * this.config.targetCpuUtilization * 10 // 10 agents per core for unlimited scaling
     );
     
-    // Context-based calculation (200k tokens per agent)
+    // Optimized context calculation (200k tokens per agent with better memory usage)
     const maxAgentsByContext = Math.floor(
-      (memory.available * 0.5) / (200000 * 2) // Conservative context memory estimation
+      (memory.available * 0.6) / (200000 * 1.5) // More optimistic context memory estimation
     );
     
-    // Take the most restrictive limit
-    const optimalAgentCount = Math.min(maxAgentsByMemory, maxAgentsByCpu, maxAgentsByContext);
-    const maxPossibleAgents = Math.max(maxAgentsByMemory, maxAgentsByCpu, maxAgentsByContext);
+    // For unlimited scaling, use the maximum possible instead of minimum
+    const optimalAgentCount = Math.max(maxAgentsByMemory, maxAgentsByCpu, maxAgentsByContext);
+    const maxPossibleAgents = optimalAgentCount * 2; // Allow burst scaling
     
-    // Determine recommended action
+    // Determine recommended action with unlimited scaling in mind
     let recommendedAction = 'maintain';
     const currentAgents = agents.active;
     
-    if (currentAgents < optimalAgentCount * 0.7) {
+    // More aggressive scaling for unlimited mode
+    if (currentAgents < optimalAgentCount * 0.5) {
+      recommendedAction = 'scale_up_aggressive';
+    } else if (currentAgents < optimalAgentCount * 0.8) {
       recommendedAction = 'scale_up';
-    } else if (currentAgents > optimalAgentCount * 1.1) {
+    } else if (currentAgents > optimalAgentCount * 1.5) {
       recommendedAction = 'scale_down';
-    } else if (memory.utilization > this.config.memoryThreshold || 
-               cpu.utilization > this.config.cpuThreshold) {
-      recommendedAction = 'scale_down';
+    } else if (memory.utilization > 0.95 || cpu.utilization > 0.95) {
+      // Only scale down if we're really hitting limits
+      recommendedAction = 'emergency_scale_down';
     }
     
     this.currentMetrics.scaling = {
-      optimalAgentCount: Math.max(1, optimalAgentCount),
-      maxPossibleAgents: Math.max(1, maxPossibleAgents),
+      optimalAgentCount: Math.max(10, optimalAgentCount), // Minimum 10 agents
+      maxPossibleAgents: Math.max(4000, maxPossibleAgents), // Support 4000+ agents
       recommendedAction,
       constraints: {
         memory: maxAgentsByMemory,
@@ -312,7 +315,8 @@ class ResourceMonitor extends EventEmitter {
       utilizationTargets: {
         memory: this.config.targetMemoryUtilization,
         cpu: this.config.targetCpuUtilization
-      }
+      },
+      unlimitedScaling: true // Flag to indicate unlimited scaling mode
     };
   }
   

@@ -7,8 +7,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const ComplexityAnalyzer = require('../intelligence-engine/complexity-analyzer.js');
-const ApproachSelector = require('../intelligence-engine/approach-selector.js');
+const ComplexityAnalyzer = require('../.ai-workflow/intelligence-engine/complexity-analyzer.js');
+const ApproachSelector = require('../.ai-workflow/intelligence-engine/approach-selector.js');
 
 // Colors for output
 const colors = {

@@ -250,6 +250,18 @@ class ModularWorkflowRunner {
     this.approach = await this.selectApproach(analysis, mode, task);
     this.publishEvent('approach_change', { selected: this.approach.selected, score: this.approach.score }).catch(() => {});
     
+    // Generate project-specific sub-agents
+    try {
+      const AgentGenerator = require(path.join(this.installDir, 'intelligence-engine', 'agent-generator.js'));
+      const agentGenerator = new AgentGenerator({ projectRoot: this.projectDir });
+      const generatedAgents = await agentGenerator.generateProjectAgents(analysis, this.approach);
+      this.log('success', `Generated ${generatedAgents.length} project-specific sub-agents`);
+      this.publishEvent('agents_generated', { count: generatedAgents.length, agents: generatedAgents.map(a => a.name) }).catch(() => {});
+    } catch (error) {
+      this.log('warning', 'Failed to generate project-specific agents', { error: error.message });
+      // Continue without agents - not critical for workflow
+    }
+    
     // Execute based on available components
     if (this.components.claudeFlow) {
       await this.executeWithClaudeFlow();
@@ -344,24 +356,23 @@ class ModularWorkflowRunner {
     
     const versionName = versionPolicy.getSelectedVersionName({});
     const versionSuffix = versionPolicy.getSuffixForName(versionName);
-    const NPX = 'npx --yes';
     let command;
     
     switch (this.approach.selected) {
       case 'simpleSwarm':
-        command = `${NPX} claude-flow${versionSuffix} swarm "${this.approach.task || 'Development task'}"`;
+        command = `npx claude-flow${versionSuffix} swarm "${this.approach.task || 'Development task'}"`;
         break;
       
       case 'hiveMind':
-        command = `${NPX} claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${this.approach.agentCount} --claude`;
+        command = `npx claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --agents ${this.approach.agentCount} --claude`;
         break;
       
       case 'hiveMindSparc':
-        command = `${NPX} claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${this.approach.agentCount} --claude`;
+        command = `npx claude-flow${versionSuffix} hive-mind spawn "${path.basename(this.projectDir)}" --sparc --agents ${this.approach.agentCount} --claude`;
         break;
       
       default:
-        command = `${NPX} claude-flow${versionSuffix} swarm "Complete project tasks"`;
+        command = `npx claude-flow${versionSuffix} swarm "Complete project tasks"`;
     }
     
     // Execute based on execution mode
@@ -371,7 +382,7 @@ class ModularWorkflowRunner {
       || (process.env.CF_ENABLE_EXPERIMENTAL === 'true' && versionPolicy.isExperimentalName(versionName));
     if (enableTraining) {
       const epochs = Number(process.env.CF_TRAINING_EPOCHS || 3);
-      commands.push(`${NPX} claude-flow${versionSuffix} training neural-train --epochs ${epochs}`);
+      commands.push(`npx claude-flow${versionSuffix} training neural-train --epochs ${epochs}`);
     }
 
     const enableMemory = process.env.ENABLE_CF_MEMORY_OPS === 'true';
@@ -379,11 +390,11 @@ class ModularWorkflowRunner {
       const action = (process.env.CF_MEMORY_ACTION || 'summarize').toLowerCase();
       const projectName = path.basename(this.projectDir);
       if (action === 'sync') {
-        commands.push(`${NPX} claude-flow${versionSuffix} memory sync --project "${projectName}"`);
+        commands.push(`npx claude-flow${versionSuffix} memory sync --project "${projectName}"`);
       } else if (action === 'gc') {
-        commands.push(`${NPX} claude-flow${versionSuffix} memory gc --project "${projectName}"`);
+        commands.push(`npx claude-flow${versionSuffix} memory gc --project "${projectName}"`);
       } else {
-        commands.push(`${NPX} claude-flow${versionSuffix} memory summarize --project "${projectName}"`);
+        commands.push(`npx claude-flow${versionSuffix} memory summarize --project "${projectName}"`);
       }
     }
 
@@ -391,12 +402,7 @@ class ModularWorkflowRunner {
       // In tmux mode, chain via new lines
       await this.executeInTmux(commands.join(' && '));
     } else {
-      const results = await runCommandsSequentially(commands, { cwd: this.projectDir, shell: true });
-      // Echo the child outputs so users see progress in interactive runs
-      results.forEach(r => {
-        if (r.stdout) process.stdout.write(r.stdout);
-        if (r.stderr) process.stderr.write(r.stderr);
-      });
+      await runCommandsSequentially(commands, { cwd: this.projectDir, shell: true });
     }
     this.publishEvent('exec_complete', { mode: 'claude-flow', commands }).catch(() => {});
   }

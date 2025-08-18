@@ -148,18 +148,27 @@ class SharedMemoryStore extends EventEmitter {
     // Security: Validate and sanitize projectRoot to prevent path traversal
     this.projectRoot = this.validateProjectRoot(options.projectRoot || process.cwd());
     this.hiveMindPath = this.securePathJoin(this.projectRoot, '.hive-mind');
-    this.maxMemorySize = options.maxMemorySize || 500 * 1024 * 1024; // 500MB default
-    this.maxEntries = options.maxEntries || 100000;
+    this.maxMemorySize = options.maxMemorySize || 2 * 1024 * 1024 * 1024; // 2GB default for 4000+ agents
+    this.maxEntries = options.maxEntries || 500000; // 500K entries to support 4000+ agents
     this.gcInterval = options.gcInterval || 300000; // 5 minutes
     this.compressionThreshold = options.compressionThreshold || 1024 * 1024; // 1MB
     
-    // In-memory storage layers
+    // In-memory storage layers optimized for 4000+ agents
     this.memoryCache = new Map(); // Fast access cache
     this.persistentStore = new Map(); // Persistent data store
     this.versionStore = new Map(); // Version tracking
     this.metadataStore = new Map(); // Entry metadata
     this.subscriberStore = new Map(); // Pub/Sub subscribers
     this.lockStore = new Map(); // Atomic operation locks
+    
+    // High-performance indexing for large agent counts
+    this.agentIndexes = {
+      byNamespace: new Map(), // Fast lookup by namespace
+      byDataType: new Map(),  // Fast lookup by data type
+      byAgent: new Map(),     // Fast lookup by agent ID
+      expirationQueue: [],    // Sorted array for efficient expiration
+      accessQueue: []         // LRU tracking for efficient eviction
+    };
     
     // Performance tracking
     this.stats = {
@@ -819,6 +828,9 @@ class SharedMemoryStore extends EventEmitter {
       this.metadataStore.set(key, metadata);
       this.versionStore.set(key, newVersion);
       
+      // Update high-performance indexes for fast lookups
+      this.updateIndexes(key, metadata, 'set');
+      
       // Update memory usage
       this.memoryUsage += valueSize;
       this.entryCount++;
@@ -1019,6 +1031,11 @@ class SharedMemoryStore extends EventEmitter {
         await this.deleteFromSQLite(key, opts.deleteVersions);
       }
       
+      // Update indexes
+      if (metadata) {
+        this.updateIndexes(key, metadata, 'delete');
+      }
+      
       // Update memory usage
       if (metadata) {
         this.memoryUsage -= metadata.size || 0;
@@ -1049,7 +1066,7 @@ class SharedMemoryStore extends EventEmitter {
   }
   
   /**
-   * Get all keys matching a pattern or namespace
+   * Get all keys matching a pattern or namespace - OPTIMIZED FOR 4000+ AGENTS
    * @param {object} options - Search options
    */
   async keys(options = {}) {
@@ -1058,18 +1075,33 @@ class SharedMemoryStore extends EventEmitter {
         namespace: options.namespace,
         pattern: options.pattern,
         dataType: options.dataType,
+        agentId: options.agentId,
         includeExpired: options.includeExpired || false
       };
       
-      const allKeys = new Set([
-        ...this.memoryCache.keys(),
-        ...this.persistentStore.keys()
-      ]);
+      let candidateKeys = null;
+      
+      // Use indexes for fast lookup when possible
+      if (opts.agentId) {
+        candidateKeys = this.agentIndexes.byAgent.get(opts.agentId);
+      } else if (opts.namespace) {
+        candidateKeys = this.agentIndexes.byNamespace.get(opts.namespace);
+      } else if (opts.dataType) {
+        candidateKeys = this.agentIndexes.byDataType.get(opts.dataType);
+      }
+      
+      // Fall back to full scan if no indexes match
+      if (!candidateKeys) {
+        candidateKeys = new Set([
+          ...this.memoryCache.keys(),
+          ...this.persistentStore.keys()
+        ]);
+      }
       
       const filteredKeys = [];
       const now = Date.now();
       
-      for (const key of allKeys) {
+      for (const key of candidateKeys) {
         const metadata = this.metadataStore.get(key);
         
         // Skip expired entries unless specifically requested
@@ -1077,12 +1109,16 @@ class SharedMemoryStore extends EventEmitter {
           continue;
         }
         
-        // Apply filters
+        // Apply additional filters
         if (opts.namespace && metadata?.namespace !== opts.namespace) {
           continue;
         }
         
         if (opts.dataType && metadata?.dataType !== opts.dataType) {
+          continue;
+        }
+        
+        if (opts.agentId && metadata?.agentId !== opts.agentId) {
           continue;
         }
         
@@ -1120,7 +1156,16 @@ class SharedMemoryStore extends EventEmitter {
       entryUtilization: `${(this.entryCount / this.maxEntries * 100).toFixed(2)}%`,
       dbStatus: this.dbStatus,
       activeSubscribers: this.subscriberStore.size,
-      activeLocks: this.lockStore.size
+      activeLocks: this.lockStore.size,
+      
+      // Index statistics for 4000+ agent optimization
+      indexes: {
+        namespaces: this.agentIndexes.byNamespace.size,
+        dataTypes: this.agentIndexes.byDataType.size,
+        agents: this.agentIndexes.byAgent.size,
+        expirationQueueSize: this.agentIndexes.expirationQueue.length,
+        accessQueueSize: this.agentIndexes.accessQueue.length
+      }
     };
   }
   
@@ -1610,6 +1655,148 @@ class SharedMemoryStore extends EventEmitter {
     return evictedCount;
   }
   
+  /**
+   * Update high-performance indexes for fast lookups - OPTIMIZED FOR 4000+ AGENTS
+   */
+  updateIndexes(key, metadata, operation) {
+    try {
+      if (operation === 'set') {
+        // Update namespace index
+        if (!this.agentIndexes.byNamespace.has(metadata.namespace)) {
+          this.agentIndexes.byNamespace.set(metadata.namespace, new Set());
+        }
+        this.agentIndexes.byNamespace.get(metadata.namespace).add(key);
+        
+        // Update data type index
+        if (!this.agentIndexes.byDataType.has(metadata.dataType)) {
+          this.agentIndexes.byDataType.set(metadata.dataType, new Set());
+        }
+        this.agentIndexes.byDataType.get(metadata.dataType).add(key);
+        
+        // Update agent index
+        if (metadata.agentId) {
+          if (!this.agentIndexes.byAgent.has(metadata.agentId)) {
+            this.agentIndexes.byAgent.set(metadata.agentId, new Set());
+          }
+          this.agentIndexes.byAgent.get(metadata.agentId).add(key);
+        }
+        
+        // Update expiration queue (sorted insertion for efficiency)
+        if (metadata.expiresAt) {
+          this.insertIntoExpirationQueue(key, metadata.expiresAt);
+        }
+        
+        // Update access queue for LRU
+        this.updateAccessQueue(key);
+        
+      } else if (operation === 'delete') {
+        // Remove from all indexes
+        this.removeFromIndexes(key, metadata);
+      }
+    } catch (error) {
+      console.warn('Failed to update indexes for key', key, ':', error.message);
+    }
+  }
+  
+  /**
+   * Insert key into expiration queue maintaining sorted order
+   */
+  insertIntoExpirationQueue(key, expiresAt) {
+    const item = { key, expiresAt };
+    const queue = this.agentIndexes.expirationQueue;
+    
+    // Binary search for insertion point
+    let left = 0;
+    let right = queue.length;
+    
+    while (left < right) {
+      const mid = Math.floor((left + right) / 2);
+      if (queue[mid].expiresAt <= expiresAt) {
+        left = mid + 1;
+      } else {
+        right = mid;
+      }
+    }
+    
+    queue.splice(left, 0, item);
+    
+    // Maintain reasonable queue size for performance
+    if (queue.length > 10000) {
+      queue.splice(0, queue.length - 10000);
+    }
+  }
+  
+  /**
+   * Update access queue for LRU tracking
+   */
+  updateAccessQueue(key) {
+    const queue = this.agentIndexes.accessQueue;
+    
+    // Remove existing entry if present
+    const index = queue.indexOf(key);
+    if (index !== -1) {
+      queue.splice(index, 1);
+    }
+    
+    // Add to end (most recently used)
+    queue.push(key);
+    
+    // Maintain reasonable queue size
+    if (queue.length > 50000) {
+      queue.splice(0, queue.length - 50000);
+    }
+  }
+  
+  /**
+   * Remove key from all indexes
+   */
+  removeFromIndexes(key, metadata) {
+    if (metadata) {
+      // Remove from namespace index
+      const namespaceSet = this.agentIndexes.byNamespace.get(metadata.namespace);
+      if (namespaceSet) {
+        namespaceSet.delete(key);
+        if (namespaceSet.size === 0) {
+          this.agentIndexes.byNamespace.delete(metadata.namespace);
+        }
+      }
+      
+      // Remove from data type index
+      const dataTypeSet = this.agentIndexes.byDataType.get(metadata.dataType);
+      if (dataTypeSet) {
+        dataTypeSet.delete(key);
+        if (dataTypeSet.size === 0) {
+          this.agentIndexes.byDataType.delete(metadata.dataType);
+        }
+      }
+      
+      // Remove from agent index
+      if (metadata.agentId) {
+        const agentSet = this.agentIndexes.byAgent.get(metadata.agentId);
+        if (agentSet) {
+          agentSet.delete(key);
+          if (agentSet.size === 0) {
+            this.agentIndexes.byAgent.delete(metadata.agentId);
+          }
+        }
+      }
+    }
+    
+    // Remove from expiration queue
+    const expQueue = this.agentIndexes.expirationQueue;
+    const expIndex = expQueue.findIndex(item => item.key === key);
+    if (expIndex !== -1) {
+      expQueue.splice(expIndex, 1);
+    }
+    
+    // Remove from access queue
+    const accessQueue = this.agentIndexes.accessQueue;
+    const accessIndex = accessQueue.indexOf(key);
+    if (accessIndex !== -1) {
+      accessQueue.splice(accessIndex, 1);
+    }
+  }
+
   /**
    * Check memory limits before adding new data
    */

@@ -27,10 +27,10 @@ const crypto = require('crypto');
 
 // Import our existing systems
 const UniversalMCPDiscovery = require('./universal-mcp-discovery.js');
-const QueenController = require('./intelligence-engine/queen-controller.js');
-const ComplexityAnalyzer = require('./intelligence-engine/complexity-analyzer.js');
-const ApproachSelector = require('./intelligence-engine/approach-selector.js');
-const WorkflowOrchestrator = require('./intelligence-engine/phase6-orchestrator.js');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller.js');
+const ComplexityAnalyzer = require('./.ai-workflow/intelligence-engine/complexity-analyzer.js');
+const ApproachSelector = require('./.ai-workflow/intelligence-engine/approach-selector.js');
+const WorkflowOrchestrator = require('./.ai-workflow/intelligence-engine/phase6-orchestrator.js');
 
 // Terminal colors and formatting
 const colors = {

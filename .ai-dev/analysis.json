@@ -1,8 +1,8 @@
 {
-  "score": 54,
+  "score": 57,
   "factors": {
     "size": {
-      "fileCount": 132,
+      "fileCount": 171,
       "score": 50,
       "description": "Medium project"
     },
@@ -34,10 +34,20 @@
         "Rust"
       ],
       "frameworks": [],
-      "databases": [],
+      "databases": [
+        "SQLite"
+      ],
       "tools": [],
-      "score": 75,
-      "diversity": 6
+      "containerized": true,
+      "aiTools": [
+        "Claude Code",
+        "Agent-OS",
+        "Claude Flow",
+        "TMux Orchestrator",
+        "OpenAI"
+      ],
+      "score": 100,
+      "diversity": 12
     },
     "features": {
       "detected": {
@@ -73,7 +83,7 @@
     },
     "testing": {
       "hasTests": true,
-      "testFileCount": 86,
+      "testFileCount": 100,
       "testTypes": {
         "unit": false,
         "integration": true,
