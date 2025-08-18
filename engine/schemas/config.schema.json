@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EngineConfig",
+  "type": "object",
+  "properties": {
+    "yoloMode": { "type": "boolean" },
+    "claude": {
+      "type": "object",
+      "properties": {
+        "model": { "type": "string" },
+        "contextWindow": { "type": "number" },
+        "launchFlags": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["model", "contextWindow", "launchFlags"]
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "denyAutoPermissions": { "type": "boolean" },
+        "yolo": { "type": "boolean" },
+        "dangerouslySkipPermissions": { "type": "boolean" },
+        "allowlistCommands": { "type": "array", "items": { "type": "string" } },
+        "fsWriteRoots": { "type": "array", "items": { "type": "string" } },
+        "egressAllowlist": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": [
+        "denyAutoPermissions",
+        "yolo",
+        "dangerouslySkipPermissions",
+        "allowlistCommands",
+        "fsWriteRoots",
+        "egressAllowlist"
+      ]
+    }
+  },
+  "required": ["yoloMode", "claude", "security"]
+}
+
+

@@ -1,0 +1,120 @@
+{
+  "summary": {
+    "testSuite": "System Validation Comprehensive Test",
+    "executionTime": "2025-08-14T17:15:20.365Z",
+    "totalDuration": 18,
+    "totalTests": 9,
+    "passed": 3,
+    "failed": 6,
+    "successRate": "33.3"
+  },
+  "systemComponents": {
+    "claudeFlow2": false,
+    "agentOS": false,
+    "subAgents": false,
+    "sharedMemory": false,
+    "neuralLearning": false,
+    "performance": true,
+    "configuration": true,
+    "database": false,
+    "systemIntegration": true
+  },
+  "detailedResults": [
+    {
+      "name": "Claude Flow 2.0 Architecture Components",
+      "success": false,
+      "error": "Queen Controller not found",
+      "duration": 1.407159,
+      "timestamp": "2025-08-14T17:15:20.356Z"
+    },
+    {
+      "name": "Agent-OS Integration Components",
+      "success": false,
+      "error": "Agent-OS integration module not found",
+      "duration": 0.737093999999999,
+      "timestamp": "2025-08-14T17:15:20.358Z"
+    },
+    {
+      "name": "Claude Code Sub-Agents Architecture",
+      "success": false,
+      "error": "Claude Code agents directory not found",
+      "duration": 0.19371900000000153,
+      "timestamp": "2025-08-14T17:15:20.358Z"
+    },
+    {
+      "name": "Shared Memory and Communication System",
+      "success": false,
+      "error": "Shared memory module not found",
+      "duration": 0.40287900000000576,
+      "timestamp": "2025-08-14T17:15:20.359Z"
+    },
+    {
+      "name": "Neural Learning System",
+      "success": false,
+      "error": "Neural learning module not found",
+      "duration": 0.39531500000000364,
+      "timestamp": "2025-08-14T17:15:20.359Z"
+    },
+    {
+      "name": "Performance Monitoring and Optimization",
+      "success": true,
+      "duration": 0.9472819999999942,
+      "details": {
+        "performanceMonitorExists": false,
+        "claudeFlowPerformanceExists": false,
+        "databasePerformanceExists": false,
+        "performanceFeaturesFound": 0
+      },
+      "timestamp": "2025-08-14T17:15:20.361Z"
+    },
+    {
+      "name": "Configuration and Integration Files",
+      "success": true,
+      "duration": 0.9750749999999968,
+      "details": {
+        "packageJsonExists": true,
+        "readmeExists": false,
+        "claudeMdExists": false,
+        "configsDirectoryExists": false,
+        "configurationFilesCount": 0,
+        "languageSupportExists": false
+      },
+      "timestamp": "2025-08-14T17:15:20.363Z"
+    },
+    {
+      "name": "Database and Persistence Layer",
+      "success": false,
+      "error": "Database connection manager not found",
+      "duration": 0.17267299999999608,
+      "timestamp": "2025-08-14T17:15:20.363Z"
+    },
+    {
+      "name": "System Integration Validation",
+      "success": true,
+      "duration": 0.7893819999999963,
+      "details": {
+        "systemHealthScore": "25.0%",
+        "criticalFilesFound": 0,
+        "integrationScore": "0.0%",
+        "systemRequirements": {
+          "claudeFlow2Components": false,
+          "agentArchitecture": false,
+          "systemHealth": false,
+          "readyForDeployment": false
+        },
+        "deploymentReady": false
+      },
+      "timestamp": "2025-08-14T17:15:20.365Z"
+    }
+  ],
+  "recommendations": [
+    "Address 6 failing component(s):",
+    "- Fix: Claude Flow 2.0 Architecture Components - Queen Controller not found",
+    "- Fix: Agent-OS Integration Components - Agent-OS integration module not found",
+    "- Fix: Claude Code Sub-Agents Architecture - Claude Code agents directory not found",
+    "- Fix: Shared Memory and Communication System - Shared memory module not found",
+    "- Fix: Neural Learning System - Neural learning module not found",
+    "- Fix: Database and Persistence Layer - Database connection manager not found",
+    "System requires significant fixes before deployment consideration"
+  ]
+}

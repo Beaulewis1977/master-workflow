@@ -1,0 +1,41 @@
+{
+  "name": "master-workflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Intelligent Workflow Decision System - governance and CI scaffolding",
+  "scripts": {
+    "test": "node test/test-runner.js",
+    "test:interactive": "node test/run-interactive-ai-tests.js",
+    "test:interactive:quick": "node test/run-interactive-ai-tests.js --mode quick",
+    "test:interactive:comprehensive": "node test/run-interactive-ai-tests.js --mode comprehensive",
+    "test:ai-enhancement": "node test/run-interactive-ai-tests.js --mode individual --suites ai-enhancement",
+    "test:fullstack-modern": "node test/run-interactive-ai-tests.js --mode individual --suites fullstack-modern",
+    "lint": "node scripts/lint-if-available.js",
+    "coverage": "echo 'No coverage tool configured; skipping'",
+    "install-sqlite": "npm install sqlite3 || echo 'SQLite3 installation failed, will use file-based fallback'",
+    "check-deps": "node lib/dependency-manager/claude-flow-deps.js check",
+    "install-deps": "node lib/dependency-manager/claude-flow-deps.js install",
+    "verify-deps": "node lib/dependency-manager/claude-flow-deps.js verify",
+    "test-deps": "node lib/dependency-manager/test/dependency-manager-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {
+    "sqlite3": "^5.1.7"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "archiver": "^7.0.1",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5",
+    "diff": "^8.0.2",
+    "inquirer": "^9.3.7",
+    "tar": "^7.4.3"
+  },
+  "devDependencies": {
+    "chart.js": "^4.5.0",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.18.3"
+  }
+}

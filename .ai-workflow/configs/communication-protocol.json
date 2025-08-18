@@ -1,0 +1,301 @@
+{
+  "version": "2.0",
+  "protocol": {
+    "message_format": {
+      "structure": {
+        "id": "uuid",
+        "timestamp": "iso8601",
+        "from": "agent_name",
+        "to": "agent_name|broadcast",
+        "type": "request|response|notification|error",
+        "priority": "low|medium|high|critical",
+        "payload": "object",
+        "correlation_id": "uuid (for responses)",
+        "ttl": "seconds"
+      },
+      "example": {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "timestamp": "2024-01-15T10:30:00Z",
+        "from": "workflow-orchestrator",
+        "to": "complexity-analyzer-agent",
+        "type": "request",
+        "priority": "high",
+        "payload": {
+          "action": "analyze_project",
+          "path": "/home/project",
+          "depth": "deep"
+        },
+        "ttl": 60
+      }
+    },
+    "message_types": {
+      "requests": {
+        "analyze_project": {
+          "from": "workflow-orchestrator",
+          "to": "complexity-analyzer-agent",
+          "payload": {
+            "path": "string",
+            "depth": "shallow|deep",
+            "focus": "all|specific_dimension"
+          }
+        },
+        "select_approach": {
+          "from": "workflow-orchestrator",
+          "to": "approach-selector-agent",
+          "payload": {
+            "complexity": "object",
+            "preferences": "object",
+            "version": "string"
+          }
+        },
+        "generate_documents": {
+          "from": "workflow-orchestrator",
+          "to": "document-customizer-agent",
+          "payload": {
+            "analysis": "object",
+            "approach": "object",
+            "locale": "string"
+          }
+        },
+        "manage_sparc_phase": {
+          "from": "workflow-orchestrator",
+          "to": "sparc-methodology-agent",
+          "payload": {
+            "action": "init|validate|transition|status",
+            "phase": "1-5",
+            "project": "object"
+          }
+        },
+        "integrate_system": {
+          "from": "workflow-orchestrator",
+          "to": "integration-coordinator-agent",
+          "payload": {
+            "system": "agentOs|tmux|mcp|claudeFlow",
+            "action": "setup|validate|monitor|restart",
+            "config": "object"
+          }
+        }
+      },
+      "responses": {
+        "analysis_complete": {
+          "from": "complexity-analyzer-agent",
+          "to": "workflow-orchestrator",
+          "payload": {
+            "score": "number",
+            "stage": "string",
+            "factors": "object",
+            "recommendations": "array"
+          }
+        },
+        "approach_selected": {
+          "from": "approach-selector-agent",
+          "to": "workflow-orchestrator",
+          "payload": {
+            "approach": "string",
+            "confidence": "number",
+            "command": "string",
+            "alternatives": "array"
+          }
+        },
+        "documents_generated": {
+          "from": "document-customizer-agent",
+          "to": "workflow-orchestrator",
+          "payload": {
+            "documents": "object",
+            "status": "success|partial|failed",
+            "files_created": "array"
+          }
+        },
+        "sparc_status": {
+          "from": "sparc-methodology-agent",
+          "to": "workflow-orchestrator",
+          "payload": {
+            "phase": "number",
+            "progress": "number",
+            "deliverables": "array",
+            "next_steps": "array"
+          }
+        },
+        "integration_status": {
+          "from": "integration-coordinator-agent",
+          "to": "workflow-orchestrator",
+          "payload": {
+            "systems": "object",
+            "health": "string",
+            "issues": "array"
+          }
+        }
+      },
+      "notifications": {
+        "workflow_started": {
+          "from": "workflow-orchestrator",
+          "to": "broadcast",
+          "payload": {
+            "workflow_id": "string",
+            "approach": "string",
+            "estimated_time": "string"
+          }
+        },
+        "phase_completed": {
+          "from": "sparc-methodology-agent",
+          "to": "broadcast",
+          "payload": {
+            "phase": "number",
+            "duration": "string",
+            "deliverables": "array"
+          }
+        },
+        "error_occurred": {
+          "from": "any",
+          "to": "workflow-orchestrator",
+          "payload": {
+            "error": "string",
+            "context": "object",
+            "recovery_attempted": "boolean"
+          }
+        },
+        "health_alert": {
+          "from": "integration-coordinator-agent",
+          "to": "broadcast",
+          "payload": {
+            "system": "string",
+            "status": "string",
+            "action_required": "boolean"
+          }
+        }
+      }
+    },
+    "routing": {
+      "direct": {
+        "description": "Point-to-point communication",
+        "use_cases": ["requests", "responses"],
+        "delivery": "guaranteed"
+      },
+      "broadcast": {
+        "description": "One-to-many communication",
+        "use_cases": ["notifications", "alerts"],
+        "delivery": "best_effort"
+      },
+      "pipeline": {
+        "description": "Sequential processing chain",
+        "use_cases": ["workflow_execution"],
+        "delivery": "ordered"
+      }
+    },
+    "qos": {
+      "delivery_guarantees": {
+        "at_most_once": ["notifications"],
+        "at_least_once": ["requests", "responses"],
+        "exactly_once": ["critical_operations"]
+      },
+      "message_ordering": {
+        "fifo": true,
+        "priority_queue": true,
+        "max_queue_size": 1000
+      },
+      "timeouts": {
+        "default": "30s",
+        "analysis": "60s",
+        "documentation": "30s",
+        "integration": "10s"
+      }
+    },
+    "error_handling": {
+      "retry_policy": {
+        "max_retries": 3,
+        "backoff_strategy": "exponential",
+        "retry_on": ["timeout", "temporary_failure"]
+      },
+      "dead_letter_queue": {
+        "enabled": true,
+        "max_age": "1h",
+        "handler": "workflow-orchestrator"
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "failure_threshold": 5,
+        "reset_timeout": "60s"
+      }
+    },
+    "security": {
+      "authentication": {
+        "required": false,
+        "method": "token"
+      },
+      "encryption": {
+        "in_transit": false,
+        "at_rest": false
+      },
+      "validation": {
+        "schema_validation": true,
+        "sanitization": true
+      }
+    }
+  },
+  "channels": {
+    "analysis": {
+      "type": "request-response",
+      "publisher": "workflow-orchestrator",
+      "subscriber": "complexity-analyzer-agent",
+      "qos": "at_least_once"
+    },
+    "selection": {
+      "type": "request-response",
+      "publisher": "workflow-orchestrator",
+      "subscriber": "approach-selector-agent",
+      "qos": "at_least_once"
+    },
+    "documentation": {
+      "type": "request-response",
+      "publisher": "workflow-orchestrator",
+      "subscriber": "document-customizer-agent",
+      "qos": "at_least_once"
+    },
+    "sparc": {
+      "type": "request-response",
+      "publisher": "workflow-orchestrator",
+      "subscriber": "sparc-methodology-agent",
+      "qos": "exactly_once"
+    },
+    "integration": {
+      "type": "request-response",
+      "publisher": "workflow-orchestrator",
+      "subscriber": "integration-coordinator-agent",
+      "qos": "at_least_once"
+    },
+    "broadcast": {
+      "type": "pub-sub",
+      "publishers": "all",
+      "subscribers": "all",
+      "qos": "at_most_once"
+    }
+  },
+  "events": {
+    "workflow_events": [
+      "workflow.initialized",
+      "workflow.started",
+      "workflow.completed",
+      "workflow.failed",
+      "workflow.cancelled"
+    ],
+    "agent_events": [
+      "agent.started",
+      "agent.ready",
+      "agent.busy",
+      "agent.idle",
+      "agent.error",
+      "agent.stopped"
+    ],
+    "phase_events": [
+      "phase.started",
+      "phase.checkpoint",
+      "phase.completed",
+      "phase.failed"
+    ],
+    "system_events": [
+      "system.health_check",
+      "system.resource_alert",
+      "system.integration_status"
+    ]
+  }
+}

@@ -120,6 +120,44 @@ else
     exit 1
 fi
 
+# Step 3.25: Install local libraries and MCP discovery
+print_header "Step 3.25: Installing Libraries and MCP Discovery"
+
+# Ensure lib directory
+mkdir -p "$INSTALL_DIR/lib"
+
+# Copy core JS libs (version policy, exec helper)
+if [ -d "$SCRIPT_DIR/lib" ]; then
+    cp -f "$SCRIPT_DIR/lib/"*.js "$INSTALL_DIR/lib/" 2>/dev/null || true
+fi
+
+# Copy MCP discovery tool and catalog if available, avoiding self-copy when running from repo root
+MCP_SRC="$SCRIPT_DIR/.ai-workflow/lib/mcp-discover.js"
+MCP_DST="$INSTALL_DIR/lib/mcp-discover.js"
+if [ -f "$MCP_SRC" ]; then
+    mkdir -p "$INSTALL_DIR/lib"
+    if [ -e "$MCP_DST" ] && [ "$MCP_SRC" -ef "$MCP_DST" ]; then
+        print_info "MCP discovery already present"
+    else
+        cp -f "$MCP_SRC" "$MCP_DST" 2>/dev/null || true
+    fi
+    print_success "MCP discovery tool installed"
+else
+    print_warning "MCP discovery tool not found; skipping"
+fi
+
+MCP_CAT_SRC="$SCRIPT_DIR/.ai-workflow/configs/mcp-catalog.json"
+if [ -f "$MCP_CAT_SRC" ]; then
+    mkdir -p "$INSTALL_DIR/configs"
+    MCP_CAT_DST="$INSTALL_DIR/configs/mcp-catalog.json"
+    if [ -e "$MCP_CAT_DST" ] && [ "$MCP_CAT_SRC" -ef "$MCP_CAT_DST" ]; then
+        print_info "MCP catalog already present"
+    else
+        cp -f "$MCP_CAT_SRC" "$MCP_CAT_DST" 2>/dev/null || true
+    fi
+    print_success "MCP catalog installed"
+fi
+
 # Step 3.5: Copy agent templates and slash commands
 print_header "Step 3.5: Installing Agent Templates and Slash Commands"
 

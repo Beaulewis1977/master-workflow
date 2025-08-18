@@ -1,0 +1,20 @@
+{
+  "version": "2.0",
+  "projectDir": "/workspaces/MASTER-WORKFLOW",
+  "installDir": "/workspaces/MASTER-WORKFLOW/.ai-workflow",
+  "initialized": "2025-08-12T21:41:59+00:00",
+  "features": {
+    "intelligenceEngine": true,
+    "complexityAnalysis": true,
+    "approachSelection": true,
+    "documentCustomization": true,
+    "sparcMethodology": true,
+    "claudeFlowVersions": ["alpha", "beta", "latest", "2.0", "stable", "dev"]
+  },
+  "defaultSettings": {
+    "claudeFlowVersion": "alpha",
+    "mode": "interactive",
+    "autoAnalyze": true,
+    "generateDocs": true
+  }
+}

@@ -19,6 +19,32 @@ The Intelligent Workflow System is a fully modular, production-ready orchestrati
 - **Manual Override**: Force specific approach (swarm/hive/sparc)
 - **Version Support**: All Claude Flow versions (alpha/beta/stable/2.0/dev)
 
+## 🏗️ Sub-Agent Architecture (v3.0)
+
+### Queen Controller System
+- **Hierarchical Management**: Queen Controller orchestrates 10 concurrent sub-agents
+- **Context Windows**: Each agent has 200k tokens (2M total system context)
+- **Task Distribution**: Intelligent routing based on agent specialization
+- **Neural Optimization**: AI-powered agent selection and task prediction
+
+### 10 Specialized Sub-Agents
+1. **code-analyzer-agent**: Deep code analysis and pattern detection
+2. **test-runner-agent**: Automated testing and validation
+3. **doc-generator-agent**: Intelligent documentation generation
+4. **api-builder-agent**: RESTful API construction
+5. **database-architect-agent**: Database design and optimization
+6. **security-scanner-agent**: Security vulnerability detection
+7. **performance-optimizer-agent**: Performance analysis
+8. **deployment-engineer-agent**: CI/CD automation
+9. **frontend-specialist-agent**: UI/UX development
+10. **recovery-specialist-agent**: Error recovery
+
+### Cross-Agent Communication
+- **SharedMemoryStore**: SQLite-backed persistence
+- **Pattern Sharing**: Successful workflows shared across agents
+- **Event-Driven**: Real-time coordination via EventBus
+- **Neural Learning**: Continuous improvement from outcomes
+
 ### 3. Modular Architecture
 - **Core System**: Always installed (required)
 - **Claude Code**: Optional AI agent system

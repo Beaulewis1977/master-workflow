@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "InstallRequest",
+  "type": "object",
+  "properties": {
+    "sessionId": { "type": "string" },
+    "mode": { "type": "string", "enum": ["guided", "express", "advanced"] },
+    "selections": { "type": "array", "items": { "type": "string" } },
+    "options": {
+      "type": "object",
+      "properties": {
+        "yolo": { "type": "boolean" },
+        "dangerouslySkipPermissions": { "type": "boolean" },
+        "nonInteractive": { "type": "boolean" },
+        "ack": { "type": "string" }
+      },
+      "required": ["yolo", "dangerouslySkipPermissions", "nonInteractive", "ack"]
+    }
+  },
+  "required": ["sessionId", "mode", "selections", "options"]
+}
+
+

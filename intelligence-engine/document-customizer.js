@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const versionPolicy = require('../lib/version-policy');
 
 class DocumentCustomizer {
   constructor(analysis, approach) {
@@ -22,12 +23,14 @@ class DocumentCustomizer {
    */
   async generateDocuments() {
     const documents = {
+      readme: await this.generateReadme(),
       claude: await this.generateClaudeConfig(),
       agentOS: await this.generateAgentOSInstructions(),
       workflows: await this.generateWorkflows(),
       contributing: await this.generateContributing(),
       deployment: await this.generateDeployment(),
       architecture: await this.generateArchitecture(),
+      api: await this.generateAPI(),
       sparc: this.approach.selected === 'hiveMindSparc' ? await this.generateSPARCPhases() : null,
       agents: await this.generateAgentConfigs(),
       slashCommands: await this.generateSlashCommands()
@@ -37,20 +40,124 @@ class DocumentCustomizer {
   }
 
   /**
+   * Generate all documents (alias for backward compatibility)
+   * Returns documents in array format expected by tests
+   */
+  async generateAllDocuments() {
+    const documents = await this.generateDocuments();
+    const documentArray = [];
+    
+    // Convert to array format
+    for (const [type, content] of Object.entries(documents)) {
+      if (!content) {
+        continue; // Skip null/undefined documents
+      }
+      
+      if (typeof content === 'string') {
+        // Simple string content
+        const filename = this.getFilenameForType(type);
+        documentArray.push({
+          type,
+          path: filename,
+          content,
+          size: content.length
+        });
+      } else if (typeof content === 'object') {
+        // Check if it's a document with path and content
+        if (content.path && content.content) {
+          documentArray.push({
+            type,
+            path: content.path,
+            content: content.content,
+            size: content.content.length
+          });
+        } else if (content.files && Array.isArray(content.files)) {
+          // Handle complex types like agents with multiple files
+          content.files.forEach(file => {
+            if (file.path && file.content) {
+              documentArray.push({
+                type: `${type}.${file.name || 'file'}`,
+                path: file.path,
+                content: file.content,
+                size: file.content.length
+              });
+            }
+          });
+        }
+      }
+    }
+    
+    return documentArray;
+  }
+
+  /**
+   * Get filename for document type
+   */
+  getFilenameForType(type) {
+    const typeMap = {
+      'readme': 'README.md',
+      'claude': 'CLAUDE.md',
+      'agentOS': 'Agent-OS.md',
+      'workflows': 'WORKFLOWS.md',
+      'contributing': 'CONTRIBUTING.md',
+      'deployment': 'DEPLOYMENT.md',
+      'architecture': 'ARCHITECTURE.md',
+      'api': 'API.md',
+      'sparc': 'SPARC-PHASES.md',
+      'slashCommands': 'SLASH-COMMANDS.md',
+      'agents.queen': '.agents/queen-controller.md',
+      'agents.coder': '.agents/coder-agent.md',
+      'agents.tester': '.agents/tester-agent.md',
+      'agents.deployer': '.agents/deployer-agent.md',
+      'agents.analyst': '.agents/analyst-agent.md',
+      'agents.doc-generator': '.agents/doc-generator-agent.md'
+    };
+    
+    return typeMap[type] || `${type.replace(/[^a-zA-Z0-9]/g, '-').toUpperCase()}.md`;
+  }
+
+  /**
    * Generate CLAUDE.md with deep customization
    */
   async generateClaudeConfig() {
+    const projectInstructionsPath = path.join(this.projectPath, '.ai-dev', 'project-instructions.md');
+    let projectInstructions = '';
+    try {
+      if (fs.existsSync(projectInstructionsPath)) {
+        projectInstructions = fs.readFileSync(projectInstructionsPath, 'utf8');
+      }
+    } catch (e) { /* ignore */ }
+
+    // Check if running in container
+    const isContainer = this.detectContainerEnvironment();
+
+    // Load MCP registry if present
+    const mcpRegistryPath = path.join(this.projectPath, '.ai-workflow', 'configs', 'mcp-registry.json');
+    let mcpRegistry = null;
+    try {
+      if (fs.existsSync(mcpRegistryPath)) {
+        mcpRegistry = JSON.parse(fs.readFileSync(mcpRegistryPath, 'utf8'));
+      }
+    } catch (e) { /* ignore */ }
+
+    // projectInstructions already loaded above
+
     const techStack = this.analysis.factors?.techStack || {};
     const features = this.analysis.factors?.features?.detected || {};
     const architecture = this.analysis.factors?.architecture || {};
     
+    const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+    const isExperimental = versionPolicy.isExperimentalName(versionName);
+    const hasAITools = techStack.aiTools && techStack.aiTools.length > 0;
+
     let content = `# Claude Configuration - ${this.analysis.stage} Stage Project
 
 ## Project Analysis
 - **Complexity Score**: ${this.analysis.score}/100
 - **Stage**: ${this.analysis.stage}
-- **Selected Approach**: ${this.approach.name}
-- **Command**: \`${this.approach.command}\`
+ - **Selected Approach**: ${this.approach.name}
+ - **Claude Flow Version**: ${versionName} ${isExperimental ? '(experimental)' : ''}
+ - **Command**: \`${this.generateOptimalCommand()}\`
 
 ## Technology Stack
 `;
@@ -123,9 +230,48 @@ class DocumentCustomizer {
     content += `\n## Stage-Specific Instructions (${this.analysis.stage})\n`;
     content += this.getStageInstructions(this.analysis.stage);
 
+    // Project-specific instructions (if provided)
+    if (projectInstructions && projectInstructions.trim().length > 0) {
+      content += `\n## Project-Specific Instructions\n`;
+      content += `${projectInstructions}\n`;
+    }
+
+    // MCP Registry summary
+    if (mcpRegistry) {
+      content += `\n## Discovered MCP Servers & Tools\n`;
+      const servers = mcpRegistry.servers || {};
+      const tools = mcpRegistry.tools || [];
+      const serverNames = Object.keys(servers);
+      if (serverNames.length > 0) {
+        content += `\n### Servers\n`;
+        for (const name of serverNames) {
+          const s = servers[name];
+          content += `- ${name}: ${JSON.stringify(s)}\n`;
+        }
+      }
+      if (tools.length > 0) {
+        content += `\n### Tools\n`;
+        for (const t of tools) {
+          content += `- ${t.name} (${t.type}${t.server ? `:${t.server}` : ''})\n`;
+        }
+      }
+      // Indicate default server if present
+      const defaultServer = Object.entries(servers).find(([_, v]) => v && v.default);
+      if (defaultServer) {
+        content += `\nDefault MCP Server: ${defaultServer[0]}\n`;
+      }
+    }
+
     // Add approach-specific workflow
     content += `\n## ${this.approach.name} Workflow\n`;
     content += this.getApproachWorkflow(this.approach.selected);
+
+    // Version Policy Summary (Phase 3)
+    const policy = versionPolicy.getPolicySummary();
+    content += `\n## Version Policy\n`;
+    content += `- Canonical versions: ${policy.canonicalNames.join(', ')}\n`;
+    content += `- Experimental: ${policy.experimental.join(', ')}\n`;
+    content += `- Override via env: ${policy.examples.env}\n`;
 
     return {
       path: '.claude/CLAUDE.md',
@@ -137,6 +283,14 @@ class DocumentCustomizer {
    * Generate Agent OS instructions
    */
   async generateAgentOSInstructions() {
+    const projectInstructionsPath = path.join(this.projectPath, '.ai-dev', 'project-instructions.md');
+    let projectInstructions = '';
+    try {
+      if (fs.existsSync(projectInstructionsPath)) {
+        projectInstructions = fs.readFileSync(projectInstructionsPath, 'utf8');
+      }
+    } catch (e) { /* ignore */ }
+
     const stage = this.analysis.stage;
     const techStack = this.analysis.factors?.techStack || {};
     
@@ -208,9 +362,15 @@ class DocumentCustomizer {
 `;
     }
 
+    // Inject project-specific instructions into Agent-OS if provided
+    if (projectInstructions && projectInstructions.trim().length > 0) {
+      content += `\n## Project-Specific Instructions\n`;
+      content += `${projectInstructions}\n`;
+    }
+
     // Add stage-specific planning
     content += `
-## Planning Approach (${stage} Stage)
+## Stage-Specific Instructions (${stage})
 `;
     
     switch (stage) {
@@ -253,7 +413,7 @@ class DocumentCustomizer {
     }
 
     return {
-      path: '.agent-os/instructions.md',
+      path: '.agent-os/instructions/instructions.md',
       content
     };
   }
@@ -552,7 +712,7 @@ NODE_ENV=production
       content += `REDIS_URL=redis://localhost:6379\n`;
     }
     if (this.analysis.factors?.features?.detected?.authentication) {
-      content += `JWT_SECRET=your-secret-key\n`;
+      content += `JWT_SECRET=\${JWT_SECRET:-$(openssl rand -hex 32)}\n`;
     }
 
     content += `\`\`\`
@@ -1155,6 +1315,61 @@ exports.getAll = async (req, res) => {
   }
 
   /**
+   * Detect if running in container environment
+   */
+  detectContainerEnvironment() {
+    // Check for common container indicators
+    if (process.env.CONTAINER || 
+        fs.existsSync('/.dockerenv') || 
+        fs.existsSync('/run/.containerenv') ||
+        process.env.KUBERNETES_SERVICE_HOST) {
+      return true;
+    }
+    
+    // Check for devcontainer
+    if (process.env.REMOTE_CONTAINERS || 
+        process.env.CODESPACES ||
+        fs.existsSync('/workspaces/.devcontainer')) {
+      return true;
+    }
+    
+    return false;
+  }
+
+  /**
+   * Generate optimal command based on environment and analysis
+   */
+  generateOptimalCommand() {
+    const score = this.analysis.score || 50;
+    const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+    const isContainer = this.detectContainerEnvironment();
+    const hasYolo = process.env.YOLO_MODE === 'true';
+    
+    let command = 'npx claude-flow';
+    command += versionPolicy.getSuffixForName(versionName);
+    
+    if (score <= 30) {
+      command += ' swarm';
+    } else if (score <= 70) {
+      command += ' hive-mind spawn --agents 4';
+    } else {
+      command += ' hive-mind spawn --sparc --agents 8';
+    }
+    
+    // Add appropriate Claude command
+    command += hasYolo ? ' --yolo' : ' --claude';
+    
+    // Add container-specific flags if needed
+    if (isContainer) {
+      command += ' --container-mode';
+    }
+    
+    command += ` "MASTER-WORKFLOW"`;
+    
+    return command;
+  }
+
+  /**
    * Generate slash commands for workflow control
    */
   async generateSlashCommands() {
@@ -1182,7 +1397,8 @@ exports.getAll = async (req, res) => {
         
         // Customize based on project
         let customized = template;
-        customized = customized.replace(/\[version\]/g, process.env.CLAUDE_FLOW_VERSION || 'alpha');
+        const versionName = versionPolicy.getSelectedVersionName({ analysis: this.analysis });
+        customized = customized.replace(/\[version\]/g, versionName);
         customized = customized.replace(/\[project\]/g, this.analysis.projectName || 'project');
         
         commands[`${cmdName}.md`] = customized;
@@ -1194,6 +1410,214 @@ exports.getAll = async (req, res) => {
       files: commands,
       defaultCommand: this.analysis.score > 70 ? 'sparc' : 'workflow'
     };
+  }
+
+  /**
+   * Generate command string for the selected approach
+   */
+  generateCommand() {
+    if (this.approach.selected === 'hiveMindSparc') {
+      return 'npx --yes claude-flow@latest hive-mind spawn "[project-name]" --sparc --agents 10 --claude';
+    } else if (this.approach.selected === 'hiveMind') {
+      return 'npx --yes claude-flow@latest hive-mind spawn "[project-name]" --agents 10 --claude';
+    } else if (this.approach.selected === 'singleAgent') {
+      return 'npx --yes claude-flow@latest single-agent "[project-name]" --claude';
+    } else {
+      return 'npx --yes claude-flow@latest workflow "[project-name]" --claude';
+    }
+  }
+
+  /**
+   * Generate README.md
+   */
+  async generateReadme() {
+    const projectName = this.analysis.projectName || 'Project';
+    const complexity = this.analysis.complexity?.score || this.analysis.score || 50;
+    const stage = this.analysis.stage || 'development';
+    const techStack = this.analysis.factors?.techStack?.languages || [];
+    
+    let content = `# ${projectName}
+
+## Overview
+This is a ${stage} stage project with complexity score ${complexity}/100.
+
+## Technology Stack
+${techStack.length > 0 ? techStack.map(lang => `- ${lang}`).join('\n') : '- JavaScript (default)'}
+
+## Architecture
+- **Type**: ${this.analysis.factors?.architecture?.primaryArchitecture || 'modular'}
+- **Approach**: ${this.approach.selected || 'standard development'}
+
+## Getting Started
+
+### Prerequisites
+- Node.js v18+ and npm/yarn
+${techStack.includes('Python') ? '- Python 3.8+ and pip' : ''}
+${techStack.includes('Go') ? '- Go 1.19+' : ''}
+
+### Installation
+
+\`\`\`bash
+# Clone the repository
+git clone <repository-url>
+cd ${projectName.toLowerCase().replace(/\s+/g, '-')}
+
+# Install dependencies
+npm install
+# or
+yarn install
+${techStack.includes('Python') ? `
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
+
+# Install dependencies
+pip install -r requirements.txt
+` : ''}
+\`\`\`
+
+## Development
+
+### Using AI Development OS
+This project uses the Intelligent Workflow Decision System.
+
+- **Approach**: ${this.approach.selected || 'Standard'}
+- **Command**: \`${this.generateCommand()}\`
+
+### Testing
+Run tests with: \`npm test\`${techStack.includes('Python') ? ' or `pytest`' : ''}
+
+## Current Focus (${stage} Stage)
+${stage === 'active' ? `- Adding new features
+- Maintaining code quality
+- Improving test coverage
+- Updating documentation` : 
+stage === 'initial' ? `- Setting up project structure
+- Implementing core features
+- Establishing development workflow` :
+`- Finalizing features
+- Preparing for deployment
+- Documentation completion`}
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Architecture
+See [ARCHITECTURE.md](ARCHITECTURE.md) for system design details.
+
+## Deployment
+See [DEPLOYMENT.md](DEPLOYMENT.md) for deployment instructions.
+`;
+
+    return content;
+  }
+
+  /**
+   * Generate API.md
+   */
+  async generateAPI() {
+    const projectName = this.analysis.projectName || 'Project';
+    const hasApi = this.analysis.factors?.features?.detected?.api || 
+                   this.analysis.factors?.architecture?.patterns?.api > 0;
+    
+    let content = `# API Documentation
+
+## Overview
+${hasApi ? 'This project provides a RESTful API with the following endpoints.' : 'API documentation for the project endpoints.'}
+
+## Base URL
+\`\`\`
+${hasApi ? 'https://api.example.com/v1' : 'http://localhost:3000/api'}
+\`\`\`
+
+## Authentication
+${hasApi ? `API requests require authentication using bearer tokens.
+
+\`\`\`bash
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.example.com/v1/endpoint
+\`\`\`` : 'Authentication details will be added as the API is developed.'}
+
+## Endpoints
+
+${hasApi ? `### GET /health
+Health check endpoint
+
+**Response:**
+\`\`\`json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+\`\`\`
+
+### GET /users
+Get list of users
+
+**Parameters:**
+- \`limit\` (optional): Number of users to return (default: 10)
+- \`offset\` (optional): Number of users to skip (default: 0)
+
+**Response:**
+\`\`\`json
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  ],
+  "total": 100
+}
+\`\`\`
+
+### POST /users
+Create a new user
+
+**Request Body:**
+\`\`\`json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com"
+}
+\`\`\`
+
+**Response:**
+\`\`\`json
+{
+  "id": 2,
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "created_at": "2024-01-01T00:00:00Z"
+}
+\`\`\`` : 'API endpoints will be documented as they are implemented.'}
+
+## Error Handling
+
+All API errors follow this format:
+
+\`\`\`json
+{
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable error message",
+    "details": {}
+  }
+}
+\`\`\`
+
+## Rate Limiting
+${hasApi ? 'API requests are limited to 1000 requests per hour per API key.' : 'Rate limiting will be implemented based on usage patterns.'}
+
+## SDK Support
+${hasApi ? 'Official SDKs are available for:' : 'SDKs will be provided for:'}
+- JavaScript/Node.js
+- Python
+${this.analysis.factors?.techStack?.languages?.includes('Go') ? '- Go' : ''}
+${this.analysis.factors?.techStack?.languages?.includes('Java') ? '- Java' : ''}
+`;
+
+    return content;
   }
 }
 

@@ -1,0 +1,29 @@
+{
+  "name": "sparc-workflow",
+  "description": "Enterprise SPARC methodology workflow",
+  "approach": "hiveMindSparc",
+  "steps": [
+    {
+      "type": "analyze",
+      "description": "Deep project analysis"
+    },
+    {
+      "type": "sparc-phases",
+      "phases": [
+        "specification",
+        "pseudocode",
+        "architecture",
+        "refinement",
+        "completion"
+      ]
+    },
+    {
+      "type": "execute",
+      "command": "npx claude-flow@${version} hive-mind spawn \"${project}\" --sparc --agents ${agentCount} --claude"
+    },
+    {
+      "type": "wizard",
+      "command": "npx claude-flow@${version} sparc wizard --interactive"
+    }
+  ]
+}

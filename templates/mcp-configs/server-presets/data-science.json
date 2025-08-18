@@ -1,0 +1,233 @@
+{
+  "name": "Data Science",
+  "description": "Comprehensive data science environment with Python tools, Jupyter notebooks, ML services, and analytics platforms",
+  "category": "data_science",
+  "version": "1.0.0",
+  "priority_level": "high",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Advanced coding assistance for data science and ML workflows",
+      "default": true,
+      "config": {
+        "features": ["data_analysis", "ml_modeling", "statistical_computing"],
+        "languages": ["python", "r", "sql", "julia", "scala"]
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Data project structure and large file management",
+      "config": {
+        "root": ".",
+        "watch_patterns": ["notebooks/**/*", "data/**/*", "models/**/*", "scripts/**/*"],
+        "ignore_patterns": ["*.parquet", "*.h5", "*.pkl", "__pycache__/**", ".ipynb_checkpoints/**"],
+        "large_file_support": true
+      }
+    },
+    "postgres": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Data warehouse and analytical database operations",
+      "config": {
+        "pool_size": 50,
+        "connection_timeout": 60000,
+        "analytical_functions": true,
+        "parallel_queries": true
+      }
+    },
+    "s3": {
+      "enabled": true,
+      "priority": 4,
+      "description": "Data lake storage and model artifact management",
+      "config": {
+        "multipart_uploads": true,
+        "lifecycle_policies": true,
+        "versioning": true,
+        "encryption": "AES256"
+      }
+    },
+    "aws": {
+      "enabled": true,
+      "priority": 5,
+      "description": "AWS ML services integration (SageMaker, Bedrock, etc.)",
+      "config": {
+        "regions": ["us-east-1", "us-west-2"],
+        "services": ["sagemaker", "bedrock", "comprehend", "rekognition", "textract"],
+        "auto_scaling": true
+      }
+    },
+    "gcp": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Google Cloud AI/ML platform integration",
+      "config": {
+        "services": ["vertex_ai", "bigquery", "cloud_ml", "automl"],
+        "regions": ["us-central1", "us-east1"],
+        "billing_alerts": true
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Containerized ML environments and model serving",
+      "config": {
+        "gpu_support": true,
+        "jupyter_integration": true,
+        "model_serving": true
+      }
+    },
+    "kubernetes": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Scalable ML pipeline orchestration",
+      "config": {
+        "kubeflow": true,
+        "mlflow": true,
+        "gpu_nodes": true,
+        "auto_scaling": true
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 9,
+      "description": "API integration for external data sources and ML services",
+      "config": {
+        "timeout": 120000,
+        "large_payloads": true,
+        "streaming": true
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 10,
+      "description": "Version control with DVC for data and model versioning",
+      "config": {
+        "repo": "auto",
+        "dvc_integration": true,
+        "large_file_tracking": true
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "PYTHON_ENV",
+      "JUPYTER_TOKEN",
+      "DATA_PATH"
+    ],
+    "optional": [
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "GOOGLE_APPLICATION_CREDENTIALS",
+      "AZURE_SUBSCRIPTION_ID",
+      "MLFLOW_TRACKING_URI",
+      "WANDB_API_KEY",
+      "NEPTUNE_API_TOKEN",
+      "HUGGINGFACE_HUB_TOKEN",
+      "KAGGLE_USERNAME",
+      "KAGGLE_KEY"
+    ],
+    "development": {
+      "PYTHON_ENV": "development",
+      "JUPYTER_ENABLE_LAB": "yes",
+      "MPLBACKEND": "Agg",
+      "PYTHONPATH": "./src"
+    },
+    "production": {
+      "PYTHON_ENV": "production",
+      "OMP_NUM_THREADS": "1",
+      "CUDA_VISIBLE_DEVICES": "0"
+    }
+  },
+  "recommended_tools": [
+    "jupyter",
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "tensorflow",
+    "pytorch",
+    "matplotlib",
+    "seaborn",
+    "plotly",
+    "dask",
+    "ray",
+    "mlflow",
+    "wandb",
+    "dvc",
+    "great-expectations",
+    "streamlit",
+    "fastapi",
+    "apache-airflow"
+  ],
+  "project_structure": {
+    "required_files": [
+      "requirements.txt",
+      "environment.yml",
+      "setup.py",
+      "Dockerfile",
+      "dvc.yaml",
+      ".dvcignore"
+    ],
+    "recommended_directories": [
+      "notebooks/",
+      "data/raw/",
+      "data/processed/",
+      "src/",
+      "models/",
+      "reports/",
+      "scripts/",
+      "tests/",
+      "configs/",
+      "experiments/"
+    ]
+  },
+  "common_configurations": {
+    "python_version": ">=3.9",
+    "package_manager": "conda",
+    "ml_framework": "scikit-learn",
+    "deep_learning": "tensorflow",
+    "notebook_server": "jupyter",
+    "experiment_tracking": "mlflow",
+    "data_validation": "great-expectations",
+    "containerization": "docker"
+  },
+  "integration_points": {
+    "ml_platforms": {
+      "mlflow": {
+        "experiment_tracking": true,
+        "model_registry": true,
+        "deployment": true
+      },
+      "wandb": {
+        "experiment_logging": true,
+        "hyperparameter_tuning": true,
+        "artifact_tracking": true
+      },
+      "kubeflow": {
+        "pipeline_orchestration": true,
+        "distributed_training": true,
+        "model_serving": true
+      }
+    },
+    "data_sources": {
+      "databases": ["postgresql", "mongodb", "cassandra"],
+      "cloud_storage": ["s3", "gcs", "azure_blob"],
+      "streaming": ["kafka", "kinesis", "pubsub"],
+      "apis": ["rest", "graphql", "grpc"]
+    },
+    "deployment_targets": {
+      "cloud_functions": true,
+      "kubernetes": true,
+      "docker_compose": true,
+      "serverless": true
+    }
+  },
+  "gpu_configuration": {
+    "cuda_version": "11.8",
+    "cudnn_version": "8.6",
+    "tensorflow_gpu": true,
+    "pytorch_gpu": true,
+    "memory_optimization": true
+  }
+}

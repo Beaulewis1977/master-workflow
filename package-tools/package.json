@@ -1,0 +1,10 @@
+{
+  "name": "ai-workflow-tools",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "mcp-discover": "bin/mcp-discover.js",
+    "agent-bus-http": "bin/agent-bus-http.js",
+    "agent-bus-tui": "bin/agent-bus-tui.js"
+  }
+}

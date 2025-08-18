@@ -32,10 +32,23 @@
 
 #### ✅ "Does it install the sub agents and custom slash commands?"
 **YES** - The `install-production.sh` script:
-- Installs agents to `.claude/agents/` (lines 244-254)
+- Installs 13+ specialized agents to `.claude/agents/` (lines 244-254)
+  - **Queen Controller Architect**: Supreme orchestrator managing 10 concurrent agents
+  - **Neural Swarm Architect**: Collective intelligence and emergent behavior systems
+  - **Test Automation Engineer**: Comprehensive testing and validation
+  - **Security Compliance Auditor**: Security and compliance management
+  - **Performance Optimization Engineer**: System performance optimization
+  - **Deployment Pipeline Engineer**: Advanced CI/CD automation
+  - **Error Recovery Specialist**: Advanced error handling and recovery
+  - **Code Analyzer Agent**: Deep code analysis and pattern detection
+  - **Documentation Generator**: Intelligent documentation creation
+  - **SPARC Methodology Implementer**: Enterprise methodology implementation
+  - **MCP Integration Specialist**: Model Context Protocol optimization
+  - **Integration Coordinator**: Cross-system integration management
+  - And more specialized domain agents
 - Installs commands to `.claude/commands/` (lines 287-297)
 - Creates recovery specialist agent automatically
-- Configures Claude Code settings.json with hooks
+- Configures Claude Code settings.json with hooks and agent specifications
 
 #### ✅ "Does it check for dependencies and install them?"
 **YES** - Complete dependency management:
@@ -94,10 +107,63 @@ Choose exactly what you need:
 - **TMux Orchestrator** - Optional (24/7 operation) with process mode fallback
 
 ### YOLO Mode Integration
+### Claude Flow Version Policy (v2.1 Phase 3)
+
+- Centralized in `lib/version-policy.js` with unified env/heuristic handling
+- Versions: `alpha`, `beta`, `latest`, `stable`, `2.0`, `dev` (+ aliases)
+- Experimental gating recognized for `alpha`, `beta`, `dev`
+
+### Optional Training & Memory Operations
+
+- `ENABLE_CF_TRAINING=true` or `CF_ENABLE_EXPERIMENTAL=true` (with experimental version) runs `training neural-train`
+- `ENABLE_CF_MEMORY_OPS=true` with `CF_MEMORY_ACTION=summarize|sync|gc` runs memory ops per project
+- Added to both runners; sequential execution with failure halt
 - **Interactive Configuration**: Asked during installation
 - **Toggle Support**: `./ai-workflow yolo on/off/status`
 - **Stored Preference**: Saved in installation-config.json
 - **Universal Application**: Works with all workflows and recovery mode
+
+### Governance (Phase 1)
+- CI workflow on main/develop (Node 18/20; Windows/macOS/Linux)
+- Issue templates (bug, feature, phase)
+- Policies in repo: `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
+
+### Engine (Phase 2)
+- Core engine scaffolded (`engine/`): CLI, Fastify API, SQLite migrations
+- Endpoints in place for health, components listing, install planning
+
+### Conversational Interface (Phase 4)
+- Session persistence and message storage
+- POST `/api/convo/:sessionId/message` with `{ text, images[] }` → `{ reply, actions[] }`
+- GET `/api/convo/:sessionId` returns full thread with attachments
+
+### Environment Analysis (Phase 5)
+- GET `/api/env/scan` → `{ fingerprint, matrix, suggestions }`
+- Detects OS/distro, languages, frameworks, CI, containers; provides actionable suggestions
+
+### Flow Integration Orchestrator (Phase 6)
+- Centralized version policy for Claude Flow tags
+- Launch commands builder for swarm/hive/sparc paths
+- Optional training (`training neural-train`) and memory ops (`memory summarize|sync|gc`) gated by env
+
+### Project Customization (Phase 7)
+- Generates `.agent-os/product/*` and `.agent-os/specs/<date-slug>/*` docs
+- Optional `.claude/agents/*` minimal subagents for testing, security, review, and debugging
+
+### Autonomous Infrastructure Scaffolding (Phase 8)
+- Planning: `POST /api/scaffold/plan` → file adds and conflicts
+- Preview: `POST /api/scaffold/preview` → writes to `.ai-workflow/scaffold/**`
+- Apply: `POST /api/scaffold/apply` → additive, avoids overwrites
+
+### Security, Logging, Error Handling (Phase 9)
+- Command allowlist and YOLO gating enforced
+- API request/response logging via pino
+- Audit events recorded to `audit_logs`
+
+### YOLO Mode, Privilege, Distribution (Phase 10)
+- Toggle via `POST /api/yolo/on` (requires `ack: I-ACCEPT-RISK`) and `/api/yolo/off`
+- Orchestrator switches Claude flag to `--yolo` when enabled
+- Windows: process mode default; tmux via WSL2 if available
 
 ### Component Verification
 - **Health Check**: `./ai-workflow verify` checks all components
@@ -105,11 +171,15 @@ Choose exactly what you need:
 - **Customization Check**: Confirms Agent-OS has tech-specific docs
 - **Readiness Status**: Shows if system is ready to execute workflows
 
-### Execution Modes
+### Execution Modes & Runner Consolidation (Phase 8)
 System automatically adapts:
 - **With TMux**: Detached sessions, multi-window
 - **Without TMux**: Background processes, file logging
 - **Foreground**: Direct execution with output
+
+Runner consolidation:
+- Modular runner is the default unified path across platforms.
+- Legacy runner acts as TMux specialization only; installer links modular runner as `workflow-runner.js`.
 
 ### New Files Created
 - **install-modular.sh** - Interactive modular installer

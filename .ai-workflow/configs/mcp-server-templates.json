@@ -1,0 +1,382 @@
+{
+  "version": "3.0.0",
+  "description": "MCP Server Configuration Templates for dynamic server instantiation",
+  "templates": {
+    "core_server": {
+      "template": {
+        "enabled": true,
+        "priority": 8,
+        "healthCheck": "auto",
+        "connectionPool": {
+          "minConnections": 2,
+          "maxConnections": 10,
+          "idleTimeout": 30000
+        },
+        "retry": {
+          "maxAttempts": 3,
+          "backoffMultiplier": 2,
+          "initialDelay": 1000
+        },
+        "caching": {
+          "enabled": true,
+          "ttl": 300000,
+          "maxSize": 100
+        },
+        "monitoring": {
+          "metricsEnabled": true,
+          "healthCheckInterval": 30000,
+          "performanceTracking": true
+        }
+      },
+      "applicableTo": ["context7", "filesystem", "http", "git"]
+    },
+    
+    "auth_required_server": {
+      "template": {
+        "enabled": true,
+        "priority": 6,
+        "healthCheck": "auth-required",
+        "connectionPool": {
+          "minConnections": 1,
+          "maxConnections": 5,
+          "idleTimeout": 60000
+        },
+        "authentication": {
+          "required": true,
+          "type": "api_key",
+          "envVar": "{{SERVER_NAME_UPPER}}_API_KEY",
+          "refreshInterval": 3600000
+        },
+        "retry": {
+          "maxAttempts": 2,
+          "backoffMultiplier": 1.5,
+          "initialDelay": 2000
+        },
+        "rateLimiting": {
+          "enabled": true,
+          "requestsPerMinute": 100,
+          "burstLimit": 20
+        }
+      },
+      "applicableTo": ["github", "gitlab", "openai", "anthropic", "stripe", "slack"]
+    },
+    
+    "database_server": {
+      "template": {
+        "enabled": true,
+        "priority": 7,
+        "healthCheck": "connection-required",
+        "connectionPool": {
+          "minConnections": 3,
+          "maxConnections": 15,
+          "idleTimeout": 120000,
+          "connectionTimeout": 10000
+        },
+        "retry": {
+          "maxAttempts": 5,
+          "backoffMultiplier": 2,
+          "initialDelay": 1000,
+          "maxDelay": 30000
+        },
+        "failover": {
+          "enabled": true,
+          "readReplicas": true,
+          "fallbackServers": ["sqlite"]
+        },
+        "monitoring": {
+          "connectionMetrics": true,
+          "queryPerformance": true,
+          "slowQueryThreshold": 5000
+        }
+      },
+      "applicableTo": ["postgres", "mysql", "mongodb", "redis", "elasticsearch"]
+    },
+    
+    "cloud_server": {
+      "template": {
+        "enabled": true,
+        "priority": 7,
+        "healthCheck": "auth-required",
+        "connectionPool": {
+          "minConnections": 2,
+          "maxConnections": 12,
+          "idleTimeout": 90000
+        },
+        "authentication": {
+          "required": true,
+          "type": "credentials",
+          "envVar": "{{SERVER_NAME_UPPER}}_CREDENTIALS",
+          "refreshInterval": 3600000
+        },
+        "regions": {
+          "primary": "us-east-1",
+          "fallback": ["us-west-2", "eu-west-1"]
+        },
+        "costOptimization": {
+          "enabled": true,
+          "maxConcurrentRequests": 10,
+          "requestBatching": true
+        },
+        "retry": {
+          "maxAttempts": 4,
+          "backoffMultiplier": 2,
+          "initialDelay": 1500
+        }
+      },
+      "applicableTo": ["aws", "gcp", "azure", "vercel", "netlify"]
+    },
+    
+    "ai_model_server": {
+      "template": {
+        "enabled": true,
+        "priority": 8,
+        "healthCheck": "api-key-required",
+        "connectionPool": {
+          "minConnections": 1,
+          "maxConnections": 8,
+          "idleTimeout": 45000
+        },
+        "authentication": {
+          "required": true,
+          "type": "api_key",
+          "envVar": "{{SERVER_NAME_UPPER}}_API_KEY"
+        },
+        "rateLimiting": {
+          "enabled": true,
+          "requestsPerMinute": 60,
+          "tokensPerMinute": 50000,
+          "burstLimit": 10
+        },
+        "caching": {
+          "enabled": true,
+          "ttl": 600000,
+          "maxSize": 200,
+          "semanticCaching": true
+        },
+        "costTracking": {
+          "enabled": true,
+          "trackTokens": true,
+          "costPerToken": 0.0001,
+          "dailyBudget": 100
+        },
+        "modelParameters": {
+          "temperature": 0.7,
+          "maxTokens": 4096,
+          "topP": 0.9
+        }
+      },
+      "applicableTo": ["openai", "anthropic", "cohere", "gemini", "huggingface"]
+    },
+    
+    "monitoring_server": {
+      "template": {
+        "enabled": true,
+        "priority": 7,
+        "healthCheck": "connection-required",
+        "connectionPool": {
+          "minConnections": 2,
+          "maxConnections": 8,
+          "idleTimeout": 120000
+        },
+        "dataRetention": {
+          "enabled": true,
+          "retentionPeriod": "30d",
+          "compressionEnabled": true
+        },
+        "alerting": {
+          "enabled": true,
+          "thresholds": {
+            "errorRate": 0.05,
+            "responseTime": 5000,
+            "availability": 0.99
+          }
+        },
+        "aggregation": {
+          "enabled": true,
+          "intervalSeconds": 60,
+          "batchSize": 1000
+        }
+      },
+      "applicableTo": ["prometheus", "grafana", "datadog", "newrelic", "sentry"]
+    },
+    
+    "container_server": {
+      "template": {
+        "enabled": true,
+        "priority": 8,
+        "healthCheck": "daemon-required",
+        "connectionPool": {
+          "minConnections": 2,
+          "maxConnections": 10,
+          "idleTimeout": 60000
+        },
+        "resourceLimits": {
+          "maxCpuUsage": "2.0",
+          "maxMemoryUsage": "4Gi",
+          "maxDiskUsage": "10Gi"
+        },
+        "scaling": {
+          "enabled": true,
+          "minReplicas": 1,
+          "maxReplicas": 5,
+          "targetCpuUtilization": 70
+        },
+        "networking": {
+          "portRange": "30000-32767",
+          "networkPolicy": "default"
+        }
+      },
+      "applicableTo": ["docker", "kubernetes", "podman", "rancher"]
+    },
+    
+    "utility_server": {
+      "template": {
+        "enabled": true,
+        "priority": 5,
+        "healthCheck": "auto",
+        "connectionPool": {
+          "minConnections": 1,
+          "maxConnections": 5,
+          "idleTimeout": 30000
+        },
+        "processing": {
+          "maxFileSize": "100MB",
+          "timeoutSeconds": 30,
+          "tempDirectory": "/tmp/mcp-processing"
+        },
+        "caching": {
+          "enabled": true,
+          "ttl": 1800000,
+          "maxSize": 50
+        }
+      },
+      "applicableTo": ["json", "xml", "yaml", "csv", "pdf", "imagemagick", "ffmpeg"]
+    },
+    
+    "communication_server": {
+      "template": {
+        "enabled": true,
+        "priority": 6,
+        "healthCheck": "auth-required",
+        "connectionPool": {
+          "minConnections": 1,
+          "maxConnections": 6,
+          "idleTimeout": 45000
+        },
+        "authentication": {
+          "required": true,
+          "type": "token",
+          "envVar": "{{SERVER_NAME_UPPER}}_TOKEN"
+        },
+        "rateLimiting": {
+          "enabled": true,
+          "requestsPerMinute": 120,
+          "burstLimit": 30
+        },
+        "messaging": {
+          "maxMessageLength": 4000,
+          "supportedFormats": ["text", "markdown", "html"],
+          "attachmentSupport": true
+        }
+      },
+      "applicableTo": ["slack", "discord", "teams", "telegram", "email"]
+    }
+  },
+  
+  "dynamicConfiguration": {
+    "enabled": true,
+    "templateSelectionRules": [
+      {
+        "condition": "server.tags.includes('ai')",
+        "template": "ai_model_server"
+      },
+      {
+        "condition": "server.healthCheck === 'connection-required' && server.tags.includes('database')",
+        "template": "database_server"
+      },
+      {
+        "condition": "server.tags.includes('cloud')",
+        "template": "cloud_server"
+      },
+      {
+        "condition": "server.tags.includes('containerization')",
+        "template": "container_server"
+      },
+      {
+        "condition": "server.tags.includes('monitoring')",
+        "template": "monitoring_server"
+      },
+      {
+        "condition": "server.tags.includes('communication')",
+        "template": "communication_server"
+      },
+      {
+        "condition": "server.tags.includes('utilities')",
+        "template": "utility_server"
+      },
+      {
+        "condition": "server.healthCheck === 'auth-required'",
+        "template": "auth_required_server"
+      },
+      {
+        "condition": "server.tags.includes('core')",
+        "template": "core_server"
+      }
+    ],
+    
+    "defaultTemplate": "utility_server",
+    
+    "variableSubstitution": {
+      "enabled": true,
+      "variables": {
+        "SERVER_NAME_UPPER": "{{serverName.toUpperCase()}}",
+        "SERVER_NAME_LOWER": "{{serverName.toLowerCase()}}",
+        "CATEGORY_UPPER": "{{category.toUpperCase()}}",
+        "TIMESTAMP": "{{new Date().toISOString()}}"
+      }
+    }
+  },
+  
+  "globalDefaults": {
+    "connectionPool": {
+      "acquireTimeoutMillis": 10000,
+      "createRetryIntervalMillis": 200,
+      "createTimeoutMillis": 10000,
+      "destroyTimeoutMillis": 5000,
+      "reapIntervalMillis": 1000,
+      "idleTimeoutMillis": 30000
+    },
+    
+    "healthCheck": {
+      "intervalMillis": 30000,
+      "timeoutMillis": 5000,
+      "unhealthyThreshold": 3,
+      "healthyThreshold": 2
+    },
+    
+    "retry": {
+      "maxAttempts": 3,
+      "initialDelayMillis": 1000,
+      "maxDelayMillis": 30000,
+      "backoffMultiplier": 2,
+      "jitter": true
+    },
+    
+    "caching": {
+      "defaultTtl": 300000,
+      "maxSize": 100,
+      "compressionEnabled": true
+    },
+    
+    "monitoring": {
+      "metricsEnabled": true,
+      "tracingEnabled": true,
+      "loggingLevel": "info",
+      "performanceThresholds": {
+        "responseTime": 1000,
+        "errorRate": 0.01,
+        "availability": 0.999
+      }
+    }
+  }
+}

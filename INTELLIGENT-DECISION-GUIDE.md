@@ -251,3 +251,9 @@ For existing installations:
 - View analysis: `ai-dev analyze`
 - Test system: `node test/test-basic.js`
 - Report issues: Create issue in repository
+
+## CI/CD and GitHub Actions
+
+- CI: The repository includes a CI workflow that runs Node and Bash tests on PRs and pushes
+- GitHub Actions for Claude: You can enable Claude Code GitHub Actions to respond to `@claude` in PRs/issues after installing the GitHub App and adding secrets (e.g., `ANTHROPIC_API_KEY`, or Bedrock/Vertex credentials if using those providers)
+- Reference setup guide and examples: https://docs.anthropic.com/en/docs/claude-code/github-actions

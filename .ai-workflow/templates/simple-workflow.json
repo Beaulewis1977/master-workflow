@@ -1,0 +1,15 @@
+{
+  "name": "simple-workflow",
+  "description": "Quick single-agent task execution",
+  "approach": "simpleSwarm",
+  "steps": [
+    {
+      "type": "analyze",
+      "description": "Quick project analysis"
+    },
+    {
+      "type": "execute",
+      "command": "npx claude-flow@${version} swarm \"${task}\""
+    }
+  ]
+}

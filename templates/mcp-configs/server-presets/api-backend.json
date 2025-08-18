@@ -1,0 +1,209 @@
+{
+  "name": "API Backend",
+  "description": "Comprehensive backend API development with Express.js, databases, Redis caching, and authentication services",
+  "category": "backend",
+  "version": "1.0.0",
+  "priority_level": "high",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Primary coding assistance for backend development",
+      "default": true,
+      "config": {
+        "features": ["api_design", "database_modeling", "security_patterns"],
+        "languages": ["javascript", "typescript", "sql", "python", "go"]
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Backend project structure and file management",
+      "config": {
+        "root": ".",
+        "watch_patterns": ["src/**/*", "routes/**/*", "models/**/*", "middleware/**/*"],
+        "ignore_patterns": ["node_modules/**", "dist/**", "logs/**", "uploads/**"]
+      }
+    },
+    "postgres": {
+      "enabled": true,
+      "priority": 3,
+      "description": "PostgreSQL database operations and management",
+      "config": {
+        "pool_size": 20,
+        "connection_timeout": 30000,
+        "migration_support": true,
+        "query_logging": true
+      }
+    },
+    "redis": {
+      "enabled": true,
+      "priority": 4,
+      "description": "Redis caching and session management",
+      "config": {
+        "cluster_mode": false,
+        "persistence": true,
+        "compression": true,
+        "ttl_default": 3600
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 5,
+      "description": "HTTP client for external API integration and testing",
+      "config": {
+        "timeout": 30000,
+        "retry_attempts": 3,
+        "rate_limiting": true
+      }
+    },
+    "openapi": {
+      "enabled": true,
+      "priority": 6,
+      "description": "API documentation and schema validation",
+      "config": {
+        "validate_requests": true,
+        "validate_responses": true,
+        "auto_generate_docs": true,
+        "swagger_ui": true
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Containerization and deployment management",
+      "config": {
+        "multi_stage_builds": true,
+        "health_checks": true,
+        "log_driver": "json-file"
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Version control for backend services",
+      "config": {
+        "repo": "auto",
+        "hooks": ["pre-commit", "pre-push"],
+        "conventional_commits": true
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 9,
+      "description": "CI/CD pipeline and code collaboration",
+      "config": {
+        "auto_pr": true,
+        "security_scanning": true,
+        "dependency_updates": true
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "NODE_ENV",
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "API_PORT"
+    ],
+    "optional": [
+      "REDIS_URL",
+      "SMTP_HOST",
+      "SMTP_PORT",
+      "SMTP_USER",
+      "SMTP_PASS",
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "GITHUB_TOKEN",
+      "SENTRY_DSN"
+    ],
+    "production": {
+      "NODE_ENV": "production",
+      "LOG_LEVEL": "info",
+      "RATE_LIMIT_WINDOW": "900000",
+      "RATE_LIMIT_MAX": "100"
+    },
+    "development": {
+      "NODE_ENV": "development",
+      "LOG_LEVEL": "debug",
+      "DEBUG": "*"
+    }
+  },
+  "recommended_tools": [
+    "express",
+    "fastify",
+    "prisma",
+    "typeorm",
+    "joi",
+    "helmet",
+    "cors",
+    "jsonwebtoken",
+    "bcrypt",
+    "winston",
+    "nodemon",
+    "pm2",
+    "artillery",
+    "supertest"
+  ],
+  "project_structure": {
+    "required_files": [
+      "package.json",
+      "server.js",
+      "tsconfig.json",
+      "Dockerfile",
+      "docker-compose.yml",
+      ".env.example"
+    ],
+    "recommended_directories": [
+      "src/",
+      "routes/",
+      "models/",
+      "middleware/",
+      "services/",
+      "utils/",
+      "tests/",
+      "migrations/",
+      "seeds/",
+      "docs/"
+    ]
+  },
+  "common_configurations": {
+    "framework": "express",
+    "database": "postgresql",
+    "cache": "redis",
+    "authentication": "jwt",
+    "validation": "joi",
+    "logging": "winston",
+    "testing": "jest",
+    "containerization": "docker"
+  },
+  "integration_points": {
+    "databases": {
+      "postgresql": {
+        "orm": "prisma",
+        "migrations": true,
+        "connection_pooling": true
+      },
+      "mongodb": {
+        "orm": "mongoose",
+        "transactions": true,
+        "indexing": true
+      }
+    },
+    "message_queues": {
+      "redis": {
+        "pub_sub": true,
+        "job_queues": true
+      },
+      "rabbitmq": {
+        "exchanges": true,
+        "routing": true
+      }
+    },
+    "monitoring": {
+      "prometheus": true,
+      "grafana": true,
+      "health_checks": true
+    }
+  }
+}

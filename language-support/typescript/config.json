@@ -1,0 +1,108 @@
+{
+  "name": "TypeScript",
+  "version": "5.0+",
+  "runtime": "Node.js / Browser",
+  "runtimeVersions": ["18.x", "20.x", "21.x"],
+  "features": {
+    "staticTyping": true,
+    "compilation": true,
+    "generics": true,
+    "interfaces": true,
+    "decorators": true,
+    "enums": true,
+    "unionTypes": true,
+    "intersectionTypes": true,
+    "conditionalTypes": true,
+    "mappedTypes": true,
+    "templateLiteralTypes": true,
+    "modules": true,
+    "namespaces": true,
+    "jsx": true
+  },
+  "packageManagement": {
+    "primary": "npm",
+    "alternatives": ["yarn", "pnpm", "bun"],
+    "registry": "https://registry.npmjs.org/",
+    "lockFiles": ["package-lock.json", "yarn.lock", "pnpm-lock.yaml"],
+    "typeDefinitions": "@types packages from DefinitelyTyped"
+  },
+  "compilerOptions": {
+    "target": ["ES5", "ES2015", "ES2017", "ES2018", "ES2019", "ES2020", "ES2021", "ES2022", "ESNext"],
+    "module": ["CommonJS", "AMD", "System", "UMD", "ES6", "ES2015", "ES2020", "ESNext", "Node16", "NodeNext"],
+    "moduleResolution": ["node", "classic", "bundler"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "commonDependencies": {
+    "dev": [
+      "typescript",
+      "@types/node",
+      "ts-node",
+      "tsx",
+      "@typescript-eslint/eslint-plugin",
+      "@typescript-eslint/parser",
+      "eslint",
+      "prettier",
+      "jest",
+      "@types/jest",
+      "ts-jest"
+    ],
+    "production": [
+      "express",
+      "@types/express",
+      "dotenv",
+      "cors",
+      "@types/cors",
+      "helmet",
+      "@types/helmet"
+    ]
+  },
+  "fileStructure": {
+    "src": "Source TypeScript files",
+    "dist": "Compiled JavaScript output",
+    "types": "Type declaration files",
+    "test": "Test files",
+    "public": "Static assets",
+    "config": "Configuration files",
+    "scripts": "Build and utility scripts",
+    "tsconfig.json": "TypeScript configuration",
+    "tsconfig.build.json": "Production build configuration"
+  },
+  "buildTargets": {
+    "development": {
+      "sourceMap": true,
+      "declaration": true,
+      "removeComments": false,
+      "target": "ES2020"
+    },
+    "production": {
+      "sourceMap": false,
+      "declaration": false,
+      "removeComments": true,
+      "target": "ES2017",
+      "optimization": true
+    }
+  },
+  "frameworks": {
+    "frontend": ["React", "Vue", "Angular", "Svelte"],
+    "backend": ["Express", "Fastify", "NestJS", "Koa"],
+    "fullstack": ["Next.js", "Nuxt", "SvelteKit", "Remix"],
+    "testing": ["Jest", "Vitest", "Mocha", "Playwright", "Cypress"]
+  },
+  "bestPractices": [
+    "Enable strict mode in TypeScript configuration",
+    "Use interfaces for object shapes and contracts",
+    "Prefer type unions over enums when appropriate",
+    "Use generic types for reusable components",
+    "Implement proper error handling with typed errors",
+    "Use utility types (Partial, Required, Pick, Omit)",
+    "Write comprehensive type definitions",
+    "Use const assertions for literal types",
+    "Implement proper null checking",
+    "Use discriminated unions for type safety"
+  ]
+}

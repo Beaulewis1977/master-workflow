@@ -1,7 +1,8 @@
 {
   "version": "2.0",
   "orchestration": {
-    "master": "workflow-orchestrator",
+    "master": "queen-controller",
+    "fallback_master": "workflow-orchestrator",
     "agents": {
       "workflow-orchestrator": {
         "role": "master",

@@ -1,0 +1,198 @@
+{
+  "version": "2.0",
+  "approaches": {
+    "simpleSwarm": {
+      "name": "Simple Swarm",
+      "description": "Quick AI coordination for straightforward tasks",
+      "complexityRange": [0, 30],
+      "command": "npx claude-flow@${version} swarm",
+      "timeEstimate": "5-30 minutes",
+      "agentCount": 1,
+      "bestFor": [
+        "Single feature development",
+        "Quick prototypes",
+        "Bug fixes",
+        "Simple integrations",
+        "Learning and experimentation"
+      ],
+      "limitations": [
+        "No persistent memory",
+        "Limited coordination",
+        "Single-threaded execution"
+      ],
+      "tmuxWindows": 1,
+      "requiredSystems": ["claude-flow"]
+    },
+    "hiveMind": {
+      "name": "Hive-Mind",
+      "description": "Intelligent multi-agent coordination with specialized roles",
+      "complexityRange": [31, 70],
+      "command": "npx claude-flow@${version} hive-mind spawn \"${project}\" --agents ${agentCount} --claude",
+      "timeEstimate": "30 minutes - 4 hours",
+      "agentCount": "4-6",
+      "bestFor": [
+        "Multi-feature development",
+        "Fullstack applications",
+        "Complex integrations",
+        "Team-based development",
+        "Medium-scale projects"
+      ],
+      "features": [
+        "Specialized agent roles",
+        "Cross-session memory",
+        "Parallel execution",
+        "Intelligent coordination"
+      ],
+      "tmuxWindows": 4,
+      "requiredSystems": ["claude-flow", "agent-os"]
+    },
+    "hiveMindSparc": {
+      "name": "Hive-Mind + SPARC",
+      "description": "Enterprise methodology with systematic development phases",
+      "complexityRange": [71, 100],
+      "command": "npx claude-flow@${version} hive-mind spawn \"${project}\" --sparc --agents ${agentCount} --claude",
+      "additionalCommands": [
+        "npx claude-flow@${version} sparc wizard --interactive"
+      ],
+      "timeEstimate": "4+ hours",
+      "agentCount": "8-12",
+      "bestFor": [
+        "Enterprise applications",
+        "Complex system architecture",
+        "Long-term projects",
+        "Systematic development",
+        "Professional documentation"
+      ],
+      "sparcPhases": [
+        {
+          "phase": 1,
+          "name": "Specification",
+          "description": "Requirements and planning",
+          "outputs": ["requirements.md", "success-criteria.md"]
+        },
+        {
+          "phase": 2,
+          "name": "Pseudocode",
+          "description": "Algorithm design",
+          "outputs": ["algorithms.md", "data-structures.md"]
+        },
+        {
+          "phase": 3,
+          "name": "Architecture",
+          "description": "System design",
+          "outputs": ["architecture.md", "component-design.md"]
+        },
+        {
+          "phase": 4,
+          "name": "Refinement",
+          "description": "Iterative improvement",
+          "outputs": ["optimizations.md", "quality-improvements.md"]
+        },
+        {
+          "phase": 5,
+          "name": "Completion",
+          "description": "Final implementation",
+          "outputs": ["implementation-checklist.md", "deployment-plan.md"]
+        }
+      ],
+      "features": [
+        "Structured SPARC methodology",
+        "Comprehensive documentation",
+        "Neural pattern learning",
+        "Enterprise-grade coordination",
+        "Cross-phase memory"
+      ],
+      "tmuxWindows": 6,
+      "requiredSystems": ["claude-flow", "agent-os", "tmux-orchestrator"]
+    }
+  },
+  "claudeFlowVersions": {
+    "alpha": {
+      "tag": "@alpha",
+      "description": "Alpha version - latest features",
+      "stability": "experimental",
+      "default": true
+    },
+    "beta": {
+      "tag": "@beta",
+      "description": "Beta version - testing phase",
+      "stability": "testing"
+    },
+    "latest": {
+      "tag": "@latest",
+      "description": "Latest stable version",
+      "stability": "stable"
+    },
+    "2.0": {
+      "tag": "@2.0",
+      "description": "Version 2.0 - major release",
+      "stability": "stable"
+    },
+    "stable": {
+      "tag": "@stable",
+      "description": "Most stable version",
+      "stability": "production"
+    },
+    "dev": {
+      "tag": "@dev",
+      "description": "Development version",
+      "stability": "unstable"
+    }
+  },
+  "complexityFactors": {
+    "size": {
+      "weight": 0.15,
+      "description": "Project size and file count"
+    },
+    "dependencies": {
+      "weight": 0.15,
+      "description": "Number and complexity of dependencies"
+    },
+    "architecture": {
+      "weight": 0.20,
+      "description": "Architectural complexity"
+    },
+    "techStack": {
+      "weight": 0.15,
+      "description": "Technology diversity"
+    },
+    "features": {
+      "weight": 0.15,
+      "description": "Feature complexity"
+    },
+    "team": {
+      "weight": 0.05,
+      "description": "Team collaboration indicators"
+    },
+    "deployment": {
+      "weight": 0.10,
+      "description": "Deployment complexity"
+    },
+    "testing": {
+      "weight": 0.05,
+      "description": "Testing coverage"
+    }
+  },
+  "projectStages": {
+    "idea": {
+      "indicators": ["README.md", "requirements.txt", "project-*.md"],
+      "description": "Planning and documentation phase",
+      "adjustmentFactor": 0.5
+    },
+    "early": {
+      "indicators": ["package.json", "src/", "basic file structure"],
+      "description": "Initial development phase",
+      "adjustmentFactor": 0.7
+    },
+    "active": {
+      "indicators": ["substantial code", "test files", "multiple modules"],
+      "description": "Active development phase",
+      "adjustmentFactor": 1.0
+    },
+    "mature": {
+      "indicators": ["deployment configs", "monitoring", "production builds"],
+      "description": "Production-ready phase",
+      "adjustmentFactor": 1.2
+    }
+  }
+}

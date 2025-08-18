@@ -1,0 +1,3089 @@
+{
+  "testId": "8dd5cbad-d407-41a5-90cd-3151c218f0cb",
+  "timestamp": "2025-08-14T21:33:50.107Z",
+  "summary": {
+    "overall": {
+      "total": 15,
+      "passed": 15,
+      "failed": 0,
+      "passRate": "100.00"
+    },
+    "platforms": {
+      "windows": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "passRate": "100.00"
+      },
+      "macos": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "passRate": "100.00"
+      },
+      "linux": {
+        "total": 5,
+        "passed": 5,
+        "failed": 0,
+        "passRate": "100.00"
+      }
+    }
+  },
+  "platformResults": {
+    "windows": {
+      "windows-10-x64-cmd-npm-14.x": {
+        "variant": {
+          "id": "windows-10-x64-cmd-npm-14.x",
+          "platform": "windows",
+          "version": "10",
+          "architecture": "x64",
+          "shell": "cmd",
+          "packageManager": "npm",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 580,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "npm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 99.68005321013055
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 77.98716011704714
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 51.27669905955234
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 141.9365370550345
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 68.12814130677631
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 74.79524185245924
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 111.42266579508907
+              }
+            },
+            "mcpServersDiscovered": 104,
+            "agentsDeployed": 9,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 103
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 12,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 11
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 104,
+          "agentsDeployed": 9
+        },
+        "functionality": {
+          "success": true,
+          "duration": 1,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 4475.270279239865
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 11,
+              "averageResponseTime": 75.14151303493682
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 100,
+              "connectionsEstablished": 100
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 53.822373599617,
+              "memoryUsage": 212.74706807983813,
+              "cpuUsage": 20.691178669962774
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 548,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 99.99053477674526
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 141.37933594487959
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 57.3184669847284
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 135.10399240761387
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 124.54453012908431
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 96.47154717943422
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1132,
+        "success": true
+      },
+      "windows-10-x64-cmd-npm-16.x": {
+        "variant": {
+          "id": "windows-10-x64-cmd-npm-16.x",
+          "platform": "windows",
+          "version": "10",
+          "architecture": "x64",
+          "shell": "cmd",
+          "packageManager": "npm",
+          "nodeVersion": "16.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 672,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "16.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "npm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 128.82456587242615
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 91.22671509888944
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 81.66335776509924
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 104.64223261735386
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 74.52945808956045
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 69.56874550849284
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 70.5571352378235
+              }
+            },
+            "mcpServersDiscovered": 110,
+            "agentsDeployed": 10,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 100
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 8,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 8
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 110,
+          "agentsDeployed": 10
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 5316.735451458771
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 12,
+              "averageResponseTime": 134.74057471390375
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 145,
+              "connectionsEstablished": 143
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 53.3941093265759,
+              "memoryUsage": 238.93413111685027,
+              "cpuUsage": 24.53114137061906
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 572,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 132.7803538271421
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 55.858834814940565
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 64.9313824189484
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 124.09224370807188
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 58.328905857629906
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 114.89234200668044
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1246,
+        "success": true
+      },
+      "windows-10-x64-cmd-yarn-14.x": {
+        "variant": {
+          "id": "windows-10-x64-cmd-yarn-14.x",
+          "platform": "windows",
+          "version": "10",
+          "architecture": "x64",
+          "shell": "cmd",
+          "packageManager": "yarn",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 582,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "yarn"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 63.22381793589218
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 86.37415441008056
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 145.60973643062647
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 74.15826307474968
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 96.91517723506611
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 90.38208897667434
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 142.28816070104523
+              }
+            },
+            "mcpServersDiscovered": 129,
+            "agentsDeployed": 8,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 141
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 12,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 12
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 129,
+          "agentsDeployed": 8
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 4731.792058906942
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 12,
+              "averageResponseTime": 101.49785218263875
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 141,
+              "connectionsEstablished": 123
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 57.61411965414986,
+              "memoryUsage": 230.7576876540029,
+              "cpuUsage": 7.0965998351627
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 670,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 116.78647236570004
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 65.52924407681672
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 143.38139349314693
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 52.24885099478689
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 112.10265782878784
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 55.033454351699504
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1254,
+        "success": true
+      },
+      "windows-10-x64-cmd-yarn-16.x": {
+        "variant": {
+          "id": "windows-10-x64-cmd-yarn-16.x",
+          "platform": "windows",
+          "version": "10",
+          "architecture": "x64",
+          "shell": "cmd",
+          "packageManager": "yarn",
+          "nodeVersion": "16.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 667,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "16.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "yarn"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 122.29618748003111
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 96.27360484693679
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 128.23580367105575
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 148.61070974692717
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 108.85878961268472
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 89.29186198046257
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 116.90247496214359
+              }
+            },
+            "mcpServersDiscovered": 143,
+            "agentsDeployed": 11,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 109
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 11,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 11
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 143,
+          "agentsDeployed": 11
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 5841.127724417893
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 10,
+              "averageResponseTime": 52.132722455475665
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 112,
+              "connectionsEstablished": 125
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 48.97691205000751,
+              "memoryUsage": 232.02467714196985,
+              "cpuUsage": 22.67089785265238
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 575,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 99.53238403371034
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 136.87810945699448
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 104.70649092588913
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 60.15400985346191
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 108.821992615075
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 51.37027116025787
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1243,
+        "success": true
+      },
+      "windows-10-x64-cmd-pnpm-14.x": {
+        "variant": {
+          "id": "windows-10-x64-cmd-pnpm-14.x",
+          "platform": "windows",
+          "version": "10",
+          "architecture": "x64",
+          "shell": "cmd",
+          "packageManager": "pnpm",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 713,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "pnpm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-windows-10-x64-cmd-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 51.79050648623209
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 60.337442424261624
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 133.04009908786824
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 144.7424314353898
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 104.42855169797346
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 115.21348499006181
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 116.49164352643879
+              }
+            },
+            "mcpServersDiscovered": 123,
+            "agentsDeployed": 10,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-windows-10-x64-cmd-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 113
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 10,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 8
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 123,
+          "agentsDeployed": 10
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 6171.188647673167
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 9,
+              "averageResponseTime": 59.98918607068251
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 100,
+              "connectionsEstablished": 137
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 59.54736060198674,
+              "memoryUsage": 286.2007450783097,
+              "cpuUsage": 9.952900651768308
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 525,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 57.87773403755136
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 60.027661589035674
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 133.6467211714003
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 66.70604635947679
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 86.60264962200213
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 107.79312019079146
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1240,
+        "success": true
+      }
+    },
+    "macos": {
+      "macos-monterey-intel-bash-npm-14.x": {
+        "variant": {
+          "id": "macos-monterey-intel-bash-npm-14.x",
+          "platform": "macos",
+          "version": "monterey",
+          "architecture": "intel",
+          "shell": "bash",
+          "packageManager": "npm",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 771,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "npm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 92.17913164096237
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 113.05970932907681
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 121.83213972221722
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 133.73404172839997
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 140.22364259901673
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 128.49963688822842
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 143.95200078330038
+              }
+            },
+            "mcpServersDiscovered": 100,
+            "agentsDeployed": 10,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 118
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 10,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 10
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 100,
+          "agentsDeployed": 10
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 6124.59241886386
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 10,
+              "averageResponseTime": 98.0783601819081
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 126,
+              "connectionsEstablished": 140
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 57.294377126409756,
+              "memoryUsage": 203.8591864157319,
+              "cpuUsage": 6.8891925790360276
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 607,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 114.88524321327999
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 52.27938043069757
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 132.46343854649348
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 92.99174657174629
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 127.0188331045198
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 145.58693117988963
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1379,
+        "success": true
+      },
+      "macos-monterey-intel-bash-npm-16.x": {
+        "variant": {
+          "id": "macos-monterey-intel-bash-npm-16.x",
+          "platform": "macos",
+          "version": "monterey",
+          "architecture": "intel",
+          "shell": "bash",
+          "packageManager": "npm",
+          "nodeVersion": "16.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 700,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "16.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "npm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 129.30277843524027
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 85.95718569840712
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 62.773681662465684
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 119.67432547929052
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 138.35543297543214
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 127.93621382663439
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 55.760959712288226
+              }
+            },
+            "mcpServersDiscovered": 101,
+            "agentsDeployed": 12,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 125
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 11,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 12
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 101,
+          "agentsDeployed": 12
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 2576.3907471966954
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 12,
+              "averageResponseTime": 136.0202818211513
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 110,
+              "connectionsEstablished": 103
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 50.02764874753743,
+              "memoryUsage": 244.330978322292,
+              "cpuUsage": 24.935062062483
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 669,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 112.8809335571569
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 92.82982738624621
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 67.94843465200877
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 68.15560977207464
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 109.7060629949798
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 73.94206827142469
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1370,
+        "success": true
+      },
+      "macos-monterey-intel-bash-yarn-14.x": {
+        "variant": {
+          "id": "macos-monterey-intel-bash-yarn-14.x",
+          "platform": "macos",
+          "version": "monterey",
+          "architecture": "intel",
+          "shell": "bash",
+          "packageManager": "yarn",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 707,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "yarn"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 91.0954162509988
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 106.10700079986196
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 91.46760192509711
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 138.59219479536273
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 87.03679818630172
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 125.89666993552832
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 125.93147201902826
+              }
+            },
+            "mcpServersDiscovered": 102,
+            "agentsDeployed": 9,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 128
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 12,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 12
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 102,
+          "agentsDeployed": 9
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 2683.9479100763347
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 8,
+              "averageResponseTime": 67.93854275365388
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 111,
+              "connectionsEstablished": 113
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 56.42525355378287,
+              "memoryUsage": 213.48969591400865,
+              "cpuUsage": 16.464587170978383
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 572,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 90.57649146043204
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 142.86662143120037
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 126.40365998188032
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 99.93139778671903
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 121.97956945904744
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 145.76157265407954
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1280,
+        "success": true
+      },
+      "macos-monterey-intel-bash-yarn-16.x": {
+        "variant": {
+          "id": "macos-monterey-intel-bash-yarn-16.x",
+          "platform": "macos",
+          "version": "monterey",
+          "architecture": "intel",
+          "shell": "bash",
+          "packageManager": "yarn",
+          "nodeVersion": "16.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 701,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "16.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "yarn"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 59.83021842675436
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 127.98247505766345
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 117.32988760075497
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 66.8649104745728
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 115.61735443808992
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 65.70903347995609
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 72.68879515694562
+              }
+            },
+            "mcpServersDiscovered": 133,
+            "agentsDeployed": 8,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 106
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 10,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 9
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 133,
+          "agentsDeployed": 8
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 5665.806897059092
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 8,
+              "averageResponseTime": 149.52692210143854
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 130,
+              "connectionsEstablished": 105
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 50.78366292012443,
+              "memoryUsage": 264.457097128407,
+              "cpuUsage": 15.17869633902258
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 603,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 139.31814948835563
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 75.36472208543721
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 74.43713788238304
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 97.24987973296781
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 144.60019571859664
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 95.75516360215018
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1305,
+        "success": true
+      },
+      "macos-monterey-intel-bash-pnpm-14.x": {
+        "variant": {
+          "id": "macos-monterey-intel-bash-pnpm-14.x",
+          "platform": "macos",
+          "version": "monterey",
+          "architecture": "intel",
+          "shell": "bash",
+          "packageManager": "pnpm",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 700,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "pnpm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 138.8597881633483
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 78.5092445537697
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 139.23460300635315
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 95.74315005794385
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 142.8087129464083
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 102.47704403265837
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 63.153810915038
+              }
+            },
+            "mcpServersDiscovered": 138,
+            "agentsDeployed": 11,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-macos-monterey-intel-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 145
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 12,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 11
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 138,
+          "agentsDeployed": 11
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 2749.4416212378273
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 9,
+              "averageResponseTime": 121.04041285541216
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 147,
+              "connectionsEstablished": 135
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 41.907733324008454,
+              "memoryUsage": 290.23380624247017,
+              "cpuUsage": 20.903099077835808
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 579,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 88.1154184351705
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 95.49627303267295
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 146.26483895886034
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 51.5210504125446
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 122.8739106353095
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 96.30469505404429
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1281,
+        "success": true
+      }
+    },
+    "linux": {
+      "linux-ubuntu-20.04-x64-bash-npm-14.x": {
+        "variant": {
+          "id": "linux-ubuntu-20.04-x64-bash-npm-14.x",
+          "platform": "linux",
+          "distribution": "ubuntu-20.04",
+          "architecture": "x64",
+          "shell": "bash",
+          "packageManager": "npm",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 657,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "npm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 90.67964415791201
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 132.56972617080714
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 132.42569936007175
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 114.94421264400572
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 116.48060588017626
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 75.66466276973527
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 131.56092276955454
+              }
+            },
+            "mcpServersDiscovered": 126,
+            "agentsDeployed": 10,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 116
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 8,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 8
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 126,
+          "agentsDeployed": 10
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 6158.471130073603
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 11,
+              "averageResponseTime": 108.47854605903913
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 128,
+              "connectionsEstablished": 126
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 48.646815891053826,
+              "memoryUsage": 263.90867556861514,
+              "cpuUsage": 14.257852395188259
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 518,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 98.73815850544693
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 90.17245064499085
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 77.14111262760062
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 81.15298981487209
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 74.63971751224804
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 112.04265593882573
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1175,
+        "success": true
+      },
+      "linux-ubuntu-20.04-x64-bash-npm-16.x": {
+        "variant": {
+          "id": "linux-ubuntu-20.04-x64-bash-npm-16.x",
+          "platform": "linux",
+          "distribution": "ubuntu-20.04",
+          "architecture": "x64",
+          "shell": "bash",
+          "packageManager": "npm",
+          "nodeVersion": "16.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 803,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "16.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "npm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 60.391007213256586
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 58.36615296517409
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 78.21030937645821
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 111.65932609801237
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 99.55098795749103
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 145.5590655157176
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 119.28973120095156
+              }
+            },
+            "mcpServersDiscovered": 125,
+            "agentsDeployed": 9,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-npm-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 143
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 11,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 9
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 125,
+          "agentsDeployed": 9
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 3311.497991208328
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 8,
+              "averageResponseTime": 99.1432318297191
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 136,
+              "connectionsEstablished": 119
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 49.33524294026703,
+              "memoryUsage": 286.7198443718139,
+              "cpuUsage": 18.691134511110228
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 557,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 143.89450584608443
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 95.03809636289351
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 118.18200112587618
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 52.586287606444614
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 140.36209929517736
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 60.875422805036685
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1362,
+        "success": true
+      },
+      "linux-ubuntu-20.04-x64-bash-yarn-14.x": {
+        "variant": {
+          "id": "linux-ubuntu-20.04-x64-bash-yarn-14.x",
+          "platform": "linux",
+          "distribution": "ubuntu-20.04",
+          "architecture": "x64",
+          "shell": "bash",
+          "packageManager": "yarn",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 619,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "yarn"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 128.77478433853793
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 96.54630214935298
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 130.41458630950723
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 116.2180705237039
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 117.38834924790329
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 118.32070512688608
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 135.59898056956092
+              }
+            },
+            "mcpServersDiscovered": 111,
+            "agentsDeployed": 9,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 127
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 8,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 8
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 111,
+          "agentsDeployed": 9
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 3527.4878553483263
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 12,
+              "averageResponseTime": 126.72958761483284
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 110,
+              "connectionsEstablished": 113
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 46.788032400625724,
+              "memoryUsage": 280.10849800142495,
+              "cpuUsage": 16.762776499414276
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 619,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 111.58517545447097
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 136.08684916107447
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 146.22413710537535
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 127.30903268492186
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 54.41460569801704
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 50.92112779347448
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1239,
+        "success": true
+      },
+      "linux-ubuntu-20.04-x64-bash-yarn-16.x": {
+        "variant": {
+          "id": "linux-ubuntu-20.04-x64-bash-yarn-16.x",
+          "platform": "linux",
+          "distribution": "ubuntu-20.04",
+          "architecture": "x64",
+          "shell": "bash",
+          "packageManager": "yarn",
+          "nodeVersion": "16.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 811,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "16.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "yarn"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 59.82264173029175
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 146.30611165150316
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 105.55811590654945
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 66.52469786430314
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 139.1787450291005
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 134.67809978665838
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 57.0442533737761
+              }
+            },
+            "mcpServersDiscovered": 112,
+            "agentsDeployed": 9,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-yarn-16.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 126
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 8,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 12
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 112,
+          "agentsDeployed": 9
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 4364.029649490976
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 9,
+              "averageResponseTime": 126.91900646456418
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 142,
+              "connectionsEstablished": 112
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 45.42689007587105,
+              "memoryUsage": 299.85567946926597,
+              "cpuUsage": 14.172181633203508
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 602,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 84.54504762946033
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 134.486841767486
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 139.7987257578946
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 123.4933599604609
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 73.25805807138136
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 134.13798328799186
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1414,
+        "success": true
+      },
+      "linux-ubuntu-20.04-x64-bash-pnpm-14.x": {
+        "variant": {
+          "id": "linux-ubuntu-20.04-x64-bash-pnpm-14.x",
+          "platform": "linux",
+          "distribution": "ubuntu-20.04",
+          "architecture": "x64",
+          "shell": "bash",
+          "packageManager": "pnpm",
+          "nodeVersion": "14.x"
+        },
+        "installation": {
+          "success": true,
+          "duration": 739,
+          "preChecks": {
+            "passed": true,
+            "checks": {
+              "nodeVersion": {
+                "passed": true,
+                "currentVersion": "14.x",
+                "requiredVersion": "14.0.0"
+              },
+              "packageManager": {
+                "passed": true,
+                "packageManager": "pnpm"
+              },
+              "permissions": {
+                "passed": true,
+                "writableDirectories": [
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home",
+                  "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/temp"
+                ]
+              },
+              "diskSpace": {
+                "passed": true,
+                "available": "10GB",
+                "required": "500MB"
+              },
+              "networkAccess": {
+                "passed": true,
+                "npmRegistry": true,
+                "githubAccess": true
+              }
+            },
+            "errors": []
+          },
+          "installation": {
+            "steps": {
+              "Downloading Claude Flow 2.0 package": {
+                "success": true,
+                "duration": 68.24996811278689
+              },
+              "Installing dependencies": {
+                "success": true,
+                "duration": 110.53189732997153
+              },
+              "Discovering MCP servers": {
+                "success": true,
+                "duration": 60.19844871616089
+              },
+              "Deploying agents": {
+                "success": true,
+                "duration": 54.85487769277546
+              },
+              "Configuring Queen Controller": {
+                "success": true,
+                "duration": 112.8745501818805
+              },
+              "Setting up Web UI": {
+                "success": true,
+                "duration": 53.284338521694316
+              },
+              "Creating configuration files": {
+                "success": true,
+                "duration": 108.74709454481031
+              }
+            },
+            "mcpServersDiscovered": 133,
+            "agentsDeployed": 12,
+            "configurationCreated": true
+          },
+          "postValidation": {
+            "passed": true,
+            "validations": {
+              "claudeFlowCLI": {
+                "passed": true,
+                "version": "2.0.0",
+                "location": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/programs/claude-flow"
+              },
+              "mcpConfiguration": {
+                "passed": true,
+                "configFile": "/tmp/claude-flow-clean-env-linux-ubuntu-20.04-x64-bash-pnpm-14.x-8dd5cbad-d407-41a5-90cd-3151c218f0cb/home/.claude/mcp-config.json",
+                "serversConfigured": 114
+              },
+              "agentDeployment": {
+                "passed": true,
+                "agentsActive": 11,
+                "queenControllerRunning": true
+              },
+              "webUIAccess": {
+                "passed": true,
+                "url": "http://localhost:3000",
+                "accessible": true
+              },
+              "queenController": {
+                "passed": true,
+                "status": "running",
+                "agentsManaged": 8
+              }
+            },
+            "errors": []
+          },
+          "mcpServersDiscovered": 133,
+          "agentsDeployed": 12
+        },
+        "functionality": {
+          "success": true,
+          "duration": 0,
+          "tests": {
+            "projectCreation": {
+              "success": true,
+              "projectType": "sample-react-app",
+              "filesCreated": 25,
+              "timeToCreate": 2964.4817882005473
+            },
+            "agentCommunication": {
+              "success": true,
+              "agentsResponding": 12,
+              "averageResponseTime": 62.044165126099514
+            },
+            "mcpIntegration": {
+              "success": true,
+              "serversActive": 131,
+              "connectionsEstablished": 103
+            },
+            "webUIFunctionality": {
+              "success": true,
+              "pagesAccessible": [
+                "dashboard",
+                "agents",
+                "monitoring",
+                "settings"
+              ],
+              "realTimeUpdates": true
+            },
+            "performanceOptimization": {
+              "success": true,
+              "performanceImprovement": 42.35979692381185,
+              "memoryUsage": 230.1818521447825,
+              "cpuUsage": 7.404242285465239
+            }
+          }
+        },
+        "uninstall": {
+          "success": true,
+          "duration": 605,
+          "uninstallResult": {
+            "success": true,
+            "steps": {
+              "Stopping agents": {
+                "success": true,
+                "duration": 125.62219456767718
+              },
+              "Shutting down Queen Controller": {
+                "success": true,
+                "duration": 127.24012027223743
+              },
+              "Stopping Web UI server": {
+                "success": true,
+                "duration": 59.57310695969142
+              },
+              "Removing configuration files": {
+                "success": true,
+                "duration": 138.39396577213068
+              },
+              "Uninstalling Claude Flow CLI": {
+                "success": true,
+                "duration": 65.70982274107895
+              },
+              "Cleaning up temporary files": {
+                "success": true,
+                "duration": 131.1405756281581
+              }
+            }
+          },
+          "cleanRemoval": {
+            "isClean": true,
+            "claudeFlowRemoved": true,
+            "configurationRemoved": true,
+            "temporaryFilesRemoved": true,
+            "originalProjectIntact": true
+          }
+        },
+        "duration": 1345,
+        "success": true
+      }
+    }
+  },
+  "performanceMetrics": {
+    "windows": {
+      "windows-10-x64-cmd-npm-14.x": {
+        "totalDuration": 1132,
+        "installationTime": 580,
+        "functionalityTime": 1,
+        "uninstallTime": 548
+      },
+      "windows-10-x64-cmd-npm-16.x": {
+        "totalDuration": 1246,
+        "installationTime": 672,
+        "functionalityTime": 0,
+        "uninstallTime": 572
+      },
+      "windows-10-x64-cmd-yarn-14.x": {
+        "totalDuration": 1254,
+        "installationTime": 582,
+        "functionalityTime": 0,
+        "uninstallTime": 670
+      },
+      "windows-10-x64-cmd-yarn-16.x": {
+        "totalDuration": 1243,
+        "installationTime": 667,
+        "functionalityTime": 0,
+        "uninstallTime": 575
+      },
+      "windows-10-x64-cmd-pnpm-14.x": {
+        "totalDuration": 1240,
+        "installationTime": 713,
+        "functionalityTime": 0,
+        "uninstallTime": 525
+      }
+    },
+    "macos": {
+      "macos-monterey-intel-bash-npm-14.x": {
+        "totalDuration": 1379,
+        "installationTime": 771,
+        "functionalityTime": 0,
+        "uninstallTime": 607
+      },
+      "macos-monterey-intel-bash-npm-16.x": {
+        "totalDuration": 1370,
+        "installationTime": 700,
+        "functionalityTime": 0,
+        "uninstallTime": 669
+      },
+      "macos-monterey-intel-bash-yarn-14.x": {
+        "totalDuration": 1280,
+        "installationTime": 707,
+        "functionalityTime": 0,
+        "uninstallTime": 572
+      },
+      "macos-monterey-intel-bash-yarn-16.x": {
+        "totalDuration": 1305,
+        "installationTime": 701,
+        "functionalityTime": 0,
+        "uninstallTime": 603
+      },
+      "macos-monterey-intel-bash-pnpm-14.x": {
+        "totalDuration": 1281,
+        "installationTime": 700,
+        "functionalityTime": 0,
+        "uninstallTime": 579
+      }
+    },
+    "linux": {
+      "linux-ubuntu-20.04-x64-bash-npm-14.x": {
+        "totalDuration": 1175,
+        "installationTime": 657,
+        "functionalityTime": 0,
+        "uninstallTime": 518
+      },
+      "linux-ubuntu-20.04-x64-bash-npm-16.x": {
+        "totalDuration": 1362,
+        "installationTime": 803,
+        "functionalityTime": 0,
+        "uninstallTime": 557
+      },
+      "linux-ubuntu-20.04-x64-bash-yarn-14.x": {
+        "totalDuration": 1239,
+        "installationTime": 619,
+        "functionalityTime": 0,
+        "uninstallTime": 619
+      },
+      "linux-ubuntu-20.04-x64-bash-yarn-16.x": {
+        "totalDuration": 1414,
+        "installationTime": 811,
+        "functionalityTime": 0,
+        "uninstallTime": 602
+      },
+      "linux-ubuntu-20.04-x64-bash-pnpm-14.x": {
+        "totalDuration": 1345,
+        "installationTime": 739,
+        "functionalityTime": 0,
+        "uninstallTime": 605
+      }
+    }
+  },
+  "platformIssues": {
+    "windows": [],
+    "macos": [],
+    "linux": []
+  },
+  "recommendations": [],
+  "compatibilityMatrix": {
+    "windows": {
+      "10-x64-cmd": {
+        "total": 5,
+        "passed": 5
+      }
+    },
+    "macos": {
+      "monterey-intel-bash": {
+        "total": 5,
+        "passed": 5
+      }
+    },
+    "linux": {
+      "ubuntu-20.04-x64-bash": {
+        "total": 5,
+        "passed": 5
+      }
+    }
+  }
+}

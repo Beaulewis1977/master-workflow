@@ -238,6 +238,11 @@ Best For: Maximum capability, 24/7 operation
 ./ai-workflow yolo status
 ```
 
+YOLO safeguards
+- Even with `--dangerously-skip-permissions`, installs are constrained by command allowlists and scoped write roots
+- All actions are journaled; rollback is transactional per component
+- Emergency stop: set `INSTALLER_KILL=1` to halt new actions
+
 ### Adding Components Later
 ```bash
 # Check current components

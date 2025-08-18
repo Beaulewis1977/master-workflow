@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: Agent Bus and Installer API (Minimal)
+  version: 0.1.0
+servers:
+  - url: http://localhost:8787
+paths:
+  /:
+    get:
+      summary: Get status snapshot
+      responses:
+        '200':
+          description: Snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  now:
+                    type: string
+                    format: date-time
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+  /events/stream:
+    get:
+      summary: Server-Sent Events stream
+      responses:
+        '200':
+          description: SSE stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /events/publish:
+    post:
+      summary: Publish an event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventPublish'
+      responses:
+        '204':
+          description: Event accepted
+        '400':
+          description: Invalid payload
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        ts:
+          type: string
+          format: date-time
+        type:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+    EventPublish:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+        payload:
+          type: object
+          additionalProperties: true
+

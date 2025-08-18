@@ -1,0 +1,3881 @@
+{
+  "servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 10,
+      "description": "General-purpose coding MCP server (preferred for coding)",
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring"
+      ],
+      "tags": [
+        "core",
+        "coding",
+        "primary"
+      ],
+      "healthCheck": "auto",
+      "template": "core_server",
+      "category": "core"
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 10,
+      "description": "File system operations",
+      "capabilities": [
+        "file-operations",
+        "directory-management"
+      ],
+      "tags": [
+        "core",
+        "filesystem"
+      ],
+      "healthCheck": "auto",
+      "template": "core_server",
+      "category": "core"
+    },
+    "http": {
+      "enabled": true,
+      "priority": 9,
+      "description": "HTTP client operations",
+      "capabilities": [
+        "http-requests",
+        "api-calls"
+      ],
+      "tags": [
+        "core",
+        "networking"
+      ],
+      "healthCheck": "auto",
+      "template": "core_server",
+      "category": "core"
+    },
+    "git": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Git version control operations",
+      "capabilities": [
+        "version-control",
+        "repository-management"
+      ],
+      "tags": [
+        "core",
+        "git",
+        "vcs"
+      ],
+      "healthCheck": "auto",
+      "template": "core_server",
+      "category": "core"
+    },
+    "github": {
+      "enabled": true,
+      "priority": 8,
+      "description": "GitHub integration server",
+      "capabilities": [
+        "repository-management",
+        "pull-requests",
+        "issues"
+      ],
+      "tags": [
+        "development",
+        "github",
+        "collaboration"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "development"
+    },
+    "gitlab": {
+      "enabled": true,
+      "priority": 7,
+      "description": "GitLab integration server",
+      "capabilities": [
+        "repository-management",
+        "merge-requests",
+        "ci-cd"
+      ],
+      "tags": [
+        "development",
+        "gitlab",
+        "collaboration"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "development"
+    },
+    "bitbucket": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Bitbucket integration server",
+      "capabilities": [
+        "repository-management",
+        "pull-requests",
+        "pipelines"
+      ],
+      "tags": [
+        "development",
+        "bitbucket",
+        "collaboration"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "development"
+    },
+    "vscode": {
+      "enabled": true,
+      "priority": 7,
+      "description": "VS Code integration server",
+      "capabilities": [
+        "editor-integration",
+        "debugging",
+        "extensions"
+      ],
+      "tags": [
+        "development",
+        "editor",
+        "ide"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "development"
+    },
+    "jetbrains": {
+      "enabled": true,
+      "priority": 7,
+      "description": "JetBrains IDE integration",
+      "capabilities": [
+        "ide-integration",
+        "debugging",
+        "refactoring"
+      ],
+      "tags": [
+        "development",
+        "editor",
+        "ide"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "development"
+    },
+    "vim": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Vim editor integration",
+      "capabilities": [
+        "text-editing",
+        "configuration"
+      ],
+      "tags": [
+        "development",
+        "editor",
+        "terminal"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "development"
+    },
+    "emacs": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Emacs editor integration",
+      "capabilities": [
+        "text-editing",
+        "configuration",
+        "extensibility"
+      ],
+      "tags": [
+        "development",
+        "editor",
+        "terminal"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "development"
+    },
+    "npm": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Node.js package manager",
+      "capabilities": [
+        "package-management",
+        "dependency-resolution"
+      ],
+      "tags": [
+        "package-manager",
+        "nodejs",
+        "javascript"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "yarn": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Alternative Node.js package manager",
+      "capabilities": [
+        "package-management",
+        "workspace-management"
+      ],
+      "tags": [
+        "package-manager",
+        "nodejs",
+        "javascript"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "pip": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Python package installer",
+      "capabilities": [
+        "package-management",
+        "virtual-environments"
+      ],
+      "tags": [
+        "package-manager",
+        "python"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "conda": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Cross-platform package manager",
+      "capabilities": [
+        "package-management",
+        "environment-management"
+      ],
+      "tags": [
+        "package-manager",
+        "python",
+        "data-science"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "cargo": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Rust package manager",
+      "capabilities": [
+        "package-management",
+        "build-system"
+      ],
+      "tags": [
+        "package-manager",
+        "rust"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "composer": {
+      "enabled": true,
+      "priority": 6,
+      "description": "PHP dependency manager",
+      "capabilities": [
+        "package-management",
+        "autoloading"
+      ],
+      "tags": [
+        "package-manager",
+        "php"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "maven": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Java build automation tool",
+      "capabilities": [
+        "build-management",
+        "dependency-management"
+      ],
+      "tags": [
+        "package-manager",
+        "java",
+        "build"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "gradle": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Build automation tool",
+      "capabilities": [
+        "build-management",
+        "multi-project-builds"
+      ],
+      "tags": [
+        "package-manager",
+        "java",
+        "build"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "packageManagers"
+    },
+    "aws": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Amazon Web Services integration",
+      "capabilities": [
+        "cloud-management",
+        "infrastructure",
+        "deployment"
+      ],
+      "tags": [
+        "cloud",
+        "aws",
+        "infrastructure"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "gcp": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Google Cloud Platform integration",
+      "capabilities": [
+        "cloud-management",
+        "ml-services",
+        "deployment"
+      ],
+      "tags": [
+        "cloud",
+        "gcp",
+        "google"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "azure": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Microsoft Azure integration",
+      "capabilities": [
+        "cloud-management",
+        "enterprise-services"
+      ],
+      "tags": [
+        "cloud",
+        "azure",
+        "microsoft"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "digitalocean": {
+      "enabled": true,
+      "priority": 6,
+      "description": "DigitalOcean cloud services",
+      "capabilities": [
+        "droplet-management",
+        "kubernetes"
+      ],
+      "tags": [
+        "cloud",
+        "digitalocean"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "linode": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Linode cloud services",
+      "capabilities": [
+        "server-management",
+        "networking"
+      ],
+      "tags": [
+        "cloud",
+        "linode"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "vultr": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Vultr cloud infrastructure",
+      "capabilities": [
+        "compute-instances",
+        "block-storage"
+      ],
+      "tags": [
+        "cloud",
+        "vultr"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "vercel": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Frontend deployment platform",
+      "capabilities": [
+        "deployment",
+        "serverless",
+        "frontend"
+      ],
+      "tags": [
+        "cloud",
+        "vercel",
+        "frontend",
+        "deployment"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "netlify": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Web hosting and deployment",
+      "capabilities": [
+        "static-hosting",
+        "continuous-deployment"
+      ],
+      "tags": [
+        "cloud",
+        "netlify",
+        "frontend",
+        "deployment"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "heroku": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Platform-as-a-Service provider",
+      "capabilities": [
+        "app-deployment",
+        "add-ons",
+        "scaling"
+      ],
+      "tags": [
+        "cloud",
+        "heroku",
+        "paas"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "railway": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Modern deployment platform",
+      "capabilities": [
+        "deployment",
+        "databases",
+        "monitoring"
+      ],
+      "tags": [
+        "cloud",
+        "railway",
+        "deployment"
+      ],
+      "healthCheck": "auth-required",
+      "template": "cloud_server",
+      "category": "cloud"
+    },
+    "postgres": {
+      "enabled": true,
+      "priority": 8,
+      "description": "PostgreSQL database server",
+      "capabilities": [
+        "sql-operations",
+        "schema-management",
+        "migrations"
+      ],
+      "tags": [
+        "database",
+        "postgresql",
+        "sql"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "mysql": {
+      "enabled": true,
+      "priority": 7,
+      "description": "MySQL database server",
+      "capabilities": [
+        "sql-operations",
+        "replication",
+        "clustering"
+      ],
+      "tags": [
+        "database",
+        "mysql",
+        "sql"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "mongodb": {
+      "enabled": true,
+      "priority": 7,
+      "description": "MongoDB document database",
+      "capabilities": [
+        "document-operations",
+        "aggregation",
+        "indexing"
+      ],
+      "tags": [
+        "database",
+        "mongodb",
+        "nosql"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "redis": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Redis in-memory database",
+      "capabilities": [
+        "caching",
+        "pub-sub",
+        "data-structures"
+      ],
+      "tags": [
+        "database",
+        "redis",
+        "cache"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "sqlite": {
+      "enabled": true,
+      "priority": 6,
+      "description": "SQLite embedded database",
+      "capabilities": [
+        "embedded-sql",
+        "file-based"
+      ],
+      "tags": [
+        "database",
+        "sqlite",
+        "embedded"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "databases"
+    },
+    "cassandra": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Apache Cassandra NoSQL database",
+      "capabilities": [
+        "distributed-database",
+        "high-availability"
+      ],
+      "tags": [
+        "database",
+        "cassandra",
+        "nosql"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "elasticsearch": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Elasticsearch search engine",
+      "capabilities": [
+        "full-text-search",
+        "analytics",
+        "indexing"
+      ],
+      "tags": [
+        "database",
+        "elasticsearch",
+        "search"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "couchdb": {
+      "enabled": true,
+      "priority": 4,
+      "description": "Apache CouchDB document database",
+      "capabilities": [
+        "document-storage",
+        "replication",
+        "http-api"
+      ],
+      "tags": [
+        "database",
+        "couchdb",
+        "nosql"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "neo4j": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Neo4j graph database",
+      "capabilities": [
+        "graph-queries",
+        "relationships",
+        "cypher"
+      ],
+      "tags": [
+        "database",
+        "neo4j",
+        "graph"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "influxdb": {
+      "enabled": true,
+      "priority": 5,
+      "description": "InfluxDB time-series database",
+      "capabilities": [
+        "time-series",
+        "metrics",
+        "monitoring"
+      ],
+      "tags": [
+        "database",
+        "influxdb",
+        "timeseries"
+      ],
+      "healthCheck": "connection-required",
+      "template": "database_server",
+      "category": "databases"
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Docker containerization platform",
+      "capabilities": [
+        "container-management",
+        "image-building",
+        "networking"
+      ],
+      "tags": [
+        "containerization",
+        "docker"
+      ],
+      "healthCheck": "daemon-required",
+      "template": "container_server",
+      "category": "containerization"
+    },
+    "kubernetes": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Kubernetes orchestration platform",
+      "capabilities": [
+        "pod-management",
+        "service-discovery",
+        "scaling"
+      ],
+      "tags": [
+        "containerization",
+        "kubernetes",
+        "orchestration"
+      ],
+      "healthCheck": "cluster-required",
+      "template": "container_server",
+      "category": "containerization"
+    },
+    "podman": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Podman container engine",
+      "capabilities": [
+        "rootless-containers",
+        "pod-management"
+      ],
+      "tags": [
+        "containerization",
+        "podman"
+      ],
+      "healthCheck": "daemon-required",
+      "template": "container_server",
+      "category": "containerization"
+    },
+    "rancher": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Rancher Kubernetes management",
+      "capabilities": [
+        "cluster-management",
+        "multi-cluster"
+      ],
+      "tags": [
+        "containerization",
+        "rancher",
+        "kubernetes"
+      ],
+      "healthCheck": "connection-required",
+      "template": "container_server",
+      "category": "containerization"
+    },
+    "openshift": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Red Hat OpenShift platform",
+      "capabilities": [
+        "enterprise-kubernetes",
+        "developer-tools"
+      ],
+      "tags": [
+        "containerization",
+        "openshift",
+        "enterprise"
+      ],
+      "healthCheck": "cluster-required",
+      "template": "container_server",
+      "category": "containerization"
+    },
+    "openai": {
+      "enabled": true,
+      "priority": 9,
+      "description": "OpenAI API integration",
+      "capabilities": [
+        "text-generation",
+        "embeddings",
+        "fine-tuning"
+      ],
+      "tags": [
+        "ai",
+        "openai",
+        "llm"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "anthropic": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Anthropic Claude API integration",
+      "capabilities": [
+        "conversation",
+        "analysis",
+        "reasoning"
+      ],
+      "tags": [
+        "ai",
+        "anthropic",
+        "claude"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "huggingface": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Hugging Face model hub",
+      "capabilities": [
+        "model-inference",
+        "model-download",
+        "datasets"
+      ],
+      "tags": [
+        "ai",
+        "huggingface",
+        "models"
+      ],
+      "healthCheck": "auto",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "ollama": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Local LLM server",
+      "capabilities": [
+        "local-inference",
+        "model-management"
+      ],
+      "tags": [
+        "ai",
+        "ollama",
+        "local"
+      ],
+      "healthCheck": "daemon-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "cohere": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Cohere API integration",
+      "capabilities": [
+        "text-generation",
+        "embeddings",
+        "classification"
+      ],
+      "tags": [
+        "ai",
+        "cohere",
+        "llm"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "replicate": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Replicate ML model platform",
+      "capabilities": [
+        "model-inference",
+        "image-generation"
+      ],
+      "tags": [
+        "ai",
+        "replicate",
+        "ml"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "stability": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Stability AI integration",
+      "capabilities": [
+        "image-generation",
+        "stable-diffusion"
+      ],
+      "tags": [
+        "ai",
+        "stability",
+        "image-generation"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "midjourney": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Midjourney image generation",
+      "capabilities": [
+        "image-generation",
+        "artistic-creation"
+      ],
+      "tags": [
+        "ai",
+        "midjourney",
+        "image-generation"
+      ],
+      "healthCheck": "subscription-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "tensorflow": {
+      "enabled": true,
+      "priority": 6,
+      "description": "TensorFlow ML framework",
+      "capabilities": [
+        "model-training",
+        "inference",
+        "deployment"
+      ],
+      "tags": [
+        "ai",
+        "tensorflow",
+        "ml"
+      ],
+      "healthCheck": "auto",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "pytorch": {
+      "enabled": true,
+      "priority": 6,
+      "description": "PyTorch ML framework",
+      "capabilities": [
+        "model-training",
+        "research",
+        "deployment"
+      ],
+      "tags": [
+        "ai",
+        "pytorch",
+        "ml"
+      ],
+      "healthCheck": "auto",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "perplexity": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Perplexity AI search and reasoning",
+      "capabilities": [
+        "web-search",
+        "reasoning",
+        "citations"
+      ],
+      "tags": [
+        "ai",
+        "perplexity",
+        "search"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "aiml"
+    },
+    "slack": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Slack messaging integration",
+      "capabilities": [
+        "messaging",
+        "channels",
+        "notifications"
+      ],
+      "tags": [
+        "communication",
+        "slack",
+        "messaging"
+      ],
+      "healthCheck": "auth-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "discord": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Discord integration",
+      "capabilities": [
+        "messaging",
+        "voice",
+        "communities"
+      ],
+      "tags": [
+        "communication",
+        "discord",
+        "messaging"
+      ],
+      "healthCheck": "auth-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "teams": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Microsoft Teams integration",
+      "capabilities": [
+        "meetings",
+        "chat",
+        "collaboration"
+      ],
+      "tags": [
+        "communication",
+        "teams",
+        "microsoft"
+      ],
+      "healthCheck": "auth-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "telegram": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Telegram bot integration",
+      "capabilities": [
+        "bot-messaging",
+        "channels",
+        "groups"
+      ],
+      "tags": [
+        "communication",
+        "telegram",
+        "bot"
+      ],
+      "healthCheck": "token-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "whatsapp": {
+      "enabled": true,
+      "priority": 5,
+      "description": "WhatsApp Business API",
+      "capabilities": [
+        "business-messaging",
+        "templates"
+      ],
+      "tags": [
+        "communication",
+        "whatsapp",
+        "business"
+      ],
+      "healthCheck": "auth-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "email": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Email integration server",
+      "capabilities": [
+        "smtp",
+        "imap",
+        "templates"
+      ],
+      "tags": [
+        "communication",
+        "email",
+        "smtp"
+      ],
+      "healthCheck": "config-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "twilio": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Twilio communications API",
+      "capabilities": [
+        "sms",
+        "voice",
+        "video"
+      ],
+      "tags": [
+        "communication",
+        "twilio",
+        "sms"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "sendgrid": {
+      "enabled": true,
+      "priority": 5,
+      "description": "SendGrid email service",
+      "capabilities": [
+        "transactional-email",
+        "marketing"
+      ],
+      "tags": [
+        "communication",
+        "sendgrid",
+        "email"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "communication_server",
+      "category": "communication"
+    },
+    "prometheus": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Prometheus monitoring system",
+      "capabilities": [
+        "metrics-collection",
+        "alerting",
+        "time-series"
+      ],
+      "tags": [
+        "monitoring",
+        "prometheus",
+        "metrics"
+      ],
+      "healthCheck": "connection-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "grafana": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Grafana visualization platform",
+      "capabilities": [
+        "dashboards",
+        "visualization",
+        "alerting"
+      ],
+      "tags": [
+        "monitoring",
+        "grafana",
+        "visualization"
+      ],
+      "healthCheck": "connection-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "datadog": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Datadog monitoring service",
+      "capabilities": [
+        "apm",
+        "infrastructure-monitoring",
+        "logs"
+      ],
+      "tags": [
+        "monitoring",
+        "datadog",
+        "saas"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "newrelic": {
+      "enabled": true,
+      "priority": 6,
+      "description": "New Relic observability platform",
+      "capabilities": [
+        "apm",
+        "browser-monitoring",
+        "alerts"
+      ],
+      "tags": [
+        "monitoring",
+        "newrelic",
+        "observability"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "sentry": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Sentry error tracking",
+      "capabilities": [
+        "error-tracking",
+        "performance-monitoring"
+      ],
+      "tags": [
+        "monitoring",
+        "sentry",
+        "errors"
+      ],
+      "healthCheck": "dsn-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "jaeger": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Jaeger distributed tracing",
+      "capabilities": [
+        "distributed-tracing",
+        "performance-analysis"
+      ],
+      "tags": [
+        "monitoring",
+        "jaeger",
+        "tracing"
+      ],
+      "healthCheck": "connection-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "zipkin": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Zipkin distributed tracing",
+      "capabilities": [
+        "distributed-tracing",
+        "latency-analysis"
+      ],
+      "tags": [
+        "monitoring",
+        "zipkin",
+        "tracing"
+      ],
+      "healthCheck": "connection-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "elk": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Elastic Stack (ELK) logging",
+      "capabilities": [
+        "log-aggregation",
+        "search",
+        "visualization"
+      ],
+      "tags": [
+        "monitoring",
+        "elk",
+        "logging"
+      ],
+      "healthCheck": "connection-required",
+      "template": "monitoring_server",
+      "category": "monitoring"
+    },
+    "vault": {
+      "enabled": true,
+      "priority": 8,
+      "description": "HashiCorp Vault secrets management",
+      "capabilities": [
+        "secrets-management",
+        "encryption",
+        "access-control"
+      ],
+      "tags": [
+        "security",
+        "vault",
+        "secrets"
+      ],
+      "healthCheck": "connection-required",
+      "template": "utility_server",
+      "category": "security"
+    },
+    "1password": {
+      "enabled": true,
+      "priority": 7,
+      "description": "1Password secrets automation",
+      "capabilities": [
+        "password-management",
+        "secrets-automation"
+      ],
+      "tags": [
+        "security",
+        "1password",
+        "passwords"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "security"
+    },
+    "bitwarden": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Bitwarden password manager",
+      "capabilities": [
+        "password-management",
+        "secure-sharing"
+      ],
+      "tags": [
+        "security",
+        "bitwarden",
+        "passwords"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "security"
+    },
+    "snyk": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Snyk vulnerability scanner",
+      "capabilities": [
+        "vulnerability-scanning",
+        "dependency-analysis"
+      ],
+      "tags": [
+        "security",
+        "snyk",
+        "vulnerabilities"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "security"
+    },
+    "sonarqube": {
+      "enabled": true,
+      "priority": 5,
+      "description": "SonarQube code quality",
+      "capabilities": [
+        "code-quality",
+        "security-analysis",
+        "technical-debt"
+      ],
+      "tags": [
+        "security",
+        "sonarqube",
+        "code-quality"
+      ],
+      "healthCheck": "connection-required",
+      "template": "utility_server",
+      "category": "security"
+    },
+    "veracode": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Veracode security testing",
+      "capabilities": [
+        "static-analysis",
+        "dynamic-testing"
+      ],
+      "tags": [
+        "security",
+        "veracode",
+        "testing"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "security"
+    },
+    "qualys": {
+      "enabled": true,
+      "priority": 4,
+      "description": "Qualys vulnerability management",
+      "capabilities": [
+        "vulnerability-assessment",
+        "compliance"
+      ],
+      "tags": [
+        "security",
+        "qualys",
+        "compliance"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "security"
+    },
+    "jira": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Atlassian Jira project management",
+      "capabilities": [
+        "issue-tracking",
+        "project-management",
+        "workflows"
+      ],
+      "tags": [
+        "productivity",
+        "jira",
+        "project-management"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "productivity"
+    },
+    "asana": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Asana task management",
+      "capabilities": [
+        "task-management",
+        "team-collaboration",
+        "projects"
+      ],
+      "tags": [
+        "productivity",
+        "asana",
+        "tasks"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "productivity"
+    },
+    "trello": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Trello board management",
+      "capabilities": [
+        "kanban-boards",
+        "card-management",
+        "collaboration"
+      ],
+      "tags": [
+        "productivity",
+        "trello",
+        "kanban"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "productivity"
+    },
+    "notion": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Notion workspace integration",
+      "capabilities": [
+        "documentation",
+        "databases",
+        "collaboration"
+      ],
+      "tags": [
+        "productivity",
+        "notion",
+        "documentation"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "productivity"
+    },
+    "confluence": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Atlassian Confluence wiki",
+      "capabilities": [
+        "documentation",
+        "knowledge-base",
+        "collaboration"
+      ],
+      "tags": [
+        "productivity",
+        "confluence",
+        "wiki"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "productivity"
+    },
+    "monday": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Monday.com work management",
+      "capabilities": [
+        "project-tracking",
+        "workflow-automation"
+      ],
+      "tags": [
+        "productivity",
+        "monday",
+        "workflow"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "productivity"
+    },
+    "clickup": {
+      "enabled": true,
+      "priority": 5,
+      "description": "ClickUp productivity platform",
+      "capabilities": [
+        "task-management",
+        "time-tracking",
+        "goals"
+      ],
+      "tags": [
+        "productivity",
+        "clickup",
+        "all-in-one"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "productivity"
+    },
+    "linear": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Linear issue tracking",
+      "capabilities": [
+        "issue-tracking",
+        "roadmaps",
+        "team-management"
+      ],
+      "tags": [
+        "productivity",
+        "linear",
+        "issues"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "productivity"
+    },
+    "stripe": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Stripe payment processing",
+      "capabilities": [
+        "payments",
+        "subscriptions",
+        "webhooks"
+      ],
+      "tags": [
+        "specialized",
+        "stripe",
+        "payments"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "paypal": {
+      "enabled": true,
+      "priority": 6,
+      "description": "PayPal payment integration",
+      "capabilities": [
+        "payments",
+        "invoicing",
+        "subscriptions"
+      ],
+      "tags": [
+        "specialized",
+        "paypal",
+        "payments"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "shopify": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Shopify e-commerce platform",
+      "capabilities": [
+        "store-management",
+        "products",
+        "orders"
+      ],
+      "tags": [
+        "specialized",
+        "shopify",
+        "ecommerce"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "salesforce": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Salesforce CRM integration",
+      "capabilities": [
+        "crm",
+        "lead-management",
+        "automation"
+      ],
+      "tags": [
+        "specialized",
+        "salesforce",
+        "crm"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "specialized"
+    },
+    "hubspot": {
+      "enabled": true,
+      "priority": 5,
+      "description": "HubSpot marketing platform",
+      "capabilities": [
+        "marketing",
+        "sales",
+        "customer-service"
+      ],
+      "tags": [
+        "specialized",
+        "hubspot",
+        "marketing"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "zendesk": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Zendesk customer support",
+      "capabilities": [
+        "ticketing",
+        "customer-support",
+        "knowledge-base"
+      ],
+      "tags": [
+        "specialized",
+        "zendesk",
+        "support"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "specialized"
+    },
+    "intercom": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Intercom customer messaging",
+      "capabilities": [
+        "live-chat",
+        "customer-messaging",
+        "automation"
+      ],
+      "tags": [
+        "specialized",
+        "intercom",
+        "messaging"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "figma": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Figma design collaboration",
+      "capabilities": [
+        "design-files",
+        "prototypes",
+        "collaboration"
+      ],
+      "tags": [
+        "specialized",
+        "figma",
+        "design"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "airtable": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Airtable database platform",
+      "capabilities": [
+        "databases",
+        "automation",
+        "collaboration"
+      ],
+      "tags": [
+        "specialized",
+        "airtable",
+        "database"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "zapier": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Zapier automation platform",
+      "capabilities": [
+        "workflow-automation",
+        "integrations"
+      ],
+      "tags": [
+        "specialized",
+        "zapier",
+        "automation"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "utility_server",
+      "category": "specialized"
+    },
+    "browser": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Web browser automation",
+      "capabilities": [
+        "web-scraping",
+        "automation",
+        "testing"
+      ],
+      "tags": [
+        "web",
+        "browser",
+        "automation"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "web"
+    },
+    "puppeteer": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Puppeteer browser control",
+      "capabilities": [
+        "headless-browser",
+        "pdf-generation",
+        "screenshots"
+      ],
+      "tags": [
+        "web",
+        "puppeteer",
+        "headless"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "web"
+    },
+    "playwright": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Playwright browser automation",
+      "capabilities": [
+        "cross-browser",
+        "testing",
+        "mobile-emulation"
+      ],
+      "tags": [
+        "web",
+        "playwright",
+        "testing"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "web"
+    },
+    "selenium": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Selenium web automation",
+      "capabilities": [
+        "web-testing",
+        "browser-automation"
+      ],
+      "tags": [
+        "web",
+        "selenium",
+        "testing"
+      ],
+      "healthCheck": "driver-required",
+      "template": "utility_server",
+      "category": "web"
+    },
+    "search": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Web search integration",
+      "capabilities": [
+        "web-search",
+        "results-parsing"
+      ],
+      "tags": [
+        "web",
+        "search",
+        "information"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "web"
+    },
+    "tableau": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Tableau business intelligence platform",
+      "capabilities": [
+        "data-visualization",
+        "business-intelligence",
+        "dashboards"
+      ],
+      "tags": [
+        "enterprise",
+        "tableau",
+        "bi"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "enterprise"
+    },
+    "powerbi": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Microsoft Power BI integration",
+      "capabilities": [
+        "data-visualization",
+        "reporting",
+        "analytics"
+      ],
+      "tags": [
+        "enterprise",
+        "powerbi",
+        "microsoft"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "enterprise"
+    },
+    "looker": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Looker data platform",
+      "capabilities": [
+        "data-modeling",
+        "analytics",
+        "reporting"
+      ],
+      "tags": [
+        "enterprise",
+        "looker",
+        "analytics"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "enterprise"
+    },
+    "databricks": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Databricks unified analytics platform",
+      "capabilities": [
+        "big-data",
+        "machine-learning",
+        "data-engineering"
+      ],
+      "tags": [
+        "enterprise",
+        "databricks",
+        "big-data"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "enterprise"
+    },
+    "snowflake": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Snowflake cloud data warehouse",
+      "capabilities": [
+        "data-warehouse",
+        "analytics",
+        "cloud-storage"
+      ],
+      "tags": [
+        "enterprise",
+        "snowflake",
+        "warehouse"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "enterprise"
+    },
+    "gemini": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Google Gemini AI integration",
+      "capabilities": [
+        "multimodal-ai",
+        "reasoning",
+        "code-generation"
+      ],
+      "tags": [
+        "ai",
+        "gemini",
+        "google"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "advanced_ai"
+    },
+    "claude_projects": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Claude Projects API integration",
+      "capabilities": [
+        "project-context",
+        "long-context",
+        "collaboration"
+      ],
+      "tags": [
+        "ai",
+        "claude",
+        "projects"
+      ],
+      "healthCheck": "api-key-required",
+      "template": "ai_model_server",
+      "category": "advanced_ai"
+    },
+    "langchain": {
+      "enabled": true,
+      "priority": 7,
+      "description": "LangChain framework integration",
+      "capabilities": [
+        "chain-management",
+        "agent-orchestration",
+        "tool-calling"
+      ],
+      "tags": [
+        "ai",
+        "langchain",
+        "framework"
+      ],
+      "healthCheck": "auto",
+      "template": "ai_model_server",
+      "category": "advanced_ai"
+    },
+    "llamaindex": {
+      "enabled": true,
+      "priority": 7,
+      "description": "LlamaIndex data framework",
+      "capabilities": [
+        "data-indexing",
+        "retrieval",
+        "knowledge-graphs"
+      ],
+      "tags": [
+        "ai",
+        "llamaindex",
+        "rag"
+      ],
+      "healthCheck": "auto",
+      "template": "ai_model_server",
+      "category": "advanced_ai"
+    },
+    "vectordb": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Vector database integration (Pinecone, Weaviate, etc.)",
+      "capabilities": [
+        "vector-search",
+        "embeddings",
+        "similarity"
+      ],
+      "tags": [
+        "ai",
+        "vectordb",
+        "embeddings"
+      ],
+      "healthCheck": "auth-required",
+      "template": "ai_model_server",
+      "category": "advanced_ai"
+    },
+    "terraform": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Terraform infrastructure as code",
+      "capabilities": [
+        "infrastructure-management",
+        "provisioning",
+        "state-management"
+      ],
+      "tags": [
+        "devops",
+        "terraform",
+        "iac"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "development_advanced"
+    },
+    "ansible": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Ansible automation platform",
+      "capabilities": [
+        "configuration-management",
+        "deployment",
+        "automation"
+      ],
+      "tags": [
+        "devops",
+        "ansible",
+        "automation"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "development_advanced"
+    },
+    "jenkins": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Jenkins CI/CD automation",
+      "capabilities": [
+        "continuous-integration",
+        "build-automation",
+        "deployment"
+      ],
+      "tags": [
+        "devops",
+        "jenkins",
+        "ci-cd"
+      ],
+      "healthCheck": "connection-required",
+      "template": "utility_server",
+      "category": "development_advanced"
+    },
+    "circleci": {
+      "enabled": true,
+      "priority": 5,
+      "description": "CircleCI continuous integration",
+      "capabilities": [
+        "ci-cd",
+        "testing",
+        "deployment"
+      ],
+      "tags": [
+        "devops",
+        "circleci",
+        "ci"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "development_advanced"
+    },
+    "githubactions": {
+      "enabled": true,
+      "priority": 7,
+      "description": "GitHub Actions workflow automation",
+      "capabilities": [
+        "workflow-automation",
+        "ci-cd",
+        "deployment"
+      ],
+      "tags": [
+        "devops",
+        "github-actions",
+        "ci-cd"
+      ],
+      "healthCheck": "auth-required",
+      "template": "auth_required_server",
+      "category": "development_advanced"
+    },
+    "openapi": {
+      "enabled": true,
+      "priority": 7,
+      "description": "OpenAPI specification tools",
+      "capabilities": [
+        "api-documentation",
+        "schema-validation"
+      ],
+      "tags": [
+        "utilities",
+        "openapi",
+        "documentation"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "json": {
+      "enabled": true,
+      "priority": 6,
+      "description": "JSON processing utilities",
+      "capabilities": [
+        "json-parsing",
+        "validation",
+        "transformation"
+      ],
+      "tags": [
+        "utilities",
+        "json",
+        "data"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "xml": {
+      "enabled": true,
+      "priority": 5,
+      "description": "XML processing utilities",
+      "capabilities": [
+        "xml-parsing",
+        "validation",
+        "transformation"
+      ],
+      "tags": [
+        "utilities",
+        "xml",
+        "data"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "yaml": {
+      "enabled": true,
+      "priority": 6,
+      "description": "YAML processing utilities",
+      "capabilities": [
+        "yaml-parsing",
+        "validation",
+        "conversion"
+      ],
+      "tags": [
+        "utilities",
+        "yaml",
+        "configuration"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "csv": {
+      "enabled": true,
+      "priority": 5,
+      "description": "CSV processing utilities",
+      "capabilities": [
+        "csv-parsing",
+        "data-transformation"
+      ],
+      "tags": [
+        "utilities",
+        "csv",
+        "data"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "encryption": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Encryption and cryptography utilities",
+      "capabilities": [
+        "encryption",
+        "hashing",
+        "key-generation"
+      ],
+      "tags": [
+        "utilities",
+        "encryption",
+        "security"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "compression": {
+      "enabled": true,
+      "priority": 5,
+      "description": "File compression utilities",
+      "capabilities": [
+        "compression",
+        "archiving",
+        "extraction"
+      ],
+      "tags": [
+        "utilities",
+        "compression",
+        "files"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "qr": {
+      "enabled": true,
+      "priority": 4,
+      "description": "QR code generation and reading",
+      "capabilities": [
+        "qr-generation",
+        "qr-reading"
+      ],
+      "tags": [
+        "utilities",
+        "qr",
+        "codes"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "pdf": {
+      "enabled": true,
+      "priority": 6,
+      "description": "PDF processing and manipulation",
+      "capabilities": [
+        "pdf-generation",
+        "pdf-parsing",
+        "document-processing"
+      ],
+      "tags": [
+        "utilities",
+        "pdf",
+        "documents"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "imagemagick": {
+      "enabled": true,
+      "priority": 5,
+      "description": "ImageMagick image processing",
+      "capabilities": [
+        "image-processing",
+        "format-conversion",
+        "image-manipulation"
+      ],
+      "tags": [
+        "utilities",
+        "imagemagick",
+        "images"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "ffmpeg": {
+      "enabled": true,
+      "priority": 5,
+      "description": "FFmpeg media processing",
+      "capabilities": [
+        "video-processing",
+        "audio-processing",
+        "format-conversion"
+      ],
+      "tags": [
+        "utilities",
+        "ffmpeg",
+        "media"
+      ],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "utilities"
+    },
+    "s3": {
+      "enabled": true,
+      "priority": 5,
+      "capabilities": [],
+      "tags": [],
+      "healthCheck": "auto",
+      "template": "utility_server",
+      "category": "registry"
+    }
+  },
+  "tools": [
+    {
+      "name": "context7",
+      "type": "mcp",
+      "server": "context7",
+      "description": "General-purpose coding MCP server (preferred for coding)",
+      "capabilities": [
+        "code-analysis",
+        "documentation",
+        "refactoring"
+      ],
+      "priority": 10,
+      "template": "core_server"
+    },
+    {
+      "name": "filesystem",
+      "type": "mcp",
+      "server": "filesystem",
+      "description": "File system operations",
+      "capabilities": [
+        "file-operations",
+        "directory-management"
+      ],
+      "priority": 10,
+      "template": "core_server"
+    },
+    {
+      "name": "http",
+      "type": "mcp",
+      "server": "http",
+      "description": "HTTP client operations",
+      "capabilities": [
+        "http-requests",
+        "api-calls"
+      ],
+      "priority": 9,
+      "template": "core_server"
+    },
+    {
+      "name": "git",
+      "type": "mcp",
+      "server": "git",
+      "description": "Git version control operations",
+      "capabilities": [
+        "version-control",
+        "repository-management"
+      ],
+      "priority": 9,
+      "template": "core_server"
+    },
+    {
+      "name": "github",
+      "type": "mcp",
+      "server": "github",
+      "description": "GitHub integration server",
+      "capabilities": [
+        "repository-management",
+        "pull-requests",
+        "issues"
+      ],
+      "priority": 8,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "gitlab",
+      "type": "mcp",
+      "server": "gitlab",
+      "description": "GitLab integration server",
+      "capabilities": [
+        "repository-management",
+        "merge-requests",
+        "ci-cd"
+      ],
+      "priority": 7,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "bitbucket",
+      "type": "mcp",
+      "server": "bitbucket",
+      "description": "Bitbucket integration server",
+      "capabilities": [
+        "repository-management",
+        "pull-requests",
+        "pipelines"
+      ],
+      "priority": 6,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "vscode",
+      "type": "mcp",
+      "server": "vscode",
+      "description": "VS Code integration server",
+      "capabilities": [
+        "editor-integration",
+        "debugging",
+        "extensions"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "jetbrains",
+      "type": "mcp",
+      "server": "jetbrains",
+      "description": "JetBrains IDE integration",
+      "capabilities": [
+        "ide-integration",
+        "debugging",
+        "refactoring"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "vim",
+      "type": "mcp",
+      "server": "vim",
+      "description": "Vim editor integration",
+      "capabilities": [
+        "text-editing",
+        "configuration"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "emacs",
+      "type": "mcp",
+      "server": "emacs",
+      "description": "Emacs editor integration",
+      "capabilities": [
+        "text-editing",
+        "configuration",
+        "extensibility"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "npm",
+      "type": "mcp",
+      "server": "npm",
+      "description": "Node.js package manager",
+      "capabilities": [
+        "package-management",
+        "dependency-resolution"
+      ],
+      "priority": 8,
+      "template": "utility_server"
+    },
+    {
+      "name": "yarn",
+      "type": "mcp",
+      "server": "yarn",
+      "description": "Alternative Node.js package manager",
+      "capabilities": [
+        "package-management",
+        "workspace-management"
+      ],
+      "priority": 8,
+      "template": "utility_server"
+    },
+    {
+      "name": "pip",
+      "type": "mcp",
+      "server": "pip",
+      "description": "Python package installer",
+      "capabilities": [
+        "package-management",
+        "virtual-environments"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "conda",
+      "type": "mcp",
+      "server": "conda",
+      "description": "Cross-platform package manager",
+      "capabilities": [
+        "package-management",
+        "environment-management"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "cargo",
+      "type": "mcp",
+      "server": "cargo",
+      "description": "Rust package manager",
+      "capabilities": [
+        "package-management",
+        "build-system"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "composer",
+      "type": "mcp",
+      "server": "composer",
+      "description": "PHP dependency manager",
+      "capabilities": [
+        "package-management",
+        "autoloading"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "maven",
+      "type": "mcp",
+      "server": "maven",
+      "description": "Java build automation tool",
+      "capabilities": [
+        "build-management",
+        "dependency-management"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "gradle",
+      "type": "mcp",
+      "server": "gradle",
+      "description": "Build automation tool",
+      "capabilities": [
+        "build-management",
+        "multi-project-builds"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "aws",
+      "type": "mcp",
+      "server": "aws",
+      "description": "Amazon Web Services integration",
+      "capabilities": [
+        "cloud-management",
+        "infrastructure",
+        "deployment"
+      ],
+      "priority": 8,
+      "template": "cloud_server"
+    },
+    {
+      "name": "gcp",
+      "type": "mcp",
+      "server": "gcp",
+      "description": "Google Cloud Platform integration",
+      "capabilities": [
+        "cloud-management",
+        "ml-services",
+        "deployment"
+      ],
+      "priority": 8,
+      "template": "cloud_server"
+    },
+    {
+      "name": "azure",
+      "type": "mcp",
+      "server": "azure",
+      "description": "Microsoft Azure integration",
+      "capabilities": [
+        "cloud-management",
+        "enterprise-services"
+      ],
+      "priority": 8,
+      "template": "cloud_server"
+    },
+    {
+      "name": "digitalocean",
+      "type": "mcp",
+      "server": "digitalocean",
+      "description": "DigitalOcean cloud services",
+      "capabilities": [
+        "droplet-management",
+        "kubernetes"
+      ],
+      "priority": 6,
+      "template": "cloud_server"
+    },
+    {
+      "name": "linode",
+      "type": "mcp",
+      "server": "linode",
+      "description": "Linode cloud services",
+      "capabilities": [
+        "server-management",
+        "networking"
+      ],
+      "priority": 5,
+      "template": "cloud_server"
+    },
+    {
+      "name": "vultr",
+      "type": "mcp",
+      "server": "vultr",
+      "description": "Vultr cloud infrastructure",
+      "capabilities": [
+        "compute-instances",
+        "block-storage"
+      ],
+      "priority": 5,
+      "template": "cloud_server"
+    },
+    {
+      "name": "vercel",
+      "type": "mcp",
+      "server": "vercel",
+      "description": "Frontend deployment platform",
+      "capabilities": [
+        "deployment",
+        "serverless",
+        "frontend"
+      ],
+      "priority": 7,
+      "template": "cloud_server"
+    },
+    {
+      "name": "netlify",
+      "type": "mcp",
+      "server": "netlify",
+      "description": "Web hosting and deployment",
+      "capabilities": [
+        "static-hosting",
+        "continuous-deployment"
+      ],
+      "priority": 7,
+      "template": "cloud_server"
+    },
+    {
+      "name": "heroku",
+      "type": "mcp",
+      "server": "heroku",
+      "description": "Platform-as-a-Service provider",
+      "capabilities": [
+        "app-deployment",
+        "add-ons",
+        "scaling"
+      ],
+      "priority": 6,
+      "template": "cloud_server"
+    },
+    {
+      "name": "railway",
+      "type": "mcp",
+      "server": "railway",
+      "description": "Modern deployment platform",
+      "capabilities": [
+        "deployment",
+        "databases",
+        "monitoring"
+      ],
+      "priority": 5,
+      "template": "cloud_server"
+    },
+    {
+      "name": "postgres",
+      "type": "mcp",
+      "server": "postgres",
+      "description": "PostgreSQL database server",
+      "capabilities": [
+        "sql-operations",
+        "schema-management",
+        "migrations"
+      ],
+      "priority": 8,
+      "template": "database_server"
+    },
+    {
+      "name": "mysql",
+      "type": "mcp",
+      "server": "mysql",
+      "description": "MySQL database server",
+      "capabilities": [
+        "sql-operations",
+        "replication",
+        "clustering"
+      ],
+      "priority": 7,
+      "template": "database_server"
+    },
+    {
+      "name": "mongodb",
+      "type": "mcp",
+      "server": "mongodb",
+      "description": "MongoDB document database",
+      "capabilities": [
+        "document-operations",
+        "aggregation",
+        "indexing"
+      ],
+      "priority": 7,
+      "template": "database_server"
+    },
+    {
+      "name": "redis",
+      "type": "mcp",
+      "server": "redis",
+      "description": "Redis in-memory database",
+      "capabilities": [
+        "caching",
+        "pub-sub",
+        "data-structures"
+      ],
+      "priority": 7,
+      "template": "database_server"
+    },
+    {
+      "name": "sqlite",
+      "type": "mcp",
+      "server": "sqlite",
+      "description": "SQLite embedded database",
+      "capabilities": [
+        "embedded-sql",
+        "file-based"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "cassandra",
+      "type": "mcp",
+      "server": "cassandra",
+      "description": "Apache Cassandra NoSQL database",
+      "capabilities": [
+        "distributed-database",
+        "high-availability"
+      ],
+      "priority": 5,
+      "template": "database_server"
+    },
+    {
+      "name": "elasticsearch",
+      "type": "mcp",
+      "server": "elasticsearch",
+      "description": "Elasticsearch search engine",
+      "capabilities": [
+        "full-text-search",
+        "analytics",
+        "indexing"
+      ],
+      "priority": 6,
+      "template": "database_server"
+    },
+    {
+      "name": "couchdb",
+      "type": "mcp",
+      "server": "couchdb",
+      "description": "Apache CouchDB document database",
+      "capabilities": [
+        "document-storage",
+        "replication",
+        "http-api"
+      ],
+      "priority": 4,
+      "template": "database_server"
+    },
+    {
+      "name": "neo4j",
+      "type": "mcp",
+      "server": "neo4j",
+      "description": "Neo4j graph database",
+      "capabilities": [
+        "graph-queries",
+        "relationships",
+        "cypher"
+      ],
+      "priority": 5,
+      "template": "database_server"
+    },
+    {
+      "name": "influxdb",
+      "type": "mcp",
+      "server": "influxdb",
+      "description": "InfluxDB time-series database",
+      "capabilities": [
+        "time-series",
+        "metrics",
+        "monitoring"
+      ],
+      "priority": 5,
+      "template": "database_server"
+    },
+    {
+      "name": "docker",
+      "type": "mcp",
+      "server": "docker",
+      "description": "Docker containerization platform",
+      "capabilities": [
+        "container-management",
+        "image-building",
+        "networking"
+      ],
+      "priority": 8,
+      "template": "container_server"
+    },
+    {
+      "name": "kubernetes",
+      "type": "mcp",
+      "server": "kubernetes",
+      "description": "Kubernetes orchestration platform",
+      "capabilities": [
+        "pod-management",
+        "service-discovery",
+        "scaling"
+      ],
+      "priority": 8,
+      "template": "container_server"
+    },
+    {
+      "name": "podman",
+      "type": "mcp",
+      "server": "podman",
+      "description": "Podman container engine",
+      "capabilities": [
+        "rootless-containers",
+        "pod-management"
+      ],
+      "priority": 6,
+      "template": "container_server"
+    },
+    {
+      "name": "rancher",
+      "type": "mcp",
+      "server": "rancher",
+      "description": "Rancher Kubernetes management",
+      "capabilities": [
+        "cluster-management",
+        "multi-cluster"
+      ],
+      "priority": 5,
+      "template": "container_server"
+    },
+    {
+      "name": "openshift",
+      "type": "mcp",
+      "server": "openshift",
+      "description": "Red Hat OpenShift platform",
+      "capabilities": [
+        "enterprise-kubernetes",
+        "developer-tools"
+      ],
+      "priority": 5,
+      "template": "container_server"
+    },
+    {
+      "name": "openai",
+      "type": "mcp",
+      "server": "openai",
+      "description": "OpenAI API integration",
+      "capabilities": [
+        "text-generation",
+        "embeddings",
+        "fine-tuning"
+      ],
+      "priority": 9,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "anthropic",
+      "type": "mcp",
+      "server": "anthropic",
+      "description": "Anthropic Claude API integration",
+      "capabilities": [
+        "conversation",
+        "analysis",
+        "reasoning"
+      ],
+      "priority": 9,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "huggingface",
+      "type": "mcp",
+      "server": "huggingface",
+      "description": "Hugging Face model hub",
+      "capabilities": [
+        "model-inference",
+        "model-download",
+        "datasets"
+      ],
+      "priority": 7,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "ollama",
+      "type": "mcp",
+      "server": "ollama",
+      "description": "Local LLM server",
+      "capabilities": [
+        "local-inference",
+        "model-management"
+      ],
+      "priority": 7,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "cohere",
+      "type": "mcp",
+      "server": "cohere",
+      "description": "Cohere API integration",
+      "capabilities": [
+        "text-generation",
+        "embeddings",
+        "classification"
+      ],
+      "priority": 6,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "replicate",
+      "type": "mcp",
+      "server": "replicate",
+      "description": "Replicate ML model platform",
+      "capabilities": [
+        "model-inference",
+        "image-generation"
+      ],
+      "priority": 6,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "stability",
+      "type": "mcp",
+      "server": "stability",
+      "description": "Stability AI integration",
+      "capabilities": [
+        "image-generation",
+        "stable-diffusion"
+      ],
+      "priority": 6,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "midjourney",
+      "type": "mcp",
+      "server": "midjourney",
+      "description": "Midjourney image generation",
+      "capabilities": [
+        "image-generation",
+        "artistic-creation"
+      ],
+      "priority": 5,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "tensorflow",
+      "type": "mcp",
+      "server": "tensorflow",
+      "description": "TensorFlow ML framework",
+      "capabilities": [
+        "model-training",
+        "inference",
+        "deployment"
+      ],
+      "priority": 6,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "pytorch",
+      "type": "mcp",
+      "server": "pytorch",
+      "description": "PyTorch ML framework",
+      "capabilities": [
+        "model-training",
+        "research",
+        "deployment"
+      ],
+      "priority": 6,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "perplexity",
+      "type": "mcp",
+      "server": "perplexity",
+      "description": "Perplexity AI search and reasoning",
+      "capabilities": [
+        "web-search",
+        "reasoning",
+        "citations"
+      ],
+      "priority": 7,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "slack",
+      "type": "mcp",
+      "server": "slack",
+      "description": "Slack messaging integration",
+      "capabilities": [
+        "messaging",
+        "channels",
+        "notifications"
+      ],
+      "priority": 7,
+      "template": "communication_server"
+    },
+    {
+      "name": "discord",
+      "type": "mcp",
+      "server": "discord",
+      "description": "Discord integration",
+      "capabilities": [
+        "messaging",
+        "voice",
+        "communities"
+      ],
+      "priority": 6,
+      "template": "communication_server"
+    },
+    {
+      "name": "teams",
+      "type": "mcp",
+      "server": "teams",
+      "description": "Microsoft Teams integration",
+      "capabilities": [
+        "meetings",
+        "chat",
+        "collaboration"
+      ],
+      "priority": 6,
+      "template": "communication_server"
+    },
+    {
+      "name": "telegram",
+      "type": "mcp",
+      "server": "telegram",
+      "description": "Telegram bot integration",
+      "capabilities": [
+        "bot-messaging",
+        "channels",
+        "groups"
+      ],
+      "priority": 5,
+      "template": "communication_server"
+    },
+    {
+      "name": "whatsapp",
+      "type": "mcp",
+      "server": "whatsapp",
+      "description": "WhatsApp Business API",
+      "capabilities": [
+        "business-messaging",
+        "templates"
+      ],
+      "priority": 5,
+      "template": "communication_server"
+    },
+    {
+      "name": "email",
+      "type": "mcp",
+      "server": "email",
+      "description": "Email integration server",
+      "capabilities": [
+        "smtp",
+        "imap",
+        "templates"
+      ],
+      "priority": 7,
+      "template": "communication_server"
+    },
+    {
+      "name": "twilio",
+      "type": "mcp",
+      "server": "twilio",
+      "description": "Twilio communications API",
+      "capabilities": [
+        "sms",
+        "voice",
+        "video"
+      ],
+      "priority": 6,
+      "template": "communication_server"
+    },
+    {
+      "name": "sendgrid",
+      "type": "mcp",
+      "server": "sendgrid",
+      "description": "SendGrid email service",
+      "capabilities": [
+        "transactional-email",
+        "marketing"
+      ],
+      "priority": 5,
+      "template": "communication_server"
+    },
+    {
+      "name": "prometheus",
+      "type": "mcp",
+      "server": "prometheus",
+      "description": "Prometheus monitoring system",
+      "capabilities": [
+        "metrics-collection",
+        "alerting",
+        "time-series"
+      ],
+      "priority": 7,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "grafana",
+      "type": "mcp",
+      "server": "grafana",
+      "description": "Grafana visualization platform",
+      "capabilities": [
+        "dashboards",
+        "visualization",
+        "alerting"
+      ],
+      "priority": 7,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "datadog",
+      "type": "mcp",
+      "server": "datadog",
+      "description": "Datadog monitoring service",
+      "capabilities": [
+        "apm",
+        "infrastructure-monitoring",
+        "logs"
+      ],
+      "priority": 6,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "newrelic",
+      "type": "mcp",
+      "server": "newrelic",
+      "description": "New Relic observability platform",
+      "capabilities": [
+        "apm",
+        "browser-monitoring",
+        "alerts"
+      ],
+      "priority": 6,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "sentry",
+      "type": "mcp",
+      "server": "sentry",
+      "description": "Sentry error tracking",
+      "capabilities": [
+        "error-tracking",
+        "performance-monitoring"
+      ],
+      "priority": 6,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "jaeger",
+      "type": "mcp",
+      "server": "jaeger",
+      "description": "Jaeger distributed tracing",
+      "capabilities": [
+        "distributed-tracing",
+        "performance-analysis"
+      ],
+      "priority": 5,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "zipkin",
+      "type": "mcp",
+      "server": "zipkin",
+      "description": "Zipkin distributed tracing",
+      "capabilities": [
+        "distributed-tracing",
+        "latency-analysis"
+      ],
+      "priority": 5,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "elk",
+      "type": "mcp",
+      "server": "elk",
+      "description": "Elastic Stack (ELK) logging",
+      "capabilities": [
+        "log-aggregation",
+        "search",
+        "visualization"
+      ],
+      "priority": 6,
+      "template": "monitoring_server"
+    },
+    {
+      "name": "vault",
+      "type": "mcp",
+      "server": "vault",
+      "description": "HashiCorp Vault secrets management",
+      "capabilities": [
+        "secrets-management",
+        "encryption",
+        "access-control"
+      ],
+      "priority": 8,
+      "template": "utility_server"
+    },
+    {
+      "name": "1password",
+      "type": "mcp",
+      "server": "1password",
+      "description": "1Password secrets automation",
+      "capabilities": [
+        "password-management",
+        "secrets-automation"
+      ],
+      "priority": 7,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "bitwarden",
+      "type": "mcp",
+      "server": "bitwarden",
+      "description": "Bitwarden password manager",
+      "capabilities": [
+        "password-management",
+        "secure-sharing"
+      ],
+      "priority": 6,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "snyk",
+      "type": "mcp",
+      "server": "snyk",
+      "description": "Snyk vulnerability scanner",
+      "capabilities": [
+        "vulnerability-scanning",
+        "dependency-analysis"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "sonarqube",
+      "type": "mcp",
+      "server": "sonarqube",
+      "description": "SonarQube code quality",
+      "capabilities": [
+        "code-quality",
+        "security-analysis",
+        "technical-debt"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "veracode",
+      "type": "mcp",
+      "server": "veracode",
+      "description": "Veracode security testing",
+      "capabilities": [
+        "static-analysis",
+        "dynamic-testing"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "qualys",
+      "type": "mcp",
+      "server": "qualys",
+      "description": "Qualys vulnerability management",
+      "capabilities": [
+        "vulnerability-assessment",
+        "compliance"
+      ],
+      "priority": 4,
+      "template": "utility_server"
+    },
+    {
+      "name": "jira",
+      "type": "mcp",
+      "server": "jira",
+      "description": "Atlassian Jira project management",
+      "capabilities": [
+        "issue-tracking",
+        "project-management",
+        "workflows"
+      ],
+      "priority": 7,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "asana",
+      "type": "mcp",
+      "server": "asana",
+      "description": "Asana task management",
+      "capabilities": [
+        "task-management",
+        "team-collaboration",
+        "projects"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "trello",
+      "type": "mcp",
+      "server": "trello",
+      "description": "Trello board management",
+      "capabilities": [
+        "kanban-boards",
+        "card-management",
+        "collaboration"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "notion",
+      "type": "mcp",
+      "server": "notion",
+      "description": "Notion workspace integration",
+      "capabilities": [
+        "documentation",
+        "databases",
+        "collaboration"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "confluence",
+      "type": "mcp",
+      "server": "confluence",
+      "description": "Atlassian Confluence wiki",
+      "capabilities": [
+        "documentation",
+        "knowledge-base",
+        "collaboration"
+      ],
+      "priority": 5,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "monday",
+      "type": "mcp",
+      "server": "monday",
+      "description": "Monday.com work management",
+      "capabilities": [
+        "project-tracking",
+        "workflow-automation"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "clickup",
+      "type": "mcp",
+      "server": "clickup",
+      "description": "ClickUp productivity platform",
+      "capabilities": [
+        "task-management",
+        "time-tracking",
+        "goals"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "linear",
+      "type": "mcp",
+      "server": "linear",
+      "description": "Linear issue tracking",
+      "capabilities": [
+        "issue-tracking",
+        "roadmaps",
+        "team-management"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "stripe",
+      "type": "mcp",
+      "server": "stripe",
+      "description": "Stripe payment processing",
+      "capabilities": [
+        "payments",
+        "subscriptions",
+        "webhooks"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "paypal",
+      "type": "mcp",
+      "server": "paypal",
+      "description": "PayPal payment integration",
+      "capabilities": [
+        "payments",
+        "invoicing",
+        "subscriptions"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "shopify",
+      "type": "mcp",
+      "server": "shopify",
+      "description": "Shopify e-commerce platform",
+      "capabilities": [
+        "store-management",
+        "products",
+        "orders"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "salesforce",
+      "type": "mcp",
+      "server": "salesforce",
+      "description": "Salesforce CRM integration",
+      "capabilities": [
+        "crm",
+        "lead-management",
+        "automation"
+      ],
+      "priority": 6,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "hubspot",
+      "type": "mcp",
+      "server": "hubspot",
+      "description": "HubSpot marketing platform",
+      "capabilities": [
+        "marketing",
+        "sales",
+        "customer-service"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "zendesk",
+      "type": "mcp",
+      "server": "zendesk",
+      "description": "Zendesk customer support",
+      "capabilities": [
+        "ticketing",
+        "customer-support",
+        "knowledge-base"
+      ],
+      "priority": 5,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "intercom",
+      "type": "mcp",
+      "server": "intercom",
+      "description": "Intercom customer messaging",
+      "capabilities": [
+        "live-chat",
+        "customer-messaging",
+        "automation"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "figma",
+      "type": "mcp",
+      "server": "figma",
+      "description": "Figma design collaboration",
+      "capabilities": [
+        "design-files",
+        "prototypes",
+        "collaboration"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "airtable",
+      "type": "mcp",
+      "server": "airtable",
+      "description": "Airtable database platform",
+      "capabilities": [
+        "databases",
+        "automation",
+        "collaboration"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "zapier",
+      "type": "mcp",
+      "server": "zapier",
+      "description": "Zapier automation platform",
+      "capabilities": [
+        "workflow-automation",
+        "integrations"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "browser",
+      "type": "mcp",
+      "server": "browser",
+      "description": "Web browser automation",
+      "capabilities": [
+        "web-scraping",
+        "automation",
+        "testing"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "puppeteer",
+      "type": "mcp",
+      "server": "puppeteer",
+      "description": "Puppeteer browser control",
+      "capabilities": [
+        "headless-browser",
+        "pdf-generation",
+        "screenshots"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "playwright",
+      "type": "mcp",
+      "server": "playwright",
+      "description": "Playwright browser automation",
+      "capabilities": [
+        "cross-browser",
+        "testing",
+        "mobile-emulation"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "selenium",
+      "type": "mcp",
+      "server": "selenium",
+      "description": "Selenium web automation",
+      "capabilities": [
+        "web-testing",
+        "browser-automation"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "search",
+      "type": "mcp",
+      "server": "search",
+      "description": "Web search integration",
+      "capabilities": [
+        "web-search",
+        "results-parsing"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "tableau",
+      "type": "mcp",
+      "server": "tableau",
+      "description": "Tableau business intelligence platform",
+      "capabilities": [
+        "data-visualization",
+        "business-intelligence",
+        "dashboards"
+      ],
+      "priority": 6,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "powerbi",
+      "type": "mcp",
+      "server": "powerbi",
+      "description": "Microsoft Power BI integration",
+      "capabilities": [
+        "data-visualization",
+        "reporting",
+        "analytics"
+      ],
+      "priority": 6,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "looker",
+      "type": "mcp",
+      "server": "looker",
+      "description": "Looker data platform",
+      "capabilities": [
+        "data-modeling",
+        "analytics",
+        "reporting"
+      ],
+      "priority": 5,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "databricks",
+      "type": "mcp",
+      "server": "databricks",
+      "description": "Databricks unified analytics platform",
+      "capabilities": [
+        "big-data",
+        "machine-learning",
+        "data-engineering"
+      ],
+      "priority": 7,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "snowflake",
+      "type": "mcp",
+      "server": "snowflake",
+      "description": "Snowflake cloud data warehouse",
+      "capabilities": [
+        "data-warehouse",
+        "analytics",
+        "cloud-storage"
+      ],
+      "priority": 7,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "gemini",
+      "type": "mcp",
+      "server": "gemini",
+      "description": "Google Gemini AI integration",
+      "capabilities": [
+        "multimodal-ai",
+        "reasoning",
+        "code-generation"
+      ],
+      "priority": 8,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "claude_projects",
+      "type": "mcp",
+      "server": "claude_projects",
+      "description": "Claude Projects API integration",
+      "capabilities": [
+        "project-context",
+        "long-context",
+        "collaboration"
+      ],
+      "priority": 9,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "langchain",
+      "type": "mcp",
+      "server": "langchain",
+      "description": "LangChain framework integration",
+      "capabilities": [
+        "chain-management",
+        "agent-orchestration",
+        "tool-calling"
+      ],
+      "priority": 7,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "llamaindex",
+      "type": "mcp",
+      "server": "llamaindex",
+      "description": "LlamaIndex data framework",
+      "capabilities": [
+        "data-indexing",
+        "retrieval",
+        "knowledge-graphs"
+      ],
+      "priority": 7,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "vectordb",
+      "type": "mcp",
+      "server": "vectordb",
+      "description": "Vector database integration (Pinecone, Weaviate, etc.)",
+      "capabilities": [
+        "vector-search",
+        "embeddings",
+        "similarity"
+      ],
+      "priority": 6,
+      "template": "ai_model_server"
+    },
+    {
+      "name": "terraform",
+      "type": "mcp",
+      "server": "terraform",
+      "description": "Terraform infrastructure as code",
+      "capabilities": [
+        "infrastructure-management",
+        "provisioning",
+        "state-management"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "ansible",
+      "type": "mcp",
+      "server": "ansible",
+      "description": "Ansible automation platform",
+      "capabilities": [
+        "configuration-management",
+        "deployment",
+        "automation"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "jenkins",
+      "type": "mcp",
+      "server": "jenkins",
+      "description": "Jenkins CI/CD automation",
+      "capabilities": [
+        "continuous-integration",
+        "build-automation",
+        "deployment"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "circleci",
+      "type": "mcp",
+      "server": "circleci",
+      "description": "CircleCI continuous integration",
+      "capabilities": [
+        "ci-cd",
+        "testing",
+        "deployment"
+      ],
+      "priority": 5,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "githubactions",
+      "type": "mcp",
+      "server": "githubactions",
+      "description": "GitHub Actions workflow automation",
+      "capabilities": [
+        "workflow-automation",
+        "ci-cd",
+        "deployment"
+      ],
+      "priority": 7,
+      "template": "auth_required_server"
+    },
+    {
+      "name": "openapi",
+      "type": "mcp",
+      "server": "openapi",
+      "description": "OpenAPI specification tools",
+      "capabilities": [
+        "api-documentation",
+        "schema-validation"
+      ],
+      "priority": 7,
+      "template": "utility_server"
+    },
+    {
+      "name": "json",
+      "type": "mcp",
+      "server": "json",
+      "description": "JSON processing utilities",
+      "capabilities": [
+        "json-parsing",
+        "validation",
+        "transformation"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "xml",
+      "type": "mcp",
+      "server": "xml",
+      "description": "XML processing utilities",
+      "capabilities": [
+        "xml-parsing",
+        "validation",
+        "transformation"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "yaml",
+      "type": "mcp",
+      "server": "yaml",
+      "description": "YAML processing utilities",
+      "capabilities": [
+        "yaml-parsing",
+        "validation",
+        "conversion"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "csv",
+      "type": "mcp",
+      "server": "csv",
+      "description": "CSV processing utilities",
+      "capabilities": [
+        "csv-parsing",
+        "data-transformation"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "encryption",
+      "type": "mcp",
+      "server": "encryption",
+      "description": "Encryption and cryptography utilities",
+      "capabilities": [
+        "encryption",
+        "hashing",
+        "key-generation"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "compression",
+      "type": "mcp",
+      "server": "compression",
+      "description": "File compression utilities",
+      "capabilities": [
+        "compression",
+        "archiving",
+        "extraction"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "qr",
+      "type": "mcp",
+      "server": "qr",
+      "description": "QR code generation and reading",
+      "capabilities": [
+        "qr-generation",
+        "qr-reading"
+      ],
+      "priority": 4,
+      "template": "utility_server"
+    },
+    {
+      "name": "pdf",
+      "type": "mcp",
+      "server": "pdf",
+      "description": "PDF processing and manipulation",
+      "capabilities": [
+        "pdf-generation",
+        "pdf-parsing",
+        "document-processing"
+      ],
+      "priority": 6,
+      "template": "utility_server"
+    },
+    {
+      "name": "imagemagick",
+      "type": "mcp",
+      "server": "imagemagick",
+      "description": "ImageMagick image processing",
+      "capabilities": [
+        "image-processing",
+        "format-conversion",
+        "image-manipulation"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "ffmpeg",
+      "type": "mcp",
+      "server": "ffmpeg",
+      "description": "FFmpeg media processing",
+      "capabilities": [
+        "video-processing",
+        "audio-processing",
+        "format-conversion"
+      ],
+      "priority": 5,
+      "template": "utility_server"
+    },
+    {
+      "name": "s3",
+      "type": "mcp",
+      "server": "s3",
+      "description": "s3 MCP server",
+      "capabilities": [],
+      "priority": 5,
+      "template": "utility_server"
+    }
+  ],
+  "meta": {
+    "version": "3.0.0",
+    "enhancedManager": true,
+    "generatedAt": "2025-08-14T17:51:33.581Z",
+    "totalServers": 128,
+    "totalCapabilities": 248,
+    "totalAgents": 46,
+    "features": {
+      "agentBindings": true,
+      "dynamicConfig": true,
+      "autoScaling": true,
+      "costTracking": true
+    }
+  }
+}

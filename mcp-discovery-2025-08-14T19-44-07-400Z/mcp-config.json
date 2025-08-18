@@ -1,0 +1,263 @@
+{
+  "version": "3.0",
+  "metadata": {
+    "generated": "2025-08-14T19:44:07.400Z",
+    "generator": "universal-mcp-discovery",
+    "project": {
+      "languages": [
+        {
+          "language": "JavaScript",
+          "files": 45
+        }
+      ],
+      "frameworks": [],
+      "dependencies": {
+        "production": [
+          "@babel/parser",
+          "archiver",
+          "chalk",
+          "cli-table3",
+          "diff",
+          "inquirer",
+          "tar"
+        ],
+        "development": [],
+        "total": 7
+      },
+      "infrastructure": [
+        "Docker",
+        "GitHub Actions"
+      ]
+    }
+  },
+  "global": {
+    "timeout": 30000,
+    "retries": 3,
+    "logLevel": "info",
+    "enableMetrics": true
+  },
+  "servers": {
+    "filesystem": {
+      "enabled": true,
+      "priority": 100,
+      "category": "core",
+      "confidence": 100,
+      "autoStart": true,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 30000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 5,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "debug",
+          "includeMetrics": true
+        }
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 95,
+      "category": "core",
+      "confidence": 100,
+      "autoStart": true,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 30000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 5,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "debug",
+          "includeMetrics": true
+        }
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 90,
+      "category": "core",
+      "confidence": 100,
+      "autoStart": true,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 30000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 5,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "debug",
+          "includeMetrics": true
+        }
+      }
+    },
+    "npm": {
+      "enabled": true,
+      "priority": 90,
+      "category": "package-manager",
+      "confidence": 95,
+      "autoStart": true,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 30000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 5,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "debug",
+          "includeMetrics": true
+        }
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 90,
+      "category": "containerization",
+      "confidence": 100,
+      "autoStart": true,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 30000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 5,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "debug",
+          "includeMetrics": true
+        }
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 90,
+      "category": "ci-cd",
+      "confidence": 100,
+      "autoStart": true,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 30000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 5,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "debug",
+          "includeMetrics": true
+        }
+      }
+    },
+    "eslint": {
+      "enabled": true,
+      "priority": 75,
+      "category": "linting",
+      "confidence": 85,
+      "autoStart": false,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 60000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 4,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "info",
+          "includeMetrics": false
+        }
+      }
+    },
+    "prettier": {
+      "enabled": true,
+      "priority": 70,
+      "category": "formatting",
+      "confidence": 80,
+      "autoStart": false,
+      "config": {
+        "healthCheck": {
+          "enabled": true,
+          "interval": 60000,
+          "timeout": 5000
+        },
+        "connection": {
+          "maxConnections": 4,
+          "timeout": 30000
+        },
+        "logging": {
+          "level": "info",
+          "includeMetrics": false
+        }
+      }
+    }
+  },
+  "categories": {
+    "core": {
+      "servers": [
+        "filesystem",
+        "http",
+        "git"
+      ],
+      "enabled": 3,
+      "total": 3
+    },
+    "package-manager": {
+      "servers": [
+        "npm"
+      ],
+      "enabled": 1,
+      "total": 1
+    },
+    "containerization": {
+      "servers": [
+        "docker"
+      ],
+      "enabled": 1,
+      "total": 1
+    },
+    "ci-cd": {
+      "servers": [
+        "github"
+      ],
+      "enabled": 1,
+      "total": 1
+    },
+    "linting": {
+      "servers": [
+        "eslint"
+      ],
+      "enabled": 1,
+      "total": 1
+    },
+    "formatting": {
+      "servers": [
+        "prettier"
+      ],
+      "enabled": 1,
+      "total": 1
+    }
+  }
+}

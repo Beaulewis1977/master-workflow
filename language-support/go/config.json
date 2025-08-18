@@ -1,0 +1,70 @@
+{
+  "name": "Go",
+  "version": "1.21+",
+  "runtime": "Go Runtime",
+  "runtimeVersions": ["1.19", "1.20", "1.21", "1.22"],
+  "features": {
+    "staticTyping": true,
+    "compilation": true,
+    "concurrency": true,
+    "garbageCollection": true,
+    "crossPlatform": true,
+    "generics": true,
+    "modules": true,
+    "interfaces": true
+  },
+  "packageManagement": {
+    "primary": "go modules",
+    "alternatives": ["dep", "glide", "godep"],
+    "registry": "https://pkg.go.dev/",
+    "lockFiles": ["go.sum"],
+    "configFiles": ["go.mod"]
+  },
+  "commonDependencies": {
+    "dev": [
+      "golang.org/x/tools/cmd/goimports",
+      "github.com/golangci/golangci-lint",
+      "github.com/cosmtrek/air",
+      "github.com/swaggo/swag",
+      "github.com/stretchr/testify"
+    ],
+    "production": [
+      "github.com/gin-gonic/gin",
+      "github.com/gorilla/mux",
+      "gorm.io/gorm",
+      "github.com/spf13/cobra",
+      "github.com/joho/godotenv"
+    ]
+  },
+  "fileStructure": {
+    "cmd": "Application entrypoints",
+    "internal": "Private application code",
+    "pkg": "Public library code",
+    "api": "API definitions (OpenAPI/protobuf)",
+    "web": "Web application assets",
+    "configs": "Configuration files",
+    "scripts": "Build and deployment scripts",
+    "test": "Test files and test data",
+    "docs": "Documentation",
+    "vendor": "Vendored dependencies"
+  },
+  "buildConfiguration": {
+    "compiler": "gc",
+    "buildTags": "build constraints for conditional compilation",
+    "ldflags": "linker flags for build-time variables",
+    "gcflags": "garbage collector flags",
+    "crossCompilation": "GOOS and GOARCH environment variables"
+  },
+  "bestPractices": [
+    "Use go fmt for consistent formatting",
+    "Follow effective Go guidelines",
+    "Write comprehensive tests with good coverage",
+    "Use interfaces for abstraction",
+    "Handle errors explicitly",
+    "Use context for cancellation and timeouts",
+    "Keep interfaces small and focused",
+    "Use goroutines and channels for concurrency",
+    "Prefer composition over inheritance",
+    "Use meaningful names for variables and functions"
+  ]
+}

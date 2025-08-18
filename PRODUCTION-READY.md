@@ -6,6 +6,22 @@ The Intelligent Workflow Decision System is **100% production-ready** with all r
 
 ## 🚀 What's Been Built
 
+### 0. ✅ **Specialized Sub-Agent Architecture** (PRODUCTION-READY)
+- **Queen Controller Architect** (`1-queen-controller-architect.md`)
+  - Supreme orchestrator managing 10 concurrent agents with 200k context each
+  - Neural integration for intelligent task distribution
+  - System-wide performance optimization and fault recovery
+- **Neural Swarm Architect** (`1-neural-swarm-architect.md`) 
+  - Collective intelligence and emergent behavior systems
+  - Swarm optimization algorithms (PSO, ACO, genetic)
+  - Distributed learning and self-organizing networks
+- **Specialized Domain Agents** (13 specialized agents total)
+  - Code Analyzer, Test Automation Engineer, Documentation Generator
+  - Security Compliance Auditor, Performance Optimization Engineer
+  - Deployment Pipeline Engineer, Error Recovery Specialist
+  - SPARC Methodology Implementer, MCP Integration Specialist
+  - And more - all with 200k context windows and specialized capabilities
+
 ### 1. ✅ **Deep Codebase Analysis** (FULLY IMPLEMENTED)
 - **complexity-analyzer.js** (639 lines)
   - Analyzes 8 dimensions: size, dependencies, architecture, tech stack, features, team, deployment, testing
@@ -192,6 +208,56 @@ ai-dev analyze
 - ✅ **Learning system** - Remembers user preferences
 
 ### User Control
+### Cross-Platform Execution (Phase 2)
+
+- Introduced `lib/exec-helper.js` to standardize command execution across Windows/macOS/Linux.
+- Removed naive argument splitting; default shell execution preserves quoting.
+- Ready to refactor chained commands (`&&`) into sequential helper executions.
+### Phase 3: Claude Flow v2.0.0 Integration
+
+- Centralized version policy: `lib/version-policy.js` (env + heuristic defaults)
+- Runners and selector use policy for `@tag` resolution consistently
+- Optional features (disabled by default):
+  - Training: enable with `ENABLE_CF_TRAINING=true` or `CF_ENABLE_EXPERIMENTAL=true` (when on alpha/beta/dev)
+  - Memory ops: enable with `ENABLE_CF_MEMORY_OPS=true` and `CF_MEMORY_ACTION=summarize|sync|gc`
+- Document customizer includes version info and policy summary in `.claude/CLAUDE.md`
+
+### Safety & Cross-Platform Defaults (New)
+
+### Phase 4: Sub-Agent Auto-Delegation
+### Phase 8: Consolidation & Migration (Modular Runner)
+
+- Modular runner is now the primary/default execution path.
+- Legacy runner is documented as TMux specialization only; migration guidance provided in README.
+- ### Phase 5: Observability (Status API + SSE Event Bus)
+
+- Minimal HTTP server already included (`package-tools/bin/agent-bus-http.js`):
+  - `/` returns status snapshot and recent events
+  - `/events/stream` streams live events via SSE
+  - `/events/publish` ingests events
+- Runners publish events (`log`, `approach_change`, `exec_complete`) to the bus
+- Start dashboard: `./ai-workflow status-dashboard [port]` (default 8787)
+
+- New sub-agents: `test-engineer`, `security-auditor` (installed to `.claude/agents/`)
+- `.claude/settings.json` includes `autoDelegation.enabled` and `rules[]` (taskKeywords/filePatterns → delegateTo)
+- `workflow-runner-modular.js` auto-delegates Claude Code tasks based on rules (lightweight matching)
+- Documentation updated in README
+
+- Windows hosts default to process mode; tmux orchestration is opt-in (or use WSL2).
+- YOLO is blocked in CI (`CI=true`) or when `BLOCK_YOLO=true`. When enabled, it requires `--ack I-ACCEPT-RISK` and logs a warning.
+- Event bus listens on `AGENT_BUS_PORT` (default 8787) for status and SSE.
+- MCP default server is `context7` (override with `MCP_DEFAULT_SERVER`).
+- TMux auto-commit is disabled by default; set `ENABLE_AUTO_COMMIT=true` to enable.
+- MCP registry is deterministic (env/catalog-based). Avoid untrusted endpoints; review changes via PR.
+- Governance (Phase 1): CI matrix on Node 18/20 across OS, issue templates, and policies (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`).
+- Engine (Phase 2): CLI + Fastify API + SQLite scaffolded under `engine/` with migrations and health endpoints.
+- Conversational API (Phase 4): `/api/convo/:sessionId/message` persists threads with basic action suggestions; `/api/convo/:sessionId` returns session history.
+- Environment Analysis (Phase 5): `/api/env/scan` returns fingerprint (host, distro, pkg managers, languages, frameworks, CI, containers) and suggestions.
+- Flow Integration (Phase 6): Orchestrator builds launch commands for Claude Flow with centralized version policy and optional training/memory ops.
+- Project Customization (Phase 7): API generates Agent-OS product/spec docs and optional Claude Code subagents tailored to detected stack.
+- Infrastructure Scaffolding (Phase 8): Non-destructive planning/preview/apply endpoints to add scripts, agents, and infra workflows with conflict detection.
+- Security/Logging/Error Handling (Phase 9): Command allowlist + YOLO gate, API logging hooks, and audit log records for key actions.
+- YOLO & Distribution (Phase 10): API to toggle YOLO with ack; Windows defaults to process mode; tmux via WSL2; orchestrator uses `--yolo` when enabled.
 - ✅ **Multiple modes** - Auto, interactive, manual
 - ✅ **Version selection** - All Claude Flow 2.0 versions
 - ✅ **Override warnings** - Explains mismatches

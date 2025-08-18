@@ -1,0 +1,89 @@
+{
+  "channels": {
+    "strategy_channel": {
+      "id": "channel-strategy",
+      "type": "broadcast",
+      "status": "active",
+      "participants": ["queen", "worker-researcher-001", "worker-coder-001", "worker-analyst-001", "worker-tester-001"],
+      "messages": [],
+      "created": "2025-01-12T10:30:00Z"
+    },
+    "task_queue": {
+      "id": "channel-tasks",
+      "type": "queue",
+      "status": "active",
+      "priority_enabled": true,
+      "participants": ["queen", "worker-researcher-001", "worker-coder-001", "worker-analyst-001", "worker-tester-001"],
+      "pending_tasks": 10,
+      "in_progress": 0,
+      "completed": 0,
+      "created": "2025-01-12T10:30:00Z"
+    },
+    "research_topic": {
+      "id": "channel-research",
+      "type": "pubsub",
+      "status": "active",
+      "publisher": "worker-researcher-001",
+      "subscribers": ["queen", "worker-coder-001", "worker-analyst-001"],
+      "messages": [],
+      "created": "2025-01-12T10:30:00Z"
+    },
+    "implementation_topic": {
+      "id": "channel-implementation",
+      "type": "pubsub",
+      "status": "active",
+      "publisher": "worker-coder-001",
+      "subscribers": ["queen", "worker-tester-001", "worker-analyst-001"],
+      "messages": [],
+      "created": "2025-01-12T10:30:00Z"
+    },
+    "analysis_topic": {
+      "id": "channel-analysis",
+      "type": "pubsub",
+      "status": "active",
+      "publisher": "worker-analyst-001",
+      "subscribers": ["queen", "worker-coder-001", "worker-tester-001", "worker-researcher-001"],
+      "messages": [],
+      "created": "2025-01-12T10:30:00Z"
+    },
+    "testing_topic": {
+      "id": "channel-testing",
+      "type": "pubsub",
+      "status": "active",
+      "publisher": "worker-tester-001",
+      "subscribers": ["queen", "worker-coder-001", "worker-analyst-001"],
+      "messages": [],
+      "created": "2025-01-12T10:30:00Z"
+    },
+    "coordination_channel": {
+      "id": "channel-coordination",
+      "type": "direct",
+      "status": "active",
+      "encryption": false,
+      "participants": ["queen", "worker-researcher-001", "worker-coder-001", "worker-analyst-001", "worker-tester-001"],
+      "handshake_completed": true,
+      "created": "2025-01-12T10:30:00Z"
+    }
+  },
+  "routing_rules": {
+    "task_assignment": {
+      "research": "worker-researcher-001",
+      "implementation": "worker-coder-001",
+      "analysis": "worker-analyst-001",
+      "testing": "worker-tester-001"
+    },
+    "escalation_path": ["worker", "queen", "workflow-orchestrator"],
+    "broadcast_topics": ["strategy_updates", "phase_transitions", "critical_alerts"]
+  },
+  "communication_protocols": {
+    "message_format": "json",
+    "encoding": "utf-8",
+    "max_message_size": "10MB",
+    "timeout": "30s",
+    "retry_policy": {
+      "max_attempts": 3,
+      "backoff": "exponential",
+      "initial_delay": "1s"
+    }
+  }
+}

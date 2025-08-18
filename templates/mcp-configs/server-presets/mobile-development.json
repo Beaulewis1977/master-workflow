@@ -1,0 +1,298 @@
+{
+  "name": "Mobile Development",
+  "description": "Comprehensive mobile development environment for React Native, Flutter, Firebase, and cross-platform app development",
+  "category": "mobile",
+  "version": "1.0.0",
+  "priority_level": "high",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Mobile-focused coding assistance with cross-platform expertise",
+      "default": true,
+      "config": {
+        "features": ["mobile_ui", "native_modules", "performance_optimization"],
+        "languages": ["javascript", "typescript", "dart", "swift", "kotlin", "java"],
+        "mobile_frameworks": ["react_native", "flutter", "expo"]
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Mobile project structure with platform-specific file handling",
+      "config": {
+        "root": ".",
+        "watch_patterns": ["src/**/*", "components/**/*", "screens/**/*", "assets/**/*", "android/**/*", "ios/**/*"],
+        "ignore_patterns": ["node_modules/**", "android/build/**", "ios/build/**", ".expo/**", "build/**"]
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Version control optimized for mobile development",
+      "config": {
+        "repo": "auto",
+        "hooks": ["pre-commit", "pre-push"],
+        "large_file_support": true,
+        "platform_specific_ignores": true
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 4,
+      "description": "CI/CD for mobile app deployment and distribution",
+      "config": {
+        "workflows": ["build_ios", "build_android", "test", "deploy"],
+        "artifact_storage": true,
+        "app_store_integration": true,
+        "google_play_integration": true
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 5,
+      "description": "API client for mobile backend integration",
+      "config": {
+        "timeout": 30000,
+        "retry_attempts": 3,
+        "offline_support": true,
+        "certificate_pinning": true
+      }
+    },
+    "aws": {
+      "enabled": true,
+      "priority": 6,
+      "description": "AWS mobile services and backend infrastructure",
+      "config": {
+        "services": ["amplify", "cognito", "appsync", "pinpoint", "s3", "lambda"],
+        "regions": ["us-east-1", "us-west-2"],
+        "mobile_analytics": true,
+        "push_notifications": true
+      }
+    },
+    "gcp": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Google Cloud Platform mobile services",
+      "config": {
+        "services": ["firebase", "cloud_functions", "firestore", "cloud_storage"],
+        "regions": ["us-central1", "europe-west1"],
+        "analytics": true,
+        "crashlytics": true
+      }
+    },
+    "browser": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Web-based mobile testing and debugging",
+      "config": {
+        "mobile_simulation": true,
+        "device_emulation": true,
+        "performance_profiling": true,
+        "network_throttling": true
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Containerized build environments for consistent mobile builds",
+      "config": {
+        "android_sdk": true,
+        "xcode_tools": false,
+        "node_environments": true,
+        "build_caching": true
+      }
+    },
+    "search": {
+      "enabled": true,
+      "priority": 10,
+      "description": "Mobile-specific code search and documentation",
+      "config": {
+        "mobile_docs": true,
+        "platform_guides": true,
+        "component_libraries": true
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "NODE_ENV",
+      "EXPO_TOKEN",
+      "REACT_NATIVE_VERSION"
+    ],
+    "optional": [
+      "ANDROID_HOME",
+      "ANDROID_SDK_ROOT",
+      "JAVA_HOME",
+      "IOS_CERTIFICATE",
+      "IOS_PROVISIONING_PROFILE",
+      "GOOGLE_SERVICES_JSON",
+      "GOOGLESERVICE_INFO_PLIST",
+      "FIREBASE_TOKEN",
+      "AWS_MOBILE_HUB_TOKEN",
+      "CODECOV_TOKEN",
+      "SENTRY_DSN",
+      "BUGSNAG_API_KEY",
+      "APPCENTER_ACCESS_TOKEN"
+    ],
+    "development": {
+      "NODE_ENV": "development",
+      "EXPO_DEBUG": "true",
+      "REACT_NATIVE_PACKAGER_HOSTNAME": "localhost",
+      "FLIPPER_ENABLED": "true"
+    },
+    "production": {
+      "NODE_ENV": "production",
+      "BUNDLE_ANALYZER": "false",
+      "SOURCEMAP_UPLOAD": "true",
+      "CRASH_REPORTING": "true"
+    }
+  },
+  "recommended_tools": [
+    "react-native-cli",
+    "expo-cli",
+    "flutter",
+    "firebase-tools",
+    "fastlane",
+    "detox",
+    "appium",
+    "flipper",
+    "reactotron",
+    "adb",
+    "xcrun",
+    "cocoapods",
+    "gradle",
+    "metro",
+    "babel",
+    "eslint"
+  ],
+  "project_structure": {
+    "react_native": {
+      "required_files": [
+        "package.json",
+        "app.json",
+        "metro.config.js",
+        "babel.config.js",
+        "android/",
+        "ios/"
+      ],
+      "recommended_directories": [
+        "src/",
+        "components/",
+        "screens/",
+        "navigation/",
+        "services/",
+        "utils/",
+        "assets/",
+        "__tests__/",
+        "e2e/"
+      ]
+    },
+    "flutter": {
+      "required_files": [
+        "pubspec.yaml",
+        "analysis_options.yaml",
+        "android/",
+        "ios/",
+        "lib/",
+        "test/"
+      ],
+      "recommended_directories": [
+        "lib/models/",
+        "lib/screens/",
+        "lib/widgets/",
+        "lib/services/",
+        "lib/utils/",
+        "assets/",
+        "test/",
+        "integration_test/"
+      ]
+    }
+  },
+  "platform_configurations": {
+    "react_native": {
+      "version": ">=0.72",
+      "typescript": true,
+      "new_architecture": false,
+      "hermes": true,
+      "flipper": true
+    },
+    "expo": {
+      "sdk_version": ">=49",
+      "managed_workflow": true,
+      "eas_build": true,
+      "eas_update": true
+    },
+    "flutter": {
+      "version": ">=3.10",
+      "dart_version": ">=3.0",
+      "null_safety": true,
+      "sound_null_safety": true
+    }
+  },
+  "testing_frameworks": {
+    "unit_testing": ["jest", "dart_test"],
+    "integration_testing": ["detox", "integration_test"],
+    "e2e_testing": ["appium", "maestro"],
+    "ui_testing": ["storybook", "golden_tests"],
+    "performance_testing": ["flashlight", "flutter_driver"]
+  },
+  "deployment_targets": {
+    "ios": {
+      "app_store": true,
+      "testflight": true,
+      "ad_hoc": true,
+      "enterprise": true
+    },
+    "android": {
+      "google_play": true,
+      "firebase_distribution": true,
+      "apk_distribution": true,
+      "aab_format": true
+    },
+    "web": {
+      "expo_web": true,
+      "react_native_web": true,
+      "flutter_web": true
+    }
+  },
+  "backend_integrations": {
+    "firebase": {
+      "authentication": true,
+      "firestore": true,
+      "storage": true,
+      "functions": true,
+      "analytics": true,
+      "crashlytics": true,
+      "messaging": true,
+      "remote_config": true
+    },
+    "aws_amplify": {
+      "authentication": true,
+      "api": true,
+      "storage": true,
+      "analytics": true,
+      "push_notifications": true
+    },
+    "supabase": {
+      "database": true,
+      "authentication": true,
+      "storage": true,
+      "realtime": true
+    }
+  },
+  "performance_monitoring": {
+    "crash_reporting": ["sentry", "bugsnag", "firebase_crashlytics"],
+    "performance_monitoring": ["flipper", "reactotron", "firebase_performance"],
+    "analytics": ["firebase_analytics", "mixpanel", "amplitude"],
+    "testing": ["detox", "maestro", "appium"]
+  },
+  "security_features": {
+    "code_obfuscation": true,
+    "certificate_pinning": true,
+    "root_detection": true,
+    "debug_detection": true,
+    "secure_storage": true,
+    "biometric_authentication": true
+  }
+}

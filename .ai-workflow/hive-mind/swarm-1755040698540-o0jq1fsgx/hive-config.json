@@ -1,0 +1,133 @@
+{
+  "swarm": {
+    "id": "swarm-1755040698540-o0jq1fsgx",
+    "objective": "MASTER-WORKFLOW",
+    "created": "2025-01-12T10:30:00Z",
+    "status": "initializing",
+    "version": "2.0"
+  },
+  "queen": {
+    "type": "strategic",
+    "role": "Master Workflow Orchestrator",
+    "capabilities": [
+      "workflow_coordination",
+      "agent_management",
+      "strategy_planning",
+      "resource_allocation"
+    ]
+  },
+  "workers": {
+    "researcher": {
+      "id": "worker-researcher-001",
+      "status": "spawning",
+      "role": "Knowledge Discovery Agent",
+      "responsibilities": [
+        "Documentation analysis",
+        "Best practices research",
+        "Technology evaluation",
+        "Pattern identification"
+      ],
+      "capabilities": [
+        "document_analysis",
+        "web_search",
+        "knowledge_synthesis",
+        "trend_analysis"
+      ]
+    },
+    "coder": {
+      "id": "worker-coder-001",
+      "status": "spawning",
+      "role": "Implementation Agent",
+      "responsibilities": [
+        "Code generation",
+        "Module implementation",
+        "API development",
+        "Refactoring"
+      ],
+      "capabilities": [
+        "multi_language_coding",
+        "architecture_implementation",
+        "testing",
+        "optimization"
+      ]
+    },
+    "analyst": {
+      "id": "worker-analyst-001",
+      "status": "spawning",
+      "role": "System Analysis Agent",
+      "responsibilities": [
+        "Complexity evaluation",
+        "Performance analysis",
+        "Architecture review",
+        "Risk assessment"
+      ],
+      "capabilities": [
+        "complexity_scoring",
+        "dependency_analysis",
+        "metrics_calculation",
+        "bottleneck_detection"
+      ]
+    },
+    "tester": {
+      "id": "worker-tester-001",
+      "status": "spawning",
+      "role": "Quality Assurance Agent",
+      "responsibilities": [
+        "Test creation",
+        "Test execution",
+        "Coverage analysis",
+        "Bug detection"
+      ],
+      "capabilities": [
+        "unit_testing",
+        "integration_testing",
+        "e2e_testing",
+        "performance_testing"
+      ]
+    }
+  },
+  "collective_memory": {
+    "type": "distributed",
+    "storage": ".ai-workflow/hive-mind/swarm-1755040698540-o0jq1fsgx/memory",
+    "sync_interval": "30s",
+    "retention": "7d"
+  },
+  "communication": {
+    "protocol": "async_message_passing",
+    "channels": {
+      "strategy": {
+        "type": "broadcast",
+        "participants": ["queen", "all_workers"]
+      },
+      "tasks": {
+        "type": "queue",
+        "priority": true
+      },
+      "results": {
+        "type": "pubsub",
+        "topics": ["analysis", "implementation", "testing", "research"]
+      },
+      "coordination": {
+        "type": "direct",
+        "encryption": false
+      }
+    }
+  },
+  "performance": {
+    "monitoring": {
+      "enabled": true,
+      "interval": "10s",
+      "metrics": [
+        "task_completion_rate",
+        "worker_utilization",
+        "memory_usage",
+        "communication_latency"
+      ]
+    },
+    "optimization": {
+      "load_balancing": true,
+      "adaptive_scheduling": true,
+      "resource_pooling": true
+    }
+  }
+}

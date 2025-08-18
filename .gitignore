@@ -1,86 +1,147 @@
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Node
-node_modules/
-.npm/
-.pnpm-store/
-dist/
-build/
-.next/
-.nuxt/
-out/
-coverage/
-.nyc_output/
-
-# Python
-__pycache__/
-.pytest_cache/
-.venv/
-venv/
-env/
-
-# Java / Kotlin / Gradle
-target/
-.gradle/
-build/
-
-# Go
-bin/
-vendor/
-
-# Rust
-target/
-
-# Frontend tooling
-.cache/
-.parcel-cache/
-.eslintcache
-.stylelintcache
-
-# OS / Editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-*.code-workspace
-
-# Env files
+# Environment variables and secrets
 .env
 .env.*
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.claude.json
+.env.development
+.env.production
+.env.test
+*.env
 
-# Temporary files
-tmp/
-temp/
+# API Keys and sensitive configurations
+.mcp.json
+mcp.json
+*.mcp.json
+.claude/settings.local.json
+.claude/settings.*.json
+**/settings.local.json
+**/api-keys.json
+**/secrets.json
+**/credentials.json
+*.key
+*.pem
+*.cert
+*.crt
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.yarn-integrity
+*.tgz
+
+# Logs
+logs/
+*.log
+.ai-workflow/logs/
+.hive-mind/sessions/*.log
+.hive-mind/*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Database files (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+.hive-mind/*.db
+.hive-mind/*.db-shm
+.hive-mind/*.db-wal
+
+# Session and temporary files
+.hive-mind/sessions/
+.ai-workflow/recovery/
+.ai-workflow/checkpoints/
+.ai-workflow/backups/
+*.tmp
+*.temp
+*.bak
+*.backup
 *.swp
 *.swo
+*~
 
-# Test artifacts
-test/results/
-test/temp*/
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
 
-# Coverage / Reports
-reports/
-report/
-playwright-report/
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build outputs
+dist/
+build/
+out/
+.output/
+*.out
+
+# Testing
+coverage/
+.nyc_output/
 test-results/
+*.lcov
+.coverage
 
-# Docker / Compose overrides
-docker-compose.override.yml
+# TypeScript
+*.tsbuildinfo
+.typescript/
 
-# Misc
-.cache-loader/
-.sass-cache/
-.eslintcache
-.tsbuildinfo
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
 
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+.ai-dev/incomplete-work.json
+.ai-dev/recovery-plan.json
+.ai-dev/dry-run-plan.json
+.claude-flow/metrics/
+.claude-flow/cache/
+.agent-os/cache/
+
+# Temporary test files
+test-queen-controller.js
+
+# Local configuration overrides
+*.local
+*.local.*
+local-*
+
+# Backup files
+*.orig
+*.rej
+backup/
+backups/

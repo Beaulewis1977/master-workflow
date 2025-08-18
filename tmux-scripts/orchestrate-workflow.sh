@@ -56,7 +56,7 @@ case "$WORKFLOW_TYPE" in
         # Window 0: Main swarm agent
         tmux rename-window -t "${SESSION_NAME}:0" "swarm"
         send_to_window 0 "cd $(pwd)"
-        send_to_window 0 "npx claude-flow@alpha swarm 'Complete project tasks'"
+        send_to_window 0 "npx claude-flow@${CLAUDE_FLOW_VERSION:-alpha} swarm 'Complete project tasks'"
         ;;
     
     hive-mind)
@@ -70,7 +70,7 @@ case "$WORKFLOW_TYPE" in
         # Window 1: Queen
         create_window 1 "queen"
         send_to_window 1 "cd $(pwd)"
-        send_to_window 1 "npx claude-flow@alpha hive-mind spawn '$PROJECT_NAME' --agents 5 --claude"
+        send_to_window 1 "npx claude-flow@${CLAUDE_FLOW_VERSION:-alpha} hive-mind spawn '$PROJECT_NAME' --agents 5 --claude"
         
         # Windows 2-4: Worker agents
         for i in {2..4}; do
@@ -92,7 +92,7 @@ case "$WORKFLOW_TYPE" in
         # Window 1: Queen with SPARC
         create_window 1 "queen-sparc"
         send_to_window 1 "cd $(pwd)"
-        send_to_window 1 "npx claude-flow@alpha hive-mind spawn '$PROJECT_NAME' --sparc --agents 10 --claude"
+        send_to_window 1 "npx claude-flow@${CLAUDE_FLOW_VERSION:-alpha} hive-mind spawn '$PROJECT_NAME' --sparc --agents 10 --claude"
         
         # Window 2: SPARC Phase Manager
         create_window 2 "sparc-phases"
@@ -127,10 +127,14 @@ create_window $((LAST_WINDOW + 1)) "monitor"
 send_to_window $((LAST_WINDOW + 1)) "cd $(pwd)"
 send_to_window $((LAST_WINDOW + 1)) "tail -f $INSTALL_DIR/logs/workflow.log"
 
-# Window for auto-commit (every 30 minutes)
-create_window $((LAST_WINDOW + 2)) "auto-commit"
-send_to_window $((LAST_WINDOW + 2)) "cd $(pwd)"
-send_to_window $((LAST_WINDOW + 2)) "while true; do git add . && git commit -m 'Auto-commit: Workflow progress - $(date)' || true; sleep 1800; done"
+# Window for auto-commit (every 30 minutes) – disabled by default
+if [ "${ENABLE_AUTO_COMMIT:-false}" = "true" ]; then
+    create_window $((LAST_WINDOW + 2)) "auto-commit"
+    send_to_window $((LAST_WINDOW + 2)) "cd $(pwd)"
+    send_to_window $((LAST_WINDOW + 2)) "while true; do git add . && git commit -m 'Auto-commit: Workflow progress - $(date)' || true; sleep 1800; done"
+else
+    echo -e "${YELLOW}Auto-commit window disabled (set ENABLE_AUTO_COMMIT=true to enable).${NC}"
+fi
 
 # Save session info
 mkdir -p "$LOG_DIR"

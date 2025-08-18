@@ -1,0 +1,273 @@
+{
+  "summary": {
+    "totalTests": 20,
+    "passed": 16,
+    "failed": 4,
+    "skipped": 0,
+    "successRate": "80.00%"
+  },
+  "timestamp": "2025-08-14T22:51:57.669Z",
+  "environment": {
+    "nodeVersion": "v22.18.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "testResults": [
+    {
+      "testName": "Template Creation: react-typescript",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.651Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/test-react-typescript-1755211917648",
+        "filesCreated": 14,
+        "template": "react-typescript"
+      }
+    },
+    {
+      "testName": "Project Structure Validation: react-typescript",
+      "passed": false,
+      "error": "Validation failed: Missing required file: CLAUDE.md, Missing required file: .claude/mcp.json",
+      "timestamp": "2025-08-14T22:51:57.653Z",
+      "details": {}
+    },
+    {
+      "testName": "Configuration Generation: react-typescript",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.655Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/config-react-typescript-1755211917654",
+        "configFilesGenerated": [
+          "CLAUDE.md",
+          "tsconfig.json",
+          "package.json"
+        ],
+        "template": "react-typescript"
+      }
+    },
+    {
+      "testName": "Agent Configuration: react-typescript",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.656Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/agents-react-typescript-1755211917656",
+        "agentsCreated": [
+          "code-analyzer-agent",
+          "doc-generator-agent",
+          "frontend-specialist-agent"
+        ],
+        "template": "react-typescript"
+      }
+    },
+    {
+      "testName": "MCP Server Configuration: react-typescript",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.657Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/mcp-react-typescript-1755211917657",
+        "mcpServers": [
+          "context7",
+          "filesystem",
+          "git",
+          "npm",
+          "vite",
+          "vercel"
+        ],
+        "template": "react-typescript"
+      }
+    },
+    {
+      "testName": "CI Workflow Generation: react-typescript",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.659Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/ci-react-typescript-1755211917658",
+        "workflowSteps": 4,
+        "template": "react-typescript"
+      }
+    },
+    {
+      "testName": "Template Creation: node-express",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.660Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/test-node-express-1755211917659",
+        "filesCreated": 12,
+        "template": "node-express"
+      }
+    },
+    {
+      "testName": "Project Structure Validation: node-express",
+      "passed": false,
+      "error": "Validation failed: Missing required file: CLAUDE.md, Missing required file: .claude/mcp.json",
+      "timestamp": "2025-08-14T22:51:57.660Z",
+      "details": {}
+    },
+    {
+      "testName": "Configuration Generation: node-express",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.661Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/config-node-express-1755211917660",
+        "configFilesGenerated": [
+          "CLAUDE.md",
+          "tsconfig.json",
+          "package.json"
+        ],
+        "template": "node-express"
+      }
+    },
+    {
+      "testName": "Agent Configuration: node-express",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.661Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/agents-node-express-1755211917661",
+        "agentsCreated": [
+          "code-analyzer-agent",
+          "doc-generator-agent",
+          "api-builder-agent"
+        ],
+        "template": "node-express"
+      }
+    },
+    {
+      "testName": "MCP Server Configuration: node-express",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.662Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/mcp-node-express-1755211917661",
+        "mcpServers": [
+          "context7",
+          "filesystem",
+          "git",
+          "npm",
+          "postgres",
+          "docker"
+        ],
+        "template": "node-express"
+      }
+    },
+    {
+      "testName": "CI Workflow Generation: node-express",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.662Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/ci-node-express-1755211917662",
+        "workflowSteps": 3,
+        "template": "node-express"
+      }
+    },
+    {
+      "testName": "Template Creation: python-django",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.663Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/test-python-django-1755211917662",
+        "filesCreated": 12,
+        "template": "python-django"
+      }
+    },
+    {
+      "testName": "Project Structure Validation: python-django",
+      "passed": false,
+      "error": "Validation failed: Missing required file: CLAUDE.md, Missing required file: .claude/mcp.json",
+      "timestamp": "2025-08-14T22:51:57.664Z",
+      "details": {}
+    },
+    {
+      "testName": "Configuration Generation: python-django",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.664Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/config-python-django-1755211917664",
+        "configFilesGenerated": [
+          "CLAUDE.md",
+          "requirements.txt",
+          "pyproject.toml"
+        ],
+        "template": "python-django"
+      }
+    },
+    {
+      "testName": "Agent Configuration: python-django",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.665Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/agents-python-django-1755211917664",
+        "agentsCreated": [
+          "code-analyzer-agent",
+          "doc-generator-agent",
+          "api-builder-agent"
+        ],
+        "template": "python-django"
+      }
+    },
+    {
+      "testName": "MCP Server Configuration: python-django",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.666Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/mcp-python-django-1755211917665",
+        "mcpServers": [
+          "context7",
+          "filesystem",
+          "git",
+          "postgres",
+          "redis",
+          "docker"
+        ],
+        "template": "python-django"
+      }
+    },
+    {
+      "testName": "CI Workflow Generation: python-django",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.666Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/ci-python-django-1755211917666",
+        "workflowSteps": 3,
+        "template": "python-django"
+      }
+    },
+    {
+      "testName": "Existing Project Enhancement",
+      "passed": true,
+      "error": null,
+      "timestamp": "2025-08-14T22:51:57.667Z",
+      "details": {
+        "projectPath": "/tmp/claude-flow-scaffolding-tests/enhancement-1755211917666",
+        "enhancementsAdded": [
+          "CLAUDE.md",
+          ".claude/agents/",
+          ".claude/mcp.json"
+        ],
+        "existingFilesPreserved": [
+          "package.json",
+          "src/App.js"
+        ]
+      }
+    },
+    {
+      "testName": "Cross-Template Compatibility",
+      "passed": false,
+      "error": "Compatibility issues: react-typescript: Invalid tsconfig.json: Unexpected token '#', \"# Generate\"... is not valid JSON, Invalid package.json: Unexpected token '#', \"# Generate\"... is not valid JSON; node-express: Invalid tsconfig.json: Unexpected token '#', \"# Generate\"... is not valid JSON, Invalid package.json: Unexpected token '#', \"# Generate\"... is not valid JSON",
+      "timestamp": "2025-08-14T22:51:57.669Z",
+      "details": {}
+    }
+  ]
+}

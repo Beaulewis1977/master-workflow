@@ -1,0 +1,272 @@
+{
+  "name": "DevOps",
+  "description": "Complete DevOps toolkit with Docker, Kubernetes, CI/CD pipelines, infrastructure monitoring, and automation tools",
+  "category": "devops",
+  "version": "1.0.0",
+  "priority_level": "critical",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Infrastructure as Code and DevOps automation assistance",
+      "default": true,
+      "config": {
+        "features": ["infrastructure_design", "pipeline_optimization", "security_hardening"],
+        "languages": ["yaml", "bash", "python", "go", "terraform", "ansible"]
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Container management and orchestration",
+      "config": {
+        "swarm_mode": true,
+        "buildkit": true,
+        "security_scanning": true,
+        "multi_arch_builds": true,
+        "registry_integration": true
+      }
+    },
+    "kubernetes": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Kubernetes cluster management and application deployment",
+      "config": {
+        "helm_integration": true,
+        "istio_support": true,
+        "monitoring": true,
+        "auto_scaling": true,
+        "rbac": true,
+        "network_policies": true
+      }
+    },
+    "aws": {
+      "enabled": true,
+      "priority": 4,
+      "description": "AWS cloud infrastructure management",
+      "config": {
+        "regions": ["us-east-1", "us-west-2", "eu-west-1"],
+        "services": ["ec2", "ecs", "eks", "lambda", "cloudformation", "cloudwatch"],
+        "cost_optimization": true,
+        "security_groups": true
+      }
+    },
+    "gcp": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Google Cloud Platform infrastructure",
+      "config": {
+        "services": ["gce", "gke", "cloud_functions", "cloud_run", "deployment_manager"],
+        "regions": ["us-central1", "europe-west1"],
+        "billing_alerts": true
+      }
+    },
+    "azure": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Microsoft Azure cloud services",
+      "config": {
+        "services": ["vm", "aks", "functions", "arm_templates", "monitor"],
+        "regions": ["eastus", "westeurope"],
+        "resource_groups": true
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 7,
+      "description": "Version control with GitOps workflows",
+      "config": {
+        "repo": "auto",
+        "gitops": true,
+        "branch_protection": true,
+        "conventional_commits": true
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 8,
+      "description": "GitHub Actions CI/CD and automation",
+      "config": {
+        "workflows": ["ci", "cd", "security", "dependency_updates"],
+        "environments": ["staging", "production"],
+        "secrets_management": true,
+        "self_hosted_runners": true
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Infrastructure configuration file management",
+      "config": {
+        "root": ".",
+        "watch_patterns": ["*.tf", "*.yml", "*.yaml", "Dockerfile*", "*/Chart.yaml"],
+        "ignore_patterns": [".terraform/**", "terraform.tfstate*", "*.log"]
+      }
+    },
+    "postgres": {
+      "enabled": true,
+      "priority": 10,
+      "description": "Database infrastructure and backup management",
+      "config": {
+        "high_availability": true,
+        "automated_backups": true,
+        "monitoring": true,
+        "connection_pooling": true
+      }
+    },
+    "redis": {
+      "enabled": true,
+      "priority": 11,
+      "description": "Caching layer and session management",
+      "config": {
+        "cluster_mode": true,
+        "persistence": true,
+        "monitoring": true,
+        "backup_strategy": true
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "ENVIRONMENT",
+      "CLUSTER_NAME",
+      "REGISTRY_URL"
+    ],
+    "optional": [
+      "AWS_ACCESS_KEY_ID",
+      "AWS_SECRET_ACCESS_KEY",
+      "AWS_REGION",
+      "GOOGLE_APPLICATION_CREDENTIALS",
+      "AZURE_SUBSCRIPTION_ID",
+      "DOCKER_REGISTRY_USER",
+      "DOCKER_REGISTRY_PASSWORD",
+      "KUBECONFIG",
+      "TERRAFORM_CLOUD_TOKEN",
+      "ANSIBLE_VAULT_PASSWORD",
+      "GITHUB_TOKEN",
+      "SLACK_WEBHOOK_URL",
+      "PAGERDUTY_INTEGRATION_KEY"
+    ],
+    "production": {
+      "ENVIRONMENT": "production",
+      "LOG_LEVEL": "info",
+      "MONITORING_ENABLED": "true",
+      "BACKUP_RETENTION": "30d"
+    },
+    "staging": {
+      "ENVIRONMENT": "staging",
+      "LOG_LEVEL": "debug",
+      "MONITORING_ENABLED": "true",
+      "BACKUP_RETENTION": "7d"
+    }
+  },
+  "recommended_tools": [
+    "terraform",
+    "ansible",
+    "helm",
+    "kubectl",
+    "docker-compose",
+    "prometheus",
+    "grafana",
+    "fluentd",
+    "elasticsearch",
+    "kibana",
+    "jenkins",
+    "argocd",
+    "vault",
+    "consul",
+    "traefik",
+    "nginx",
+    "certbot"
+  ],
+  "project_structure": {
+    "required_files": [
+      "Dockerfile",
+      "docker-compose.yml",
+      "kubernetes/",
+      "terraform/",
+      ".github/workflows/",
+      "monitoring/",
+      "scripts/"
+    ],
+    "recommended_directories": [
+      "infrastructure/",
+      "k8s/",
+      "helm-charts/",
+      "ansible/",
+      "scripts/",
+      "monitoring/",
+      "security/",
+      "docs/",
+      "tests/"
+    ]
+  },
+  "common_configurations": {
+    "container_runtime": "docker",
+    "orchestrator": "kubernetes",
+    "iac_tool": "terraform",
+    "config_management": "ansible",
+    "monitoring": "prometheus",
+    "logging": "elasticsearch",
+    "service_mesh": "istio",
+    "secrets_management": "vault",
+    "ci_cd": "github_actions"
+  },
+  "integration_points": {
+    "monitoring_stack": {
+      "prometheus": {
+        "metrics_collection": true,
+        "alerting": true,
+        "service_discovery": true
+      },
+      "grafana": {
+        "dashboards": true,
+        "alerting": true,
+        "user_management": true
+      },
+      "elk_stack": {
+        "log_aggregation": true,
+        "searching": true,
+        "visualization": true
+      }
+    },
+    "security_tools": {
+      "vault": {
+        "secrets_management": true,
+        "dynamic_secrets": true,
+        "encryption": true
+      },
+      "falco": {
+        "runtime_security": true,
+        "anomaly_detection": true,
+        "compliance": true
+      }
+    },
+    "deployment_strategies": {
+      "blue_green": true,
+      "canary": true,
+      "rolling_updates": true,
+      "feature_flags": true
+    }
+  },
+  "automation_workflows": {
+    "infrastructure_provisioning": {
+      "terraform_plan": true,
+      "terraform_apply": true,
+      "state_management": true,
+      "drift_detection": true
+    },
+    "application_deployment": {
+      "build_automation": true,
+      "testing_pipeline": true,
+      "security_scanning": true,
+      "deployment_automation": true
+    },
+    "monitoring_automation": {
+      "alert_routing": true,
+      "incident_response": true,
+      "auto_remediation": true,
+      "capacity_planning": true
+    }
+  }
+}

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Flow 2.0 - Real-Time Monitoring Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #f44336;
+            --info-color: #2196F3;
+            --bg-dark: #1a1a1a;
+            --bg-darker: #0f0f0f;
+            --text-light: #ffffff;
+            --text-muted: #888888;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --backdrop-blur: blur(10px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: var(--card-bg);
+            backdrop-filter: var(--backdrop-blur);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success-color);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .control-button {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            padding: 2rem;
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: var(--backdrop-blur);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .icon-button:hover {
+            color: var(--text-light);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: var(--success-color);
+        }
+
+        .metric-change.negative {
+            color: var(--error-color);
+        }
+
+        .chart-container {
+            height: 200px;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .large-chart {
+            height: 300px;
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .agent-cell {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .agent-cell.active {
+            background: var(--success-color);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .agent-cell.idle {
+            background: var(--info-color);
+        }
+
+        .agent-cell.error {
+            background: var(--error-color);
+            animation: blink 1s infinite;
+        }
+
+        .agent-cell.warning {
+            background: var(--warning-color);
+        }
+
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .server-item {
+            padding: 0.75rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .server-item.healthy {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid var(--success-color);
+        }
+
+        .server-item.degraded {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid var(--warning-color);
+        }
+
+        .server-item.failed {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid var(--error-color);
+        }
+
+        .server-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .server-status {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .alert-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .alert-item.critical {
+            background: rgba(244, 67, 54, 0.1);
+            border-left-color: var(--error-color);
+        }
+
+        .alert-item.warning {
+            background: rgba(255, 152, 0, 0.1);
+            border-left-color: var(--warning-color);
+        }
+
+        .alert-item.info {
+            background: rgba(33, 150, 243, 0.1);
+            border-left-color: var(--info-color);
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .performance-gauge {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .gauge-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--success-color) 0deg,
+                var(--warning-color) 180deg,
+                var(--error-color) 360deg
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gauge-inner {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .gauge-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .gauge-label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .connection-status.connected {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+
+        .connection-status.disconnected {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error-color);
+        }
+
+        .task-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .flow-node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .flow-node.queue {
+            background: var(--info-color);
+        }
+
+        .flow-node.processing {
+            background: var(--warning-color);
+            animation: spin 2s linear infinite;
+        }
+
+        .flow-node.completed {
+            background: var(--success-color);
+        }
+
+        .flow-arrow {
+            flex: 1;
+            height: 2px;
+            background: var(--border-color);
+            position: relative;
+            margin: 0 1rem;
+        }
+
+        .flow-arrow::after {
+            content: '→';
+            position: absolute;
+            right: -10px;
+            top: -8px;
+            color: var(--text-muted);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .agent-grid {
+                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            }
+
+            .server-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .tooltip {
+            position: absolute;
+            background: var(--bg-darker);
+            color: var(--text-light);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            z-index: 10000;
+            border: 1px solid var(--border-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <div class="status-indicator" id="systemStatusIndicator"></div>
+            🚀 Claude Flow 2.0 - Real-Time Monitoring
+        </h1>
+        <div class="controls">
+            <div class="connection-status" id="connectionStatus">
+                <div class="spinner"></div>
+                Connecting...
+            </div>
+            <button class="control-button" onclick="toggleAlerts()">🔔 Alerts</button>
+            <button class="control-button" onclick="exportData()">📊 Export</button>
+            <button class="control-button" onclick="toggleTheme()">🌓 Theme</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- System Overview -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📊 System Overview</div>
+                    <div class="card-actions">
+                        <button class="icon-button" onclick="refreshSystemMetrics()">🔄</button>
+                    </div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-value" id="activeAgents">--</div>
+                        <div class="metric-label">Active Agents</div>
+                        <div class="metric-change positive" id="agentsChange">+0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="tasksCompleted">--</div>
+                        <div class="metric-label">Tasks Completed</div>
+                        <div class="metric-change positive" id="tasksChange">+0</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="systemUptime">--</div>
+                        <div class="metric-label">Uptime</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="queuedTasks">--</div>
+                        <div class="metric-label">Queued Tasks</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⚡ Performance</div>
+                </div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="performance-gauge">
+                            <div class="gauge-circle">
+                                <div class="gauge-inner">
+                                    <div class="gauge-value" id="cpuUsage">--</div>
+                                    <div class="gauge-label">CPU</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="performance-gauge">
+                            <div class="gauge-circle">
+                                <div class="gauge-inner">
+                                    <div class="gauge-value" id="memoryUsage">--</div>
+                                    <div class="gauge-label">Memory</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="networkThroughput">--</div>
+                        <div class="metric-label">Network (MB/s)</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="avgResponseTime">--</div>
+                        <div class="metric-label">Response Time (ms)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🚨 Active Alerts</div>
+                </div>
+                <div class="alert-list" id="alertsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading alerts...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Swarm Visualization -->
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">🤖 Agent Swarm (4,462 Max Capacity)</div>
+                <div class="card-actions">
+                    <span id="agentCount">0/4462 agents</span>
+                    <button class="icon-button" onclick="toggleAgentView()">🔍</button>
+                </div>
+            </div>
+            <div class="agent-grid" id="agentGrid">
+                <!-- Agent cells will be dynamically generated -->
+            </div>
+        </div>
+
+        <!-- MCP Server Status -->
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">🔌 MCP Server Status (125+ Servers)</div>
+                <div class="card-actions">
+                    <span id="serverHealth">--/-- healthy</span>
+                </div>
+            </div>
+            <div class="server-grid" id="serverGrid">
+                <!-- Server status will be dynamically generated -->
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📈 CPU Usage</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="cpuChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">💾 Memory Usage</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="memoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🌐 Network Activity</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="networkChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Flow Visualization -->
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">🔄 Task Flow Distribution</div>
+            </div>
+            <div class="task-flow">
+                <div class="flow-node queue" id="queueNode">
+                    <span id="queueCount">0</span>
+                </div>
+                <div class="flow-arrow"></div>
+                <div class="flow-node processing" id="processingNode">
+                    <span id="processingCount">0</span>
+                </div>
+                <div class="flow-arrow"></div>
+                <div class="flow-node completed" id="completedNode">
+                    <span id="completedCount">0</span>
+                </div>
+            </div>
+            <div class="chart-container large-chart">
+                <canvas id="taskFlowChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Resource Monitor -->
+        <div class="card full-width">
+            <div class="card-header">
+                <div class="card-title">📊 Resource Allocation</div>
+            </div>
+            <div class="chart-container large-chart">
+                <canvas id="resourceChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        class RealTimeMonitoringDashboard {
+            constructor() {
+                this.ws = null;
+                this.charts = {};
+                this.agents = new Map();
+                this.servers = new Map();
+                this.alerts = [];
+                this.isConnected = false;
+                this.reconnectAttempts = 0;
+                this.maxReconnectAttempts = 5;
+                this.theme = 'dark';
+                this.alertsEnabled = true;
+                
+                this.init();
+            }
+
+            async init() {
+                this.setupCharts();
+                this.connectWebSocket();
+                this.startPeriodicUpdates();
+                this.setupEventListeners();
+                this.generateMockAgents();
+                this.generateMockServers();
+            }
+
+            setupCharts() {
+                const chartConfig = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#888' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#888' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: '#fff' }
+                        }
+                    }
+                };
+
+                // CPU Chart
+                this.charts.cpu = new Chart(document.getElementById('cpuChart'), {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'CPU Usage %',
+                            data: [],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: chartConfig
+                });
+
+                // Memory Chart
+                this.charts.memory = new Chart(document.getElementById('memoryChart'), {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Memory Usage %',
+                            data: [],
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: chartConfig
+                });
+
+                // Network Chart
+                this.charts.network = new Chart(document.getElementById('networkChart'), {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Inbound',
+                                data: [],
+                                borderColor: '#2196F3',
+                                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Outbound',
+                                data: [],
+                                borderColor: '#FF9800',
+                                backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: chartConfig
+                });
+
+                // Task Flow Chart
+                this.charts.taskFlow = new Chart(document.getElementById('taskFlowChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Queued', 'Processing', 'Completed', 'Failed'],
+                        datasets: [{
+                            data: [0, 0, 0, 0],
+                            backgroundColor: ['#2196F3', '#FF9800', '#4CAF50', '#f44336']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#fff' }
+                            }
+                        }
+                    }
+                });
+
+                // Resource Chart
+                this.charts.resource = new Chart(document.getElementById('resourceChart'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['CPU', 'Memory', 'Disk', 'Network', 'Agents', 'Tasks'],
+                        datasets: [{
+                            label: 'Current Usage',
+                            data: [0, 0, 0, 0, 0, 0],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.2)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                pointLabels: { color: '#fff' },
+                                ticks: { color: '#888' }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#fff' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            connectWebSocket() {
+                const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+                this.ws = new WebSocket(wsUrl);
+
+                this.ws.onopen = () => {
+                    console.log('WebSocket connected');
+                    this.isConnected = true;
+                    this.reconnectAttempts = 0;
+                    this.updateConnectionStatus(true);
+                    
+                    // Subscribe to all monitoring channels
+                    this.ws.send(JSON.stringify({
+                        type: 'subscribe',
+                        channels: ['system', 'agents', 'metrics', 'alerts', 'servers', 'tasks']
+                    }));
+                };
+
+                this.ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        this.handleWebSocketMessage(message);
+                    } catch (error) {
+                        console.error('WebSocket message error:', error);
+                    }
+                };
+
+                this.ws.onclose = () => {
+                    console.log('WebSocket disconnected');
+                    this.isConnected = false;
+                    this.updateConnectionStatus(false);
+                    this.handleReconnect();
+                };
+
+                this.ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+            }
+
+            handleWebSocketMessage(message) {
+                switch (message.type) {
+                    case 'systemMetrics':
+                        this.updateSystemMetrics(message.data);
+                        break;
+                    case 'agentStatus':
+                        this.updateAgentStatus(message.data);
+                        break;
+                    case 'serverStatus':
+                        this.updateServerStatus(message.data);
+                        break;
+                    case 'alert':
+                        this.addAlert(message.data);
+                        break;
+                    case 'taskFlow':
+                        this.updateTaskFlow(message.data);
+                        break;
+                    case 'performanceMetrics':
+                        this.updatePerformanceCharts(message.data);
+                        break;
+                }
+            }
+
+            updateSystemMetrics(data) {
+                document.getElementById('activeAgents').textContent = data.activeAgents || '--';
+                document.getElementById('tasksCompleted').textContent = data.tasksCompleted?.toLocaleString() || '--';
+                document.getElementById('systemUptime').textContent = this.formatDuration(data.uptime) || '--';
+                document.getElementById('queuedTasks').textContent = data.queuedTasks || '--';
+                document.getElementById('cpuUsage').textContent = `${data.cpu || '--'}%`;
+                document.getElementById('memoryUsage').textContent = `${data.memory || '--'}%`;
+                document.getElementById('networkThroughput').textContent = data.networkThroughput || '--';
+                document.getElementById('avgResponseTime').textContent = data.avgResponseTime || '--';
+
+                // Update agent count
+                document.getElementById('agentCount').textContent = `${data.activeAgents || 0}/4462 agents`;
+            }
+
+            updateAgentStatus(data) {
+                for (const [agentId, status] of Object.entries(data)) {
+                    this.agents.set(agentId, status);
+                }
+                this.renderAgentGrid();
+            }
+
+            updateServerStatus(data) {
+                for (const [serverId, status] of Object.entries(data)) {
+                    this.servers.set(serverId, status);
+                }
+                this.renderServerGrid();
+            }
+
+            addAlert(alertData) {
+                if (!this.alertsEnabled) return;
+
+                this.alerts.unshift({
+                    ...alertData,
+                    id: Date.now(),
+                    timestamp: new Date()
+                });
+
+                // Keep only last 50 alerts
+                if (this.alerts.length > 50) {
+                    this.alerts = this.alerts.slice(0, 50);
+                }
+
+                this.renderAlerts();
+                this.showAlertNotification(alertData);
+            }
+
+            updateTaskFlow(data) {
+                document.getElementById('queueCount').textContent = data.queued || 0;
+                document.getElementById('processingCount').textContent = data.processing || 0;
+                document.getElementById('completedCount').textContent = data.completed || 0;
+
+                this.charts.taskFlow.data.datasets[0].data = [
+                    data.queued || 0,
+                    data.processing || 0,
+                    data.completed || 0,
+                    data.failed || 0
+                ];
+                this.charts.taskFlow.update('none');
+            }
+
+            updatePerformanceCharts(data) {
+                const time = new Date().toLocaleTimeString();
+
+                // Update CPU chart
+                this.updateChart(this.charts.cpu, time, data.cpu);
+
+                // Update Memory chart
+                this.updateChart(this.charts.memory, time, data.memory);
+
+                // Update Network chart
+                this.charts.network.data.labels.push(time);
+                this.charts.network.data.datasets[0].data.push(data.networkIn);
+                this.charts.network.data.datasets[1].data.push(data.networkOut);
+                
+                // Keep only last 20 data points
+                if (this.charts.network.data.labels.length > 20) {
+                    this.charts.network.data.labels.shift();
+                    this.charts.network.data.datasets[0].data.shift();
+                    this.charts.network.data.datasets[1].data.shift();
+                }
+                this.charts.network.update('none');
+
+                // Update Resource radar chart
+                this.charts.resource.data.datasets[0].data = [
+                    data.cpu || 0,
+                    data.memory || 0,
+                    data.disk || 0,
+                    data.network || 0,
+                    (data.activeAgents / 4462) * 100 || 0,
+                    data.taskUtilization || 0
+                ];
+                this.charts.resource.update('none');
+            }
+
+            updateChart(chart, label, value) {
+                chart.data.labels.push(label);
+                chart.data.datasets[0].data.push(value);
+                
+                // Keep only last 20 data points
+                if (chart.data.labels.length > 20) {
+                    chart.data.labels.shift();
+                    chart.data.datasets[0].data.shift();
+                }
+                chart.update('none');
+            }
+
+            generateMockAgents() {
+                // Generate mock agents for demonstration
+                for (let i = 1; i <= 100; i++) {
+                    const status = Math.random() > 0.8 ? 'active' : 
+                                  Math.random() > 0.9 ? 'error' : 'idle';
+                    this.agents.set(`agent-${i}`, { status, id: i });
+                }
+                this.renderAgentGrid();
+            }
+
+            generateMockServers() {
+                const serverNames = [
+                    'context7', 'filesystem', 'git', 'http', 'github', 'slack',
+                    'postgres', 'redis', 'aws', 'docker', 'kubernetes', 'prometheus',
+                    'grafana', 'elasticsearch', 'mongodb', 'mysql', 'nginx',
+                    'apache', 'nodejs', 'python', 'java', 'golang'
+                ];
+
+                serverNames.forEach(name => {
+                    const status = Math.random() > 0.9 ? 'failed' :
+                                  Math.random() > 0.8 ? 'degraded' : 'healthy';
+                    this.servers.set(name, { 
+                        status, 
+                        name,
+                        responseTime: Math.floor(Math.random() * 100) + 10
+                    });
+                });
+                this.renderServerGrid();
+            }
+
+            renderAgentGrid() {
+                const grid = document.getElementById('agentGrid');
+                grid.innerHTML = '';
+
+                let activeCount = 0;
+                for (const [id, agent] of this.agents) {
+                    const cell = document.createElement('div');
+                    cell.className = `agent-cell ${agent.status}`;
+                    cell.textContent = agent.id;
+                    cell.title = `Agent ${id}: ${agent.status}`;
+                    
+                    if (agent.status === 'active') activeCount++;
+                    
+                    cell.addEventListener('click', () => this.showAgentDetails(agent));
+                    grid.appendChild(cell);
+                }
+
+                document.getElementById('activeAgents').textContent = activeCount;
+                document.getElementById('agentCount').textContent = `${activeCount}/4462 agents`;
+            }
+
+            renderServerGrid() {
+                const grid = document.getElementById('serverGrid');
+                grid.innerHTML = '';
+
+                let healthyCount = 0;
+                for (const [id, server] of this.servers) {
+                    const item = document.createElement('div');
+                    item.className = `server-item ${server.status}`;
+                    
+                    item.innerHTML = `
+                        <div class="server-name">${server.name}</div>
+                        <div class="server-status">${server.status}</div>
+                    `;
+                    
+                    if (server.status === 'healthy') healthyCount++;
+                    
+                    item.addEventListener('click', () => this.showServerDetails(server));
+                    grid.appendChild(item);
+                }
+
+                document.getElementById('serverHealth').textContent = `${healthyCount}/${this.servers.size} healthy`;
+            }
+
+            renderAlerts() {
+                const alertsList = document.getElementById('alertsList');
+                
+                if (this.alerts.length === 0) {
+                    alertsList.innerHTML = '<div class="loading">No active alerts</div>';
+                    return;
+                }
+
+                alertsList.innerHTML = this.alerts.slice(0, 10).map(alert => `
+                    <div class="alert-item ${alert.severity}">
+                        <div class="alert-title">${alert.title}</div>
+                        <div>${alert.message}</div>
+                        <div class="alert-time">${alert.timestamp.toLocaleTimeString()}</div>
+                    </div>
+                `).join('');
+            }
+
+            showAlertNotification(alert) {
+                if (!this.alertsEnabled) return;
+                
+                // Show browser notification if permitted
+                if (Notification.permission === 'granted') {
+                    new Notification(`Claude Flow Alert: ${alert.title}`, {
+                        body: alert.message,
+                        icon: '/favicon.ico'
+                    });
+                }
+
+                // Visual notification
+                const notification = document.createElement('div');
+                notification.className = 'alert-notification';
+                notification.innerHTML = `
+                    <strong>${alert.title}</strong><br>
+                    ${alert.message}
+                `;
+                document.body.appendChild(notification);
+
+                setTimeout(() => notification.remove(), 5000);
+            }
+
+            updateConnectionStatus(connected) {
+                const status = document.getElementById('connectionStatus');
+                if (connected) {
+                    status.className = 'connection-status connected';
+                    status.innerHTML = '🟢 Connected';
+                } else {
+                    status.className = 'connection-status disconnected';
+                    status.innerHTML = '🔴 Disconnected';
+                }
+            }
+
+            handleReconnect() {
+                if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                    this.reconnectAttempts++;
+                    console.log(`Reconnecting in 5 seconds... (attempt ${this.reconnectAttempts})`);
+                    setTimeout(() => this.connectWebSocket(), 5000);
+                }
+            }
+
+            startPeriodicUpdates() {
+                // Simulate real-time data updates
+                setInterval(() => {
+                    if (!this.isConnected) {
+                        this.simulateData();
+                    }
+                }, 2000);
+
+                // Update charts periodically
+                setInterval(() => {
+                    this.updatePerformanceCharts({
+                        cpu: Math.random() * 100,
+                        memory: Math.random() * 100,
+                        disk: Math.random() * 100,
+                        network: Math.random() * 100,
+                        networkIn: Math.random() * 50,
+                        networkOut: Math.random() * 30,
+                        activeAgents: this.agents.size,
+                        taskUtilization: Math.random() * 100
+                    });
+                }, 3000);
+            }
+
+            simulateData() {
+                // Simulate system metrics
+                this.updateSystemMetrics({
+                    activeAgents: Math.floor(Math.random() * 50) + 10,
+                    tasksCompleted: Math.floor(Math.random() * 10000) + 5000,
+                    uptime: Date.now() - (Math.random() * 86400000),
+                    queuedTasks: Math.floor(Math.random() * 100),
+                    cpu: Math.floor(Math.random() * 100),
+                    memory: Math.floor(Math.random() * 100),
+                    networkThroughput: (Math.random() * 100).toFixed(1),
+                    avgResponseTime: Math.floor(Math.random() * 200) + 50
+                });
+
+                // Simulate task flow
+                this.updateTaskFlow({
+                    queued: Math.floor(Math.random() * 50),
+                    processing: Math.floor(Math.random() * 20),
+                    completed: Math.floor(Math.random() * 1000) + 500,
+                    failed: Math.floor(Math.random() * 10)
+                });
+
+                // Randomly add alerts
+                if (Math.random() > 0.95) {
+                    this.addAlert({
+                        title: 'High CPU Usage',
+                        message: 'CPU usage has exceeded 80% for 5 minutes',
+                        severity: 'warning'
+                    });
+                }
+            }
+
+            setupEventListeners() {
+                // Request notification permission
+                if (Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
+            }
+
+            formatDuration(ms) {
+                if (!ms) return '--';
+                
+                const seconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
+                
+                if (days > 0) return `${days}d ${hours % 24}h`;
+                if (hours > 0) return `${hours}h ${minutes % 60}m`;
+                if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+                return `${seconds}s`;
+            }
+
+            showAgentDetails(agent) {
+                alert(`Agent ${agent.id}\nStatus: ${agent.status}\nClick OK to continue monitoring.`);
+            }
+
+            showServerDetails(server) {
+                alert(`Server: ${server.name}\nStatus: ${server.status}\nResponse Time: ${server.responseTime}ms`);
+            }
+        }
+
+        // Global functions for controls
+        function toggleAlerts() {
+            dashboard.alertsEnabled = !dashboard.alertsEnabled;
+            console.log(`Alerts ${dashboard.alertsEnabled ? 'enabled' : 'disabled'}`);
+        }
+
+        function exportData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                agents: Array.from(dashboard.agents.entries()),
+                servers: Array.from(dashboard.servers.entries()),
+                alerts: dashboard.alerts
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `claude-flow-monitoring-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function toggleTheme() {
+            // Theme switching would be implemented here
+            console.log('Theme toggle clicked');
+        }
+
+        function refreshSystemMetrics() {
+            dashboard.simulateData();
+        }
+
+        function toggleAgentView() {
+            const grid = document.getElementById('agentGrid');
+            grid.style.maxHeight = grid.style.maxHeight === '600px' ? '300px' : '600px';
+        }
+
+        // Initialize dashboard
+        let dashboard;
+        document.addEventListener('DOMContentLoaded', () => {
+            dashboard = new RealTimeMonitoringDashboard();
+        });
+    </script>
+</body>
+</html>
