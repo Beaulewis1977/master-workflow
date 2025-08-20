@@ -140,12 +140,16 @@
     }
   },
   "complexityFactors": {
+    "prompt": {
+      "weight": 0.20,
+      "description": "Complexity derived from the initial user prompt, especially for new projects."
+    },
     "size": {
-      "weight": 0.15,
+      "weight": 0.10,
       "description": "Project size and file count"
     },
     "dependencies": {
-      "weight": 0.15,
+      "weight": 0.10,
       "description": "Number and complexity of dependencies"
     },
     "architecture": {

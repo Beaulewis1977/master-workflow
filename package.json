@@ -1,0 +1,12 @@
+{
+  "name": "intelligent-workflow-system",
+  "version": "2.0.0",
+  "description": "An intelligent system for analyzing projects and selecting optimal AI development workflows.",
+  "private": true,
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "execa": "^8.0.1",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.20"
+  }
+}

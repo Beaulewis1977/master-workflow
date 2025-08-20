@@ -51,9 +51,12 @@ Choose exactly what you need! The Intelligent Workflow System now offers fully m
 git clone [repository-url] workflow-system
 cd workflow-system
 
-# Run the modular installer in your project
+# Install dependencies for the installer itself
+npm install
+
+# Run the modular installer in your project's directory
 cd /path/to/your/project
-/path/to/workflow-system/install-modular.sh
+node /path/to/workflow-system/install.js
 
 # Follow the interactive prompts to:
 # 1. Select components to install
