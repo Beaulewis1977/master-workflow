@@ -219,7 +219,20 @@ case "$1" in
         [ "$HAS_TMUX" = "true" ] && echo "  TMux Orchestrator: ✓" || echo "  TMux Orchestrator: ✗"
         ;;
     add)
-        echo "This feature is not yet implemented in the Node.js installer."
+        shift
+        if [ -z "$1" ]; then
+            echo "Please specify a component to add."
+            echo "Available: claude-code, agent-os, claude-flow, tmux"
+            exit 1
+        fi
+        # Find the path to the installer script itself to run it
+        INSTALLER_SCRIPT_PATH="$(dirname "$INSTALL_DIR")/install.js"
+        if [ -f "$INSTALLER_SCRIPT_PATH" ]; then
+            node "$INSTALLER_SCRIPT_PATH" --add "$1"
+        else
+            echo "Error: Could not find the installer script at $INSTALLER_SCRIPT_PATH"
+            exit 1
+        fi
         ;;
     help|--help|-h)
         echo "Modular AI Workflow System"
@@ -286,8 +299,32 @@ esac
     }
   }
 
+  async installNpmDependency(packageName, isDev = false) {
+    const packageJsonPath = path.join(PROJECT_DIR, 'package.json');
+    if (!await fs.pathExists(packageJsonPath)) {
+      console.log(chalk.yellow(`  - No package.json found. Initializing a new one...`));
+      await execa('npm', ['init', '-y'], { cwd: PROJECT_DIR });
+    }
+
+    console.log(chalk.blue(`  - Installing ${packageName}...`));
+    const args = ['install', packageName];
+    if (isDev) {
+      args.push('--save-dev');
+    }
+    try {
+      await execa('npm', args, { cwd: PROJECT_DIR });
+      console.log(chalk.green(`  ✓ ${packageName} installed locally.`));
+    } catch (error) {
+      console.error(chalk.red(`  ✗ Failed to install ${packageName}:`), error.stderr);
+      // Don't exit, just warn the user.
+      console.log(chalk.yellow(`  - Please try installing it manually: npm install ${packageName}`));
+    }
+  }
+
   async installClaudeCodeComponents() {
     console.log(chalk.blue('\nInstalling Claude Code components...'));
+    await this.installNpmDependency('@anthropic-ai/claude-code');
+
     // This is a simplified version. We will just copy templates.
     const agentTemplatesDir = path.join(SCRIPT_DIR, 'agent-templates');
     const destAgentsDir = path.join(PROJECT_DIR, '.claude', 'agents');
@@ -310,9 +347,17 @@ esac
   }
 
   async installClaudeFlowComponents() {
-     console.log(chalk.blue('\nInstalling Claude Flow components...'));
-     // In a real scenario, we might run `npx claude-flow init` here
-     console.log(chalk.yellow('  - Skipping claude-flow init for now.'));
+    console.log(chalk.blue('\nInstalling Claude Flow components...'));
+    await this.installNpmDependency('claude-flow@alpha');
+
+    console.log(chalk.blue('  - Initializing Claude Flow...'));
+    try {
+      await execa('npx', ['claude-flow@alpha', 'init', '--quiet'], { cwd: PROJECT_DIR });
+      console.log(chalk.green('  ✓ Claude Flow initialized.'));
+    } catch (error) {
+      console.error(chalk.red('  ✗ Failed to initialize Claude Flow:'), error.stderr);
+      console.log(chalk.yellow('  - You may need to run "npx claude-flow init" manually.'));
+    }
   }
 
   async installTmuxComponents() {
@@ -352,8 +397,56 @@ esac
   }
 }
 
-const installer = new Installer();
-installer.run().catch(error => {
+  async addComponent(componentName) {
+    console.log(chalk.blue(`\nAdding component: ${componentName}...`));
+
+    const validComponents = Object.keys(components);
+    if (!validComponents.includes(componentName)) {
+      console.error(chalk.red(`  ✗ Invalid component '${componentName}'.`));
+      console.log(chalk.yellow(`  Available components: ${validComponents.join(', ')}`));
+      process.exit(1);
+    }
+
+    const configFile = path.join(INSTALL_DIR, 'installation-config.json');
+    if (!await fs.pathExists(configFile)) {
+      console.error(chalk.red('  ✗ No installation found. Please run the installer first.'));
+      process.exit(1);
+    }
+
+    const config = await fs.readJson(configFile);
+    if (config.components[componentName]) {
+      console.log(chalk.yellow(`  - Component '${componentName}' is already installed.`));
+      return;
+    }
+
+    // Set selectedComponents to the one we are adding to trigger the right installers
+    this.selectedComponents = [componentName];
+
+    // Create directories and install the component
+    await this.createDirectoryStructure();
+    await this.installComponent(componentName, this[`install${componentName.charAt(0).toUpperCase() + componentName.slice(1)}Components`]);
+
+    // Update and save the configuration
+    config.components[componentName] = true;
+    await fs.writeJson(configFile, config, { spaces: 2 });
+
+    console.log(chalk.green.bold(`\n✅ Component '${componentName}' added successfully!`));
+  }
+}
+
+// Main execution logic
+const main = async () => {
+    const args = process.argv.slice(2);
+    const installer = new Installer();
+
+    if (args[0] === '--add' && args[1]) {
+        await installer.addComponent(args[1]);
+    } else {
+        await installer.run();
+    }
+};
+
+main().catch(error => {
   console.error(chalk.red('\nAn unexpected error occurred:'), error);
   process.exit(1);
 });

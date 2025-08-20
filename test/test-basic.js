@@ -194,7 +194,7 @@ async function testComplexityAnalysis() {
         
         printTestResult(
             'Complex project complexity',
-            complexAnalysis.score > 30, // Adjusted for new weights
+            complexAnalysis.score > 28, // Adjusted for new glob-based feature detection
             `Score: ${complexAnalysis.score}`
         );
         
@@ -295,8 +295,8 @@ async function testUserOverride() {
     );
 }
 
-async function testFeatureDetection() {
-    printHeader('Test 4: Feature Detection');
+async function testDetection() {
+    printHeader('Test 4: Language & Feature Detection');
     
     const tempDir = path.join(__dirname, 'temp-test-features');
     fs.mkdirSync(tempDir, { recursive: true });
@@ -344,9 +344,38 @@ async function testFeatureDetection() {
             features.docker === true,
             `Detected: ${features.docker}`
         );
+
+        // Test new language detection
+        fs.writeFileSync(path.join(projectDir, 'src/index.php'), '<?php echo "Hello"; ?>');
+        const analysisWithPhp = await analyzer.analyze();
+        const languages = analysisWithPhp.factors.techStack?.languages || [];
+
+        printTestResult(
+            'PHP language detection',
+            languages.includes('PHP'),
+            `Detected languages: ${languages.join(', ')}`
+        );
+
+        // Test Dart and HTML detection
+        fs.writeFileSync(path.join(projectDir, 'src/main.dart'), 'void main() {}');
+        fs.writeFileSync(path.join(projectDir, 'index.html'), '<html></html>');
+        const analysisWithDart = await analyzer.analyze();
+        const dartLanguages = analysisWithDart.factors.techStack?.languages || [];
+
+        printTestResult(
+            'Dart language detection',
+            dartLanguages.includes('Dart'),
+            `Detected languages: ${dartLanguages.join(', ')}`
+        );
+
+        printTestResult(
+            'HTML file detection',
+            dartLanguages.includes('HTML'),
+            `Detected languages: ${dartLanguages.join(', ')}`
+        );
         
     } catch (error) {
-        console.error('Error in feature detection test:', error);
+        console.error('Error in detection test:', error);
         testsFailed++;
     } finally {
         // Cleanup
@@ -365,7 +394,7 @@ async function runTests() {
     await testComplexityAnalysis();
     await testApproachSelection();
     await testUserOverride();
-    await testFeatureDetection();
+    await testDetection();
     
     // Print summary
     console.log(`\n${colors.bold}${colors.blue}════════════════════════════════════════════════════════${colors.reset}`);

@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { globSync } = require('glob');
 
 class ComplexityAnalyzer {
   constructor(projectPath = process.cwd()) {
@@ -274,6 +275,22 @@ class ComplexityAnalyzer {
     if (files.some(f => /\.go$/.test(f))) stack.languages.push('Go');
     if (files.some(f => /\.java$/.test(f))) stack.languages.push('Java');
     if (files.some(f => /\.rs$/.test(f))) stack.languages.push('Rust');
+    if (files.some(f => /\.php$/.test(f))) stack.languages.push('PHP');
+    if (files.some(f => /\.rb$/.test(f))) stack.languages.push('Ruby');
+    if (files.some(f => /\.cs$/.test(f))) stack.languages.push('C#');
+    if (files.some(f => /\.swift$/.test(f))) stack.languages.push('Swift');
+    if (files.some(f => /\.kt$|\.kts$/.test(f))) stack.languages.push('Kotlin');
+    if (files.some(f => /\.c$|\.cpp$|\.h$|\.hpp$/.test(f))) stack.languages.push('C/C++');
+    if (files.some(f => /\.sh$/.test(f))) stack.languages.push('Shell');
+    if (files.some(f => /\.dart$/.test(f))) stack.languages.push('Dart');
+    if (files.some(f => /\.scala$/.test(f))) stack.languages.push('Scala');
+    if (files.some(f => /\.r$/.test(f))) stack.languages.push('R');
+    if (files.some(f => /\.lua$/.test(f))) stack.languages.push('Lua');
+    if (files.some(f => /\.ex$|\.exs$/.test(f))) stack.languages.push('Elixir');
+    if (files.some(f => /\.html$|\.htm$/.test(f))) stack.languages.push('HTML');
+    if (files.some(f => /\.css$/.test(f))) stack.languages.push('CSS');
+    if (files.some(f => /\.scss$|\.sass$/.test(f))) stack.languages.push('Sass/SCSS');
+    if (files.some(f => /\.m$|\.mm$/.test(f))) stack.languages.push('Objective-C');
     
     // Check package.json for frameworks
     const packageJsonPath = path.join(this.projectPath, 'package.json');
@@ -312,7 +329,7 @@ class ComplexityAnalyzer {
   }
 
   /**
-   * Analyze features based on code patterns
+   * Analyze features based on code patterns using glob for efficiency
    */
   async analyzeFeatures() {
     const features = {
@@ -326,34 +343,30 @@ class ComplexityAnalyzer {
       kubernetes: false
     };
 
-    const allFiles = await this.getProjectFiles();
-    
-    // More robust feature detection by checking file paths first
-    features.testing = allFiles.some(f => /test|spec/.test(f));
-    features.ci_cd = allFiles.some(f => /\.github\/workflows|\.gitlab-ci|jenkinsfile/.test(f.toLowerCase()));
-    features.docker = allFiles.some(f => /dockerfile|docker-compose/.test(f.toLowerCase()));
-    features.kubernetes = allFiles.some(f => /k8s|kubernetes|\.yaml$|\.yml$/.test(f.toLowerCase()));
+    const options = { cwd: this.projectPath, nodir: true, dot: true, ignore: 'node_modules/**' };
 
-    // For content-based features, scan relevant files thoroughly
-    const relevantExtensions = /\.(js|ts|py|go|java|rs|jsx|tsx|vue|md|yml|yaml|json)$/;
-    const filesToScan = allFiles.filter(f => relevantExtensions.test(f));
+    // File path-based detection
+    features.testing = globSync('**/*{test,spec}*.*', options).length > 0;
+    features.ci_cd = globSync('.github/workflows/*.{yml,yaml}', options).length > 0 || globSync('**/*gitlab-ci.yml', options).length > 0;
+    features.docker = globSync('**/*Dockerfile*', options).length > 0 || globSync('**/*docker-compose*.yml', options).length > 0;
+    features.kubernetes = globSync('**/*k8s*/*.{yml,yaml}', options).length > 0 || globSync('**/helm/**/*', options).length > 0;
 
-    for (const file of filesToScan) {
-      // If all features are found, we can stop scanning.
-      if (Object.values(features).every(Boolean)) break;
-
-      try {
-        const content = fs.readFileSync(path.join(this.projectPath, file), 'utf8').toLowerCase();
-
-        if (!features.authentication) features.authentication = /jwt|auth|login|passport|oauth/.test(content);
-        if (!features.realtime) features.realtime = /websocket|socket\.io|ws:|real-time|pubsub/.test(content);
-        if (!features.api) features.api = /api|endpoint|route|rest|graphql/.test(content);
-        if (!features.database) features.database = /database|mongodb|postgres|mysql|redis/.test(content);
-
-      } catch (e) {
-        // Ignore read errors for individual files
+    // Content-based detection using glob to find candidate files
+    const checkContent = (pattern, regex) => {
+      const files = globSync(pattern, options);
+      for (const file of files) {
+        try {
+          const content = fs.readFileSync(path.join(this.projectPath, file), 'utf8');
+          if (regex.test(content)) return true;
+        } catch (e) { /* ignore read errors */ }
       }
-    }
+      return false;
+    };
+
+    features.authentication = checkContent('**/*.{js,ts,py,go,java,php,rb}', /jwt|auth|login|passport|oauth/i);
+    features.realtime = checkContent('**/*.{js,ts,py,go,java}', /websocket|socket\.io|ws:|real-time|pubsub/i);
+    features.api = checkContent('**/*.{js,ts,py,go,java}', /api|endpoint|route|rest|graphql/i);
+    features.database = checkContent('**/*.{js,ts,py,go,java,rb}', /database|mongodb|postgres|mysql|redis|mongoose|sequelize|typeorm/i);
 
     // Calculate score based on features
     const featureCount = Object.values(features).filter(Boolean).length;
