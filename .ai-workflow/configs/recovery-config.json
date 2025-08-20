@@ -1,0 +1,239 @@
+{
+  "version": "2.0",
+  "recovery": {
+    "enabled": true,
+    "description": "Configuration for recovering and completing partially finished projects",
+
+    "detection": {
+      "patterns": {
+        "todos": ["TODO", "TODO:", "@todo", "TODOS"],
+        "fixmes": ["FIXME", "FIX ME", "FIXME:", "@fixme"],
+        "hacks": ["HACK", "XXX", "HACK:", "UGLY", "REFACTOR"],
+        "notImplemented": [
+          "throw.*Error.*not.*implemented",
+          "NotImplementedError",
+          "TODO.*implement",
+          "raise NotImplementedError",
+          "panic.*not implemented",
+          "unimplemented!"
+        ],
+        "incomplete": [
+          "// ...",
+          "# ...",
+          "pass  # TODO",
+          "return  # TODO",
+          "// Implement this",
+          "// Complete this"
+        ]
+      },
+
+      "testPatterns": {
+        "failing": ["FAIL", "Failed", "failure", "✗", "✖"],
+        "skipped": ["SKIP", "Skipped", "pending", "xit", "xtest", "skip("],
+        "todo": ["it.todo", "test.todo", "describe.todo"]
+      },
+
+      "exclusions": [
+        "node_modules",
+        ".ai-workflow",
+        ".git",
+        "dist",
+        "build",
+        "coverage",
+        "vendor",
+        ".next",
+        ".cache"
+      ]
+    },
+
+    "prioritization": {
+      "rules": [
+        {
+          "type": "critical_bugs",
+          "priority": 1,
+          "patterns": ["CRITICAL", "URGENT", "BREAKING", "BUG"],
+          "description": "Fix critical bugs first"
+        },
+        {
+          "type": "failing_tests",
+          "priority": 2,
+          "patterns": ["test.*fail", "spec.*fail"],
+          "description": "Fix failing tests"
+        },
+        {
+          "type": "not_implemented",
+          "priority": 3,
+          "patterns": ["NotImplemented", "not implemented"],
+          "description": "Implement stub functions"
+        },
+        {
+          "type": "security_issues",
+          "priority": 4,
+          "patterns": ["SECURITY", "VULNERABILITY", "CVE"],
+          "description": "Fix security vulnerabilities"
+        },
+        {
+          "type": "todos",
+          "priority": 5,
+          "patterns": ["TODO"],
+          "description": "Complete TODO items"
+        },
+        {
+          "type": "fixmes",
+          "priority": 6,
+          "patterns": ["FIXME"],
+          "description": "Fix known issues"
+        },
+        {
+          "type": "documentation",
+          "priority": 7,
+          "patterns": ["TODO.*document", "missing.*docs"],
+          "description": "Add missing documentation"
+        },
+        {
+          "type": "refactoring",
+          "priority": 8,
+          "patterns": ["REFACTOR", "CLEANUP", "OPTIMIZE"],
+          "description": "Clean up and optimize code"
+        }
+      ]
+    },
+
+    "strategies": {
+      "triage": {
+        "name": "Triage Mode",
+        "description": "Fix only critical issues to get project working",
+        "focus": ["critical_bugs", "failing_tests", "security_issues"],
+        "timeLimit": "2 hours"
+      },
+      "complete": {
+        "name": "Complete Mode",
+        "description": "Finish all incomplete work thoroughly",
+        "focus": "all",
+        "timeLimit": "8 hours"
+      },
+      "polish": {
+        "name": "Polish Mode",
+        "description": "Clean up, optimize, and document",
+        "focus": ["documentation", "refactoring"],
+        "timeLimit": "4 hours"
+      }
+    },
+
+    "sparc_recovery": {
+      "enabled": true,
+      "phases": {
+        "1": {
+          "name": "Assessment",
+          "tasks": [
+            "Scan for all incomplete work",
+            "Analyze test coverage",
+            "Check documentation completeness",
+            "Review architecture issues"
+          ]
+        },
+        "2": {
+          "name": "Planning",
+          "tasks": [
+            "Create prioritized task list",
+            "Estimate completion time",
+            "Identify dependencies",
+            "Plan implementation sequence"
+          ]
+        },
+        "3": {
+          "name": "Critical Fixes",
+          "tasks": [
+            "Fix breaking bugs",
+            "Repair failing tests",
+            "Resolve security issues",
+            "Fix compilation errors"
+          ]
+        },
+        "4": {
+          "name": "Feature Completion",
+          "tasks": [
+            "Implement stub functions",
+            "Complete TODO features",
+            "Add error handling",
+            "Finish incomplete APIs"
+          ]
+        },
+        "5": {
+          "name": "Polish & Deploy",
+          "tasks": [
+            "Update documentation",
+            "Add missing tests",
+            "Refactor messy code",
+            "Prepare for deployment"
+          ]
+        }
+      }
+    },
+
+    "automation": {
+      "auto_commit": {
+        "enabled": true,
+        "interval": 1800,
+        "message_template": "Auto-recovery: {task_type} - {timestamp}"
+      },
+      "progress_reporting": {
+        "enabled": true,
+        "interval": 600,
+        "destination": ".ai-workflow/logs/recovery-progress.log"
+      },
+      "checkpoint_creation": {
+        "enabled": true,
+        "before_critical_changes": true,
+        "interval": 3600
+      }
+    },
+
+    "agents": {
+      "recovery_specialist": {
+        "primary": true,
+        "responsibilities": [
+          "Scan for incomplete work",
+          "Create recovery plans",
+          "Fix critical issues",
+          "Complete features"
+        ]
+      },
+      "workflow_orchestrator": {
+        "responsibilities": [
+          "Coordinate recovery",
+          "Manage agent tasks",
+          "Track progress",
+          "Handle errors"
+        ]
+      },
+      "sparc_methodology_agent": {
+        "responsibilities": [
+          "Manage recovery phases",
+          "Enforce quality gates",
+          "Validate completions"
+        ]
+      }
+    },
+
+    "metrics": {
+      "track": [
+        "todos_completed",
+        "fixmes_resolved",
+        "tests_fixed",
+        "functions_implemented",
+        "documentation_added",
+        "code_coverage_increase"
+      ],
+      "report_format": "json",
+      "report_destination": ".ai-workflow/recovery-report.json"
+    },
+
+    "failure_handling": {
+      "max_retries": 3,
+      "retry_delay": 60,
+      "fallback_strategy": "skip_and_continue",
+      "error_log": ".ai-workflow/logs/recovery-errors.log"
+    }
+  }
+}

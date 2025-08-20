@@ -1,0 +1,38 @@
+# System Architecture
+
+This document provides a high-level overview of the system architecture for `{{PRODUCT_NAME}}`.
+
+## 1. Architectural Style
+
+Based on the project's requirements, a **`{{ARCHITECTURAL_STYLE}}`** has been selected.
+
+- **Rationale:** {{ARCHITECTURE_RATIONALE}}
+
+## 2. Technology Stack
+
+The following technologies will be used:
+
+| Layer | Technology | Rationale |
+|---|---|---|
+| **Frontend** | `{{FRONTEND_FRAMEWORK}}` | {{FRONTEND_RATIONALE}} |
+| **Backend** | `{{BACKEND_FRAMEWORK}}` | {{BACKEND_RATIONALE}} |
+| **Database** | `{{DATABASE_CHOICE}}` | {{DATABASE_RATIONALE}} |
+| **Caching** | `{{CACHING_SOLUTION}}` | Optional, for performance. |
+| **Deployment**| `{{CLOUD_PROVIDER}}` | {{DEPLOYMENT_RATIONALE}} |
+
+## 3. System Components
+
+The system will be composed of the following major components:
+
+- **User Interface (UI):** A responsive web application built with `{{FRONTEND_FRAMEWORK}}`. It will handle user interaction and data presentation.
+- **API Gateway:** A single entry point for all client requests, routing them to the appropriate backend services.
+- **Backend Services:** A set of services built with `{{BACKEND_FRAMEWORK}}` responsible for business logic, data processing, and user authentication.
+- **Data Persistence:** A `{{DATABASE_CHOICE}}` database will be used to store all application data.
+
+## 4. Data Flow
+
+*A diagram or description of the data flow will be added here.*
+
+## 5. Deployment & Infrastructure
+
+The application will be containerized using **Docker** and deployed to **`{{CLOUD_PROVIDER}}`**. A CI/CD pipeline will be established to automate testing and deployment.

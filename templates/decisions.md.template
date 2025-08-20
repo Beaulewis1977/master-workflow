@@ -1,0 +1,33 @@
+# Architectural & Technical Decisions
+
+This document logs key decisions made during the project's development.
+
+## Decision Log
+
+---
+
+### Decision: Core Backend Framework
+- **Choice:** `{{BACKEND_FRAMEWORK}}`
+- **Date:** `{{DATE}}`
+- **Rationale:** Based on project analysis, `{{BACKEND_FRAMEWORK}}` was selected for its {{FRAMEWORK_RATIONALE}}. It aligns well with the project's requirements for {{PROJECT_REQUIREMENT}}.
+- **Alternatives Considered:** {{ALTERNATIVES_CONSIDERED}}
+
+---
+
+### Decision: Primary Database
+- **Choice:** `{{DATABASE_CHOICE}}`
+- **Date:** `{{DATE}}`
+- **Rationale:** `{{DATABASE_CHOICE}}` was chosen for its {{DATABASE_RATIONALE}}. This is suitable for handling the expected data structure and query patterns.
+- **Alternatives Considered:** {{DATABASE_ALTERNATIVES}}
+
+---
+
+### Decision: Frontend Framework
+- **Choice:** `{{FRONTEND_FRAMEWORK}}`
+- **Date:** `{{DATE}}`
+- **Rationale:** The project will use `{{FRONTEND_FRAMEWORK}}` to build the user interface. Its component-based architecture and strong community support make it an excellent choice for this project.
+- **Alternatives Considered:** {{FRONTEND_ALTERNATIVES}}
+
+---
+
+*(More decisions will be logged here as the project progresses.)*

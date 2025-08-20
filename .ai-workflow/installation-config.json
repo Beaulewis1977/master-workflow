@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "components": {
+    "core": true,
+    "agentOS": true,
+    "claudeCode": true
+  },
+  "installerPath": "/app",
+  "installedAt": "2025-08-20T19:57:18.977Z"
+}

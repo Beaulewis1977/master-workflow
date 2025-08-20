@@ -1,0 +1,35 @@
+# Product Roadmap
+
+This roadmap outlines the planned phases of development.
+
+## Phase 1: Foundation (Current)
+
+- **Goal:** Establish the core architecture, setup development environments, and build foundational features.
+- **Key Features:**
+    - [ ] Feature: {{FEATURE_1_P1}}
+    - [ ] Feature: {{FEATURE_2_P1}}
+    - [ ] Feature: {{FEATURE_3_P1}}
+
+## Phase 2: Core Functionality
+
+- **Goal:** Implement the primary features that deliver the core value proposition.
+- **Key Features:**
+    - [ ] Feature: {{FEATURE_1_P2}}
+    - [ ] Feature: {{FEATURE_2_P2}}
+    - [ ] Feature: {{FEATURE_3_P2}}
+
+## Phase 3: Expansion & Scaling
+
+- **Goal:** Add secondary features, improve scalability, and enhance performance.
+- **Key Features:**
+    - [ ] Feature: {{FEATURE_1_P3}}
+    - [ ] Feature: {{FEATURE_2_P3}}
+    - [ ] Feature: {{FEATURE_3_P3}}
+
+## Phase 4: Polish & Launch
+
+- **Goal:** Focus on user experience, bug fixing, and preparing for a public launch.
+- **Key Features:**
+    - [ ] Feature: {{FEATURE_1_P4}}
+    - [ ] Feature: {{FEATURE_2_P4}}
+    - [ ] Feature: {{FEATURE_3_P4}}

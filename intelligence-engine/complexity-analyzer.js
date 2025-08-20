@@ -8,7 +8,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { globSync } = require('glob');
 
 class ComplexityAnalyzer {
   constructor(projectPath = process.cwd()) {
@@ -20,41 +19,12 @@ class ComplexityAnalyzer {
       recommendations: [],
       confidence: 0
     };
-    this.config = this.loadConfig();
-  }
-
-  /**
-   * Load configuration from JSON file
-   */
-  loadConfig() {
-    try {
-      const configPath = path.join(__dirname, '..', 'configs', 'approaches.json');
-      return JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    } catch (error) {
-      console.error('Failed to load or parse approaches.json:', error);
-      // Return a default/fallback config to prevent crashes
-      return {
-        approaches: {},
-        complexityFactors: {
-          size: { weight: 0.15 },
-          dependencies: { weight: 0.15 },
-          architecture: { weight: 0.20 },
-          techStack: { weight: 0.15 },
-          features: { weight: 0.15 },
-          team: { weight: 0.05 },
-          deployment: { weight: 0.10 },
-          testing: { weight: 0.05 }
-        },
-        projectStages: {}
-      };
-    }
   }
 
   /**
    * Main analysis function
    */
-  async analyze(options = {}) {
-    const { promptText } = options;
+  async analyze() {
     try {
       // Detect project stage first
       this.analysis.stage = await this.detectProjectStage();
@@ -68,8 +38,7 @@ class ComplexityAnalyzer {
         features: await this.analyzeFeatures(),
         team: await this.analyzeTeamIndicators(),
         deployment: await this.analyzeDeployment(),
-        testing: await this.analyzeTestingComplexity(),
-        prompt: await this.analyzePrompt(promptText),
+        testing: await this.analyzeTestingComplexity()
       };
 
       this.analysis.factors = factors;
@@ -275,22 +244,6 @@ class ComplexityAnalyzer {
     if (files.some(f => /\.go$/.test(f))) stack.languages.push('Go');
     if (files.some(f => /\.java$/.test(f))) stack.languages.push('Java');
     if (files.some(f => /\.rs$/.test(f))) stack.languages.push('Rust');
-    if (files.some(f => /\.php$/.test(f))) stack.languages.push('PHP');
-    if (files.some(f => /\.rb$/.test(f))) stack.languages.push('Ruby');
-    if (files.some(f => /\.cs$/.test(f))) stack.languages.push('C#');
-    if (files.some(f => /\.swift$/.test(f))) stack.languages.push('Swift');
-    if (files.some(f => /\.kt$|\.kts$/.test(f))) stack.languages.push('Kotlin');
-    if (files.some(f => /\.c$|\.cpp$|\.h$|\.hpp$/.test(f))) stack.languages.push('C/C++');
-    if (files.some(f => /\.sh$/.test(f))) stack.languages.push('Shell');
-    if (files.some(f => /\.dart$/.test(f))) stack.languages.push('Dart');
-    if (files.some(f => /\.scala$/.test(f))) stack.languages.push('Scala');
-    if (files.some(f => /\.r$/.test(f))) stack.languages.push('R');
-    if (files.some(f => /\.lua$/.test(f))) stack.languages.push('Lua');
-    if (files.some(f => /\.ex$|\.exs$/.test(f))) stack.languages.push('Elixir');
-    if (files.some(f => /\.html$|\.htm$/.test(f))) stack.languages.push('HTML');
-    if (files.some(f => /\.css$/.test(f))) stack.languages.push('CSS');
-    if (files.some(f => /\.scss$|\.sass$/.test(f))) stack.languages.push('Sass/SCSS');
-    if (files.some(f => /\.m$|\.mm$/.test(f))) stack.languages.push('Objective-C');
     
     // Check package.json for frameworks
     const packageJsonPath = path.join(this.projectPath, 'package.json');
@@ -329,7 +282,7 @@ class ComplexityAnalyzer {
   }
 
   /**
-   * Analyze features based on code patterns using glob for efficiency
+   * Analyze features based on code patterns
    */
   async analyzeFeatures() {
     const features = {
@@ -343,30 +296,33 @@ class ComplexityAnalyzer {
       kubernetes: false
     };
 
-    const options = { cwd: this.projectPath, nodir: true, dot: true, ignore: 'node_modules/**' };
+    const files = await this.getProjectFiles();
+    const fileContents = [];
 
-    // File path-based detection
-    features.testing = globSync('**/*{test,spec}*.*', options).length > 0;
-    features.ci_cd = globSync('.github/workflows/*.{yml,yaml}', options).length > 0 || globSync('**/*gitlab-ci.yml', options).length > 0;
-    features.docker = globSync('**/*Dockerfile*', options).length > 0 || globSync('**/*docker-compose*.yml', options).length > 0;
-    features.kubernetes = globSync('**/*k8s*/*.{yml,yaml}', options).length > 0 || globSync('**/helm/**/*', options).length > 0;
-
-    // Content-based detection using glob to find candidate files
-    const checkContent = (pattern, regex) => {
-      const files = globSync(pattern, options);
-      for (const file of files) {
+    // Read a sample of files to check for features (limit for performance)
+    const sampleFiles = files.slice(0, 20);
+    for (const file of sampleFiles) {
+      if (file.endsWith('.js') || file.endsWith('.ts') || file.endsWith('.py')) {
         try {
           const content = fs.readFileSync(path.join(this.projectPath, file), 'utf8');
-          if (regex.test(content)) return true;
-        } catch (e) { /* ignore read errors */ }
+          fileContents.push(content.toLowerCase());
+        } catch (e) {
+          // Ignore read errors
+        }
       }
-      return false;
-    };
+    }
 
-    features.authentication = checkContent('**/*.{js,ts,py,go,java,php,rb}', /jwt|auth|login|passport|oauth/i);
-    features.realtime = checkContent('**/*.{js,ts,py,go,java}', /websocket|socket\.io|ws:|real-time|pubsub/i);
-    features.api = checkContent('**/*.{js,ts,py,go,java}', /api|endpoint|route|rest|graphql/i);
-    features.database = checkContent('**/*.{js,ts,py,go,java,rb}', /database|mongodb|postgres|mysql|redis|mongoose|sequelize|typeorm/i);
+    const allContent = fileContents.join('\n');
+
+    // Check for features
+    features.authentication = /jwt|auth|login|passport|oauth/.test(allContent);
+    features.realtime = /websocket|socket\.io|ws:|realtime|pubsub/.test(allContent);
+    features.api = /api|endpoint|route|rest|graphql/.test(allContent);
+    features.database = /database|mongodb|postgres|mysql|redis/.test(allContent);
+    features.testing = files.some(f => /test|spec/.test(f));
+    features.ci_cd = files.some(f => /\.github\/workflows|\.gitlab-ci|jenkinsfile/.test(f.toLowerCase()));
+    features.docker = files.some(f => /dockerfile|docker-compose/.test(f.toLowerCase()));
+    features.kubernetes = files.some(f => /k8s|kubernetes|\.yaml$|\.yml$/.test(f.toLowerCase()));
 
     // Calculate score based on features
     const featureCount = Object.values(features).filter(Boolean).length;
@@ -381,43 +337,6 @@ class ComplexityAnalyzer {
       detected: features,
       count: featureCount,
       score: Math.min(score, 100)
-    };
-  }
-
-  /**
-   * Analyze the initial user prompt for complexity indicators
-   */
-  async analyzePrompt(promptText) {
-    if (!promptText || promptText.trim() === '') {
-      return { score: 0, keywords: [] };
-    }
-    let score = 0;
-    const keywords = [];
-
-    // Add score based on prompt length
-    if (promptText.length > 500) score += 20;
-    else if (promptText.length > 100) score += 10;
-
-    // Check for keywords and add/subtract from score
-    const keywordMap = {
-      'api': 20, 'database': 20, 'authentication': 25, 'real-time': 30,
-      'enterprise': 30, 'scalable': 25, 'microservices': 30,
-      'prototype': -20, 'simple': -10, 'example': -15,
-      'test': 10, 'deployment': 15, 'docker': 15, 'kubernetes': 25,
-      'ui': 15, 'frontend': 15, 'backend': 15, 'full-stack': 20,
-    };
-
-    for (const [kw, value] of Object.entries(keywordMap)) {
-      if (new RegExp(`\\b${kw.replace('-', '[- ]?')}\\b`, 'i').test(promptText)) {
-        score += value;
-        keywords.push(kw);
-      }
-    }
-
-    return {
-      score: Math.max(0, Math.min(100, score)),
-      keywords,
-      description: `Analyzed prompt of ${promptText.length} characters.`
     };
   }
 
@@ -533,10 +452,16 @@ class ComplexityAnalyzer {
    * Calculate overall complexity score
    */
   calculateComplexityScore(factors) {
-    const weights = Object.entries(this.config.complexityFactors).reduce((acc, [key, value]) => {
-      acc[key] = value.weight;
-      return acc;
-    }, {});
+    const weights = {
+      size: 0.15,
+      dependencies: 0.15,
+      architecture: 0.20,
+      techStack: 0.15,
+      features: 0.15,
+      team: 0.05,
+      deployment: 0.10,
+      testing: 0.05
+    };
     
     let weightedScore = 0;
     for (const [factor, weight] of Object.entries(weights)) {
@@ -544,24 +469,19 @@ class ComplexityAnalyzer {
     }
     
     // Adjust based on project stage
-    const stageAdjustment = this.config.projectStages[this.analysis.stage]?.adjustmentFactor || 1.0;
-    weightedScore *= stageAdjustment;
-
-    // Apply caps for idea/early/mature stages from config if they exist
-    // For now, keeping the original logic as it's more nuanced than just a factor.
     switch (this.analysis.stage) {
       case 'idea':
-        weightedScore = Math.max(5, weightedScore);
+        weightedScore = Math.max(5, weightedScore * 0.5); // Ideas are simpler
         break;
       case 'early':
-        weightedScore = Math.max(15, weightedScore);
+        weightedScore = Math.max(15, weightedScore * 0.7); // Early projects are moderately complex
         break;
       case 'mature':
-        weightedScore = Math.min(100, weightedScore);
+        weightedScore = Math.min(100, weightedScore * 1.2); // Mature projects are more complex
         break;
     }
     
-    return Math.round(Math.min(100, weightedScore));
+    return Math.round(weightedScore);
   }
 
   /**
@@ -594,28 +514,23 @@ class ComplexityAnalyzer {
     const recommendations = [];
     const score = this.analysis.score;
 
-    let approachFound = false;
-    for (const key in this.config.approaches) {
-      const approach = this.config.approaches[key];
-      const [min, max] = approach.complexityRange;
-
-      if (score >= min && score <= max) {
-        recommendations.push({
-          approach: approach.name,
-          reason: approach.description, // Or a more detailed reason
-          confidence: 0.9 // This could also be made dynamic later
-        });
-        approachFound = true;
-        break;
-      }
-    }
-
-    if (!approachFound) {
-       // Fallback for scores outside all defined ranges
-       recommendations.push({
+    if (score <= 30) {
+      recommendations.push({
+        approach: 'Simple Swarm',
+        reason: 'Low complexity project suitable for quick, focused AI coordination',
+        confidence: 0.9
+      });
+    } else if (score <= 70) {
+      recommendations.push({
         approach: 'Hive-Mind',
-        reason: 'Default recommendation due to score being outside defined ranges.',
-        confidence: 0.7
+        reason: 'Medium complexity requiring multi-agent coordination',
+        confidence: 0.85
+      });
+    } else {
+      recommendations.push({
+        approach: 'Hive-Mind + SPARC',
+        reason: 'High complexity project benefiting from systematic methodology',
+        confidence: 0.95
       });
     }
     
@@ -715,10 +630,8 @@ class ComplexityAnalyzer {
 
 // CLI execution
 if (require.main === module) {
-  const projectPath = process.argv[2] || process.cwd();
-  const promptText = process.argv[3] || ''; // Allow passing prompt as second arg
-  const analyzer = new ComplexityAnalyzer(projectPath);
-  analyzer.analyze({ promptText }).then(result => {
+  const analyzer = new ComplexityAnalyzer(process.argv[2] || process.cwd());
+  analyzer.analyze().then(result => {
     console.log(JSON.stringify(result, null, 2));
   });
 }

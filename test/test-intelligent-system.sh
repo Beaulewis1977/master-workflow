@@ -192,19 +192,19 @@ test_complexity_analysis() {
     # Test medium project
     create_test_project "medium"
     local score=$(node "$INTELLIGENCE_ENGINE_DIR/complexity-analyzer.js" "$TEST_PROJECTS_DIR/medium" 2>/dev/null | jq -r '.score')
-    if [ "$score" -ge 10 ] && [ "$score" -le 40 ]; then # Adjusted for new weights
+    if [ "$score" -ge 30 ] && [ "$score" -le 70 ]; then
         print_test_result "Medium project score (score: $score)" "PASS"
     else
-        print_test_result "Medium project score (score: $score, expected 10-40)" "FAIL"
+        print_test_result "Medium project score (score: $score, expected 30-70)" "FAIL"
     fi
     
     # Test complex project
     create_test_project "complex"
     local score=$(node "$INTELLIGENCE_ENGINE_DIR/complexity-analyzer.js" "$TEST_PROJECTS_DIR/complex" 2>/dev/null | jq -r '.score')
-    if [ "$score" -gt 30 ]; then # Adjusted for new weights
+    if [ "$score" -gt 70 ]; then
         print_test_result "Complex project score (score: $score)" "PASS"
     else
-        print_test_result "Complex project score (score: $score, expected > 30)" "FAIL"
+        print_test_result "Complex project score (score: $score, expected > 70)" "FAIL"
     fi
 }
 

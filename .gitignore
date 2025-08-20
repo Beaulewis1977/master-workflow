@@ -84,3 +84,5 @@ docker-compose.override.yml
 .eslintcache
 .tsbuildinfo
 
+# Agent-OS generated files
+/.agent-os/
