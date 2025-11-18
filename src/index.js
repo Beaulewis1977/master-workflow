@@ -21,12 +21,10 @@
 
 import { EventEmitter } from 'events';
 
-// Revolutionary new systems
-import { CrossDimensionalMemoryFusion } from './quantum-intelligence/cross-dimensional-memory-fusion.js';
-import { NeuralSwarmLearning } from './neural-swarm/swarm-learning-engine.js';
-import { CodeArchaeologyEngine } from './code-archaeology/pattern-discovery-engine.js';
+// INTEGRATED SYSTEMS - Wires revolutionary features with existing Queen Controller
+import { IntegratedQueenController } from './integration/queen-integration.js';
 
-// Clean implementations
+// Clean implementations (for standalone use)
 import { AgentOS } from './agent-os/core/agent-runtime.js';
 import { FlowOrchestrator } from './claude-flow/orchestrator/flow-orchestrator.js';
 import { AutonomousBuilder } from './builder/autonomous-builder.js';
@@ -63,12 +61,10 @@ export class MasterWorkflow3 extends EventEmitter {
       ...config
     };
 
-    // Revolutionary systems
-    this.quantumMemory = null;
-    this.neuralSwarm = null;
-    this.archaeology = null;
+    // INTEGRATED QUEEN CONTROLLER - Combines all intelligence systems
+    this.queen = null;
 
-    // Clean implementations
+    // Clean implementations (for standalone tasks)
     this.agents = new Map();
     this.orchestrator = null;
     this.builder = null;
@@ -93,45 +89,29 @@ export class MasterWorkflow3 extends EventEmitter {
 
     const startTime = Date.now();
 
-    // Step 1: Initialize Quantum Memory Fusion
-    if (this.config.quantumMemory) {
-      console.log('🌌 Initializing Cross-Dimensional Memory Fusion...');
-      this.quantumMemory = new CrossDimensionalMemoryFusion({
-        fusionDepth: 5,
-        quantumStates: 10,
-        consciousnessLevel: 5
-      });
-      await this.quantumMemory.initialize();
-      this.capabilitiesUnlocked.add('quantum_memory');
-      this.systemIQ += 50;
-    }
+    // Initialize INTEGRATED QUEEN CONTROLLER
+    // This wires revolutionary features with existing Queen Controller and Hive-Mind
+    console.log('👑 Initializing Integrated Queen Controller...\n');
+    this.queen = new IntegratedQueenController({
+      maxConcurrent: this.config.maxConcurrent || 10,
+      maxAgents: this.config.maxAgents,
+      projectRoot: process.cwd(),
+      fusionDepth: 5,
+      quantumStates: 10,
+      verbose: this.config.verbose
+    });
 
-    // Step 2: Initialize Neural Swarm Learning
-    if (this.config.neuralLearning) {
-      console.log('\n🐝 Initializing Neural Swarm Learning...');
-      this.neuralSwarm = new NeuralSwarmLearning({
-        maxAgents: this.config.maxAgents,
-        swarmIntelligence: 'exponential'
-      });
-      await this.neuralSwarm.initialize();
-      this.capabilitiesUnlocked.add('neural_learning');
-      this.systemIQ += 75;
-    }
+    await this.queen.initialize();
 
-    // Step 3: Initialize Code Archaeology
-    if (this.config.codeArchaeology) {
-      console.log('\n🏺 Initializing Autonomous Code Archaeology...');
-      this.archaeology = new CodeArchaeologyEngine({
-        excavationDepth: 'deep',
-        geniusDetection: true,
-        futureIssuesPrediction: true
-      });
-      await this.archaeology.initialize();
-      this.capabilitiesUnlocked.add('code_archaeology');
-      this.systemIQ += 40;
-    }
+    this.capabilitiesUnlocked.add('queen_controller');
+    this.capabilitiesUnlocked.add('hive_mind_databases');
+    this.capabilitiesUnlocked.add('quantum_memory_fusion');
+    this.capabilitiesUnlocked.add('neural_swarm_learning');
+    this.capabilitiesUnlocked.add('code_archaeology');
+    this.capabilitiesUnlocked.add('shared_memory_store');
+    this.systemIQ += 300; // Massive IQ boost from integrated system
 
-    // Step 4: Initialize Flow Orchestrator
+    // Initialize Flow Orchestrator
     console.log('\n🌊 Initializing Flow Orchestrator...');
     this.orchestrator = new FlowOrchestrator({
       verbose: this.config.verbose
@@ -139,7 +119,7 @@ export class MasterWorkflow3 extends EventEmitter {
     this.capabilitiesUnlocked.add('workflow_orchestration');
     this.systemIQ += 30;
 
-    // Step 5: Initialize Autonomous Builder
+    // Initialize Autonomous Builder
     console.log('\n🏗️  Initializing Autonomous Builder...');
     this.builder = new AutonomousBuilder({
       outputDir: './generated-apps',
@@ -148,7 +128,7 @@ export class MasterWorkflow3 extends EventEmitter {
     this.capabilitiesUnlocked.add('autonomous_building');
     this.systemIQ += 45;
 
-    // Step 6: Wire up event listeners
+    // Wire up event listeners
     this._wireEventListeners();
 
     // Initialization complete
@@ -172,6 +152,7 @@ export class MasterWorkflow3 extends EventEmitter {
 
   /**
    * EXECUTE TASK - The main interface for doing anything
+   * Delegates to Integrated Queen Controller for full intelligence
    */
   async execute(task) {
     if (!this.isInitialized) await this.initialize();
@@ -180,155 +161,45 @@ export class MasterWorkflow3 extends EventEmitter {
     console.log(`🎯 EXECUTING TASK: ${task.description || task}`);
     console.log(`${'═'.repeat(60)}\n`);
 
-    const result = {
-      task,
-      approach: null,
-      phases: [],
-      insights: [],
-      learnings: [],
-      output: null,
-      success: false,
-      startTime: Date.now(),
-      endTime: null
-    };
-
     try {
-      // Phase 1: Quantum Recall - Check if we've done this before
-      if (this.quantumMemory) {
-        console.log('🔍 Phase 1: Quantum Recall...');
-        const recall = await this.quantumMemory.quantumRecall(
-          typeof task === 'string' ? task : task.description
-        );
-        result.phases.push({
-          name: 'quantum_recall',
-          ...recall
-        });
+      // Use Integrated Queen Controller for full intelligence pipeline
+      const result = await this.queen.executeTask(task);
 
-        if (recall.confidence > 0.8) {
-          console.log(`   ✓ High confidence recall (${(recall.confidence * 100).toFixed(0)}%)`);
-          result.insights.push('Previous experience found - optimizing approach');
-        }
-      }
-
-      // Phase 2: Code Archaeology - Understand current state
-      if (this.archaeology && task.codebase) {
-        console.log('\n🏺 Phase 2: Code Archaeology...');
-        const excavation = await this.archaeology.excavateCodebase(task.codebase || '.');
-        result.phases.push({
-          name: 'code_excavation',
-          ...excavation
-        });
-        result.insights.push(...excavation.recommendations.map(r => r.action));
-      }
-
-      // Phase 3: Neural Swarm Planning - Get collective intelligence
-      if (this.neuralSwarm) {
-        console.log('\n🧠 Phase 3: Neural Swarm Planning...');
-        const swarmSolution = await this.neuralSwarm.swarmSolvesProblem({
-          type: task.type || 'general',
-          description: typeof task === 'string' ? task : task.description,
-          context: task.context || {}
-        });
-        result.phases.push({
-          name: 'swarm_planning',
-          ...swarmSolution
-        });
-        result.approach = swarmSolution.bestSolution.approach;
-      }
-
-      // Phase 4: Execution - Actually do the thing
-      console.log('\n⚡ Phase 4: Execution...');
-
-      if (task.type === 'build_app') {
-        // Use autonomous builder
+      // Additional specialized processing
+      if (task.type === 'build_app' && this.builder) {
+        console.log('\n🏗️  Delegating to Autonomous Builder...');
         const app = await this.builder.buildApp(
-          task.description,
+          task.description || task,
           task.options || {}
         );
-        result.output = app;
-        result.phases.push({ name: 'app_building', ...app });
-      } else if (task.type === 'workflow') {
-        // Use flow orchestrator
+        result.builderOutput = app;
+      } else if (task.type === 'workflow' && this.orchestrator) {
+        console.log('\n🌊 Delegating to Flow Orchestrator...');
         const workflowResult = await this.orchestrator.executeWorkflow(task.workflow);
-        result.output = workflowResult;
-        result.phases.push({ name: 'workflow_execution', ...workflowResult });
-      } else {
-        // Use individual agent
-        const agent = new AgentOS({
-          memory: true,
-          planning: true,
-          verbose: this.config.verbose
-        });
-
-        const agentResult = await agent.execute({
-          task: typeof task === 'string' ? task : task.description,
-          context: task.context || {}
-        });
-
-        result.output = agentResult;
-        result.phases.push({ name: 'agent_execution', ...agentResult });
-
-        await agent.shutdown();
+        result.workflowOutput = workflowResult;
       }
-
-      // Phase 5: Collective Learning - Share with all agents
-      if (this.neuralSwarm) {
-        console.log('\n🌊 Phase 5: Collective Learning...');
-        const learning = await this.neuralSwarm.swarm.memory.collectiveLearning({
-          type: 'task_completion',
-          task,
-          result,
-          approach: result.approach
-        });
-        result.learnings.push(learning);
-      }
-
-      // Phase 6: Quantum Storage - Remember for the future
-      if (this.quantumMemory) {
-        console.log('\n💾 Phase 6: Quantum Storage...');
-        await this.quantumMemory.quantumStore({
-          task,
-          result,
-          approach: result.approach,
-          success: true,
-          insights: result.insights
-        });
-      }
-
-      result.success = true;
-      result.endTime = Date.now();
 
       console.log(`\n${'═'.repeat(60)}`);
       console.log('✅ TASK COMPLETED SUCCESSFULLY!');
-      console.log(`${'═'.repeat(60)}`);
-      console.log(`⏱️  Duration: ${result.endTime - result.startTime}ms`);
-      console.log(`🔬 Phases Executed: ${result.phases.length}`);
-      console.log(`💡 Insights Generated: ${result.insights.length}`);
-      console.log(`📚 Learnings Captured: ${result.learnings.length}\n`);
+      console.log(`${'═'.repeat(60)}\n`);
 
       this.emit('task:complete', result);
 
       return result;
 
     } catch (error) {
-      result.success = false;
-      result.error = error.message;
-      result.endTime = Date.now();
-
       console.error(`\n❌ TASK FAILED: ${error.message}\n`);
 
-      // Still learn from failure
-      if (this.neuralSwarm) {
-        await this.neuralSwarm.swarm.memory.collectiveLearning({
-          type: 'task_failure',
-          task,
-          error: error.message
-        });
-      }
+      const errorResult = {
+        task,
+        success: false,
+        error: error.message,
+        timestamp: Date.now()
+      };
 
-      this.emit('task:error', { error, result });
+      this.emit('task:error', { error, result: errorResult });
 
-      return result;
+      return errorResult;
     }
   }
 
@@ -357,42 +228,48 @@ export class MasterWorkflow3 extends EventEmitter {
    * ANALYZE CODEBASE - Shortcut for code archaeology
    */
   async analyzeCodebase(path) {
-    return await this.execute({
-      type: 'analyze',
-      codebase: path
-    });
+    if (!this.isInitialized) await this.initialize();
+    return await this.queen.excavateCodebase(path);
   }
 
   /**
    * TEST IN PARALLEL REALITIES - Test across multiple approaches
    */
   async testInParallelRealities(solution) {
-    if (!this.quantumMemory) {
-      throw new Error('Quantum memory not initialized');
-    }
-
-    return await this.quantumMemory.parallelRealityTest(solution);
+    if (!this.isInitialized) await this.initialize();
+    return await this.queen.quantumMemory.parallelRealityTest(solution);
   }
 
   /**
-   * GET SYSTEM STATUS
+   * GET SYSTEM STATUS - Get complete system status
    */
-  getStatus() {
+  async getStatus() {
+    if (!this.isInitialized) {
+      return {
+        initialized: false,
+        message: 'System not initialized'
+      };
+    }
+
+    const queenStatus = await this.queen.getStatus();
+
     return {
       initialized: this.isInitialized,
       systemIQ: this.systemIQ,
       capabilities: Array.from(this.capabilitiesUnlocked),
       subsystems: {
-        quantumMemory: !!this.quantumMemory,
-        neuralSwarm: !!this.neuralSwarm,
-        archaeology: !!this.archaeology,
+        queen: !!this.queen,
         orchestrator: !!this.orchestrator,
         builder: !!this.builder
       },
+      queen: queenStatus,
       stats: {
-        agents: this.agents.size,
-        swarmIQ: this.neuralSwarm ? this.neuralSwarm.swarmIQ : 0,
-        quantumStates: this.quantumMemory ? this.quantumMemory.quantumStates.size : 0
+        activeAgents: queenStatus.queen.activeAgents,
+        queuedTasks: queenStatus.queen.queuedTasks,
+        completedTasks: queenStatus.queen.completedTasks,
+        memoryEntries: queenStatus.sharedMemory.entries,
+        quantumStates: queenStatus.quantumMemory.quantumStates,
+        swarmIQ: queenStatus.neuralSwarm.swarmIQ
       }
     };
   }
@@ -402,6 +279,10 @@ export class MasterWorkflow3 extends EventEmitter {
    */
   async shutdown() {
     console.log('\n🛑 Shutting down Master Workflow 3.0...\n');
+
+    if (this.queen) {
+      await this.queen.shutdown();
+    }
 
     if (this.orchestrator) {
       await this.orchestrator.shutdown();
@@ -423,29 +304,35 @@ export class MasterWorkflow3 extends EventEmitter {
    * Wire up event listeners for cross-system communication
    */
   _wireEventListeners() {
-    // Forward all quantum memory events
-    if (this.quantumMemory) {
-      this.quantumMemory.on('quantum:recall', (data) => {
+    // Forward Integrated Queen Controller events
+    if (this.queen) {
+      // Forward quantum memory events through queen
+      this.queen.quantumMemory.on('quantum:recall', (data) => {
         this.emit('quantum:recall', data);
       });
 
-      this.quantumMemory.on('quantum:store', (data) => {
+      this.queen.quantumMemory.on('quantum:store', (data) => {
         this.emit('quantum:store', data);
       });
-    }
 
-    // Forward all neural swarm events
-    if (this.neuralSwarm) {
-      this.neuralSwarm.on('agent:learned', (data) => {
+      // Forward neural swarm events through queen
+      this.queen.neuralSwarm.on('agent:learned', (data) => {
         this.emit('swarm:learning', data);
         this.systemIQ += 0.1; // Tiny IQ boost for each learning
       });
-    }
 
-    // Forward all archaeology events
-    if (this.archaeology) {
-      this.archaeology.on('excavation:complete', (data) => {
+      // Forward archaeology events through queen
+      this.queen.archaeology.on('excavation:complete', (data) => {
         this.emit('archaeology:complete', data);
+      });
+
+      // Forward queen controller events
+      this.queen.queen.on('agent-spawned', (data) => {
+        this.emit('agent:spawned', data);
+      });
+
+      this.queen.queen.on('queue-full', (data) => {
+        this.emit('agent:queue-full', data);
       });
     }
 
