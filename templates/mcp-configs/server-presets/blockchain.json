@@ -1,0 +1,397 @@
+{
+  "name": "Blockchain & Web3",
+  "description": "Comprehensive Web3 development environment with Ethereum, Solidity, DeFi protocols, and blockchain infrastructure tools",
+  "category": "blockchain",
+  "version": "1.0.0",
+  "priority_level": "high",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Web3 and blockchain development expertise",
+      "default": true,
+      "config": {
+        "features": ["smart_contracts", "defi_protocols", "nft_development", "tokenomics"],
+        "languages": ["solidity", "vyper", "rust", "javascript", "typescript", "go"],
+        "frameworks": ["hardhat", "truffle", "foundry", "brownie"]
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 2,
+      "description": "Blockchain project structure with contract and frontend organization",
+      "config": {
+        "root": ".",
+        "watch_patterns": ["contracts/**/*", "scripts/**/*", "test/**/*", "frontend/**/*"],
+        "ignore_patterns": ["node_modules/**", "artifacts/**", "cache/**", "typechain/**"]
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Version control with security audit trails for smart contracts",
+      "config": {
+        "repo": "auto",
+        "hooks": ["pre-commit", "pre-push"],
+        "security_scanning": true,
+        "audit_trails": true,
+        "signed_commits": true
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 4,
+      "description": "CI/CD for smart contract testing and deployment",
+      "config": {
+        "workflows": ["test_contracts", "security_audit", "deploy_testnet", "deploy_mainnet"],
+        "security_scanning": true,
+        "dependency_review": true,
+        "artifact_storage": true
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Blockchain API and RPC communication",
+      "config": {
+        "timeout": 60000,
+        "retry_attempts": 3,
+        "rate_limiting": true,
+        "websocket_support": true,
+        "ethereum_rpc": true
+      }
+    },
+    "docker": {
+      "enabled": true,
+      "priority": 6,
+      "description": "Containerized blockchain nodes and development environments",
+      "config": {
+        "ethereum_nodes": true,
+        "ipfs_nodes": true,
+        "local_testnets": true,
+        "multi_chain_support": true
+      }
+    },
+    "aws": {
+      "enabled": true,
+      "priority": 7,
+      "description": "AWS blockchain services and infrastructure",
+      "config": {
+        "services": ["managed_blockchain", "s3", "lambda", "api_gateway", "cloudwatch"],
+        "regions": ["us-east-1", "us-west-2"],
+        "blockchain_networks": ["ethereum", "hyperledger"],
+        "scalability": true
+      }
+    },
+    "gcp": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Google Cloud blockchain and analytics services",
+      "config": {
+        "services": ["blockchain_analytics", "cloud_functions", "bigquery", "cloud_storage"],
+        "regions": ["us-central1", "europe-west1"],
+        "data_analytics": true
+      }
+    },
+    "postgres": {
+      "enabled": true,
+      "priority": 9,
+      "description": "Off-chain data storage and indexing",
+      "config": {
+        "blockchain_indexing": true,
+        "transaction_history": true,
+        "analytics": true,
+        "high_performance": true
+      }
+    },
+    "redis": {
+      "enabled": true,
+      "priority": 10,
+      "description": "Caching for blockchain data and session management",
+      "config": {
+        "blockchain_cache": true,
+        "session_storage": true,
+        "pub_sub": true,
+        "real_time_data": true
+      }
+    },
+    "browser": {
+      "enabled": true,
+      "priority": 11,
+      "description": "Web3 frontend testing and wallet integration",
+      "config": {
+        "web3_support": true,
+        "metamask_integration": true,
+        "wallet_connect": true,
+        "dapp_testing": true
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "NETWORK",
+      "DEPLOYER_PRIVATE_KEY",
+      "INFURA_PROJECT_ID"
+    ],
+    "optional": [
+      "ETHEREUM_RPC_URL",
+      "POLYGON_RPC_URL",
+      "BSC_RPC_URL",
+      "AVALANCHE_RPC_URL",
+      "ARBITRUM_RPC_URL",
+      "OPTIMISM_RPC_URL",
+      "ALCHEMY_API_KEY",
+      "MORALIS_API_KEY",
+      "ETHERSCAN_API_KEY",
+      "POLYGONSCAN_API_KEY",
+      "COINMARKETCAP_API_KEY",
+      "PINATA_API_KEY",
+      "PINATA_SECRET_KEY",
+      "WALLET_CONNECT_PROJECT_ID",
+      "TENDERLY_PROJECT",
+      "TENDERLY_USERNAME"
+    ],
+    "development": {
+      "NETWORK": "localhost",
+      "GAS_PRICE": "20000000000",
+      "GAS_LIMIT": "6000000",
+      "ENABLE_OPTIMIZER": "false"
+    },
+    "testnet": {
+      "NETWORK": "goerli",
+      "GAS_PRICE": "auto",
+      "VERIFY_CONTRACTS": "true",
+      "ENABLE_OPTIMIZER": "true"
+    },
+    "mainnet": {
+      "NETWORK": "mainnet",
+      "GAS_PRICE": "auto",
+      "VERIFY_CONTRACTS": "true",
+      "ENABLE_OPTIMIZER": "true",
+      "OPTIMIZER_RUNS": "1000000"
+    }
+  },
+  "recommended_tools": [
+    "hardhat",
+    "foundry",
+    "truffle",
+    "ganache",
+    "remix",
+    "metamask",
+    "web3.js",
+    "ethers.js",
+    "openzeppelin",
+    "slither",
+    "mythril",
+    "surya",
+    "solhint",
+    "prettier-solidity",
+    "typechain",
+    "waffle"
+  ],
+  "project_structure": {
+    "hardhat": {
+      "required_files": [
+        "hardhat.config.js",
+        "package.json",
+        "contracts/",
+        "scripts/",
+        "test/"
+      ],
+      "recommended_directories": [
+        "contracts/",
+        "scripts/deploy/",
+        "scripts/interact/",
+        "test/unit/",
+        "test/integration/",
+        "frontend/",
+        "docs/",
+        "audits/"
+      ]
+    },
+    "foundry": {
+      "required_files": [
+        "foundry.toml",
+        "src/",
+        "test/",
+        "script/"
+      ],
+      "recommended_directories": [
+        "src/",
+        "test/",
+        "script/",
+        "lib/",
+        "docs/",
+        "audits/"
+      ]
+    }
+  },
+  "blockchain_networks": {
+    "ethereum": {
+      "mainnet": {
+        "chain_id": 1,
+        "rpc_url": "https://mainnet.infura.io/v3/",
+        "explorer": "https://etherscan.io",
+        "gas_token": "ETH"
+      },
+      "goerli": {
+        "chain_id": 5,
+        "rpc_url": "https://goerli.infura.io/v3/",
+        "explorer": "https://goerli.etherscan.io",
+        "faucet": true
+      }
+    },
+    "polygon": {
+      "mainnet": {
+        "chain_id": 137,
+        "rpc_url": "https://polygon-rpc.com",
+        "explorer": "https://polygonscan.com",
+        "gas_token": "MATIC"
+      },
+      "mumbai": {
+        "chain_id": 80001,
+        "rpc_url": "https://rpc-mumbai.maticvigil.com",
+        "explorer": "https://mumbai.polygonscan.com",
+        "faucet": true
+      }
+    },
+    "arbitrum": {
+      "mainnet": {
+        "chain_id": 42161,
+        "rpc_url": "https://arb1.arbitrum.io/rpc",
+        "explorer": "https://arbiscan.io",
+        "gas_token": "ETH"
+      }
+    },
+    "optimism": {
+      "mainnet": {
+        "chain_id": 10,
+        "rpc_url": "https://mainnet.optimism.io",
+        "explorer": "https://optimistic.etherscan.io",
+        "gas_token": "ETH"
+      }
+    }
+  },
+  "smart_contract_patterns": {
+    "security": {
+      "reentrancy_guard": true,
+      "access_control": true,
+      "pausable": true,
+      "upgradeable": true,
+      "multisig": true
+    },
+    "tokens": {
+      "erc20": true,
+      "erc721": true,
+      "erc1155": true,
+      "erc4626": true,
+      "governance": true
+    },
+    "defi": {
+      "dex": true,
+      "lending": true,
+      "staking": true,
+      "yield_farming": true,
+      "insurance": true
+    }
+  },
+  "development_frameworks": {
+    "hardhat": {
+      "version": ">=2.17",
+      "plugins": ["hardhat-deploy", "hardhat-gas-reporter", "hardhat-contract-sizer"],
+      "testing": "waffle",
+      "verification": "hardhat-etherscan"
+    },
+    "foundry": {
+      "version": "latest",
+      "testing": "forge",
+      "fuzzing": true,
+      "gas_optimization": true
+    },
+    "brownie": {
+      "version": ">=1.19",
+      "python_support": true,
+      "pytest_integration": true
+    }
+  },
+  "security_tools": {
+    "static_analysis": {
+      "slither": {
+        "vulnerability_detection": true,
+        "optimization_analysis": true,
+        "architectural_analysis": true
+      },
+      "mythril": {
+        "symbolic_execution": true,
+        "vulnerability_scanning": true
+      }
+    },
+    "testing": {
+      "echidna": {
+        "property_testing": true,
+        "fuzzing": true
+      },
+      "manticore": {
+        "symbolic_execution": true,
+        "formal_verification": true
+      }
+    },
+    "auditing": {
+      "certification": true,
+      "formal_verification": true,
+      "economic_modeling": true,
+      "gas_optimization": true
+    }
+  },
+  "frontend_integration": {
+    "web3_libraries": {
+      "ethers.js": ">=5.7",
+      "web3.js": ">=1.8",
+      "viem": ">=1.0"
+    },
+    "wallet_integration": {
+      "metamask": true,
+      "walletconnect": true,
+      "coinbase_wallet": true,
+      "rainbow_kit": true
+    },
+    "ui_frameworks": {
+      "react": true,
+      "next.js": true,
+      "vue.js": true,
+      "svelte": true
+    }
+  },
+  "deployment_strategies": {
+    "local_development": {
+      "hardhat_network": true,
+      "ganache": true,
+      "foundry_anvil": true
+    },
+    "testnet_deployment": {
+      "automated_testing": true,
+      "contract_verification": true,
+      "gas_optimization": true
+    },
+    "mainnet_deployment": {
+      "multi_sig_deployment": true,
+      "timelock_controller": true,
+      "upgrade_patterns": true,
+      "monitoring": true
+    }
+  },
+  "monitoring_analytics": {
+    "on_chain": {
+      "transaction_monitoring": true,
+      "event_indexing": true,
+      "gas_tracking": true,
+      "performance_metrics": true
+    },
+    "off_chain": {
+      "api_analytics": true,
+      "user_behavior": true,
+      "error_tracking": true,
+      "uptime_monitoring": true
+    }
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "name": "Web Development",
+  "description": "Optimized configuration for modern web development with React, Next.js, Vercel, and comprehensive testing tools",
+  "category": "frontend",
+  "version": "1.0.0",
+  "priority_level": "high",
+  "enabled_servers": {
+    "context7": {
+      "enabled": true,
+      "priority": 1,
+      "description": "Primary coding assistance and code analysis",
+      "default": true,
+      "config": {
+        "features": ["code_completion", "refactoring", "debugging"],
+        "languages": ["javascript", "typescript", "jsx", "tsx", "css", "html"]
+      }
+    },
+    "filesystem": {
+      "enabled": true,
+      "priority": 2,
+      "description": "File system operations and project structure management",
+      "config": {
+        "root": ".",
+        "watch_patterns": ["src/**/*", "components/**/*", "pages/**/*", "styles/**/*"],
+        "ignore_patterns": ["node_modules/**", "dist/**", "build/**", ".next/**"]
+      }
+    },
+    "git": {
+      "enabled": true,
+      "priority": 3,
+      "description": "Version control and collaborative development",
+      "config": {
+        "repo": "auto",
+        "hooks": ["pre-commit", "pre-push"],
+        "branch_protection": true
+      }
+    },
+    "github": {
+      "enabled": true,
+      "priority": 4,
+      "description": "GitHub integration for issues, PRs, and CI/CD",
+      "config": {
+        "auto_pr": true,
+        "issue_templates": true,
+        "workflows": ["ci", "cd", "pr-review"]
+      }
+    },
+    "browser": {
+      "enabled": true,
+      "priority": 5,
+      "description": "Browser automation and testing capabilities",
+      "config": {
+        "headless": false,
+        "viewport": {"width": 1920, "height": 1080},
+        "user_agent": "automated-testing"
+      }
+    },
+    "http": {
+      "enabled": true,
+      "priority": 6,
+      "description": "HTTP client for API testing and integration",
+      "config": {
+        "timeout": 30000,
+        "retry_attempts": 3,
+        "follow_redirects": true
+      }
+    },
+    "openapi": {
+      "enabled": true,
+      "priority": 7,
+      "description": "API documentation and testing with OpenAPI specs",
+      "config": {
+        "validate_requests": true,
+        "generate_types": true,
+        "mock_responses": true
+      }
+    },
+    "search": {
+      "enabled": true,
+      "priority": 8,
+      "description": "Code search and documentation lookup",
+      "config": {
+        "engines": ["ripgrep", "elasticsearch"],
+        "index_patterns": ["*.js", "*.ts", "*.jsx", "*.tsx", "*.css", "*.md"]
+      }
+    }
+  },
+  "environment_variables": {
+    "required": [
+      "NODE_ENV",
+      "NEXT_PUBLIC_API_URL"
+    ],
+    "optional": [
+      "VERCEL_TOKEN",
+      "GITHUB_TOKEN",
+      "BROWSERSTACK_ACCESS_KEY",
+      "CYPRESS_RECORD_KEY",
+      "PLAYWRIGHT_BROWSERS_PATH"
+    ],
+    "development": {
+      "NODE_ENV": "development",
+      "NEXT_TELEMETRY_DISABLED": "1",
+      "FAST_REFRESH": "true"
+    }
+  },
+  "recommended_tools": [
+    "eslint",
+    "prettier",
+    "jest",
+    "cypress",
+    "playwright",
+    "storybook",
+    "webpack-bundle-analyzer",
+    "lighthouse"
+  ],
+  "project_structure": {
+    "required_files": [
+      "package.json",
+      "next.config.js",
+      "tsconfig.json",
+      ".eslintrc.js",
+      ".prettierrc"
+    ],
+    "recommended_directories": [
+      "src/",
+      "components/",
+      "pages/",
+      "styles/",
+      "public/",
+      "tests/",
+      "__tests__/",
+      "cypress/"
+    ]
+  },
+  "common_configurations": {
+    "package_manager": "npm",
+    "node_version": ">=18.0.0",
+    "typescript": true,
+    "css_framework": "tailwindcss",
+    "testing_framework": "jest",
+    "e2e_framework": "cypress"
+  },
+  "integration_points": {
+    "vercel": {
+      "auto_deploy": true,
+      "environment_promotion": true,
+      "preview_urls": true
+    },
+    "netlify": {
+      "build_hooks": true,
+      "form_handling": true,
+      "edge_functions": true
+    }
+  }
+}

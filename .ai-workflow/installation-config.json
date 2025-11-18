@@ -1,0 +1,18 @@
+{
+  "version": "2.0",
+  "components": {
+    "core": true,
+    "claudeCode": true,
+    "agentOS": true,
+    "claudeFlow": true,
+    "tmux": false
+  },
+  "executionMode": "process",
+  "claudeCommand": "claude --dangerously-skip-permissions",
+  "skipPermissions": true,
+  "initialPrompt": "/workspaces/MASTER-WORKFLOW/.ai-workflow/initial-prompt.md",
+  "recommendedApproach": "simpleSwarm",
+  "installedAt": "2025-08-12T22:59:42+00:00",
+  "projectDir": "/workspaces/MASTER-WORKFLOW",
+  "installDir": "/workspaces/MASTER-WORKFLOW/.ai-workflow"
+}

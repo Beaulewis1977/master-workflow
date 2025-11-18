@@ -1,0 +1,198 @@
+{
+  "installerVersion": "3.0.0",
+  "installedAt": "2025-08-14T02:38:59.241Z",
+  "items": [
+    {
+      "path": ".ai-workflow/lib/core.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/lib/config-manager.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/lib/task-runner.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/lib/uninstall/manifest.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/lib/uninstall/manifest-writer.sh",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/lib/uninstall/classifier.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/lib/uninstall/plan-builder.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/configs/default-config.json",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/configs/hive-mind.yaml",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/configs/agent-templates.json",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/bin/ai-workflow",
+      "origin": "symlink_executable",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/bin/claude-flow",
+      "origin": "symlink_executable",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/bin/hive-mind",
+      "origin": "symlink_executable",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/templates/agent-template.yaml",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/templates/task-template.json",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/agent-templates/researcher.yaml",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/agent-templates/developer.yaml",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/hooks/pre-task.sh",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/hooks/post-task.sh",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/logs/installation.log",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/logs/task-execution.log",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/logs/agents/agent-001.log",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/logs/agents/agent-002.log",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/logs/sessions/session-2024-08-14.log",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/recovery/checkpoints/checkpoint-001.json",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/recovery/backups/config-backup.json",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/hive-mind/swarm-1755040698540-o0jq1fsgx/memory/shared-memory.json",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/hive-mind/swarm-1755040698540-o0jq1fsgx/tasks/task-queue.json",
+      "origin": "ephemeral_cache_log",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/supervisor/supervisor.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/intelligence-engine/analyzer.js",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/slash-commands/commands.json",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    },
+    {
+      "path": ".ai-workflow/tmux-scripts/session-manager.sh",
+      "origin": "installed_system_asset",
+      "timestamp": "2025-08-14T02:38:59.241Z",
+      "version": "3.0.0"
+    }
+  ]
+}

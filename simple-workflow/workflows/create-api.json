@@ -1,0 +1,67 @@
+{
+  "workflow": "create-api",
+  "version": "1.0",
+  "description": "Build a REST API with authentication and database integration",
+  "author": "AI Dev OS",
+  "created": "2024-01-01",
+  
+  "variables": {
+    "api_name": "my-api",
+    "framework": "express",
+    "database": "postgresql",
+    "auth_type": "jwt",
+    "api_style": "restful"
+  },
+  
+  "steps": [
+    {
+      "id": "analyze-requirements",
+      "name": "Analyze API Requirements",
+      "type": "claude",
+      "prompt": "Analyze requirements for a {{api_style}} API called {{api_name}} with {{auth_type}} authentication and {{database}} database",
+      "capture_output": "requirements"
+    },
+    {
+      "id": "create-spec",
+      "name": "Create API Specification",
+      "type": "agent-os",
+      "command": "create-spec",
+      "prompt": "Create detailed API specification for {{api_name}} with endpoints, data models, authentication flow using {{auth_type}}, and {{database}} schema",
+      "output": "specs/api-spec.md"
+    },
+    {
+      "id": "implement-api",
+      "name": "Implement API",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the {{framework}} API based on specifications with {{database}} integration and {{auth_type}} authentication",
+      "output": "api-implementation"
+    },
+    {
+      "id": "create-tests",
+      "name": "Generate API Tests",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Create comprehensive API tests including unit tests, integration tests, and endpoint tests for {{api_name}}",
+      "output": "tests-complete"
+    },
+    {
+      "id": "api-documentation",
+      "name": "Generate API Documentation",
+      "type": "claude",
+      "prompt": "Generate OpenAPI/Swagger documentation for the API endpoints",
+      "output": "docs/openapi.yaml"
+    },
+    {
+      "id": "security-review",
+      "name": "Security Audit",
+      "type": "sub-agent",
+      "agent": "security-auditor",
+      "prompt": "Perform security audit on the API, checking for vulnerabilities in authentication, authorization, and data handling",
+      "output": "security-report.md"
+    }
+  ],
+  
+  "on_success": "✅ API '{{api_name}}' created successfully with {{framework}} and {{database}}!",
+  "on_failure": "❌ Failed to create API. Check logs for details."
+}

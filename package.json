@@ -1,16 +1,22 @@
 {
   "name": "master-workflow",
-  "version": "1.0.0",
-  "description": "A meta-framework combining Claude Flow, Agent OS, and Claude Code for autonomous application development",
+  "version": "3.0.0",
+  "description": "Master Workflow 3.0 - Unified AI Development Platform combining Claude Flow, Agent OS, Hive-Mind, and revolutionary intelligence systems",
   "main": "src/index.js",
   "type": "module",
+  "private": true,
   "scripts": {
     "start": "node src/index.js",
+    "demo": "node demos/master-workflow-3.0-demo.js",
     "install:interactive": "node src/installer/interactive-installer.js",
     "flow": "node src/cli/flow-cli.js",
     "agent": "node src/cli/agent-cli.js",
     "build:app": "node src/builder/autonomous-builder.js",
-    "test": "node --test src/**/*.test.js",
+    "test": "node test/test-runner.js",
+    "test:new": "node --test src/**/*.test.js",
+    "lint": "node scripts/lint-if-available.js",
+    "coverage": "echo 'No coverage tool configured; skipping'",
+    "install-sqlite": "npm install sqlite3 sqlite || echo 'SQLite installation failed, will use file-based fallback'",
     "dev": "node --watch src/index.js"
   },
   "keywords": [
@@ -20,19 +26,32 @@
     "autonomous",
     "agent-os",
     "claude-code",
+    "claude-flow",
+    "hive-mind",
+    "quantum-memory",
+    "neural-swarm",
     "app-builder"
   ],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "chalk": "^5.3.0",
-    "inquirer": "^9.2.12",
-    "ora": "^8.0.1",
-    "commander": "^11.1.0",
-    "yaml": "^2.3.4",
-    "dotenv": "^16.3.1"
-  },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "optionalDependencies": {
+    "sqlite3": "^5.1.7",
+    "sqlite": "^5.1.1"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "archiver": "^7.0.1",
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^11.1.0",
+    "diff": "^8.0.2",
+    "dotenv": "^16.3.1",
+    "inquirer": "^9.3.7",
+    "ora": "^8.0.1",
+    "tar": "^7.4.3",
+    "yaml": "^2.3.4"
   }
 }

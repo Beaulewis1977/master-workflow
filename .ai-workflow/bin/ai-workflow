@@ -1,0 +1,337 @@
+#!/bin/bash
+
+# Modular AI Workflow CLI
+# Adapts based on installed components
+
+INSTALL_DIR="$(dirname "$(dirname "$(readlink -f "$0")")")"
+PROJECT_DIR="$(pwd)"
+CONFIG_FILE="$INSTALL_DIR/installation-config.json"
+
+# Load configuration
+if [ -f "$CONFIG_FILE" ]; then
+    COMPONENTS=$(jq -r '.components' "$CONFIG_FILE" 2>/dev/null || echo '{}')
+    HAS_CLAUDE_CODE=$(echo "$COMPONENTS" | jq -r '.claudeCode' 2>/dev/null || echo "false")
+    HAS_AGENT_OS=$(echo "$COMPONENTS" | jq -r '.agentOS' 2>/dev/null || echo "false")
+    HAS_CLAUDE_FLOW=$(echo "$COMPONENTS" | jq -r '.claudeFlow' 2>/dev/null || echo "false")
+    HAS_TMUX=$(echo "$COMPONENTS" | jq -r '.tmux' 2>/dev/null || echo "false")
+else
+    HAS_CLAUDE_CODE="false"
+    HAS_AGENT_OS="false"
+    HAS_CLAUDE_FLOW="false"
+    HAS_TMUX="false"
+fi
+
+case "$1" in
+    supervisor)
+        shift
+        action="$1"; shift || true
+        PID_FILE="$INSTALL_DIR/supervisor/supervisor.pid"
+        case "$action" in
+            start)
+                INTERVAL=${1:-1800}
+                if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+                    echo "Supervisor already running (PID $(cat "$PID_FILE")). Use 'supervisor stop' first."
+                else
+                    nohup "$INSTALL_DIR/supervisor/supervisor.sh" "$INTERVAL" >/dev/null 2>&1 &
+                    echo $! > "$PID_FILE"
+                    echo "Supervisor started (PID $(cat "$PID_FILE")) at interval ${INTERVAL}s"
+                fi
+                ;;
+            stop)
+                if [ -f "$PID_FILE" ]; then
+                    kill "$(cat "$PID_FILE")" 2>/dev/null || true
+                    rm -f "$PID_FILE"
+                    echo "Supervisor stopped."
+                else
+                    echo "No supervisor PID file found."
+                fi
+                ;;
+            status|*)
+                if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
+                    echo "Supervisor running (PID $(cat "$PID_FILE")). Log: $INSTALL_DIR/logs/supervisor.log"
+                else
+                    echo "Supervisor not running."
+                fi
+                ;;
+        esac
+        ;;
+    status-dashboard)
+        shift
+        PORT=${1:-8787}
+        if [ "${AI_TOOLS_USE_NPX:-false}" = "true" ] && command -v npx >/dev/null 2>&1; then
+            (AGENT_BUS_PORT=$PORT npx --yes --package ai-workflow-tools@${AI_TOOLS_VERSION:-latest} agent-bus-http >/dev/null 2>&1 &) || true
+            echo "Agent Bus HTTP dashboard (npx) on http://localhost:$PORT"
+            echo "SSE stream: http://localhost:$PORT/events/stream?type=prompt|tool|response"
+        elif [ -f "$INSTALL_DIR/bin/tmp_rovodev_agent_bus_http.js" ]; then
+            AGENT_BUS_PORT=$PORT node "$INSTALL_DIR/bin/tmp_rovodev_agent_bus_http.js" &
+            echo "Agent Bus HTTP dashboard started on http://localhost:$PORT"
+            echo "SSE stream: http://localhost:$PORT/events/stream?type=prompt|tool|response"
+        else
+            echo "Dashboard script not found."
+        fi
+        ;;
+    mcp)
+        shift
+        subcmd="$1"; shift || true
+        case "$subcmd" in
+            refresh|discover|scan)
+                node "$INSTALL_DIR/lib/mcp-discover.js" "$INSTALL_DIR/configs/mcp-registry.json"
+                if command -v jq >/dev/null 2>&1; then
+                    echo "\nDetected MCP Servers:" && jq -r '.servers | to_entries[] | "  - \(.key): \(.value)"' "$INSTALL_DIR/configs/mcp-registry.json" 2>/dev/null || true
+                    echo "\nDetected Tools:" && jq -r '.tools[] | "  - \(.name) (\(.type)\(.server? // ""))"' "$INSTALL_DIR/configs/mcp-registry.json" 2>/dev/null || true
+                else
+                    cat "$INSTALL_DIR/configs/mcp-registry.json"
+                fi
+                ;;
+            *)
+                echo "Usage: ai-workflow mcp refresh" ;;
+        esac
+        ;;
+    init)
+        shift
+        node "$INSTALL_DIR/workflow-runner.js" init "$@"
+        ;;
+    analyze)
+        shift
+        node "$INSTALL_DIR/intelligence-engine/complexity-analyzer.js" "$@"
+        ;;
+    prompt)
+        # Re-collect or execute saved prompt
+        shift
+        if [ "$1" = "edit" ]; then
+            ${EDITOR:-nano} "$INSTALL_DIR/initial-prompt.md"
+        else
+            echo "Executing saved prompt..."
+            node "$INSTALL_DIR/workflow-runner.js" execute-prompt
+        fi
+        ;;
+    yolo)
+        # Toggle or check YOLO mode
+        shift
+        case "$1" in
+            on)
+                # Enable YOLO mode
+                if [ -f "$CONFIG_FILE" ]; then
+                    jq '.claudeCommand = "yolo" | .skipPermissions = true' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+                    echo "✓ YOLO mode enabled - using 'yolo' command"
+                fi
+                ;;
+            off)
+                # Disable YOLO mode
+                if [ -f "$CONFIG_FILE" ]; then
+                    jq '.claudeCommand = "claude" | .skipPermissions = false' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+                    echo "✓ YOLO mode disabled - using standard 'claude' command"
+                fi
+                ;;
+            status|*)
+                # Show current mode
+                if [ -f "$CONFIG_FILE" ]; then
+                    CURRENT_CMD=$(jq -r '.claudeCommand' "$CONFIG_FILE" 2>/dev/null || echo "claude")
+                    SKIP_PERMS=$(jq -r '.skipPermissions' "$CONFIG_FILE" 2>/dev/null || echo "false")
+                    echo "Current Claude command: $CURRENT_CMD"
+                    echo "Skip permissions: $SKIP_PERMS"
+                fi
+                ;;
+        esac
+        ;;
+    components)
+        echo "Installed Components:"
+        echo "  Core Workflow: ✓"
+        [ "$HAS_CLAUDE_CODE" = "true" ] && echo "  Claude Code: ✓" || echo "  Claude Code: ✗"
+        [ "$HAS_AGENT_OS" = "true" ] && echo "  Agent-OS: ✓" || echo "  Agent-OS: ✗"
+        [ "$HAS_CLAUDE_FLOW" = "true" ] && echo "  Claude Flow: ✓" || echo "  Claude Flow: ✗"
+        [ "$HAS_TMUX" = "true" ] && echo "  TMux Orchestrator: ✓" || echo "  TMux Orchestrator: ✗"
+        
+        # Also show Claude command mode
+        if [ -f "$CONFIG_FILE" ]; then
+            CURRENT_CMD=$(jq -r '.claudeCommand' "$CONFIG_FILE" 2>/dev/null || echo "claude")
+            echo ""
+            echo "Claude Command Mode: $CURRENT_CMD"
+        fi
+        ;;
+    verify)
+        # Verify all components work together
+        echo "Verifying Component Integration..."
+        echo ""
+        
+        # Check core system
+        echo "Core System:"
+        [ -f "$INSTALL_DIR/workflow-runner.js" ] && echo "  ✓ Workflow runner" || echo "  ✗ Workflow runner missing"
+        [ -f "$INSTALL_DIR/intelligence-engine/complexity-analyzer.js" ] && echo "  ✓ Complexity analyzer" || echo "  ✗ Complexity analyzer missing"
+        [ -f "$INSTALL_DIR/intelligence-engine/project-scanner.js" ] && echo "  ✓ Project scanner" || echo "  ✗ Project scanner missing"
+        
+        # Check Claude Code if installed
+        if [ "$HAS_CLAUDE_CODE" = "true" ]; then
+            echo ""
+            echo "Claude Code Integration:"
+            [ -d "$PROJECT_DIR/.claude/agents" ] && echo "  ✓ Agents directory" || echo "  ✗ Agents missing"
+            [ -f "$PROJECT_DIR/.claude/agents/recovery-specialist.md" ] && echo "  ✓ Recovery specialist" || echo "  ✗ Recovery specialist missing"
+            [ -d "$INSTALL_DIR/hooks" ] && echo "  ✓ Hooks configured" || echo "  ✗ Hooks missing"
+            
+            if [ -f "$CONFIG_FILE" ]; then
+                CLAUDE_CMD=$(jq -r '.claudeCommand' "$CONFIG_FILE" 2>/dev/null || echo "not set")
+                echo "  Claude command: $CLAUDE_CMD"
+            fi
+        fi
+        
+        # Check Agent-OS if installed
+        if [ "$HAS_AGENT_OS" = "true" ]; then
+            echo ""
+            echo "Agent-OS Integration:"
+            [ -f "$PROJECT_DIR/.agent-os/instructions/instructions.md" ] && echo "  ✓ Instructions customized" || echo "  ✗ Instructions missing"
+            [ -f "$PROJECT_DIR/.agent-os/agentOS-config.json" ] && echo "  ✓ Configuration" || echo "  ✗ Configuration missing"
+            
+            # Check if customization happened
+            if [ -f "$PROJECT_DIR/.agent-os/instructions/instructions.md" ]; then
+                grep -q "JavaScript" "$PROJECT_DIR/.agent-os/instructions/instructions.md" 2>/dev/null && echo "  ✓ Tech-specific guidelines" || echo "  ⚠ Generic guidelines only"
+            fi
+        fi
+        
+        # Check Claude Flow if installed
+        if [ "$HAS_CLAUDE_FLOW" = "true" ]; then
+            echo ""
+            echo "Claude Flow Integration:"
+            [ -d "$PROJECT_DIR/.claude-flow" ] && echo "  ✓ Claude Flow initialized" || echo "  ✗ Not initialized"
+            FLOW_VERSION="${CLAUDE_FLOW_VERSION:-alpha}"
+            echo "  Version: $FLOW_VERSION"
+        fi
+        
+        # Check TMux if installed
+        if [ "$HAS_TMUX" = "true" ]; then
+            echo ""
+            echo "TMux Orchestrator:"
+            [ -d "$INSTALL_DIR/tmux-scripts" ] && echo "  ✓ TMux scripts" || echo "  ✗ Scripts missing"
+            [ -d "$PROJECT_DIR/.tmux-orchestrator" ] && echo "  ✓ Configuration" || echo "  ✗ Configuration missing"
+        else
+            echo ""
+            echo "TMux: Not installed (using process mode)"
+        fi
+        
+        # Check communication
+        echo ""
+        echo "Component Communication:"
+        [ -f "$PROJECT_DIR/.ai-dev/analysis.json" ] && echo "  ✓ Project analysis available" || echo "  ⚠ No analysis performed"
+        [ -f "$CONFIG_FILE" ] && echo "  ✓ Installation config" || echo "  ✗ Config missing"
+        
+        # Test workflow execution readiness
+        echo ""
+        echo "Workflow Readiness:"
+        if [ -f "$INSTALL_DIR/workflow-runner.js" ] && [ -f "$CONFIG_FILE" ]; then
+            echo "  ✓ Ready to execute workflows"
+        else
+            echo "  ✗ Not ready - missing components"
+        fi
+        ;;
+    add)
+        # Add component post-installation
+        shift
+        case "$1" in
+            claude-code|claudecode)
+                echo "Adding Claude Code integration..."
+                # Re-run installer for specific component
+                ;;
+            agent-os|agentos)
+                echo "Adding Agent-OS integration..."
+                ;;
+            claude-flow|claudeflow)
+                echo "Adding Claude Flow 2.0..."
+                ;;
+            tmux)
+                echo "Adding TMux Orchestrator..."
+                ;;
+            *)
+                echo "Unknown component: $1"
+                echo "Available: claude-code, agent-os, claude-flow, tmux"
+                ;;
+        esac
+        ;;
+    uninstall)
+        # Uninstall the AI Workflow system
+        shift
+        if [ -f "$INSTALL_DIR/.ai-workflow/bin/uninstall.sh" ]; then
+            bash "$INSTALL_DIR/.ai-workflow/bin/uninstall.sh" "$@"
+        elif [ -f ".ai-workflow/bin/uninstall.sh" ]; then
+            bash ".ai-workflow/bin/uninstall.sh" "$@"
+        else
+            echo "❌ Uninstaller not found."
+            echo "Please ensure the uninstaller is properly installed."
+            exit 1
+        fi
+        ;;
+    bus)
+        shift
+        subcmd="$1"; shift || true
+        case "$subcmd" in
+            tail)
+                if [ -f "$INSTALL_DIR/bin/tmp_rovodev_agent_bus_tail.sh" ]; then
+                    bash "$INSTALL_DIR/bin/tmp_rovodev_agent_bus_tail.sh" "$@"
+                else
+                    echo "Tail script not found."
+                fi
+                ;;
+            tui)
+                if [ -f "$INSTALL_DIR/bin/tmp_rovodev_agent_bus_tui.js" ]; then
+                    if [ "${AI_TOOLS_USE_NPX:-false}" = "true" ] && command -v npx >/dev/null 2>&1; then
+                    npx --yes --package ai-workflow-tools@${AI_TOOLS_VERSION:-latest} agent-bus-tui "$@"
+                else
+                    node "$INSTALL_DIR/bin/tmp_rovodev_agent_bus_tui.js" "$@"
+                fi
+                else
+                    echo "TUI script not found."
+                fi
+                ;;
+            *) echo "Usage: ai-workflow bus tail|tui [--type T] [--agent A] [--role R]" ;;
+        esac
+        ;;
+    help|--help|-h)
+        echo "Modular AI Workflow System"
+        echo ""
+        echo "Core Commands (always available):"
+        echo "  init [options]          Initialize workflow"
+        echo "  analyze [path]          Analyze project complexity"
+        echo "  prompt [edit]           View/edit saved prompt"
+        echo "  components              List installed components"
+        echo "  verify                  Verify component integration"
+        echo "  add [component]         Add component post-install"
+        echo "  uninstall [options]     Safely uninstall the workflow system"
+        echo "  yolo [on|off|status]    Manage YOLO mode (skip permissions)"
+        echo "  help                    Show this help"
+        echo ""
+        
+        if [ "$HAS_CLAUDE_CODE" = "true" ]; then
+            echo "Claude Code Commands:"
+            echo "  agents list            List installed agents"
+            echo "  agents status          Show agent status"
+            echo ""
+        fi
+        
+        if [ "$HAS_CLAUDE_FLOW" = "true" ]; then
+            echo "Claude Flow Commands:"
+            echo "  swarm [task]           Run simple swarm"
+            echo "  hive [project]         Run hive-mind"
+            echo "  sparc                  Run SPARC wizard"
+            echo ""
+        fi
+        
+        if [ "$HAS_TMUX" = "true" ]; then
+            echo "TMux Commands:"
+            echo ""
+            echo "Bus Commands:"
+            echo "  bus tail [--type T] [--agent A] [--role R]  Tail the event bus"
+            echo "  status-dashboard [port]                    Start HTTP+SSE dashboard"
+            echo "  tmux start             Start background session"
+            echo "  tmux attach            Attach to session"
+            echo "  tmux list              List sessions"
+            echo ""
+        fi
+        
+        echo "Environment Variables:"
+        echo "  CLAUDE_FLOW_VERSION    Claude Flow version"
+        echo "  AI_WORKFLOW_MODE       Default mode"
+        ;;
+    *)
+        echo "Unknown command: $1"
+        echo "Run 'ai-workflow help' for usage"
+        exit 1
+        ;;
+esac

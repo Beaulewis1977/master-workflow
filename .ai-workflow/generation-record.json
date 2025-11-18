@@ -1,0 +1,136 @@
+{
+  "generatedAt": "2025-08-14T02:38:59.358Z",
+  "updates": [
+    {
+      "path": ".claude/CLAUDE.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/CLAUDE.md.bak"
+    },
+    {
+      "path": ".claude/agents/researcher.md",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": ".ai-workflow/backups/researcher.md.bak"
+    },
+    {
+      "path": ".claude/agents/developer.md",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": ".ai-workflow/backups/developer.md.bak"
+    },
+    {
+      "path": ".claude/project-context.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/project-context.md.bak"
+    },
+    {
+      "path": ".ai-dev/analysis.json",
+      "origin": "generated_document",
+      "strategy": "replace",
+      "backup": ".ai-workflow/backups/analysis.json.bak"
+    },
+    {
+      "path": ".ai-dev/task-breakdown.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/task-breakdown.md.bak"
+    },
+    {
+      "path": ".ai-dev/progress-tracking.json",
+      "origin": "generated_document",
+      "strategy": "merge"
+    },
+    {
+      "path": ".ai-dev/metrics.json",
+      "origin": "generated_document",
+      "strategy": "replace"
+    },
+    {
+      "path": ".agent-os/config.yaml",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/agent-config.yaml.bak"
+    },
+    {
+      "path": ".agent-os/agents/agent-001.yaml",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": ".ai-workflow/backups/agent-001.yaml.bak"
+    },
+    {
+      "path": ".agent-os/workflows/main-workflow.yaml",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/main-workflow.yaml.bak"
+    },
+    {
+      "path": "docs/README.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/README.md.bak"
+    },
+    {
+      "path": "docs/API.md",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": ".ai-workflow/backups/API.md.bak"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/ARCHITECTURE.md.bak"
+    },
+    {
+      "path": "docs/DEPLOYMENT.md",
+      "origin": "generated_document",
+      "strategy": "replace"
+    },
+    {
+      "path": "END-OF-PHASE-SUMMARIES/PHASE-ONE/PHASE-1-COMPLETE.md",
+      "origin": "generated_document",
+      "strategy": "intelligent"
+    },
+    {
+      "path": "END-OF-PHASE-SUMMARIES/PHASE-ONE/PHASE-1-SUMMARY.md",
+      "origin": "generated_document",
+      "strategy": "intelligent"
+    },
+    {
+      "path": "package.json",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": ".ai-workflow/backups/package.json.bak"
+    },
+    {
+      "path": "tsconfig.json",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/tsconfig.json.bak"
+    },
+    {
+      "path": ".gitignore",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": ".ai-workflow/backups/gitignore.bak"
+    },
+    {
+      "path": "intelligence-engine/.claude/INTELLIGENCE-CLAUDE.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": ".ai-workflow/backups/INTELLIGENCE-CLAUDE.md.bak"
+    },
+    {
+      "path": "intelligence-engine/docs/FEATURES.md",
+      "origin": "generated_document",
+      "strategy": "merge"
+    },
+    {
+      "path": "intelligence-engine/analysis/system-analysis.json",
+      "origin": "generated_document",
+      "strategy": "replace"
+    }
+  ]
+}

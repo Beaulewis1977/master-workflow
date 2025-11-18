@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "integration": "intelligent-workflow",
+  "projectAnalysis": {
+    "score": $SCORE,
+    "stage": "$STAGE",
+    "languages": [${LANGUAGES:+\"$LANGUAGES\"}],
+    "frameworks": [${FRAMEWORKS:+\"$FRAMEWORKS\"}],
+    "databases": [${DATABASES:+\"$DATABASES\"}]
+  },
+  "features": {
+    "planning": true,
+    "specifications": true,
+    "taskManagement": true,
+    "documentation": true,
+    "customization": true
+  },
+  "commands": [
+    "/plan-product",
+    "/create-spec",
+    "/analyze-product",
+    "/execute-tasks"
+  ],
+  "generatedAt": "$(date -Iseconds)"
+}

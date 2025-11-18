@@ -1,0 +1,147 @@
+# Environment variables and secrets
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+
+# API Keys and sensitive configurations
+.mcp.json
+mcp.json
+*.mcp.json
+.claude/settings.local.json
+.claude/settings.*.json
+**/settings.local.json
+**/api-keys.json
+**/secrets.json
+**/credentials.json
+*.key
+*.pem
+*.cert
+*.crt
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.npm
+.yarn-integrity
+*.tgz
+
+# Logs
+logs/
+*.log
+.ai-workflow/logs/
+.hive-mind/sessions/*.log
+.hive-mind/*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Database files (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+.hive-mind/*.db
+.hive-mind/*.db-shm
+.hive-mind/*.db-wal
+
+# Session and temporary files
+.hive-mind/sessions/
+.ai-workflow/recovery/
+.ai-workflow/checkpoints/
+.ai-workflow/backups/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*~
+
+# Cache directories
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+.vscode-test
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build outputs
+dist/
+build/
+out/
+.output/
+*.out
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+*.lcov
+.coverage
+
+# TypeScript
+*.tsbuildinfo
+.typescript/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Project specific
+.ai-dev/incomplete-work.json
+.ai-dev/recovery-plan.json
+.ai-dev/dry-run-plan.json
+.claude-flow/metrics/
+.claude-flow/cache/
+.agent-os/cache/
+
+# Temporary test files
+test-queen-controller.js
+
+# Local configuration overrides
+*.local
+*.local.*
+local-*
+
+# Backup files
+*.orig
+*.rej
+backup/
+backups/

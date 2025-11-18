@@ -1,0 +1,56 @@
+{
+  "name": "JavaScript",
+  "version": "ES2023",
+  "runtime": "Node.js",
+  "runtimeVersions": ["18.x", "20.x", "21.x"],
+  "features": {
+    "asyncAwait": true,
+    "modules": true,
+    "optionalChaining": true,
+    "nullishCoalescing": true,
+    "privateFields": true,
+    "topLevelAwait": true,
+    "decorators": "experimental"
+  },
+  "packageManagement": {
+    "primary": "npm",
+    "alternatives": ["yarn", "pnpm", "bun"],
+    "registry": "https://registry.npmjs.org/",
+    "lockFiles": ["package-lock.json", "yarn.lock", "pnpm-lock.yaml"]
+  },
+  "commonDependencies": {
+    "dev": [
+      "@types/node",
+      "eslint",
+      "prettier",
+      "jest",
+      "nodemon",
+      "typescript"
+    ],
+    "production": [
+      "express",
+      "dotenv",
+      "cors",
+      "helmet",
+      "compression"
+    ]
+  },
+  "fileStructure": {
+    "src": "Source code",
+    "dist": "Build output",
+    "test": "Test files",
+    "public": "Static assets",
+    "config": "Configuration files",
+    "scripts": "Build and utility scripts"
+  },
+  "bestPractices": [
+    "Use strict mode",
+    "Prefer const over let",
+    "Use async/await over callbacks",
+    "Implement proper error handling",
+    "Use environment variables for configuration",
+    "Implement logging with appropriate levels",
+    "Use semantic versioning",
+    "Write comprehensive tests"
+  ]
+}

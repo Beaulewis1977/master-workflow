@@ -1,0 +1,27 @@
+{
+  "worker": {
+    "id": "worker-analyst-001",
+    "type": "analyst",
+    "status": "active",
+    "spawned_at": "2025-01-12T10:30:00Z",
+    "capabilities": [
+      "complexity_scoring",
+      "dependency_analysis",
+      "performance_analysis",
+      "metrics_calculation",
+      "bottleneck_detection",
+      "risk_assessment"
+    ],
+    "assigned_tasks": ["task-001", "task-007", "task-010"],
+    "mcp_servers": ["context7", "git", "filesystem"],
+    "memory_allocation": "384MB",
+    "priority": "high"
+  },
+  "configuration": {
+    "analysis_depth": "comprehensive",
+    "metrics_enabled": true,
+    "visualization": false,
+    "reporting_format": "json",
+    "threshold_alerts": true
+  }
+}

@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: master-workflow-dev:latest
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    environment:
+      - MW_ENGINE_PORT=13800
+      - AGENT_BUS_PORT=8787
+      - NODE_ENV=development
+    ports:
+      - "13800:13800"
+      - "8787:8787"
+    command: bash -lc "tail -f /dev/null"

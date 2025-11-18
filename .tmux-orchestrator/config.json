@@ -1,0 +1,11 @@
+{
+  "sessions": {
+    "default_windows": {
+      "simpleSwarm": 1,
+      "hiveMind": 4,
+      "hiveMindSparc": 6
+    },
+    "auto_restart": true,
+    "log_sessions": true
+  }
+}

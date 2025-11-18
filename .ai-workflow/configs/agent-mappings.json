@@ -1,0 +1,182 @@
+{
+  "version": "2.0",
+  "mappings": {
+    "complexity_to_agents": {
+      "0-30": {
+        "agents": ["workflow-orchestrator"],
+        "approach": "simple_swarm",
+        "agent_count": 1,
+        "description": "Simple projects need minimal coordination"
+      },
+      "31-50": {
+        "agents": [
+          "workflow-orchestrator",
+          "complexity-analyzer-agent",
+          "approach-selector-agent"
+        ],
+        "approach": "hive_mind",
+        "agent_count": 3,
+        "description": "Moderate complexity requires basic multi-agent coordination"
+      },
+      "51-70": {
+        "agents": [
+          "workflow-orchestrator",
+          "complexity-analyzer-agent",
+          "approach-selector-agent",
+          "document-customizer-agent",
+          "integration-coordinator-agent"
+        ],
+        "approach": "hive_mind",
+        "agent_count": 5,
+        "description": "Higher complexity needs full agent team"
+      },
+      "71-100": {
+        "agents": [
+          "workflow-orchestrator",
+          "sparc-methodology-agent",
+          "complexity-analyzer-agent",
+          "approach-selector-agent",
+          "document-customizer-agent",
+          "integration-coordinator-agent",
+          "test-engineer",
+          "security-auditor",
+          "recovery-specialist",
+          "performance-optimizer"
+        ],
+        "approach": "sparc",
+        "agent_count": 10,
+        "description": "Enterprise projects require SPARC methodology and full agent team with Queen Controller"
+      }
+    },
+    "task_to_agent": {
+      "analyze_complexity": "complexity-analyzer-agent",
+      "select_approach": "approach-selector-agent",
+      "generate_documentation": "document-customizer-agent",
+      "manage_sparc": "sparc-methodology-agent",
+      "coordinate_systems": "integration-coordinator-agent",
+      "orchestrate_workflow": "workflow-orchestrator"
+    },
+    "tech_stack_specialists": {
+      "javascript": ["document-customizer-agent", "integration-coordinator-agent"],
+      "typescript": ["document-customizer-agent", "integration-coordinator-agent"],
+      "python": ["document-customizer-agent", "integration-coordinator-agent"],
+      "go": ["document-customizer-agent", "integration-coordinator-agent"],
+      "rust": ["document-customizer-agent", "integration-coordinator-agent"],
+      "java": ["document-customizer-agent", "sparc-methodology-agent"],
+      "microservices": ["sparc-methodology-agent", "integration-coordinator-agent"],
+      "monolith": ["complexity-analyzer-agent", "approach-selector-agent"]
+    },
+    "activation_triggers": {
+      "complexity-analyzer-agent": {
+        "triggers": [
+          "project_init",
+          "code_change > 20%",
+          "dependency_update",
+          "architecture_change"
+        ],
+        "priority": "high"
+      },
+      "approach-selector-agent": {
+        "triggers": [
+          "complexity_analyzed",
+          "user_override",
+          "approach_mismatch_detected"
+        ],
+        "priority": "high"
+      },
+      "document-customizer-agent": {
+        "triggers": [
+          "approach_selected",
+          "tech_stack_change",
+          "documentation_request"
+        ],
+        "priority": "medium"
+      },
+      "sparc-methodology-agent": {
+        "triggers": [
+          "complexity > 70",
+          "enterprise_flag",
+          "sparc_requested"
+        ],
+        "priority": "high"
+      },
+      "integration-coordinator-agent": {
+        "triggers": [
+          "workflow_start",
+          "system_integration_needed",
+          "health_check_interval"
+        ],
+        "priority": "high"
+      }
+    },
+    "execution_sequences": {
+      "new_project": [
+        "workflow-orchestrator",
+        "complexity-analyzer-agent",
+        "approach-selector-agent",
+        "document-customizer-agent",
+        "integration-coordinator-agent"
+      ],
+      "existing_project": [
+        "workflow-orchestrator",
+        "complexity-analyzer-agent",
+        "approach-selector-agent",
+        "integration-coordinator-agent"
+      ],
+      "sparc_workflow": [
+        "workflow-orchestrator",
+        "sparc-methodology-agent",
+        "complexity-analyzer-agent",
+        "document-customizer-agent",
+        "integration-coordinator-agent"
+      ],
+      "quick_task": [
+        "workflow-orchestrator"
+      ]
+    },
+    "parallel_execution": {
+      "groups": [
+        {
+          "name": "analysis_group",
+          "agents": ["complexity-analyzer-agent"],
+          "can_parallel": false
+        },
+        {
+          "name": "decision_group",
+          "agents": ["approach-selector-agent", "sparc-methodology-agent"],
+          "can_parallel": false
+        },
+        {
+          "name": "implementation_group",
+          "agents": ["document-customizer-agent", "integration-coordinator-agent"],
+          "can_parallel": true
+        }
+      ]
+    },
+    "priority_rules": {
+      "critical_path": [
+        "workflow-orchestrator",
+        "complexity-analyzer-agent",
+        "approach-selector-agent"
+      ],
+      "optional_path": [
+        "document-customizer-agent",
+        "integration-coordinator-agent"
+      ],
+      "conditional_path": [
+        "sparc-methodology-agent"
+      ]
+    }
+  },
+  "constraints": {
+    "max_concurrent_agents": 10,
+    "max_message_queue": 200,
+    "max_execution_time": "6h",
+    "resource_limits": {
+      "per_agent_memory": "512MB",
+      "total_memory": "6GB",
+      "cpu_cores": 8,
+      "context_window_per_agent": 200000
+    }
+  }
+}
