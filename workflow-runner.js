@@ -11,17 +11,25 @@ const { spawn, exec } = require('child_process');
 const { promisify } = require('util');
 const execAsync = promisify(exec);
 const { runCommand, runCommandsSequentially } = require('./lib/exec-helper');
+const { createSecurityValidator } = require('./lib/security-validator');
 const versionPolicy = require('./lib/version-policy');
 const http = require('http');
 
 // Import Queen Controller for hierarchical sub-agent management
-const QueenController = require('./intelligence-engine/queen-controller');
-const SubAgentManager = require('./intelligence-engine/sub-agent-manager');
-const SharedMemoryStore = require('./intelligence-engine/shared-memory');
-const MCPFullConfigurator = require('./intelligence-engine/mcp-full-configurator');
+const QueenController = require('./.ai-workflow/intelligence-engine/queen-controller');
+const SubAgentManager = require('./.ai-workflow/intelligence-engine/sub-agent-manager');
+const SharedMemoryStore = require('./.ai-workflow/intelligence-engine/shared-memory');
+const MCPFullConfigurator = require('./.ai-workflow/intelligence-engine/mcp-full-configurator');
 
 class WorkflowRunner {
   constructor() {
+    // Initialize security validator
+    this.securityValidator = createSecurityValidator({
+      enableLogging: true,
+      logLevel: 'WARN',
+      maxStringLength: 5000
+    });
+    
     this.projectDir = process.cwd();
     this.installDir = path.join(this.projectDir, '.ai-workflow');
     this.logDir = path.join(this.installDir, 'logs');
@@ -92,12 +100,38 @@ class WorkflowRunner {
   }
 
   log(level, message, context = {}) {
+    // Validate log inputs for security
+    const levelValidation = this.securityValidator.validateString(level, {
+      maxLength: 20,
+      allowedChars: 'alphanumeric',
+      context: 'log.level'
+    });
+    
+    const messageValidation = this.securityValidator.validateString(message, {
+      maxLength: 2000,
+      sanitize: 'html',
+      checkPatterns: ['dangerous'],
+      context: 'log.message'
+    });
+    
+    if (!levelValidation.isValid || !messageValidation.isValid) {
+      console.error('[SECURITY] Log input validation failed:', {
+        levelErrors: levelValidation.errors,
+        messageErrors: messageValidation.errors
+      });
+      return; // Don't log invalid input
+    }
+    
     const timestamp = new Date().toISOString();
     const logEntry = {
       timestamp,
-      level,
-      message,
-      context
+      level: levelValidation.sanitized,
+      message: messageValidation.sanitized,
+      context: this.securityValidator.validateObject(context, {
+        maxKeys: 20,
+        maxDepth: 3,
+        context: 'log.context'
+      }).sanitized || {}
     };
     
     // Console output
@@ -146,39 +180,102 @@ class WorkflowRunner {
     });
   }
 
-  execSafe(command, options = {}) {
-    const allowlist = [
-      'npm', 'node', 'npx', 'bash', 'sh', 'pwsh', 'powershell',
-      'git', 'tmux', 'jq', 'claude', 'claude-flow'
-    ];
-    const cmd = Array.isArray(command) ? command[0] : String(command).trim().split(/\s+/)[0];
-    if (!allowlist.includes(cmd)) {
-      throw new Error(`Command not allowed: ${cmd}`);
-    }
-    const maxRetries = options.retries ?? 2;
-    const backoffMs = options.backoffMs ?? 500;
-    const shell = options.shell ?? true;
-    const cwd = options.cwd ?? this.projectDir;
-
-    return new Promise((resolve, reject) => {
-      let attempt = 0;
-      const run = () => {
-        attempt++;
-        const child = spawn(Array.isArray(command) ? command.join(' ') : command, { cwd, shell: true });
-        let stdout = '', stderr = '';
-        child.stdout.on('data', d => (stdout += d.toString()));
-        child.stderr.on('data', d => (stderr += d.toString()));
-        child.on('exit', code => {
-          if (code === 0) return resolve({ stdout, stderr, code });
-          if (attempt <= maxRetries) {
-            setTimeout(run, backoffMs * attempt);
-          } else {
-            reject(new Error(`Command failed (${code}): ${stderr || stdout}`));
-          }
-        });
+  /**
+   * Security-hardened command execution with comprehensive validation
+   * Replaces the vulnerable execSafe method with proper security controls
+   */
+  async execSafe(command, options = {}) {
+    const { SecurityUtils } = require('./lib/exec-helper');
+    
+    // Use the hardened runCommand from exec-helper
+    try {
+      const result = await runCommand(command, {
+        ...options,
+        caller: 'WorkflowRunner.execSafe',
+        cwd: options.cwd || this.projectDir,
+        timeoutMs: options.timeout || 60000, // 60 second timeout
+        maxOutputSize: 20 * 1024 * 1024 // 20MB limit
+      });
+      
+      return {
+        stdout: result.stdout,
+        stderr: result.stderr,
+        code: result.code,
+        executionId: result.executionId
       };
-      run();
+    } catch (error) {
+      this.log('error', `Secure command execution failed: ${error.message}`, {
+        command: Array.isArray(command) ? command[0] : command.toString().split(' ')[0],
+        caller: 'WorkflowRunner.execSafe'
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Enhanced command validation specifically for workflow operations
+   */
+  validateWorkflowCommand(command, context = {}) {
+    const { SecurityUtils } = require('./lib/exec-helper');
+    
+    // First use the standard validation
+    const validation = SecurityUtils.validateCommand(command, {
+      caller: `WorkflowRunner.${context.operation || 'unknown'}`
     });
+
+    // Add workflow-specific validation
+    if (!validation.isValid) {
+      return validation;
+    }
+
+    const cmdArray = validation.sanitizedCommand;
+    const baseCommand = cmdArray[0];
+
+    // Workflow-specific security checks
+    const workflowSecurityChecks = {
+      // Don't allow direct file system operations outside project
+      restrictedPaths: ['/etc/', '/usr/', '/bin/', '/sbin/', '/var/'],
+      // Don't allow network operations without explicit permission
+      networkCommands: ['curl', 'wget', 'nc', 'telnet', 'ssh'],
+      // Don't allow system modification commands
+      systemCommands: ['sudo', 'su', 'chmod', 'chown', 'mount', 'umount']
+    };
+
+    // Check for restricted paths in arguments
+    for (const arg of cmdArray.slice(1)) {
+      for (const restrictedPath of workflowSecurityChecks.restrictedPaths) {
+        if (arg.startsWith(restrictedPath)) {
+          validation.errors.push(`Access to restricted path not allowed: ${restrictedPath}`);
+          validation.isValid = false;
+          break;
+        }
+      }
+    }
+
+    // Check for network commands requiring permission
+    if (workflowSecurityChecks.networkCommands.includes(baseCommand)) {
+      if (!context.allowNetwork) {
+        validation.errors.push(`Network command '${baseCommand}' requires explicit permission`);
+        validation.isValid = false;
+      }
+    }
+
+    // Check for system commands
+    if (workflowSecurityChecks.systemCommands.includes(baseCommand)) {
+      validation.errors.push(`System command '${baseCommand}' not allowed in workflow context`);
+      validation.isValid = false;
+    }
+
+    // Log workflow-specific validation
+    if (!validation.isValid) {
+      this.log('error', 'Workflow command validation failed', {
+        command: baseCommand,
+        errors: validation.errors,
+        context: context
+      });
+    }
+
+    return validation;
   }
 
   async analyzeProject() {
@@ -186,11 +283,28 @@ class WorkflowRunner {
     this.publishEvent('status', { phase: 'analyze:start' }).catch(() => {});
     
     try {
-      // Run complexity analyzer
+      // Run complexity analyzer with security validation
       const analyzerPath = path.join(this.installDir, 'intelligence-engine', 'complexity-analyzer.js');
-      const { stdout } = await execAsync(`node "${analyzerPath}" "${this.projectDir}"`);
       
-      const analysis = JSON.parse(stdout);
+      // Validate paths to prevent traversal
+      const resolvedAnalyzerPath = path.resolve(analyzerPath);
+      const resolvedProjectDir = path.resolve(this.projectDir);
+      
+      if (!resolvedAnalyzerPath.startsWith(path.resolve(this.installDir))) {
+        throw new Error('Analyzer path outside allowed directory');
+      }
+      
+      const command = ['node', resolvedAnalyzerPath, resolvedProjectDir];
+      const result = await this.execSafe(command, {
+        timeout: 30000,
+        caller: 'WorkflowRunner.analyzeProject'
+      });
+      
+      if (result.code !== 0) {
+        throw new Error(`Analysis failed: ${result.stderr || result.stdout}`);
+      }
+      
+      const analysis = JSON.parse(result.stdout);
       this.analysis = analysis;
       
       // Save analysis
@@ -262,15 +376,21 @@ class WorkflowRunner {
       
       // Optional: lightweight failing test detection is handled by scanner
       
-      // Check for uncommitted changes
+      // Check for uncommitted changes with secure execution
       try {
-        const { stdout } = await execAsync('git status --porcelain', { cwd: this.projectDir });
-        if (stdout) {
-          incomplete.uncommitted = stdout.split('\n').filter(line => line.trim());
+        const result = await this.execSafe(['git', 'status', '--porcelain'], {
+          cwd: this.projectDir,
+          timeout: 10000,
+          caller: 'WorkflowRunner.detectIncompleteWork'
+        });
+        
+        if (result.code === 0 && result.stdout) {
+          incomplete.uncommitted = result.stdout.split('\n').filter(line => line.trim());
           this.log('warning', `Found ${incomplete.uncommitted.length} uncommitted files`);
         }
       } catch (e) {
-        // Not a git repo, that's ok
+        // Not a git repo, that's ok - but log for security monitoring
+        this.log('info', 'Git status check failed - not a git repository or permission denied');
       }
       
       // Save incomplete work analysis
@@ -301,8 +421,29 @@ class WorkflowRunner {
       const selectorPath = path.join(this.installDir, 'intelligence-engine', 'approach-selector.js');
       const analysisPath = path.join(this.projectDir, '.ai-dev', 'analysis.json');
       
-      const { stdout } = await execAsync(`node "${selectorPath}" "${analysisPath}"`);
-      const approach = JSON.parse(stdout);
+      // Validate paths for security
+      const resolvedSelectorPath = path.resolve(selectorPath);
+      const resolvedAnalysisPath = path.resolve(analysisPath);
+      
+      if (!resolvedSelectorPath.startsWith(path.resolve(this.installDir))) {
+        throw new Error('Selector path outside allowed directory');
+      }
+      
+      if (!resolvedAnalysisPath.startsWith(path.resolve(this.projectDir))) {
+        throw new Error('Analysis path outside project directory');
+      }
+      
+      const command = ['node', resolvedSelectorPath, resolvedAnalysisPath];
+      const result = await this.execSafe(command, {
+        timeout: 30000,
+        caller: 'WorkflowRunner.selectApproach'
+      });
+      
+      if (result.code !== 0) {
+        throw new Error(`Approach selection failed: ${result.stderr || result.stdout}`);
+      }
+      
+      const approach = JSON.parse(result.stdout);
       
       // Adjust for incomplete work
       if (this.analysis.hasIncompleteWork) {
@@ -331,6 +472,37 @@ class WorkflowRunner {
       this.log('error', `Approach selection failed: ${error.message}`);
       this.publishEvent('status', { phase: 'approach:error', error: error.message }).catch(() => {});
       throw error;
+    }
+  }
+
+  async generateProjectAgents() {
+    this.log('info', 'Generating project-specific sub-agents...');
+    this.publishEvent('status', { phase: 'agents:generate' }).catch(() => {});
+    
+    try {
+      const AgentGenerator = require('./.ai-workflow/intelligence-engine/agent-generator');
+      const generator = new AgentGenerator({ projectRoot: this.projectDir });
+      
+      const generatedAgents = await generator.generateProjectAgents(this.analysis, this.approach);
+      
+      this.log('success', `Generated ${generatedAgents.length} project-specific sub-agents:`);
+      generatedAgents.forEach(agent => {
+        this.log('info', `  ✅ ${agent.name}: ${agent.description || 'Specialized agent'}`);
+      });
+      
+      // Store generated agents info
+      this.generatedAgents = generatedAgents;
+      
+      // Emit event for monitoring
+      this.publishEvent('agents:generated', {
+        count: generatedAgents.length,
+        agents: generatedAgents.map(a => ({ name: a.name, path: a.path }))
+      }).catch(() => {});
+      
+    } catch (error) {
+      this.log('warning', `Failed to generate project-specific agents: ${error.message}`);
+      // Continue without custom agents - not critical
+      this.generatedAgents = [];
     }
   }
 
@@ -648,15 +820,42 @@ class WorkflowRunner {
     const sessionName = `workflow-${Date.now()}`;
     
     try {
-      // Create main session
-      await execAsync(`tmux new-session -d -s ${sessionName}`);
+      // Validate session name to prevent injection
+      if (!/^[a-zA-Z0-9_-]+$/.test(sessionName)) {
+        throw new Error('Invalid session name format');
+      }
+      
+      // Create main session with secure execution
+      const createResult = await this.execSafe(['tmux', 'new-session', '-d', '-s', sessionName], {
+        timeout: 10000,
+        caller: 'WorkflowRunner.createTmuxSessions'
+      });
+      
+      if (createResult.code !== 0) {
+        throw new Error(`Failed to create tmux session: ${createResult.stderr}`);
+      }
       
       // Create windows based on approach
       const windowCount = this.approach.selected === 'simpleSwarm' ? 1 :
                          this.approach.selected === 'hiveMind' ? 4 : 6;
       
       for (let i = 1; i <= windowCount; i++) {
-        await execAsync(`tmux new-window -t ${sessionName}:${i} -n "window-${i}"`);
+        const windowName = `window-${i}`;
+        // Validate window name
+        if (!/^[a-zA-Z0-9_-]+$/.test(windowName)) {
+          continue; // Skip invalid window names
+        }
+        
+        const windowResult = await this.execSafe([
+          'tmux', 'new-window', '-t', `${sessionName}:${i}`, '-n', windowName
+        ], {
+          timeout: 5000,
+          caller: 'WorkflowRunner.createTmuxSessions'
+        });
+        
+        if (windowResult.code !== 0) {
+          this.log('warning', `Failed to create tmux window ${i}: ${windowResult.stderr}`);
+        }
       }
       
       this.sessions.main = sessionName;
@@ -810,13 +1009,45 @@ class WorkflowRunner {
       }
     }
 
-    this.log('info', `Executing command(s): ${commands.join(' | ')}`);
-    runCommandsSequentially(commands, { cwd: this.projectDir, shell: true })
-      .then(() => this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {}))
-      .catch(err => {
-        this.log('error', `Claude Flow failed: ${err.message}`);
-        this.publishEvent('status', { phase: 'exec:error', error: err.message }).catch(() => {});
-      });
+    this.log('info', `Executing secure command sequence: ${commands.length} commands`);
+    
+    // Execute commands with security validation
+    try {
+      for (let i = 0; i < commands.length; i++) {
+        const command = commands[i];
+        
+        // Validate each command before execution
+        const validation = this.validateWorkflowCommand(command, {
+          operation: 'executeClaudeFlow',
+          allowNetwork: true // Claude Flow may need network access
+        });
+        
+        if (!validation.isValid) {
+          throw new Error(`Command ${i + 1} validation failed: ${validation.errors.join(', ')}`);
+        }
+        
+        this.log('info', `Executing command ${i + 1}/${commands.length}`);
+        
+        // Use secure execution
+        const result = await this.execSafe(command, {
+          cwd: this.projectDir,
+          timeout: 300000, // 5 minutes per command
+          caller: `WorkflowRunner.executeClaudeFlow[${i}]`
+        });
+        
+        if (result.code !== 0) {
+          throw new Error(`Command ${i + 1} failed (${result.code}): ${result.stderr || result.stdout}`);
+        }
+      }
+      
+      this.log('success', 'Claude Flow execution completed successfully');
+      this.publishEvent('status', { phase: 'exec:complete' }).catch(() => {});
+      
+    } catch (err) {
+      this.log('error', `Claude Flow failed: ${err.message}`);
+      this.publishEvent('status', { phase: 'exec:error', error: err.message }).catch(() => {});
+      throw err; // Re-throw for proper error handling
+    }
     
     return command;
   }
@@ -1052,6 +1283,9 @@ class WorkflowRunner {
       
       // Step 2: Select approach
       await this.selectApproach();
+      
+      // Step 2.5: Generate project-specific sub-agents
+      await this.generateProjectAgents();
       
       // Step 3: Initialize agents
       await this.initializeAgents();

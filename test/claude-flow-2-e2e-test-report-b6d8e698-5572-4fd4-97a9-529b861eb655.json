@@ -1,0 +1,132 @@
+{
+  "testId": "b6d8e698-5572-4fd4-97a9-529b861eb655",
+  "timestamp": "2025-08-14T21:33:16.474Z",
+  "duration": 796,
+  "summary": {
+    "totalTests": 32,
+    "passed": 31,
+    "failed": 1,
+    "passRate": "96.88"
+  },
+  "requirements": {
+    "installationSpeed": true,
+    "autoDiscovery": true,
+    "agentScaling": true,
+    "webUIFunctionality": true,
+    "performanceImprovement": true,
+    "cleanUninstall": true,
+    "projectPreservation": true
+  },
+  "scenarios": {
+    "fresh-system-setup": {
+      "cleanSystemDetection": true,
+      "prerequsiteValidation": false,
+      "systemCompatibility": true
+    },
+    "project-discovery": {
+      "npmDiscovery": true,
+      "githubDiscovery": true,
+      "packageJsonGeneration": true,
+      "documentationAccess": true
+    },
+    "one-command-installation": {
+      "linux-react": {
+        "success": true,
+        "duration": 0,
+        "withinTimeLimit": true,
+        "mcpServersDiscovered": 125,
+        "agentsSpawned": 10
+      },
+      "linux-nextjs": {
+        "success": true,
+        "duration": 0,
+        "withinTimeLimit": true,
+        "mcpServersDiscovered": 125,
+        "agentsSpawned": 10
+      },
+      "linux-python": {
+        "success": true,
+        "duration": 0,
+        "withinTimeLimit": true,
+        "mcpServersDiscovered": 125,
+        "agentsSpawned": 10
+      }
+    },
+    "automatic-configuration": {
+      "mcpDiscovery": true,
+      "agentDeployment": true,
+      "queenControllerInit": true,
+      "configurationPersistence": true
+    },
+    "project-development": {
+      "unlimitedScaling": true,
+      "agentCoordination": true,
+      "taskExecution": true,
+      "codeGeneration": true
+    },
+    "real-time-monitoring": {
+      "webUIAccess": true,
+      "realTimeUpdates": true,
+      "performanceMetrics": true,
+      "agentStatusMonitoring": true
+    },
+    "clean-uninstall": {
+      "linux-react": {
+        "success": true,
+        "duration": 0,
+        "withinTimeLimit": true,
+        "claudeFlowRemoved": true,
+        "originalProjectIntact": true,
+        "systemClean": true
+      },
+      "linux-nextjs": {
+        "success": true,
+        "duration": 0,
+        "withinTimeLimit": true,
+        "claudeFlowRemoved": true,
+        "originalProjectIntact": true,
+        "systemClean": true
+      },
+      "linux-python": {
+        "success": true,
+        "duration": 0,
+        "withinTimeLimit": true,
+        "claudeFlowRemoved": true,
+        "originalProjectIntact": true,
+        "systemClean": true
+      }
+    },
+    "final-verification": {
+      "installationSpeed": true,
+      "autoDiscovery": true,
+      "agentScaling": true,
+      "webUIFunctionality": true,
+      "performanceImprovement": true,
+      "cleanUninstall": true,
+      "projectPreservation": true
+    }
+  },
+  "performance": {
+    "linux-react": {
+      "installationDuration": 0,
+      "performanceTarget": 60000,
+      "meetsTarget": true
+    },
+    "linux-nextjs": {
+      "installationDuration": 0,
+      "performanceTarget": 60000,
+      "meetsTarget": true
+    },
+    "linux-python": {
+      "installationDuration": 0,
+      "performanceTarget": 60000,
+      "meetsTarget": true
+    }
+  },
+  "errors": [],
+  "productionReadiness": {
+    "ready": true,
+    "criticalIssues": 0,
+    "recommendation": "APPROVED FOR PRODUCTION"
+  }
+}

@@ -250,6 +250,18 @@ class ModularWorkflowRunner {
     this.approach = await this.selectApproach(analysis, mode, task);
     this.publishEvent('approach_change', { selected: this.approach.selected, score: this.approach.score }).catch(() => {});
     
+    // Generate project-specific sub-agents
+    try {
+      const AgentGenerator = require(path.join(this.installDir, 'intelligence-engine', 'agent-generator.js'));
+      const agentGenerator = new AgentGenerator({ projectRoot: this.projectDir });
+      const generatedAgents = await agentGenerator.generateProjectAgents(analysis, this.approach);
+      this.log('success', `Generated ${generatedAgents.length} project-specific sub-agents`);
+      this.publishEvent('agents_generated', { count: generatedAgents.length, agents: generatedAgents.map(a => a.name) }).catch(() => {});
+    } catch (error) {
+      this.log('warning', 'Failed to generate project-specific agents', { error: error.message });
+      // Continue without agents - not critical for workflow
+    }
+    
     // Execute based on available components
     if (this.components.claudeFlow) {
       await this.executeWithClaudeFlow();

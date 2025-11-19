@@ -1,0 +1,58 @@
+{
+  "name": "@claude-flow/dependency-manager",
+  "version": "2.0.0",
+  "description": "Comprehensive dependency checking and installation system for Claude Flow 2.0",
+  "main": "claude-flow-dependency-manager.js",
+  "bin": {
+    "claude-flow-deps": "./claude-flow-deps.js"
+  },
+  "scripts": {
+    "test": "node test/dependency-manager-test.js",
+    "check": "node claude-flow-deps.js check",
+    "install-deps": "node claude-flow-deps.js install",
+    "verify": "node claude-flow-deps.js verify",
+    "help": "node claude-flow-deps.js help"
+  },
+  "keywords": [
+    "claude-flow",
+    "dependency-management",
+    "installation",
+    "cross-platform",
+    "ai-workflow",
+    "automation"
+  ],
+  "author": "Claude Flow Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "inquirer": "^9.3.7"
+  },
+  "optionalDependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "peerDependencies": {
+    "claude-flow": "^2.0.0"
+  },
+  "files": [
+    "claude-flow-dependency-manager.js",
+    "claude-flow-deps.js",
+    "dependency-checker.js",
+    "installers/",
+    "ui/",
+    "verification/",
+    "test/",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/claude-flow/claude-flow-2.0.git",
+    "directory": "lib/dependency-manager"
+  },
+  "bugs": {
+    "url": "https://github.com/claude-flow/claude-flow-2.0/issues"
+  },
+  "homepage": "https://docs.claude-flow.dev/dependencies"
+}

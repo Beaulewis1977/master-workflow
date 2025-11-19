@@ -1,9 +1,46 @@
 import fs from 'fs';
 import path from 'path';
 import { scanEnvironment } from './env-scanner.js';
+import { createInterface } from 'readline';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 export type ScaffoldFile = { relativePath: string; content: string };
 export type ScaffoldPlan = { files: ScaffoldFile[]; conflicts: string[]; monorepo: boolean };
+
+export interface ProjectTemplate {
+  name: string;
+  type: 'frontend' | 'backend' | 'fullstack' | 'mobile' | 'desktop' | 'data-science' | 'devops';
+  framework?: string;
+  language: string;
+  dependencies: string[];
+  devDependencies: string[];
+  scripts: Record<string, string>;
+  structure: Record<string, string>;
+  configs: Record<string, string>;
+  agents: string[];
+  mcpServers: string[];
+  bestPractices: {
+    linting: boolean;
+    testing: boolean;
+    security: boolean;
+    documentation: boolean;
+    cicd: boolean;
+  };
+}
+
+export interface ScaffoldOptions {
+  projectName: string;
+  template?: string;
+  interactive?: boolean;
+  enhance?: boolean;
+  skipExisting?: boolean;
+  installDeps?: boolean;
+  initGit?: boolean;
+  generateDocs?: boolean;
+}
 
 function ensureDir(p: string) {
   if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
@@ -151,6 +188,222 @@ export function applyScaffold(root = process.cwd(), plan?: ScaffoldPlan) {
     applied.push(f.relativePath);
   }
   return { applied, skipped, conflicts: p.conflicts };
+}
+
+// Enhanced template system
+export const AVAILABLE_TEMPLATES = {
+  'fullstack-modern': {
+    name: 'Modern Full-Stack Template',
+    description: 'Production-ready full-stack app with React 18, Next.js 14, Rust backend, real-time features',
+    type: 'fullstack' as const,
+    features: ['typescript', 'react-18', 'nextjs-14', 'rust-backend', 'supabase-auth', 'real-time', 'websockets'],
+    path: 'templates/fullstack-modern'
+  },
+  'react-spa': {
+    name: 'React Single Page Application',
+    description: 'Modern React SPA with TypeScript, Vite, and essential tooling',
+    type: 'frontend' as const,
+    features: ['typescript', 'react-18', 'vite', 'tailwindcss', 'zustand'],
+    path: 'templates/react-spa'
+  },
+  'nextjs-app': {
+    name: 'Next.js Application',
+    description: 'Next.js 14 app with App Router, TypeScript, and Tailwind CSS',
+    type: 'frontend' as const,
+    features: ['typescript', 'nextjs-14', 'tailwindcss', 'app-router'],
+    path: 'templates/nextjs-app'
+  },
+  'rust-api': {
+    name: 'Rust API Server',
+    description: 'High-performance Rust API with Axum, PostgreSQL, and Redis',
+    type: 'backend' as const,
+    features: ['rust', 'axum', 'postgresql', 'redis', 'jwt-auth'],
+    path: 'templates/rust-api'
+  },
+  'node-api': {
+    name: 'Node.js API Server',
+    description: 'Express.js API with TypeScript, PostgreSQL, and comprehensive tooling',
+    type: 'backend' as const,
+    features: ['typescript', 'express', 'postgresql', 'jwt-auth', 'swagger'],
+    path: 'templates/node-api'
+  }
+} as const;
+
+export type TemplateType = keyof typeof AVAILABLE_TEMPLATES;
+
+export function createFromTemplate(templateName: TemplateType, projectName: string, targetDir: string = process.cwd()) {
+  const template = AVAILABLE_TEMPLATES[templateName];
+  if (!template) {
+    throw new Error(`Template "${templateName}" not found`);
+  }
+
+  const templatePath = path.join(__dirname, '../../../', template.path);
+  if (!exists(templatePath)) {
+    throw new Error(`Template directory not found: ${templatePath}`);
+  }
+
+  console.log(`Creating ${template.name} project: ${projectName}`);
+  
+  // Copy template files
+  const applied: string[] = [];
+  const skipped: string[] = [];
+  
+  function copyTemplate(srcDir: string, destDir: string, relativePath = '') {
+    const items = fs.readdirSync(srcDir);
+    
+    for (const item of items) {
+      const srcPath = path.join(srcDir, item);
+      const destPath = path.join(destDir, item);
+      const itemRelativePath = path.join(relativePath, item);
+      
+      // Skip template config file
+      if (item === 'template.config.json') continue;
+      
+      const stat = fs.statSync(srcPath);
+      
+      if (stat.isDirectory()) {
+        ensureDir(destPath);
+        copyTemplate(srcPath, destPath, itemRelativePath);
+      } else {
+        if (exists(destPath)) {
+          skipped.push(itemRelativePath);
+          continue;
+        }
+        
+        // Process template variables
+        let content = fs.readFileSync(srcPath, 'utf8');
+        content = content.replace(/\{\{projectName\}\}/g, projectName);
+        
+        fs.writeFileSync(destPath, content, 'utf8');
+        applied.push(itemRelativePath);
+      }
+    }
+  }
+  
+  const projectDir = path.join(targetDir, projectName);
+  ensureDir(projectDir);
+  
+  copyTemplate(templatePath, projectDir);
+  
+  return {
+    template: template.name,
+    projectName,
+    projectDir,
+    applied,
+    skipped,
+    features: template.features
+  };
+}
+
+export async function scaffoldInteractive(options: Partial<ScaffoldOptions> = {}) {
+  const rl = createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  const ask = (question: string): Promise<string> => {
+    return new Promise(resolve => rl.question(question, resolve));
+  };
+
+  try {
+    console.log('🚀 Claude Flow 2.0 - Interactive Project Scaffolding\n');
+    
+    // Project name
+    const projectName = options.projectName || await ask('📝 Project name: ');
+    if (!projectName.trim()) {
+      throw new Error('Project name is required');
+    }
+    
+    // Template selection
+    console.log('\n📚 Available templates:');
+    Object.entries(AVAILABLE_TEMPLATES).forEach(([key, template], index) => {
+      console.log(`  ${index + 1}. ${template.name} (${template.type})`);
+      console.log(`     ${template.description}`);
+      console.log(`     Features: ${template.features.join(', ')}\n`);
+    });
+    
+    const templateChoice = options.template || await ask('🎨 Choose template (1-5): ');
+    const templateKeys = Object.keys(AVAILABLE_TEMPLATES);
+    const selectedTemplate = templateKeys[parseInt(templateChoice) - 1] as TemplateType;
+    
+    if (!selectedTemplate || !AVAILABLE_TEMPLATES[selectedTemplate]) {
+      throw new Error('Invalid template selection');
+    }
+    
+    // Additional options
+    const installDeps = options.installDeps ?? (await ask('📦 Install dependencies? (y/N): ')).toLowerCase() === 'y';
+    const initGit = options.initGit ?? (await ask('🔧 Initialize git repository? (y/N): ')).toLowerCase() === 'y';
+    
+    console.log('\n🔨 Creating project...');
+    
+    // Create project from template
+    const result = createFromTemplate(selectedTemplate, projectName);
+    
+    console.log(`✅ Created ${result.applied.length} files`);
+    if (result.skipped.length > 0) {
+      console.log(`⚠️  Skipped ${result.skipped.length} existing files`);
+    }
+    
+    // Install dependencies
+    if (installDeps) {
+      console.log('\n📦 Installing dependencies...');
+      
+      const template = AVAILABLE_TEMPLATES[selectedTemplate];
+      if (template.type === 'fullstack') {
+        // Install frontend dependencies
+        await execAsync('npm install', { cwd: path.join(result.projectDir, 'frontend') });
+        console.log('✅ Frontend dependencies installed');
+        
+        // Build backend (Rust)
+        await execAsync('cargo check', { cwd: path.join(result.projectDir, 'backend') });
+        console.log('✅ Backend dependencies checked');
+      } else if (template.type === 'frontend') {
+        await execAsync('npm install', { cwd: result.projectDir });
+        console.log('✅ Dependencies installed');
+      } else if (template.type === 'backend' && template.features.includes('rust')) {
+        await execAsync('cargo check', { cwd: result.projectDir });
+        console.log('✅ Dependencies checked');
+      } else {
+        await execAsync('npm install', { cwd: result.projectDir });
+        console.log('✅ Dependencies installed');
+      }
+    }
+    
+    // Initialize git
+    if (initGit) {
+      console.log('\n🔧 Initializing git repository...');
+      await execAsync('git init', { cwd: result.projectDir });
+      await execAsync('git add .', { cwd: result.projectDir });
+      await execAsync('git commit -m "Initial commit from Claude Flow template"', { cwd: result.projectDir });
+      console.log('✅ Git repository initialized');
+    }
+    
+    // Success message
+    console.log('\n🎉 Project created successfully!');
+    console.log(`\n📁 Project location: ${result.projectDir}`);
+    console.log('\n🚀 Next steps:');
+    console.log(`   cd ${projectName}`);
+    
+    if (template.type === 'fullstack') {
+      console.log('   cp .env.example .env');
+      console.log('   # Configure environment variables');
+      console.log('   docker-compose up -d');
+      console.log('\n🌐 URLs:');
+      console.log('   Frontend: http://localhost:3000');
+      console.log('   Backend:  http://localhost:8000');
+      console.log('   Database: http://localhost:8080 (Adminer)');
+    } else if (!installDeps) {
+      console.log('   npm install');
+      console.log('   npm run dev');
+    } else {
+      console.log('   npm run dev');
+    }
+    
+    return result;
+    
+  } finally {
+    rl.close();
+  }
 }
 
 

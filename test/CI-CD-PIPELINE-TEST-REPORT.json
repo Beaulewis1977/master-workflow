@@ -1,0 +1,323 @@
+{
+  "startTime": 1755198363536,
+  "endTime": 1755198364906,
+  "pipelineTests": [
+    {
+      "pipeline": "GitHub Actions Pipeline",
+      "platform": "github-actions",
+      "status": "failed",
+      "duration": 620.9949510000006,
+      "stagesCompleted": 9,
+      "totalStages": 10,
+      "qualityGatesPassed": 1,
+      "totalQualityGates": 6,
+      "performance": {
+        "avgStageTime": 62.099495100000055,
+        "parallelismEfficiency": 0.85,
+        "resourceUtilization": 0.8622122637870293
+      }
+    },
+    {
+      "pipeline": "Jenkins Pipeline",
+      "platform": "jenkins",
+      "status": "failed",
+      "duration": 245.38394499999777,
+      "stagesCompleted": 7,
+      "totalStages": 8,
+      "qualityGatesPassed": 0,
+      "totalQualityGates": 6,
+      "performance": {
+        "avgStageTime": 30.67299312499972,
+        "parallelismEfficiency": 0.75,
+        "resourceUtilization": 0.7923251740831798
+      }
+    },
+    {
+      "pipeline": "GitLab CI Pipeline",
+      "platform": "gitlab-ci",
+      "status": "failed",
+      "duration": 258.187586,
+      "stagesCompleted": 5,
+      "totalStages": 5,
+      "qualityGatesPassed": 0,
+      "totalQualityGates": 6,
+      "performance": {
+        "avgStageTime": 51.637517200000005,
+        "parallelismEfficiency": 0.8,
+        "resourceUtilization": 0.8233788863747733
+      }
+    },
+    {
+      "pipeline": "Azure DevOps Pipeline",
+      "platform": "azure-devops",
+      "status": "failed",
+      "duration": 105.75286899999992,
+      "stagesCompleted": 1,
+      "totalStages": 7,
+      "qualityGatesPassed": 0,
+      "totalQualityGates": 6,
+      "performance": {
+        "avgStageTime": 15.107552714285703,
+        "parallelismEfficiency": 0.82,
+        "resourceUtilization": 0.7171622389569394
+      }
+    }
+  ],
+  "deploymentTests": [
+    {
+      "environment": "development",
+      "status": "failed",
+      "phase": "pre-deployment",
+      "error": "Pre-deployment checks failed"
+    },
+    {
+      "environment": "staging",
+      "status": "passed",
+      "deploymentTime": 87.81833700000061,
+      "healthCheck": true,
+      "smokeTests": true,
+      "loadTests": true,
+      "rollbackAvailable": true,
+      "deploymentStrategy": "rolling"
+    },
+    {
+      "environment": "production",
+      "status": "failed",
+      "phase": "approval",
+      "error": "Deployment not approved"
+    }
+  ],
+  "integrationTests": [],
+  "reportingTests": [
+    {
+      "name": "Quality Gate Enforcement",
+      "status": "passed",
+      "correctlyEnforced": 6,
+      "totalGates": 6,
+      "details": [
+        {
+          "gate": "code-coverage",
+          "threshold": 85,
+          "actualValue": 85.63304143944752,
+          "shouldPass": true,
+          "blocking": true,
+          "correctlyEnforced": true
+        },
+        {
+          "gate": "test-pass-rate",
+          "threshold": 98,
+          "actualValue": 98.67448287613794,
+          "shouldPass": true,
+          "blocking": true,
+          "correctlyEnforced": true
+        },
+        {
+          "gate": "performance-regression",
+          "threshold": 10,
+          "actualValue": 4.07295587492584,
+          "shouldPass": true,
+          "blocking": true,
+          "correctlyEnforced": true
+        },
+        {
+          "gate": "security-vulnerabilities",
+          "threshold": 0,
+          "actualValue": 2,
+          "shouldPass": false,
+          "blocking": true,
+          "correctlyEnforced": true
+        },
+        {
+          "gate": "code-quality",
+          "threshold": "A",
+          "actualValue": "A",
+          "shouldPass": true,
+          "blocking": false,
+          "correctlyEnforced": true
+        },
+        {
+          "gate": "technical-debt",
+          "threshold": "medium",
+          "actualValue": "medium",
+          "shouldPass": true,
+          "blocking": false,
+          "correctlyEnforced": true
+        }
+      ]
+    },
+    {
+      "name": "Test Result Reporting",
+      "status": "passed",
+      "workingChannels": 6,
+      "totalChannels": 6,
+      "details": [
+        {
+          "channel": "junit-xml",
+          "working": true,
+          "responseTime": 893.9025434088924
+        },
+        {
+          "channel": "json-report",
+          "working": true,
+          "responseTime": 1793.4904532023027
+        },
+        {
+          "channel": "html-report",
+          "working": true,
+          "responseTime": 2351.3412677025412
+        },
+        {
+          "channel": "slack-notification",
+          "working": true,
+          "responseTime": 2108.834425940009
+        },
+        {
+          "channel": "email-notification",
+          "working": true,
+          "responseTime": 587.9019200956654
+        },
+        {
+          "channel": "dashboard-update",
+          "working": true,
+          "responseTime": 1200.1203006876958
+        }
+      ]
+    },
+    {
+      "name": "Notification System",
+      "status": "passed",
+      "workingNotifications": 6,
+      "totalNotifications": 6,
+      "avgDeliveryTime": 3272.976589302078,
+      "details": [
+        {
+          "type": "build-success",
+          "working": true,
+          "deliveryTime": 4775.6778473085005,
+          "channels": [
+            "slack",
+            "email",
+            "dashboard"
+          ]
+        },
+        {
+          "type": "build-failure",
+          "working": true,
+          "deliveryTime": 4655.540669745059,
+          "channels": [
+            "slack",
+            "email",
+            "dashboard"
+          ]
+        },
+        {
+          "type": "deployment-success",
+          "working": true,
+          "deliveryTime": 1554.635043202235,
+          "channels": [
+            "slack",
+            "email",
+            "dashboard"
+          ]
+        },
+        {
+          "type": "deployment-failure",
+          "working": true,
+          "deliveryTime": 1551.247273516533,
+          "channels": [
+            "slack",
+            "email",
+            "dashboard"
+          ]
+        },
+        {
+          "type": "quality-gate-failure",
+          "working": true,
+          "deliveryTime": 5238.586439737445,
+          "channels": [
+            "slack",
+            "email",
+            "dashboard"
+          ]
+        },
+        {
+          "type": "performance-regression",
+          "working": true,
+          "deliveryTime": 1862.172262302695,
+          "channels": [
+            "slack",
+            "email",
+            "dashboard"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Metrics Collection",
+      "status": "passed",
+      "collectedMetrics": 7,
+      "totalMetrics": 7,
+      "dataQuality": 1,
+      "details": [
+        {
+          "metric": "build-duration",
+          "collected": true,
+          "value": 510.8619877929443,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        },
+        {
+          "metric": "test-duration",
+          "collected": true,
+          "value": 928.6163962074633,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        },
+        {
+          "metric": "deployment-frequency",
+          "collected": true,
+          "value": 9.316898392216192,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        },
+        {
+          "metric": "lead-time",
+          "collected": true,
+          "value": 2.7653951594364194,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        },
+        {
+          "metric": "mttr",
+          "collected": true,
+          "value": 150.69125665804052,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        },
+        {
+          "metric": "change-failure-rate",
+          "collected": true,
+          "value": 0.010803713405330406,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        },
+        {
+          "metric": "deployment-success-rate",
+          "collected": true,
+          "value": 0.9491047859479743,
+          "timestamp": 1755198364905,
+          "quality": "high"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalPipelines": 4,
+    "successfulPipelines": 0,
+    "testsPassed": 5,
+    "testsFailed": 6,
+    "successRate": "45.5",
+    "avgPipelineTime": 307.57983774999957,
+    "duration": 1370
+  }
+}
