@@ -15,9 +15,18 @@
     "build:app": "node src/builder/autonomous-builder.js",
     "test": "node test/test-runner.js",
     "test:new": "node --test src/**/*.test.js",
+    "test:interactive": "node test/run-interactive-ai-tests.js",
+    "test:interactive:quick": "node test/run-interactive-ai-tests.js --mode quick",
+    "test:interactive:comprehensive": "node test/run-interactive-ai-tests.js --mode comprehensive",
+    "test:ai-enhancement": "node test/run-interactive-ai-tests.js --mode individual --suites ai-enhancement",
+    "test:fullstack-modern": "node test/run-interactive-ai-tests.js --mode individual --suites fullstack-modern",
     "lint": "node scripts/lint-if-available.js",
     "coverage": "echo 'No coverage tool configured; skipping'",
     "install-sqlite": "npm install sqlite3 sqlite || echo 'SQLite installation failed, will use file-based fallback'",
+    "check-deps": "node lib/dependency-manager/claude-flow-deps.js check",
+    "install-deps": "node lib/dependency-manager/claude-flow-deps.js install",
+    "verify-deps": "node lib/dependency-manager/claude-flow-deps.js verify",
+    "test-deps": "node lib/dependency-manager/test/dependency-manager-test.js",
     "dev": "node --watch src/index.js",
     "bootstrap": "node -e \"import('./src/bootstrap/project-bootstrap-agent.js').then(m => new m.ProjectBootstrapAgent({interactive:true}).bootstrap())\"",
     "wiki": "node -e \"import('./src/bootstrap/project-bootstrap-agent.js').then(m => new m.ProjectBootstrapAgent().then(a => a._createRepoWiki()))\"",
@@ -62,5 +71,10 @@
     "ora": "^8.0.1",
     "tar": "^7.4.3",
     "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "chart.js": "^4.5.0",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.18.3"
   }
 }

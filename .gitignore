@@ -52,6 +52,9 @@ pids
 .hive-mind/*.db
 .hive-mind/*.db-shm
 .hive-mind/*.db-wal
+test-database-fixes/.hive-mind/*.db-shm
+test-database-fixes/.hive-mind/*.db-wal
+test-database-fixes/
 
 # Session and temporary files
 .hive-mind/sessions/
