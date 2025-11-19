@@ -19,7 +19,43 @@ import { join, dirname } from 'path';
 import { existsSync } from 'fs';
 import inquirer from 'inquirer';
 
+/**
+ * Project Bootstrap Agent
+ * Ultra-intelligent agent for project initialization and analysis
+ *
+ * @class ProjectBootstrapAgent
+ * @extends EventEmitter
+ * @description Intelligent project bootstrapping that can:
+ * - Read minimal build docs (just architecture description)
+ * - Ask clarifying questions interactively
+ * - Generate complete documentation suite
+ * - Create architecture diagrams (Mermaid)
+ * - Determine tech stack automatically
+ * - Create build phases
+ * - Start autonomous building
+ *
+ * Supports both:
+ * - New Projects: From scratch with minimal input
+ * - Existing Projects: Analysis and documentation generation
+ *
+ * @example
+ * const agent = new ProjectBootstrapAgent({
+ *   projectPath: './my-project',
+ *   interactive: true,
+ *   queen: queenControllerInstance
+ * });
+ * const result = await agent.bootstrap();
+ * console.log('Generated docs:', result.project.generatedDocs);
+ */
 export class ProjectBootstrapAgent extends EventEmitter {
+  /**
+   * Create new Project Bootstrap Agent
+   * @param {Object} [options={}] - Configuration options
+   * @param {string} [options.projectPath] - Project root path
+   * @param {boolean} [options.interactive=true] - Enable interactive questions
+   * @param {boolean} [options.verbose=false] - Enable verbose logging
+   * @param {Object} [options.queen] - Queen controller for code archaeology
+   */
   constructor(options = {}) {
     super();
 
@@ -46,8 +82,20 @@ export class ProjectBootstrapAgent extends EventEmitter {
   }
 
   /**
-   * BOOTSTRAP - Main entry point
-   * Can bootstrap from scratch OR analyze existing project
+   * Bootstrap project (main entry point)
+   * Automatically detects new vs existing project and handles appropriately
+   *
+   * @async
+   * @returns {Promise<Object>} Bootstrap result
+   * @returns {boolean} result.success - Whether bootstrap succeeded
+   * @returns {Object} result.project - Project metadata
+   * @returns {Array<string>} result.nextSteps - Recommended next steps
+   *
+   * @example
+   * const result = await agent.bootstrap();
+   * if (result.success) {
+   *   console.log('Next steps:', result.nextSteps);
+   * }
    */
   async bootstrap() {
     console.log('\n🚀 PROJECT BOOTSTRAP AGENT');
@@ -66,8 +114,12 @@ export class ProjectBootstrapAgent extends EventEmitter {
   }
 
   /**
-   * BOOTSTRAP EXISTING PROJECT
-   * Analyzes codebase, creates missing docs, determines build phase
+   * Bootstrap existing project
+   * Analyzes codebase, generates missing docs, creates wiki
+   *
+   * @private
+   * @async
+   * @returns {Promise<Object>} Bootstrap result
    */
   async _bootstrapExistingProject() {
     console.log('🔍 ANALYZING EXISTING PROJECT...\n');
@@ -115,8 +167,12 @@ export class ProjectBootstrapAgent extends EventEmitter {
   }
 
   /**
-   * BOOTSTRAP NEW PROJECT
-   * Reads minimal docs, asks questions, generates everything
+   * Bootstrap new project from scratch
+   * Interactive process: reads docs → asks questions → generates complete suite
+   *
+   * @private
+   * @async
+   * @returns {Promise<Object>} Bootstrap result
    */
   async _bootstrapNewProject() {
     console.log('📝 BOOTSTRAPPING NEW PROJECT...\n');
@@ -189,6 +245,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     return false;
   }
 
+  /**
+   * Read existing documentation files
+   * Searches for README, ARCHITECTURE, SPEC, etc.
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _readExistingDocs() {
     const docPatterns = [
       'README.md',
@@ -225,6 +289,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     await this._readExistingDocs();
   }
 
+  /**
+   * Analyze codebase structure and content
+   * Uses Queen's Code Archaeology if available, otherwise fallback to simple scanning
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _analyzeCodebase() {
     // Use Queen's Code Archaeology if available
     if (this.queen) {
@@ -238,6 +310,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     }
   }
 
+  /**
+   * Detect technology stack from project files
+   * Checks for package.json, requirements.txt, go.mod, Cargo.toml, etc.
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _detectTechStack() {
     const detected = new Set(this.project.techStack);
 
@@ -266,6 +346,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     this.project.techStack = Array.from(detected);
   }
 
+  /**
+   * Detect current build phase
+   * Phases: planning → early-development → development → testing → pre-release → maintenance
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _detectBuildPhase() {
     // Analyze completeness of project
     const hasTests = this.project.existingCode.some(f => f.includes('test'));
@@ -290,6 +378,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
 
   // ========== INTERACTIVE METHODS ==========
 
+  /**
+   * Ask clarifying questions for existing projects
+   * Interactive prompts for project name, description, documentation options
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _askClarifyingQuestions() {
     const questions = [
       {
@@ -322,6 +418,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     Object.assign(this.project, answers);
   }
 
+  /**
+   * Ask detailed questions for new projects
+   * Comprehensive interactive setup including tech stack, architecture, features
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _askDetailedQuestions() {
     const questions = [
       {
@@ -384,6 +488,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
 
   // ========== GENERATION METHODS ==========
 
+  /**
+   * Generate missing documentation files
+   * Creates ARCHITECTURE, DEVELOPMENT, API, DEPLOYMENT, CONTRIBUTING
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _generateMissingDocs() {
     const docsToGenerate = [
       { name: 'ARCHITECTURE.md', generator: () => this._generateArchitectureDoc() },
@@ -414,6 +526,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     this.project.generatedDocs.push('README.md');
   }
 
+  /**
+   * Generate architecture diagrams in Mermaid format
+   * Creates overview, data flow, and deployment diagrams
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _generateArchitectureDiagrams() {
     // Generate Mermaid diagrams
     const diagrams = {
@@ -430,6 +550,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     }
   }
 
+  /**
+   * Create build phase plan
+   * Generates 5-phase plan: Foundation → Core → Integration → Polish → Release
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _createBuildPhases() {
     const phases = [
       {
@@ -458,6 +586,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     await writeFile(join(this.projectPath, 'BUILD-PHASES.md'), phasesDoc);
   }
 
+  /**
+   * Create project directory structure
+   * Sets up src/, tests/, docs/, config/, .agent-os/
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _createProjectStructure() {
     const structure = {
       'src': {},
@@ -474,6 +610,14 @@ export class ProjectBootstrapAgent extends EventEmitter {
     await this._createDirStructure(this.projectPath, structure);
   }
 
+  /**
+   * Create repository wiki
+   * Generates wiki pages: Home, Getting Started, Architecture, Development, API
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   */
   async _createRepoWiki() {
     const wikiDir = join(this.projectPath, 'wiki');
     await mkdir(wikiDir, { recursive: true });
@@ -493,6 +637,13 @@ export class ProjectBootstrapAgent extends EventEmitter {
 
   // ========== HELPER METHODS ==========
 
+  /**
+   * Classify document type from content
+   *
+   * @private
+   * @param {string} content - Document content
+   * @returns {string} Document type (architecture, api, specification, readme, general)
+   */
   _classifyDoc(content) {
     const lower = content.toLowerCase();
     if (lower.includes('architecture') || lower.includes('design')) return 'architecture';

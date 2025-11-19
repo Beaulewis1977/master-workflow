@@ -1,12 +1,12 @@
 analyze the codebase and this plan. /workspaces/MASTER-WORKFLOW/CLAUDE-CODE-PLAN.MD then when ready, do phase 1. after      │
 │   phase one you will create an end of phase summary, and for every phase, do an end of phase summary which also is a handoff  │
 │   document for the next phase. /workspaces/MASTER-WORKFLOW/END-OF-PHASE-SUMMARIES and put the phase there. use context7 and   │
-│   other mcp sever tools too help. also create highly speciaalized sub-agents and run them in parallel and give them           │
+│   other mcp server tools to help. also create highly specialized sub-agents and run them in parallel and give them           │
 │   specialize prompts to help you      
 
 
-youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD be  sure to review the end of phase 2 
-  @END-OF-PHASE-SUMMARIES/PHASE-ONE/ make sure to read the memory of whaat to do after you finish phase 3. be sure to use specialized sub-agents in
+youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD be  sure to review the end of phase 2
+  @END-OF-PHASE-SUMMARIES/PHASE-ONE/ make sure to read the memory of what to do after you finish phase 3. be sure to use specialized sub-agents in
    parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is https://github.com/Beaulewis1977/master-workflow
   ⎿  Read CLAUDE-CODE-PLAN.MD (819 lines)
   ⎿  Listed directory END-OF-PHASE-SUMMARIES/PHASE-ONE/
@@ -16,24 +16,24 @@ youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD b
   
    youre on Phase 7 | Documentation & Final Updates of @CLAUDE-CODE-PLAN.MD  be  sure to review the end of phase 6
     @END-OF-PHASE-SUMMARIES/PHASE-SIX/  make sure to read the memory of what to do after you finish phase 7. be sure to use specialized sub-agents
-   in parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is 
-  https://github.com/Beaulewis1977/master-workflow be sure to use mcp servers and tools wheen needed. and you can use 'ultrathink' when needed and 
-  sequential thinking, also zen mcp if needed. make sure you finish all work, dont lie and dont be lazy. finish it al professionally. also, make sure all tests are passing and
-  everyhting is working before stopping. if youre having problems, stop for a minite and use 'ultrathink' or use zen mcp to consult with other models.
-  when you commit and push, make sure all files and chaanges that should be pushed, are pushed. see your memory for information, or ask me.
+   in parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is
+  https://github.com/Beaulewis1977/master-workflow be sure to use mcp servers and tools when needed. and you can use 'ultrathink' when needed and
+  sequential thinking, also zen mcp if needed. make sure you finish all work, dont lie and dont be lazy. finish it all professionally. also, make sure all tests are passing and
+  everything is working before stopping. if youre having problems, stop for a minute and use 'ultrathink' or use zen mcp to consult with other models.
+  when you commit and push, make sure all files and changes that should be pushed, are pushed. see your memory for information, or ask me.
   
   **************************************
   
   do phase 5 of this: you are going to implement @UNINSTALLER-EXECUTION-PLAN.md  with @UNINSTALLER-PLAN.md  and you when done with each phase create a end of phase summary and put it here @MASTER-WORKFLOW/END-OF-PHASE-SUMMARIES/UNINSTALLER
   and label them like this PHASE-5-SUMMARY.MD, etc. and add create the phase number folder. so for end of phase 5 you will add a folder to @MASTER-WORKFLOW/END-OF-PHASE-SUMMARIES/UNINSTALLER/PHASE-5
   you must ALSO review the previous phases end of phase-4-summary.md to be sure theres nothing left to do and then start phase 5. be sure to use specialized sub-agents
-   in parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is 
-  https://github.com/Beaulewis1977/master-workflow be sure to use mcp servers and tools wheen needed. and you can use 'ultrathink' when needed and 
-  sequential thinking, also zen mcp if needed. make sure you finish all work, dont lie and dont be lazy. finish it al professionally. also, make sure all tests are passing and
-  everyhting is working before stopping. if youre having problems, stop for a minite and use 'ultrathink' or use zen mcp to consult with other models.
-  when you commit and push, make sure all files and chaanges that should be pushed, are pushed. see your memory for information, or ask me.
-  be sure to nderstand what youre doing and the codebase so you do the task correcctly. finish all work and test until the tests pass.
-  use mcp servers like context7 and others to help. after phase one is complete, create the documents and commit andd push, then stop.. you must use SPECIALIZED SUB-AGENTS IN PARALLEL
+   in parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is
+  https://github.com/Beaulewis1977/master-workflow be sure to use mcp servers and tools when needed. and you can use 'ultrathink' when needed and
+  sequential thinking, also zen mcp if needed. make sure you finish all work, dont lie and dont be lazy. finish it all professionally. also, make sure all tests are passing and
+  everything is working before stopping. if youre having problems, stop for a minute and use 'ultrathink' or use zen mcp to consult with other models.
+  when you commit and push, make sure all files and changes that should be pushed, are pushed. see your memory for information, or ask me.
+  be sure to understand what youre doing and the codebase so you do the task correctly. finish all work and test until the tests pass.
+  use mcp servers like context7 and others to help. after phase one is complete, create the documents and commit and push, then stop.. you must use SPECIALIZED SUB-AGENTS IN PARALLEL
   FROM @.CLAUDE/AGENTS FOR ALL WORK
  
  *********************************** 
@@ -46,8 +46,8 @@ youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD b
   
   do we need to have the system when used by a new user, the installer should install all packages to make it work, correct?
   
-** also, we need an unintaller that is installed with the workflow system for new users that when done with the project or app, 
-  they can remove all the files and documents that came with the workflow but leave all the documents and files it created. 
+** also, we need an uninstaller that is installed with the workflow system for new users that when done with the project or app,
+  they can remove all the files and documents that came with the workflow but leave all the documents and files it created.
   so when the project is finished the user will want to fully remove the autonomous workflow system. so we need an interactive uninstaller
   
   Phase 6 | System Integration & Testing | 3-4 hours | Phases 1-5 |
@@ -56,8 +56,8 @@ youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD b
   
   *** run security test
   make sure all scripts are updated and working
-  make sure all documents are updated. 
-  do a few at a timedo a cleanup
+  make sure all documents are updated.
+  do a few at a time do a cleanup
   
   
   how does it work?
@@ -67,27 +67,27 @@ youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD b
   
   give me some use cases and examples for these:
   
- 1) user has a working recipe gamification app thats working but was built for a single person
+ 1) user has a working recipe gamification app that's working but was built for a single person
   and the user wants to refactor it and turn it into a Saas. they want to keep the flutter frontend/ui/ux but add a new backend
   with supabase and others to make it able to have million of users
   
-  2) i want to build a new Saas app for helping people be safe. A mobile app that looks for inactivity in an elderly perssons phone.
-  it will have settings to sset all the timers, etc. it also has settingss for adding emergency contacts and if the inactivity alarm
-  goes off (12 hours, or any time set) andd the user didnt turn off the alarm ina certain amount of time, it sends sms to all peopleon their emergency\
- contact list. it sends their name, location, with gps link to pull up on the emergency contats phone map, a one touch button to call back the elderly perso n,
- a one touch Call 911. It also includes local to the elderly person's county non-emergency numbers for fire/police/ambulence, hospitals.
- it also has a fall detector that works in a similar way. both of the systems have a senseitivity setting for movements and falls. it will also be able to 
- be paired with a companion app for family/caegivers where the family can see where the elderly person is, and they can chaange all setings for the elderly person as well.
- and also turn it on or off iff needed. 
+  2) i want to build a new Saas app for helping people be safe. A mobile app that looks for inactivity in an elderly persons phone.
+  it will have settings to set all the timers, etc. it also has settings for adding emergency contacts and if the inactivity alarm
+  goes off (12 hours, or any time set) and the user didnt turn off the alarm in a certain amount of time, it sends sms to all people on their emergency\
+ contact list. it sends their name, location, with gps link to pull up on the emergency contacts phone map, a one touch button to call back the elderly person,
+ a one touch Call 911. It also includes local to the elderly person's county non-emergency numbers for fire/police/ambulance, hospitals.
+ it also has a fall detector that works in a similar way. both of the systems have a sensitivity setting for movements and falls. it will also be able to
+ be paired with a companion app for family/caregivers where the family can see where the elderly person is, and they can change all settings for the elderly person as well.
+ and also turn it on or off if needed. 
  
- 3) a Saas app that uses tinder swipe widgeet to cclean out a users camera roll.
+ 3) a Saas app that uses tinder swipe widget to clean out a users camera roll.
+
+ also we need a full document about the workflow system. every feature and setting, also use wireframes as examples. it should be comprehensive about everything the workflow can do.
  
- also we need a full document about the workflow system. every feature and setting, also use wwireframes as examples. it should be comprehensive about everything the workflow can do.
- 
- also we need a full comprehensive user guide.. how to install, how to start, all the different ways to use, all the different commands to start. hot to use it on new projects, already started projects
- how gto get the most out of it. what kind of build documents does the workflow system need in the new project to do a good job. how and what can it do for generaating custom documents foro the build.
- how does it update documents if you already have theem, but the workflow system will updte to include contexxt that will help it do aa better job.
- how the workflow will generate its own todo lists and uses its intelligence enrgine.
+ also we need a full comprehensive user guide.. how to install, how to start, all the different ways to use, all the different commands to start. how to use it on new projects, already started projects
+ how to get the most out of it. what kind of build documents does the workflow system need in the new project to do a good job. how and what can it do for generating custom documents for the build.
+ how does it update documents if you already have them, but the workflow system will update to include context that will help it do a better job.
+ how the workflow will generate its own todo lists and uses its intelligence engine.
  
  what all does it do, what are all the parts and tech it uses
  
@@ -148,8 +148,8 @@ youre on Phase 3 | Deep Analysis & Document Generation of @CLAUDE-CODE-PLAN.MD b
 
 continue with this @CLAUDE-PHASE-7-HANDOFF.md and @CLAUDE-CODE-PLAN.MD phase 7. you can see whats been done with phase 7 @END-OF-PHASE-SUMMARIES/PHASE-SEVEN/  summaries.
 e sure to use specialized sub-agents
-   in parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is 
-  https://github.com/Beaulewis1977/master-workflow be sure to use mcp servers and tools wheen needed. and you can use 'ultrathink' when needed and 
-  sequential thinking, also zen mcp if needed. make sure you finish all work, dont lie and dont be lazy. finish it al professionally. also, make sure all tests are passing and
-  everyhting is working before stopping. if youre having problems, stop for a minite and use 'ultrathink' or use zen mcp to consult with other models.
-  when you commit and push, make sure all files and chaanges that should be pushed, are pushed. see your memory for information, or ask me.
+   in parallel as many as you need. theyre in @.claude/agents/ folder. do a professional job and make sure it all works. the repo is
+  https://github.com/Beaulewis1977/master-workflow be sure to use mcp servers and tools when needed. and you can use 'ultrathink' when needed and
+  sequential thinking, also zen mcp if needed. make sure you finish all work, dont lie and dont be lazy. finish it all professionally. also, make sure all tests are passing and
+  everything is working before stopping. if youre having problems, stop for a minute and use 'ultrathink' or use zen mcp to consult with other models.
+  when you commit and push, make sure all files and changes that should be pushed, are pushed. see your memory for information, or ask me.

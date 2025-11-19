@@ -30,10 +30,44 @@ import { FlowOrchestrator } from './claude-flow/orchestrator/flow-orchestrator.j
 import { AutonomousBuilder } from './builder/autonomous-builder.js';
 
 /**
- * MASTER WORKFLOW 3.0
- * The system that changes everything
+ * MASTER WORKFLOW 3.0 - Main System Class
+ * The Ultimate AI Development Platform combining revolutionary features
+ *
+ * @class MasterWorkflow3
+ * @extends EventEmitter
+ * @description Main orchestrator for the Master Workflow 3.0 system. Integrates:
+ * - Queen Controller with 4,462+ agents
+ * - Hive-Mind SQLite databases
+ * - Agent OS v2 spec-driven development
+ * - Universal Scaffolder for any tech stack
+ * - SPARC methodology
+ * - Cross-Dimensional Memory Fusion
+ * - Neural Swarm Learning
+ * - Autonomous Code Archaeology
+ *
+ * @example
+ * const system = new MasterWorkflow3({
+ *   maxAgents: 10000,
+ *   verbose: true
+ * });
+ * await system.initialize();
+ * const result = await system.execute({
+ *   description: 'Build a React app',
+ *   type: 'build_app'
+ * });
  */
 export class MasterWorkflow3 extends EventEmitter {
+  /**
+   * Create a new Master Workflow 3.0 instance
+   * @param {Object} config - Configuration options
+   * @param {number} [config.maxAgents=10000] - Maximum number of concurrent agents
+   * @param {boolean} [config.quantumMemory=true] - Enable quantum memory fusion
+   * @param {boolean} [config.neuralLearning=true] - Enable neural swarm learning
+   * @param {boolean} [config.codeArchaeology=true] - Enable code archaeology
+   * @param {boolean} [config.queenController=true] - Enable integrated queen controller
+   * @param {boolean} [config.hiveMind=true] - Enable hive-mind databases
+   * @param {boolean} [config.verbose=false] - Enable verbose logging
+   */
   constructor(config = {}) {
     super();
 
@@ -78,7 +112,17 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * INITIALIZE - Bring all systems online
+   * Initialize all subsystems and bring them online
+   *
+   * @async
+   * @returns {Promise<void>}
+   * @throws {Error} If initialization of any subsystem fails
+   * @fires MasterWorkflow3#system:ready
+   *
+   * @example
+   * const system = new MasterWorkflow3();
+   * await system.initialize();
+   * console.log('System IQ:', system.systemIQ);
    */
   async initialize() {
     if (this.isInitialized) return;
@@ -151,8 +195,31 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * EXECUTE TASK - The main interface for doing anything
-   * Delegates to Integrated Queen Controller for full intelligence
+   * Execute a task using the full intelligence pipeline
+   * Main interface for all system operations. Delegates to Integrated Queen Controller.
+   *
+   * @async
+   * @param {Object|string} task - Task to execute (object with details or string description)
+   * @param {string} task.description - Task description
+   * @param {string} [task.type] - Task type (build_app, workflow, general)
+   * @param {Object} [task.options] - Task-specific options
+   * @param {Object} [task.context] - Additional context for task execution
+   * @returns {Promise<Object>} Task execution result
+   * @returns {boolean} result.success - Whether task completed successfully
+   * @returns {*} result.output - Task output
+   * @returns {Array} result.phases - Execution phases (quantum recall, swarm planning, etc.)
+   * @fires MasterWorkflow3#task:complete
+   * @fires MasterWorkflow3#task:error
+   *
+   * @example
+   * const result = await system.execute({
+   *   description: 'Create REST API for user management',
+   *   type: 'build_app',
+   *   options: { framework: 'express' }
+   * });
+   * if (result.success) {
+   *   console.log('Task completed:', result.output);
+   * }
    */
   async execute(task) {
     if (!this.isInitialized) await this.initialize();
@@ -204,7 +271,20 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * BUILD APP - Shortcut for building applications
+   * Build an application - convenience method for app building tasks
+   *
+   * @async
+   * @param {string} description - Application description
+   * @param {Object} [options={}] - Build options
+   * @param {string} [options.framework] - Framework to use
+   * @param {string} [options.template] - Project template
+   * @returns {Promise<Object>} Build result with app details
+   *
+   * @example
+   * const app = await system.buildApp(
+   *   'E-commerce platform with cart and checkout',
+   *   { framework: 'react', template: 'nextjs' }
+   * );
    */
   async buildApp(description, options = {}) {
     return await this.execute({
@@ -215,7 +295,19 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * RUN WORKFLOW - Shortcut for running workflows
+   * Run a predefined workflow
+   *
+   * @async
+   * @param {Object} workflow - Workflow configuration
+   * @param {string} workflow.name - Workflow name
+   * @param {Array} workflow.steps - Workflow steps
+   * @returns {Promise<Object>} Workflow execution result
+   *
+   * @example
+   * const result = await system.runWorkflow({
+   *   name: 'deploy-pipeline',
+   *   steps: ['test', 'build', 'deploy']
+   * });
    */
   async runWorkflow(workflow) {
     return await this.execute({
@@ -225,7 +317,21 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * ANALYZE CODEBASE - Shortcut for code archaeology
+   * Analyze codebase using Code Archaeology engine
+   * Discovers patterns, technical debt, and genius code
+   *
+   * @async
+   * @param {string} path - Path to codebase to analyze
+   * @returns {Promise<Object>} Excavation results
+   * @returns {Array} result.patterns - Discovered patterns
+   * @returns {Array} result.geniusCode - Brilliant implementations
+   * @returns {Array} result.technicalDebt - Issues found
+   * @returns {Array} result.futureIssues - Predicted problems
+   *
+   * @example
+   * const analysis = await system.analyzeCodebase('./src');
+   * console.log('Patterns found:', analysis.patterns.length);
+   * console.log('Technical debt:', analysis.technicalDebt);
    */
   async analyzeCodebase(path) {
     if (!this.isInitialized) await this.initialize();
@@ -233,7 +339,23 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * TEST IN PARALLEL REALITIES - Test across multiple approaches
+   * Test solution across multiple parallel approaches
+   * Uses quantum memory to evaluate different implementation strategies
+   *
+   * @async
+   * @param {Object} solution - Solution to test
+   * @param {string} solution.approach - Implementation approach
+   * @param {*} solution.implementation - Solution implementation
+   * @returns {Promise<Object>} Testing results across realities
+   * @returns {Array} result.realities - Results from each parallel test
+   * @returns {Object} result.best - Best performing approach
+   *
+   * @example
+   * const results = await system.testInParallelRealities({
+   *   approach: 'microservices',
+   *   implementation: serviceConfig
+   * });
+   * console.log('Best approach:', results.best.approach);
    */
   async testInParallelRealities(solution) {
     if (!this.isInitialized) await this.initialize();
@@ -241,7 +363,20 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * GET SYSTEM STATUS - Get complete system status
+   * Get comprehensive system status and metrics
+   *
+   * @async
+   * @returns {Promise<Object>} System status
+   * @returns {boolean} result.initialized - Whether system is initialized
+   * @returns {number} result.systemIQ - Current system IQ level
+   * @returns {Array<string>} result.capabilities - Unlocked capabilities
+   * @returns {Object} result.subsystems - Status of each subsystem
+   * @returns {Object} result.stats - Performance statistics
+   *
+   * @example
+   * const status = await system.getStatus();
+   * console.log('System IQ:', status.systemIQ);
+   * console.log('Active agents:', status.stats.activeAgents);
    */
   async getStatus() {
     if (!this.isInitialized) {
@@ -275,7 +410,15 @@ export class MasterWorkflow3 extends EventEmitter {
   }
 
   /**
-   * SHUTDOWN - Clean shutdown of all systems
+   * Gracefully shutdown all subsystems
+   * Closes databases, terminates agents, and cleans up resources
+   *
+   * @async
+   * @returns {Promise<void>}
+   *
+   * @example
+   * await system.shutdown();
+   * console.log('System shutdown complete');
    */
   async shutdown() {
     console.log('\n🛑 Shutting down Master Workflow 3.0...\n');
@@ -302,6 +445,10 @@ export class MasterWorkflow3 extends EventEmitter {
 
   /**
    * Wire up event listeners for cross-system communication
+   * Connects events from all subsystems and forwards to main emitter
+   *
+   * @private
+   * @returns {void}
    */
   _wireEventListeners() {
     // Forward Integrated Queen Controller events

@@ -32,9 +32,39 @@ const { NeuralLearningSystem } = require(join(__dirname, '../../.ai-workflow/int
 
 /**
  * INTEGRATED QUEEN CONTROLLER
- * Combines existing Queen with revolutionary new features
+ * Bridges ES6 modules with existing CommonJS Queen Controller and adds revolutionary features
+ *
+ * @class IntegratedQueenController
+ * @description Combines existing Queen Controller (CommonJS) with new ES6 intelligence systems:
+ * - Cross-Dimensional Memory Fusion (connects to .hive-mind databases)
+ * - Neural Swarm Learning (integrates with neural-learning.js)
+ * - Code Archaeology Engine (pattern discovery)
+ * - AgentDB v1.3.9 (96x-164x faster semantic search)
+ * - ReasoningBank (hybrid memory system)
+ * - Skills System (25 specialized skills)
+ *
+ * @example
+ * const controller = new IntegratedQueenController({
+ *   maxConcurrent: 10,
+ *   projectRoot: process.cwd(),
+ *   fusionDepth: 5
+ * });
+ * await controller.initialize();
+ * const result = await controller.executeTask('Build REST API');
  */
 export class IntegratedQueenController {
+  /**
+   * Create new Integrated Queen Controller
+   * @param {Object} [options={}] - Configuration options
+   * @param {number} [options.maxConcurrent=10] - Max concurrent agents
+   * @param {string} [options.projectRoot] - Project root directory
+   * @param {number} [options.fusionDepth=5] - Memory fusion depth
+   * @param {number} [options.quantumStates=10] - Number of quantum states
+   * @param {number} [options.maxAgents=1000] - Maximum number of agents
+   * @param {string} [options.quantization='scalar'] - AgentDB quantization mode (binary, scalar, product)
+   * @param {string} [options.rlAlgorithm='ppo'] - Reinforcement learning algorithm
+   * @param {boolean} [options.verbose=false] - Enable verbose logging
+   */
   constructor(options = {}) {
     this.options = options;
     this.projectRoot = options.projectRoot || process.cwd();
@@ -125,7 +155,16 @@ export class IntegratedQueenController {
   }
 
   /**
-   * Initialize all systems
+   * Initialize all intelligence systems
+   * Connects quantum memory to databases, initializes swarm, and sets up archaeology
+   *
+   * @async
+   * @returns {Promise<boolean>} True if initialization successful
+   * @throws {Error} If any subsystem fails to initialize
+   *
+   * @example
+   * await controller.initialize();
+   * console.log('Patterns:', controller.agentDB.patterns.size);
    */
   async initialize() {
     console.log('\n═══════════════════════════════════════════════════════════');
@@ -185,7 +224,28 @@ export class IntegratedQueenController {
   }
 
   /**
-   * Execute task with full intelligence system
+   * Execute task using full intelligence pipeline
+   * Phases: Quantum Recall → Swarm Planning → Agent Spawn → Learning → Storage
+   *
+   * @async
+   * @param {Object|string} task - Task to execute
+   * @param {string} task.description - Task description
+   * @param {string} [task.type] - Task type
+   * @param {Object} [task.context] - Additional context
+   * @param {string} [task.priority='normal'] - Task priority
+   * @returns {Promise<Object>} Execution result
+   * @returns {boolean} result.success - Whether task succeeded
+   * @returns {Array} result.phases - Execution phases
+   * @returns {*} result.output - Task output
+   * @returns {number} result.startTime - Start timestamp
+   * @returns {number} result.endTime - End timestamp
+   *
+   * @example
+   * const result = await controller.executeTask({
+   *   description: 'Refactor authentication module',
+   *   type: 'refactoring',
+   *   priority: 'high'
+   * });
    */
   async executeTask(task) {
     if (!this.isInitialized) await this.initialize();
@@ -317,6 +377,19 @@ export class IntegratedQueenController {
 
   /**
    * Run code archaeology on codebase
+   * Discovers patterns, technical debt, genius code, and predicts future issues
+   *
+   * @async
+   * @param {string} path - Path to codebase
+   * @returns {Promise<Object>} Excavation results
+   * @returns {Array} result.patterns - Discovered patterns
+   * @returns {Array} result.technicalDebt - Technical debt found
+   * @returns {Array} result.geniusCode - Brilliant implementations
+   * @returns {Array} result.futureIssues - Predicted problems
+   *
+   * @example
+   * const excavation = await controller.excavateCodebase('./src');
+   * console.log('Found', excavation.patterns.length, 'patterns');
    */
   async excavateCodebase(path) {
     if (!this.isInitialized) await this.initialize();
@@ -346,7 +419,20 @@ export class IntegratedQueenController {
   }
 
   /**
-   * Get complete system status
+   * Get complete system status and metrics
+   *
+   * @async
+   * @returns {Promise<Object>} Complete system status
+   * @returns {boolean} result.initialized - Initialization status
+   * @returns {Object} result.queen - Queen controller status
+   * @returns {Object} result.sharedMemory - Shared memory statistics
+   * @returns {Object} result.quantumMemory - Quantum memory status
+   * @returns {Object} result.neuralSwarm - Swarm intelligence metrics
+   * @returns {Object} result.integration - Integration statistics
+   *
+   * @example
+   * const status = await controller.getStatus();
+   * console.log('Active agents:', status.queen.activeAgents);
    */
   async getStatus() {
     return {
@@ -378,6 +464,13 @@ export class IntegratedQueenController {
 
   /**
    * Shutdown all systems gracefully
+   * Closes all database connections and cleans up resources
+   *
+   * @async
+   * @returns {Promise<void>}
+   *
+   * @example
+   * await controller.shutdown();
    */
   async shutdown() {
     console.log('\n🛑 Shutting down Integrated Queen Controller...\n');
@@ -399,6 +492,10 @@ export class IntegratedQueenController {
 
   /**
    * Wire event handlers between systems
+   * Forwards events from all subsystems for monitoring
+   *
+   * @private
+   * @returns {void}
    */
   _wireEvents() {
     // Forward Queen events
@@ -423,6 +520,13 @@ export class IntegratedQueenController {
 
   /**
    * Select optimal agent type based on task and swarm solution
+   *
+   * @private
+   * @param {Object} task - Task to execute
+   * @param {Object} swarmSolution - Swarm's recommended solution
+   * @param {Object} swarmSolution.bestSolution - Best solution found
+   * @param {string} swarmSolution.bestSolution.approach - Recommended approach
+   * @returns {string} Agent type (architect, developer, test-runner, etc.)
    */
   _selectOptimalAgentType(task, swarmSolution) {
     // Use swarm's approach to select agent type
@@ -442,7 +546,13 @@ export class IntegratedQueenController {
   }
 
   /**
-   * Simulate agent execution (in real implementation, agents would actually execute)
+   * Simulate agent execution
+   * In production, agents would actually execute tasks
+   *
+   * @private
+   * @async
+   * @param {Object} agent - Agent to execute
+   * @returns {Promise<void>}
    */
   async _simulateAgentExecution(agent) {
     // Simulate some work

@@ -19,7 +19,46 @@ import { writeFile, readFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import crypto from 'crypto';
 
+/**
+ * Autonomous Context Compactor
+ * Intelligently manages context windows for continuous autonomous building
+ *
+ * @class ContextCompactor
+ * @extends EventEmitter
+ * @description Enables unlimited autonomous building sessions by:
+ * - Monitoring context usage in real-time
+ * - Intelligently compacting/summarizing when approaching limits
+ * - Preserving CRITICAL information needed to continue
+ * - Removing redundant/obsolete context
+ * - Creating checkpoints for recovery
+ *
+ * Importance Weighting:
+ * - Active Tasks: 3.5 (highest priority)
+ * - Decisions: 3.0
+ * - Errors: 2.5
+ * - Recent Messages: 2.0
+ * - Learnings: 2.0
+ * - Code Snippets: 1.5
+ * - Completed Tasks: 1.0
+ *
+ * @example
+ * const compactor = new ContextCompactor({
+ *   maxTokens: 200000,
+ *   compactionThreshold: 0.80,
+ *   preservePercent: 0.40
+ * });
+ * compactor.addToContext('task', { description: 'Build API', status: 'active' });
+ */
 export class ContextCompactor extends EventEmitter {
+  /**
+   * Create new Context Compactor
+   * @param {Object} [options={}] - Configuration options
+   * @param {number} [options.maxTokens=200000] - Maximum tokens (Claude's limit)
+   * @param {number} [options.compactionThreshold=0.80] - Compact at 80% usage
+   * @param {number} [options.criticalThreshold=0.95] - Emergency at 95% usage
+   * @param {number} [options.preservePercent=0.40] - Keep 40% most important
+   * @param {string} [options.projectPath] - Project path for checkpoints
+   */
   constructor(options = {}) {
     super();
 
@@ -63,7 +102,18 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * ADD TO CONTEXT - Add new information to context
+   * Add new information to context
+   * Automatically triggers compaction if threshold exceeded
+   *
+   * @param {string} type - Context type (message, code, decision, task, error, learning)
+   * @param {*} data - Context data
+   * @returns {string} Entry ID
+   *
+   * @example
+   * const id = compactor.addToContext('decision', {
+   *   decision: 'Use PostgreSQL for data storage',
+   *   reasoning: 'ACID compliance required'
+   * });
    */
   addToContext(type, data) {
     const entry = {
@@ -122,7 +172,17 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * SMART COMPACT - Intelligently reduce context while preserving critical info
+   * Smart compaction - intelligently reduce context while preserving critical info
+   * Process: Checkpoint → Score → Select → Compact → Rebuild
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   * @fires ContextCompactor#compaction:complete
+   *
+   * @example
+   * // Triggered automatically at 80% usage
+   * // Preserves 40% most important, compacts rest into summary
    */
   async _smartCompact() {
     console.log('\n📊 SMART COMPACTION IN PROGRESS...\n');
@@ -176,7 +236,13 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * EMERGENCY COMPACT - Aggressive compaction for critical situations
+   * Emergency compaction - aggressive reduction at 95% usage
+   * Only keeps active tasks, recent errors, and recent decisions (25% total)
+   *
+   * @private
+   * @async
+   * @returns {Promise<void>}
+   * @fires ContextCompactor#compaction:emergency
    */
   async _emergencyCompact() {
     console.log('\n🚨 EMERGENCY COMPACTION IN PROGRESS...\n');
@@ -228,7 +294,15 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * CREATE CHECKPOINT - Save current context state for recovery
+   * Create checkpoint of current context state
+   * Enables recovery if compaction goes wrong
+   *
+   * @private
+   * @async
+   * @returns {Promise<Object>} Checkpoint object
+   *
+   * @example
+   * // Automatically created before each compaction
    */
   async _createCheckpoint() {
     await mkdir(this.checkpointDir, { recursive: true });
@@ -259,7 +333,15 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * RESTORE FROM CHECKPOINT - Recover from a checkpoint
+   * Restore context from checkpoint
+   *
+   * @async
+   * @param {string} checkpointId - Checkpoint ID to restore
+   * @returns {Promise<Object>} Restored checkpoint
+   * @fires ContextCompactor#checkpoint:restored
+   *
+   * @example
+   * await compactor.restoreFromCheckpoint('abc123');
    */
   async restoreFromCheckpoint(checkpointId) {
     const filename = `checkpoint-${checkpointId}.json`;
@@ -485,7 +567,19 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * GET STATUS - Get current compactor status
+   * Get current compactor status
+   *
+   * @returns {Object} Status object
+   * @returns {number} result.currentTokens - Current token usage
+   * @returns {number} result.maxTokens - Maximum tokens allowed
+   * @returns {string} result.usage - Usage percentage
+   * @returns {number} result.compactionCount - Number of compactions performed
+   * @returns {number} result.checkpoints - Number of checkpoints created
+   * @returns {Object} result.context - Context breakdown by type
+   *
+   * @example
+   * const status = compactor.getStatus();
+   * console.log(`Usage: ${status.usage}%`);
    */
   getStatus() {
     return {
@@ -506,7 +600,13 @@ export class ContextCompactor extends EventEmitter {
   }
 
   /**
-   * CLEAR CONTEXT - Reset context (use with caution!)
+   * Clear all context (use with caution!)
+   * Resets to empty state
+   *
+   * @returns {void}
+   *
+   * @example
+   * compactor.clearContext();
    */
   clearContext() {
     this.context = {

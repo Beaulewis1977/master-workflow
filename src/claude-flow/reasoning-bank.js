@@ -26,7 +26,40 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 
+/**
+ * ReasoningBank - Hybrid Memory System
+ *
+ * @class ReasoningBank
+ * @extends EventEmitter
+ * @description Hybrid memory combining AgentDB with legacy SQLite storage:
+ * - Hash-based embeddings (1024 dimensions, no API keys needed)
+ * - Persistent SQLite database at .swarm/memory.db
+ * - Pattern matching via LIKE-based search
+ * - Namespace isolation for domain organization
+ * - 2-3ms average query latency
+ * - Hybrid search: pattern matching (30%) + semantic similarity (70%)
+ *
+ * Database Structure:
+ * - memories: Stored knowledge entries
+ * - patterns: Learned behavior patterns
+ * - embeddings: Vector representations
+ * - links: Causal relationships
+ *
+ * @example
+ * const bank = new ReasoningBank({
+ *   dbPath: '.swarm/memory.db',
+ *   agentDB: agentDBInstance
+ * });
+ * await bank.initialize();
+ * await bank.store({ content: 'OAuth2 implementation', namespace: 'auth' });
+ */
 export class ReasoningBank extends EventEmitter {
+  /**
+   * Create new ReasoningBank instance
+   * @param {Object} [options={}] - Configuration options
+   * @param {string} [options.dbPath] - Database file path
+   * @param {Object} [options.agentDB] - AgentDB instance for integration
+   */
   constructor(options = {}) {
     super();
 
@@ -56,6 +89,15 @@ export class ReasoningBank extends EventEmitter {
 
   /**
    * Initialize Reasoning Bank
+   * Sets up SQLite (or file-based fallback) and loads existing memories
+   *
+   * @async
+   * @returns {Promise<void>}
+   * @fires ReasoningBank#initialized
+   *
+   * @example
+   * await bank.initialize();
+   * console.log('Memories loaded:', bank.memories.size);
    */
   async initialize() {
     console.log('\n🏦 Initializing Reasoning Bank...');
@@ -86,7 +128,24 @@ export class ReasoningBank extends EventEmitter {
   }
 
   /**
-   * STORE MEMORY - Add new memory with namespace
+   * Store new memory with namespace isolation
+   *
+   * @async
+   * @param {Object|string} memory - Memory to store
+   * @param {string} [memory.content] - Memory content (if object)
+   * @param {Object} [memory.metadata] - Additional metadata
+   * @param {string} [namespace='default'] - Memory namespace for organization
+   * @returns {Promise<Object>} Storage result
+   * @returns {string} result.id - Memory ID
+   * @returns {number} result.latency - Storage latency in ms
+   * @returns {string} result.namespace - Memory namespace
+   * @fires ReasoningBank#stored
+   *
+   * @example
+   * await bank.store({
+   *   content: 'Use bcrypt for password hashing',
+   *   metadata: { category: 'security' }
+   * }, 'best-practices');
    */
   async store(memory, namespace = 'default') {
     const startTime = Date.now();
@@ -135,7 +194,28 @@ export class ReasoningBank extends EventEmitter {
   }
 
   /**
-   * SEARCH - Hybrid search using pattern matching + embeddings
+   * Hybrid search combining pattern matching and semantic similarity
+   * Score = (pattern_match × 0.3) + (semantic_similarity × 0.7)
+   *
+   * @async
+   * @param {string} query - Search query
+   * @param {Object} [options={}] - Search options
+   * @param {string} [options.namespace] - Search within specific namespace
+   * @param {number} [options.limit=10] - Maximum results
+   * @param {number} [options.threshold=0.6] - Minimum similarity threshold
+   * @returns {Promise<Object>} Search results
+   * @returns {string} result.query - Original query
+   * @returns {Array<Object>} result.results - Matching memories with scores
+   * @returns {number} result.latency - Query latency in ms
+   * @returns {string} result.namespace - Searched namespace (or null for all)
+   * @fires ReasoningBank#searched
+   *
+   * @example
+   * const results = await bank.search('authentication patterns', {
+   *   namespace: 'auth',
+   *   threshold: 0.7
+   * });
+   * console.log(`Found ${results.results.length} matches`);
    */
   async search(query, options = {}) {
     const startTime = Date.now();
@@ -208,7 +288,30 @@ export class ReasoningBank extends EventEmitter {
   }
 
   /**
-   * LEARN PATTERN - Store behavioral pattern
+   * Learn and store behavioral pattern
+   * Also integrates with AgentDB if available
+   *
+   * @async
+   * @param {Object} pattern - Pattern to learn
+   * @param {string} [pattern.type='general'] - Pattern type
+   * @param {string} pattern.trigger - What triggers this pattern
+   * @param {Array} pattern.actions - Actions in pattern
+   * @param {boolean} [pattern.success=false] - Whether pattern was successful
+   * @param {number} [pattern.reward=0] - Reward value
+   * @param {string} [pattern.feedback] - Feedback on pattern
+   * @returns {Promise<Object>} Learning result
+   * @returns {string} result.id - Pattern ID
+   * @returns {Object} result.pattern - Stored pattern
+   * @fires ReasoningBank#pattern-learned
+   *
+   * @example
+   * await bank.learnPattern({
+   *   type: 'deployment',
+   *   trigger: 'Production deployment',
+   *   actions: ['test', 'build', 'deploy', 'verify'],
+   *   success: true,
+   *   reward: 1.0
+   * });
    */
   async learnPattern(pattern) {
     const id = this._generateId();
@@ -249,7 +352,22 @@ export class ReasoningBank extends EventEmitter {
   }
 
   /**
-   * CREATE LINK - Establish causal relationship
+   * Create causal link between two concepts
+   * Tracks strength based on number of observations
+   *
+   * @async
+   * @param {string} from - Source concept
+   * @param {string} to - Target concept
+   * @param {string} [relationship='causes'] - Relationship type
+   * @returns {Promise<Object>} Created/updated link
+   * @fires ReasoningBank#link-created
+   *
+   * @example
+   * await bank.createLink(
+   *   'poor error handling',
+   *   'production crashes',
+   *   'leads-to'
+   * );
    */
   async createLink(from, to, relationship) {
     const id = this._generateId();
@@ -283,7 +401,25 @@ export class ReasoningBank extends EventEmitter {
   }
 
   /**
-   * GET REASONING CHAIN - Build causal reasoning chain
+   * Build causal reasoning chain from start to end concept
+   * Uses graph traversal to find connection path
+   *
+   * @param {string} start - Starting concept
+   * @param {string} end - Ending concept
+   * @returns {Object} Reasoning chain
+   * @returns {string} result.start - Start concept
+   * @returns {string} result.end - End concept
+   * @returns {Array<Object>} result.chain - Links in chain
+   * @returns {boolean} result.found - Whether path was found
+   *
+   * @example
+   * const chain = bank.getReasoningChain(
+   *   'slow queries',
+   *   'user complaints'
+   * );
+   * if (chain.found) {
+   *   console.log('Causal path:', chain.chain);
+   * }
    */
   getReasoningChain(start, end) {
     const chain = [];
@@ -501,6 +637,16 @@ export class ReasoningBank extends EventEmitter {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
+  /**
+   * Save to disk
+   * SQLite auto-persists, file-based requires explicit save
+   *
+   * @async
+   * @returns {Promise<void>}
+   *
+   * @example
+   * await bank.save();
+   */
   async save() {
     if (this.db) {
       // SQLite auto-persists
@@ -511,6 +657,23 @@ export class ReasoningBank extends EventEmitter {
     }
   }
 
+  /**
+   * Get statistics
+   *
+   * @returns {Object} Statistics
+   * @returns {number} result.queries - Total queries
+   * @returns {number} result.hits - Successful searches
+   * @returns {number} result.misses - Unsuccessful searches
+   * @returns {number} result.avgLatency - Average latency in ms
+   * @returns {number} result.memories - Number of memories
+   * @returns {number} result.patterns - Number of patterns
+   * @returns {number} result.links - Number of causal links
+   * @returns {string} result.hitRate - Hit rate percentage
+   *
+   * @example
+   * const stats = bank.getStats();
+   * console.log('Hit rate:', stats.hitRate);
+   */
   getStats() {
     return {
       ...this.stats,

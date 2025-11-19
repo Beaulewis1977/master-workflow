@@ -21,7 +21,36 @@
 
 import { EventEmitter } from 'events';
 
+/**
+ * Skills System - 25 Specialized Skills with Natural Language Activation
+ *
+ * @class SkillsSystem
+ * @extends EventEmitter
+ * @description Provides natural language activation for 25 specialized capabilities:
+ *
+ * Categories:
+ * 1. Development & Methodology (3 skills) - SPARC, Pair Programming, Skill Builder
+ * 2. Intelligence & Memory (6 skills) - AgentDB, Reflexion, Causal Reasoning, etc.
+ * 3. Swarm Coordination (3 skills) - Multi-Agent, Hive-Mind, Task Distribution
+ * 4. GitHub Integration (5 skills) - PR Review, Workflows, Release, Multi-Repo, Issue Triage
+ * 5. Automation & Quality (4 skills) - Git Hooks, Verification, Performance, Security
+ * 6. Flow Nexus Platform (4 skills) - Cloud Sandbox, Neural Training, Benchmarking, Deployment
+ *
+ * @example
+ * const skills = new SkillsSystem({
+ *   agentDB: agentDBInstance,
+ *   reasoningBank: bankInstance
+ * });
+ * const result = await skills.activate('search for authentication patterns');
+ * console.log('Activated:', result.activated);
+ */
 export class SkillsSystem extends EventEmitter {
+  /**
+   * Create new Skills System
+   * @param {Object} [options={}] - Configuration options
+   * @param {Object} [options.agentDB] - AgentDB instance for semantic search
+   * @param {Object} [options.reasoningBank] - ReasoningBank instance for memory
+   */
   constructor(options = {}) {
     super();
 
@@ -281,7 +310,20 @@ export class SkillsSystem extends EventEmitter {
   }
 
   /**
-   * ACTIVATE - Natural language skill activation
+   * Activate skills based on natural language input
+   * Analyzes input text and triggers matching skills automatically
+   *
+   * @async
+   * @param {string} input - Natural language input
+   * @returns {Promise<Object>} Activation result
+   * @returns {Array<string>} result.activated - Names of activated skills
+   * @returns {Array<Object>} result.executed - Execution results for each skill
+   *
+   * @example
+   * const result = await skills.activate(
+   *   'search for similar authentication patterns and review the PR'
+   * );
+   * console.log('Activated:', result.activated); // ['AgentDB Semantic Search', 'Pull Request Review']
    */
   async activate(input) {
     console.log(`\n🎯 Analyzing input for skill activation: "${input}"\n`);
@@ -347,7 +389,15 @@ export class SkillsSystem extends EventEmitter {
   }
 
   /**
-   * Execute a skill with context
+   * Execute a skill with context and track performance
+   *
+   * @private
+   * @async
+   * @param {Object} skill - Skill to execute
+   * @param {Object} context - Execution context
+   * @returns {Promise<*>} Skill execution result
+   * @fires SkillsSystem#skill:executed
+   * @fires SkillsSystem#skill:error
    */
   async _executeSkill(skill, context) {
     const startTime = Date.now();
@@ -616,6 +666,21 @@ export class SkillsSystem extends EventEmitter {
     });
   }
 
+  /**
+   * Get all available skills with their metadata
+   *
+   * @returns {Array<Object>} Skills array
+   * @returns {string} skill.id - Skill ID
+   * @returns {string} skill.name - Skill name
+   * @returns {string} skill.category - Category
+   * @returns {string} skill.description - Description
+   * @returns {Array<string>} skill.triggers - Trigger phrases
+   * @returns {Object} skill.stats - Usage statistics
+   *
+   * @example
+   * const allSkills = skills.getSkills();
+   * console.log(`Available: ${allSkills.length} skills`);
+   */
   getSkills() {
     return Array.from(this.skills.values()).map(skill => ({
       id: skill.id,
@@ -627,6 +692,19 @@ export class SkillsSystem extends EventEmitter {
     }));
   }
 
+  /**
+   * Get system statistics
+   *
+   * @returns {Object} Statistics
+   * @returns {number} result.totalSkills - Total number of skills
+   * @returns {Object} result.categories - Stats per category
+   * @returns {number} result.history - Number of activations
+   * @returns {number} result.activeSkills - Currently active skills
+   *
+   * @example
+   * const stats = skills.getStats();
+   * console.log('Total uses:', stats.categories.intelligence.uses);
+   */
   getStats() {
     const categoryStats = {};
 
