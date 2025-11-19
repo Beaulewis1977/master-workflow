@@ -9,6 +9,7 @@
     "start": "node src/index.js",
     "demo": "node demos/master-workflow-3.0-demo.js",
     "install:interactive": "node src/installer/interactive-installer.js",
+    "install:enhanced": "node src/installer/enhanced-installer.js",
     "flow": "node src/cli/flow-cli.js",
     "agent": "node src/cli/agent-cli.js",
     "build:app": "node src/builder/autonomous-builder.js",
@@ -17,7 +18,15 @@
     "lint": "node scripts/lint-if-available.js",
     "coverage": "echo 'No coverage tool configured; skipping'",
     "install-sqlite": "npm install sqlite3 sqlite || echo 'SQLite installation failed, will use file-based fallback'",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "bootstrap": "node -e \"import('./src/bootstrap/project-bootstrap-agent.js').then(m => new m.ProjectBootstrapAgent({interactive:true}).bootstrap())\"",
+    "wiki": "node -e \"import('./src/bootstrap/project-bootstrap-agent.js').then(m => new m.ProjectBootstrapAgent().then(a => a._createRepoWiki()))\"",
+    "agentdb:status": "node -e \"import('./src/claude-flow/agentdb-integration.js').then(m => {const db=new m.AgentDB();db.initialize().then(()=>console.log(db.getStats()))})\"",
+    "compactor:status": "node -e \"import('./src/context/context-compactor.js').then(m => console.log(new m.ContextCompactor().getStatus()))\"",
+    "skills:list": "node -e \"import('./src/claude-flow/skills-system.js').then(m => new m.SkillsSystem().getSkills().forEach(s=>console.log(s.name)))\"",
+    "system:status": "node -e \"import('./src/index.js').then(m => {const s=new m.MasterWorkflow3();s.initialize().then(()=>s.getStatus().then(console.log))})\"",
+    "setup": "npm install && npm run install-sqlite && echo '✅ Setup complete! Run: npm run install:enhanced'",
+    "quick-start": "npm run setup && npm run install:enhanced"
   },
   "keywords": [
     "ai",
