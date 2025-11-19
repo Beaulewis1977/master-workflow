@@ -24,7 +24,9 @@
       "Bash(npm test:*)",
       "Bash(grep:*)",
       "Bash(npm ls:*)",
-      "Bash(tmux ls:*)"
+      "Bash(tmux ls:*)",
+      "mcp__github-official__get_file_contents",
+      "Bash(git fetch:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
@@ -41,6 +43,10 @@
     "github-official",
     "mcp-filesystem",
     "desktop-commander",
+    "netlify",
+    "dart-mcp",
+    "dart",
+    "n8n-mcp",
     "firecrawl",
     "context7-mcp",
     "consult7",
@@ -52,13 +58,16 @@
     "deep-code-reasoning",
     "shadcn-ui",
     "nextjs-manager",
-    "vibe-coder-mcp-wsl",
-    "vibe-coder-mcp",
-    "mcp-installer",
     "supabase",
+    "postgres",
+    "upstash",
+    "BMAD-METHOD Docs",
     "awesome-ui-component-library Docs",
-    "BMAD-METHOD DOCS",
-    "zen-mcp-server"
+    "Prisma-Local",
+    "Prisma-Remote",
+    "zen-mcp-server",
+    "vibe-coder-mcp-wsl",
+    "vibe-coder-mcp"
   ],
   "disabledMcpjsonServers": [
     "vibe-coder-mcp-wsl",
