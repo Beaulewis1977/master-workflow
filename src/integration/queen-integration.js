@@ -17,6 +17,9 @@ import { dirname, join } from 'path';
 import { CrossDimensionalMemoryFusion } from '../quantum-intelligence/cross-dimensional-memory-fusion.js';
 import { NeuralSwarmLearning } from '../neural-swarm/swarm-learning-engine.js';
 import { CodeArchaeologyEngine } from '../code-archaeology/pattern-discovery-engine.js';
+import { AgentDB } from '../claude-flow/agentdb-integration.js';
+import { ReasoningBank } from '../claude-flow/reasoning-bank.js';
+import { SkillsSystem } from '../claude-flow/skills-system.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -82,6 +85,31 @@ export class IntegratedQueenController {
       ...options.archaeologyOptions
     });
 
+    // Initialize AgentDB (96x-164x faster semantic search)
+    console.log('🚀 Initializing AgentDB v1.3.9...');
+    this.agentDB = new AgentDB({
+      dbPath: join(this.projectRoot, '.swarm', 'agentdb.db'),
+      quantization: options.quantization || 'scalar',
+      rlAlgorithm: options.rlAlgorithm || 'ppo',
+      ...options.agentDBOptions
+    });
+
+    // Initialize ReasoningBank (hybrid memory)
+    console.log('🏦 Initializing Reasoning Bank...');
+    this.reasoningBank = new ReasoningBank({
+      dbPath: join(this.projectRoot, '.swarm', 'memory.db'),
+      agentDB: this.agentDB,
+      ...options.reasoningBankOptions
+    });
+
+    // Initialize Skills System (25 specialized skills)
+    console.log('🎯 Initializing Skills System...');
+    this.skills = new SkillsSystem({
+      agentDB: this.agentDB,
+      reasoningBank: this.reasoningBank,
+      ...options.skillsOptions
+    });
+
     // Event wiring
     this._wireEvents();
 
@@ -114,6 +142,15 @@ export class IntegratedQueenController {
       // Initialize code archaeology
       await this.archaeology.initialize();
 
+      // Initialize AgentDB (96x-164x faster semantic search)
+      await this.agentDB.initialize();
+
+      // Initialize ReasoningBank (hybrid memory system)
+      await this.reasoningBank.initialize();
+
+      // Skills System (no async initialization needed)
+      console.log(`   ✓ Skills System: ${this.skills.skills.size} skills ready`);
+
       // Wait for shared memory to be ready
       if (!this.sharedMemory.isInitialized) {
         await new Promise(resolve => {
@@ -134,7 +171,10 @@ export class IntegratedQueenController {
       console.log(`   ✓ Shared Memory: ${this.sharedMemory.entryCount} entries`);
       console.log(`   ✓ Quantum Memory: ${this.quantumMemory.quantumStates.size} quantum states`);
       console.log(`   ✓ Neural Swarm: ${this.neuralSwarm.agents.size} swarm agents`);
-      console.log(`   ✓ Code Archaeology: Ready for excavation\n`);
+      console.log(`   ✓ Code Archaeology: Ready for excavation`);
+      console.log(`   ✓ AgentDB: ${this.agentDB.patterns.size} patterns, ${this.agentDB.skills.size} skills`);
+      console.log(`   ✓ Reasoning Bank: ${this.reasoningBank.memories.size} memories`);
+      console.log(`   ✓ Skills System: ${this.skills.skills.size} specialized skills\n`);
 
       return true;
 
