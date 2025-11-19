@@ -1,0 +1,8 @@
+{
+  "agentsSpawned": 0,
+  "tasksDistributed": 0,
+  "tasksCompleted": 0,
+  "averageCompletionTime": 0,
+  "contextUsage": {},
+  "errors": []
+}

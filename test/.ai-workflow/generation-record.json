@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2025-08-14T14:06:02.488Z",
+  "updates": [
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/README.md",
+      "origin": "generated_document",
+      "strategy": "replace",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.487Z"
+    },
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/.claude/CLAUDE.md",
+      "origin": "generated_document",
+      "strategy": "intelligent",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.490Z"
+    },
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/.agent-os/instructions/instructions.md",
+      "origin": "generated_document",
+      "strategy": "merge",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.492Z"
+    },
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/CONTRIBUTING.md",
+      "origin": "generated_document",
+      "strategy": "replace",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.493Z"
+    },
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/DEPLOYMENT.md",
+      "origin": "generated_document",
+      "strategy": "replace",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.495Z"
+    },
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/ARCHITECTURE.md",
+      "origin": "generated_document",
+      "strategy": "replace",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.496Z"
+    },
+    {
+      "path": "/tmp/phase6-integration-1755180352894/generated-docs/API.md",
+      "origin": "generated_document",
+      "strategy": "replace",
+      "backup": null,
+      "timestamp": "2025-08-14T14:06:02.497Z"
+    }
+  ]
+}

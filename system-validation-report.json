@@ -1,0 +1,5302 @@
+{
+  "timestamp": "2025-08-14T15:45:57.880Z",
+  "totalDuration": "5598.00ms",
+  "summary": {
+    "totalTests": 9,
+    "passed": 8,
+    "failed": 1,
+    "successRate": "88.9%"
+  },
+  "systemStatus": {
+    "sharedMemory": {
+      "reads": 604,
+      "writes": 2222,
+      "hits": 504,
+      "misses": 100,
+      "evictions": 0,
+      "gcRuns": 2,
+      "totalMemoryUsed": 436829,
+      "averageReadTime": 0,
+      "averageWriteTime": 9.166516651665173,
+      "concurrentOperations": 0,
+      "cacheHitRate": "83.44%",
+      "memoryUsage": 436829,
+      "entryCount": 4244,
+      "totalEntries": 4244,
+      "maxMemorySize": 52428800,
+      "maxEntries": 10000,
+      "memoryUtilization": "0.83%",
+      "entryUtilization": "42.44%",
+      "dbStatus": {
+        "available": false,
+        "reason": "sqlite_unavailable",
+        "fallback": "file_based",
+        "error": "Query failed: SQLITE_ERROR: no such column: severity\\nSQL: CREATE INDEX IF NOT EXISTS idx_events_severity ON memory_events(severity, timestamp DESC)",
+        "timestamp": 1755186352334
+      },
+      "activeSubscribers": 0,
+      "activeLocks": 0
+    },
+    "communication": {
+      "messagesSent": 578,
+      "messagesReceived": 78,
+      "messagesDropped": 0,
+      "averageLatency": 206.18828011741226,
+      "taskChainsCompleted": 0,
+      "parallelExecutions": 0,
+      "batchesProcessed": 17,
+      "averageBatchSize": 4.588235294117647,
+      "queueProcessingTime": 0.07776331899217777,
+      "peakQueueSize": 70,
+      "throughputPerSecond": 10,
+      "queueSize": 0,
+      "registeredAgents": 5,
+      "activeChains": 0,
+      "historySize": 78
+    },
+    "backup": {
+      "initialized": true,
+      "backupInProgress": false,
+      "currentBackup": null,
+      "backupHistory": [
+        {
+          "id": "d6aa1547-11d9-4c11-b304-6fa079f3514c",
+          "type": "integration-test",
+          "timestamp": 1755186357453,
+          "startTime": 1755186357453,
+          "version": "1.0.0",
+          "components": {
+            "sharedMemory": {
+              "name": "sharedMemory",
+              "path": ".hive-mind",
+              "files": [
+                {
+                  "path": "backups/shared-memory-1755186138706.json",
+                  "size": 1060340,
+                  "modified": "2025-08-14T15:45:57.453Z"
+                },
+                {
+                  "path": "hive.db",
+                  "size": 307200,
+                  "modified": "2025-08-14T15:45:57.457Z"
+                },
+                {
+                  "path": "hive.db-shm",
+                  "size": 32768,
+                  "modified": "2025-08-14T15:45:57.457Z"
+                },
+                {
+                  "path": "hive.db-wal",
+                  "size": 0,
+                  "modified": "2025-08-14T15:45:52.308Z"
+                },
+                {
+                  "path": "memory.db",
+                  "size": 135168,
+                  "modified": "2025-08-14T15:45:57.457Z"
+                },
+                {
+                  "path": "memory.db-shm",
+                  "size": 32768,
+                  "modified": "2025-08-14T15:45:57.457Z"
+                },
+                {
+                  "path": "memory.db-wal",
+                  "size": 0,
+                  "modified": "2025-08-14T15:45:52.300Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755036061465-190jiauun.txt",
+                  "size": 5697,
+                  "modified": "2025-08-14T15:45:57.457Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755038190130-tiaxbw13m.txt",
+                  "size": 5703,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755039855984-kr93g29tm.txt",
+                  "size": 5697,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040540309-8jm9s8qcv.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040583416-mmlxsi9fp.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040698540-o0jq1fsgx.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040913555-dhwqkq5y0.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040953623-j1bwreovb.txt",
+                  "size": 5787,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755041006782-z02qvzqka.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/session-1755032286771-q5ta3okdy-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755032286771-q5ta3okdy-auto-save-1755032315293.json",
+                  "size": 2366,
+                  "modified": "2025-08-14T15:45:57.461Z"
+                },
+                {
+                  "path": "sessions/session-1755035015462-2iedcu4q8-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755035015462-2iedcu4q8-auto-save-1755035043838.json",
+                  "size": 3530,
+                  "modified": "2025-08-14T15:45:57.465Z"
+                },
+                {
+                  "path": "sessions/session-1755035483566-zqh0jwedl-auto-save-1755035511932.json",
+                  "size": 3422,
+                  "modified": "2025-08-14T15:45:57.465Z"
+                },
+                {
+                  "path": "sessions/session-1755036061485-jj006dzdc-auto-save-1755036089872.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:57.465Z"
+                },
+                {
+                  "path": "sessions/session-1755038190157-d410u8stp-auto-save-1755038218410.json",
+                  "size": 2338,
+                  "modified": "2025-08-14T15:45:57.465Z"
+                },
+                {
+                  "path": "sessions/session-1755039703145-jioprbud4-auto-save-1755039731348.json",
+                  "size": 3470,
+                  "modified": "2025-08-14T15:45:57.465Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-save-1755040568573.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:57.469Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-save-1755040611669.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:57.469Z"
+                },
+                {
+                  "path": "sessions/session-1755040698566-y581thdhr-auto-save-1755040726691.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:57.469Z"
+                },
+                {
+                  "path": "sessions/session-1755040913576-10mw6smss-auto-save-1755040941769.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:57.469Z"
+                },
+                {
+                  "path": "sessions/session-1755040953652-t8kcc3btq-auto-save-1755040981831.json",
+                  "size": 2374,
+                  "modified": "2025-08-14T15:45:57.469Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-save-1755041034981.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:57.469Z"
+                },
+                {
+                  "path": "shared-memory.json",
+                  "size": 1060340,
+                  "modified": "2025-08-14T15:45:57.473Z"
+                }
+              ],
+              "size": 2711472,
+              "checksum": "e160ef143d587324a7674644276aba6a548e034dd72ce9abc6e38fda47f1efbb",
+              "status": "completed"
+            },
+            "intelligence": {
+              "name": "intelligence",
+              "path": "intelligence-engine",
+              "files": [
+                {
+                  "path": ".hive-mind/shared-memory.json",
+                  "size": 518781,
+                  "modified": "2025-08-14T15:45:57.505Z"
+                },
+                {
+                  "path": "AGENT-OS-DOCUMENT-ANALYZER-README.md",
+                  "size": 17099,
+                  "modified": "2025-08-14T15:45:57.505Z"
+                },
+                {
+                  "path": "CLAUDE.md",
+                  "size": 885,
+                  "modified": "2025-08-14T15:45:57.509Z"
+                },
+                {
+                  "path": "NEURAL-LEARNING-SYSTEM.md",
+                  "size": 11776,
+                  "modified": "2025-08-14T15:45:57.509Z"
+                },
+                {
+                  "path": "README.md",
+                  "size": 915,
+                  "modified": "2025-08-14T15:45:57.509Z"
+                },
+                {
+                  "path": "SHARED-MEMORY-README.md",
+                  "size": 16242,
+                  "modified": "2025-08-14T15:45:57.509Z"
+                },
+                {
+                  "path": "agent-communication.js",
+                  "size": 35417,
+                  "modified": "2025-08-14T15:45:57.513Z"
+                },
+                {
+                  "path": "agent-os-document-analyzer.js",
+                  "size": 46928,
+                  "modified": "2025-08-14T15:45:57.513Z"
+                },
+                {
+                  "path": "agent-os-structure-handler.js",
+                  "size": 20912,
+                  "modified": "2025-08-14T15:45:57.513Z"
+                },
+                {
+                  "path": "agent-os-template-manager.js",
+                  "size": 25036,
+                  "modified": "2025-08-14T15:45:57.513Z"
+                },
+                {
+                  "path": "analysis-engines/api-analysis-engine.js",
+                  "size": 24155,
+                  "modified": "2025-08-14T15:45:57.513Z"
+                },
+                {
+                  "path": "analysis-engines/architecture-detection-engine.js",
+                  "size": 14825,
+                  "modified": "2025-08-14T15:45:57.513Z"
+                },
+                {
+                  "path": "analysis-engines/database-analysis-engine.js",
+                  "size": 22483,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "analysis-engines/pattern-detection-engine.js",
+                  "size": 11334,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "analysis-engines/performance-analysis-engine.js",
+                  "size": 19921,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "analysis-engines/security-analysis-engine.js",
+                  "size": 19860,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "analysis-engines/test-analysis-engine.js",
+                  "size": 16056,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "approach-selector.js",
+                  "size": 21512,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "backup-recovery-system.js",
+                  "size": 27912,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "claude-md-generator.js",
+                  "size": 31281,
+                  "modified": "2025-08-14T15:45:57.517Z"
+                },
+                {
+                  "path": "complexity-analyzer.js",
+                  "size": 21469,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "customization-manager.js",
+                  "size": 26681,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "database-connection-manager.js",
+                  "size": 25465,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "database-performance-monitor.js",
+                  "size": 20101,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "database-schema-manager.js",
+                  "size": 20738,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "decisions.md",
+                  "size": 430,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "deep-codebase-analyzer.js",
+                  "size": 21313,
+                  "modified": "2025-08-14T15:45:57.521Z"
+                },
+                {
+                  "path": "document-customizer.js",
+                  "size": 46083,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "document-generator-v2.js",
+                  "size": 25101,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "document-versioning.js",
+                  "size": 28160,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "enhanced-template-engine.js",
+                  "size": 28490,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "install-dependencies.sh",
+                  "size": 4324,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "instructions.md",
+                  "size": 722,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "integration-checker.js",
+                  "size": 12495,
+                  "modified": "2025-08-14T15:45:57.525Z"
+                },
+                {
+                  "path": "interactive-document-updater.js",
+                  "size": 78637,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "interactive-updater.js",
+                  "size": 17350,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "mcp-full-configurator.js",
+                  "size": 72927,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "memory-integration-example.js",
+                  "size": 20099,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "mission.md",
+                  "size": 411,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "neural-learning.js",
+                  "size": 68863,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "performance-cache-manager.js",
+                  "size": 29407,
+                  "modified": "2025-08-14T15:45:57.529Z"
+                },
+                {
+                  "path": "performance-integration.js",
+                  "size": 31563,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "performance-monitor.js",
+                  "size": 33457,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "phase6-orchestrator.js",
+                  "size": 18549,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "preservation-test-results.md",
+                  "size": 5439,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "project-scanner.js",
+                  "size": 12534,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "queen-controller.js",
+                  "size": 46824,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "resource-manager.js",
+                  "size": 29130,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "roadmap.md",
+                  "size": 432,
+                  "modified": "2025-08-14T15:45:57.533Z"
+                },
+                {
+                  "path": "shared-memory.js",
+                  "size": 74299,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "smart-tool-selector.js",
+                  "size": 16008,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "standards.md",
+                  "size": 574,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "sub-agent-manager.js",
+                  "size": 30467,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "test-agent-os-document-analyzer.js",
+                  "size": 9550,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "test-database-fixes.js",
+                  "size": 27147,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "test-installer-enhancements.js",
+                  "size": 4552,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "test-neural-learning.js",
+                  "size": 20341,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "test-phase3-implementation.js",
+                  "size": 13636,
+                  "modified": "2025-08-14T15:45:57.537Z"
+                },
+                {
+                  "path": "test-phase4-implementation.js",
+                  "size": 24544,
+                  "modified": "2025-08-14T15:45:57.541Z"
+                },
+                {
+                  "path": "test-phase5-implementation.js",
+                  "size": 40012,
+                  "modified": "2025-08-14T15:45:57.541Z"
+                },
+                {
+                  "path": "test-phase6-neural-integration.js",
+                  "size": 15895,
+                  "modified": "2025-08-14T15:45:57.541Z"
+                },
+                {
+                  "path": "test-preservation-features.js",
+                  "size": 7310,
+                  "modified": "2025-08-14T15:45:57.541Z"
+                },
+                {
+                  "path": "test-shared-memory.js",
+                  "size": 30792,
+                  "modified": "2025-08-14T15:45:57.541Z"
+                },
+                {
+                  "path": "user-choice-handler.sh",
+                  "size": 40034,
+                  "modified": "2025-08-14T15:45:57.541Z"
+                }
+              ],
+              "size": 2005685,
+              "checksum": "41363351d285a3ea9d042bb045fd1683fe07dac8e674d8feb0a1c8ded00eee93",
+              "status": "completed"
+            },
+            "configs": {
+              "name": "configs",
+              "path": "configs",
+              "files": [
+                {
+                  "path": "agent-mappings.json",
+                  "size": 5529,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                },
+                {
+                  "path": "approaches.json",
+                  "size": 5774,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                },
+                {
+                  "path": "communication-protocol.json",
+                  "size": 8185,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                },
+                {
+                  "path": "integrations.json",
+                  "size": 6293,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                },
+                {
+                  "path": "orchestration.json",
+                  "size": 5304,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                },
+                {
+                  "path": "recovery-config.json",
+                  "size": 6403,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                },
+                {
+                  "path": "tech-stack.json",
+                  "size": 10338,
+                  "modified": "2025-08-14T15:45:57.581Z"
+                }
+              ],
+              "size": 47826,
+              "checksum": "39c12a4e397d7308bb609500b43391f3b49b033d20c9be8df2aedf79e2573d11",
+              "status": "completed"
+            },
+            "agents": {
+              "name": "agents",
+              "path": ".claude/agents",
+              "files": [
+                {
+                  "path": "1-CONFIGURATION-SUMMARY.md",
+                  "size": 7385,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-INTER-AGENT-COMMUNICATION-MATRIX.md",
+                  "size": 7395,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-agent-communication-bridge.md",
+                  "size": 14384,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-ceo-quality-control.md",
+                  "size": 16133,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-context-flattener-specialist.md",
+                  "size": 10931,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-deployment-pipeline-engineer.md",
+                  "size": 13561,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-documentation-generator.md",
+                  "size": 14069,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-engine-architect.md",
+                  "size": 13815,
+                  "modified": "2025-08-14T15:45:57.589Z"
+                },
+                {
+                  "path": "1-error-recovery-specialist.md",
+                  "size": 12273,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-intelligence-analyzer.md",
+                  "size": 11246,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-mcp-integration-specialist.md",
+                  "size": 10790,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-metrics-monitoring-engineer.md",
+                  "size": 14247,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-neural-swarm-architect.md",
+                  "size": 17374,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-orchestration-coordinator.md",
+                  "size": 15384,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-performance-optimization-engineer.md",
+                  "size": 16274,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-queen-controller-architect.md",
+                  "size": 11975,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-resource-scheduler.md",
+                  "size": 14471,
+                  "modified": "2025-08-14T15:45:57.593Z"
+                },
+                {
+                  "path": "1-security-compliance-auditor.md",
+                  "size": 13773,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "1-sparc-methodology-implementer.md",
+                  "size": 6673,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "1-state-persistence-manager.md",
+                  "size": 8718,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "1-system-integration-specialist.md",
+                  "size": 16066,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "1-test-automation-engineer.md",
+                  "size": 13048,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "1-tmux-session-manager.md",
+                  "size": 14471,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "1-workflow-language-designer.md",
+                  "size": 15079,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "agent-config-generator.md",
+                  "size": 38199,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "api-builder-agent.md",
+                  "size": 12745,
+                  "modified": "2025-08-14T15:45:57.597Z"
+                },
+                {
+                  "path": "approach-selector-agent.md",
+                  "size": 10106,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "code-analyzer-agent.md",
+                  "size": 7289,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "complexity-analyzer-agent.md",
+                  "size": 10237,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "configuration-pipeline-agent.md",
+                  "size": 4166,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "database-architect-agent.md",
+                  "size": 20221,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "deployment-engineer-agent.md",
+                  "size": 17995,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "doc-generator-agent.md",
+                  "size": 14543,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "document-customizer-agent.md",
+                  "size": 10592,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "frontend-specialist-agent.md",
+                  "size": 9364,
+                  "modified": "2025-08-14T15:45:57.601Z"
+                },
+                {
+                  "path": "github-git-specialist-agent.md",
+                  "size": 15593,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "integration-coordinator-agent.md",
+                  "size": 13232,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "mcp-workflow-integration-agent.md",
+                  "size": 2854,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "pattern-sharing-agent.md",
+                  "size": 3342,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "performance-optimizer-agent.md",
+                  "size": 14609,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "recovery-specialist-agent.md",
+                  "size": 10545,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "recovery-specialist.md",
+                  "size": 1109,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "security-auditor.md",
+                  "size": 4490,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "security-scanner-agent.md",
+                  "size": 11620,
+                  "modified": "2025-08-14T15:45:57.605Z"
+                },
+                {
+                  "path": "sparc-methodology-agent.md",
+                  "size": 11952,
+                  "modified": "2025-08-14T15:45:57.609Z"
+                },
+                {
+                  "path": "test-engineer.md",
+                  "size": 5455,
+                  "modified": "2025-08-14T15:45:57.609Z"
+                },
+                {
+                  "path": "test-runner-agent.md",
+                  "size": 7398,
+                  "modified": "2025-08-14T15:45:57.609Z"
+                },
+                {
+                  "path": "testing-validation-agent.md",
+                  "size": 4358,
+                  "modified": "2025-08-14T15:45:57.609Z"
+                },
+                {
+                  "path": "workflow-orchestrator.md",
+                  "size": 9150,
+                  "modified": "2025-08-14T15:45:57.609Z"
+                }
+              ],
+              "size": 580699,
+              "checksum": "24024d5ad400c31104214ebc8592c229dfd0f9634eb001d0bbaf4586aa37e771",
+              "status": "completed"
+            },
+            "database": {
+              "name": "database",
+              "path": ".hive-mind/*.db",
+              "files": [],
+              "size": 0,
+              "checksum": null,
+              "status": "skipped",
+              "reason": "path_not_found"
+            }
+          },
+          "files": [
+            {
+              "path": "backups/shared-memory-1755186138706.json",
+              "size": 1060340,
+              "modified": "2025-08-14T15:45:57.453Z"
+            },
+            {
+              "path": "hive.db",
+              "size": 307200,
+              "modified": "2025-08-14T15:45:57.457Z"
+            },
+            {
+              "path": "hive.db-shm",
+              "size": 32768,
+              "modified": "2025-08-14T15:45:57.457Z"
+            },
+            {
+              "path": "hive.db-wal",
+              "size": 0,
+              "modified": "2025-08-14T15:45:52.308Z"
+            },
+            {
+              "path": "memory.db",
+              "size": 135168,
+              "modified": "2025-08-14T15:45:57.457Z"
+            },
+            {
+              "path": "memory.db-shm",
+              "size": 32768,
+              "modified": "2025-08-14T15:45:57.457Z"
+            },
+            {
+              "path": "memory.db-wal",
+              "size": 0,
+              "modified": "2025-08-14T15:45:52.300Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755036061465-190jiauun.txt",
+              "size": 5697,
+              "modified": "2025-08-14T15:45:57.457Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755038190130-tiaxbw13m.txt",
+              "size": 5703,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755039855984-kr93g29tm.txt",
+              "size": 5697,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040540309-8jm9s8qcv.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040583416-mmlxsi9fp.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040698540-o0jq1fsgx.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040913555-dhwqkq5y0.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040953623-j1bwreovb.txt",
+              "size": 5787,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755041006782-z02qvzqka.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/session-1755032286771-q5ta3okdy-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755032286771-q5ta3okdy-auto-save-1755032315293.json",
+              "size": 2366,
+              "modified": "2025-08-14T15:45:57.461Z"
+            },
+            {
+              "path": "sessions/session-1755035015462-2iedcu4q8-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755035015462-2iedcu4q8-auto-save-1755035043838.json",
+              "size": 3530,
+              "modified": "2025-08-14T15:45:57.465Z"
+            },
+            {
+              "path": "sessions/session-1755035483566-zqh0jwedl-auto-save-1755035511932.json",
+              "size": 3422,
+              "modified": "2025-08-14T15:45:57.465Z"
+            },
+            {
+              "path": "sessions/session-1755036061485-jj006dzdc-auto-save-1755036089872.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:57.465Z"
+            },
+            {
+              "path": "sessions/session-1755038190157-d410u8stp-auto-save-1755038218410.json",
+              "size": 2338,
+              "modified": "2025-08-14T15:45:57.465Z"
+            },
+            {
+              "path": "sessions/session-1755039703145-jioprbud4-auto-save-1755039731348.json",
+              "size": 3470,
+              "modified": "2025-08-14T15:45:57.465Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-save-1755040568573.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:57.469Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-save-1755040611669.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:57.469Z"
+            },
+            {
+              "path": "sessions/session-1755040698566-y581thdhr-auto-save-1755040726691.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:57.469Z"
+            },
+            {
+              "path": "sessions/session-1755040913576-10mw6smss-auto-save-1755040941769.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:57.469Z"
+            },
+            {
+              "path": "sessions/session-1755040953652-t8kcc3btq-auto-save-1755040981831.json",
+              "size": 2374,
+              "modified": "2025-08-14T15:45:57.469Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-save-1755041034981.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:57.469Z"
+            },
+            {
+              "path": "shared-memory.json",
+              "size": 1060340,
+              "modified": "2025-08-14T15:45:57.473Z"
+            },
+            {
+              "path": ".hive-mind/shared-memory.json",
+              "size": 518781,
+              "modified": "2025-08-14T15:45:57.505Z"
+            },
+            {
+              "path": "AGENT-OS-DOCUMENT-ANALYZER-README.md",
+              "size": 17099,
+              "modified": "2025-08-14T15:45:57.505Z"
+            },
+            {
+              "path": "CLAUDE.md",
+              "size": 885,
+              "modified": "2025-08-14T15:45:57.509Z"
+            },
+            {
+              "path": "NEURAL-LEARNING-SYSTEM.md",
+              "size": 11776,
+              "modified": "2025-08-14T15:45:57.509Z"
+            },
+            {
+              "path": "README.md",
+              "size": 915,
+              "modified": "2025-08-14T15:45:57.509Z"
+            },
+            {
+              "path": "SHARED-MEMORY-README.md",
+              "size": 16242,
+              "modified": "2025-08-14T15:45:57.509Z"
+            },
+            {
+              "path": "agent-communication.js",
+              "size": 35417,
+              "modified": "2025-08-14T15:45:57.513Z"
+            },
+            {
+              "path": "agent-os-document-analyzer.js",
+              "size": 46928,
+              "modified": "2025-08-14T15:45:57.513Z"
+            },
+            {
+              "path": "agent-os-structure-handler.js",
+              "size": 20912,
+              "modified": "2025-08-14T15:45:57.513Z"
+            },
+            {
+              "path": "agent-os-template-manager.js",
+              "size": 25036,
+              "modified": "2025-08-14T15:45:57.513Z"
+            },
+            {
+              "path": "analysis-engines/api-analysis-engine.js",
+              "size": 24155,
+              "modified": "2025-08-14T15:45:57.513Z"
+            },
+            {
+              "path": "analysis-engines/architecture-detection-engine.js",
+              "size": 14825,
+              "modified": "2025-08-14T15:45:57.513Z"
+            },
+            {
+              "path": "analysis-engines/database-analysis-engine.js",
+              "size": 22483,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "analysis-engines/pattern-detection-engine.js",
+              "size": 11334,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "analysis-engines/performance-analysis-engine.js",
+              "size": 19921,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "analysis-engines/security-analysis-engine.js",
+              "size": 19860,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "analysis-engines/test-analysis-engine.js",
+              "size": 16056,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "approach-selector.js",
+              "size": 21512,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "backup-recovery-system.js",
+              "size": 27912,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "claude-md-generator.js",
+              "size": 31281,
+              "modified": "2025-08-14T15:45:57.517Z"
+            },
+            {
+              "path": "complexity-analyzer.js",
+              "size": 21469,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "customization-manager.js",
+              "size": 26681,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "database-connection-manager.js",
+              "size": 25465,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "database-performance-monitor.js",
+              "size": 20101,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "database-schema-manager.js",
+              "size": 20738,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "decisions.md",
+              "size": 430,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "deep-codebase-analyzer.js",
+              "size": 21313,
+              "modified": "2025-08-14T15:45:57.521Z"
+            },
+            {
+              "path": "document-customizer.js",
+              "size": 46083,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "document-generator-v2.js",
+              "size": 25101,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "document-versioning.js",
+              "size": 28160,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "enhanced-template-engine.js",
+              "size": 28490,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "install-dependencies.sh",
+              "size": 4324,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "instructions.md",
+              "size": 722,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "integration-checker.js",
+              "size": 12495,
+              "modified": "2025-08-14T15:45:57.525Z"
+            },
+            {
+              "path": "interactive-document-updater.js",
+              "size": 78637,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "interactive-updater.js",
+              "size": 17350,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "mcp-full-configurator.js",
+              "size": 72927,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "memory-integration-example.js",
+              "size": 20099,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "mission.md",
+              "size": 411,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "neural-learning.js",
+              "size": 68863,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "performance-cache-manager.js",
+              "size": 29407,
+              "modified": "2025-08-14T15:45:57.529Z"
+            },
+            {
+              "path": "performance-integration.js",
+              "size": 31563,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "performance-monitor.js",
+              "size": 33457,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "phase6-orchestrator.js",
+              "size": 18549,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "preservation-test-results.md",
+              "size": 5439,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "project-scanner.js",
+              "size": 12534,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "queen-controller.js",
+              "size": 46824,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "resource-manager.js",
+              "size": 29130,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "roadmap.md",
+              "size": 432,
+              "modified": "2025-08-14T15:45:57.533Z"
+            },
+            {
+              "path": "shared-memory.js",
+              "size": 74299,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "smart-tool-selector.js",
+              "size": 16008,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "standards.md",
+              "size": 574,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "sub-agent-manager.js",
+              "size": 30467,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "test-agent-os-document-analyzer.js",
+              "size": 9550,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "test-database-fixes.js",
+              "size": 27147,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "test-installer-enhancements.js",
+              "size": 4552,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "test-neural-learning.js",
+              "size": 20341,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "test-phase3-implementation.js",
+              "size": 13636,
+              "modified": "2025-08-14T15:45:57.537Z"
+            },
+            {
+              "path": "test-phase4-implementation.js",
+              "size": 24544,
+              "modified": "2025-08-14T15:45:57.541Z"
+            },
+            {
+              "path": "test-phase5-implementation.js",
+              "size": 40012,
+              "modified": "2025-08-14T15:45:57.541Z"
+            },
+            {
+              "path": "test-phase6-neural-integration.js",
+              "size": 15895,
+              "modified": "2025-08-14T15:45:57.541Z"
+            },
+            {
+              "path": "test-preservation-features.js",
+              "size": 7310,
+              "modified": "2025-08-14T15:45:57.541Z"
+            },
+            {
+              "path": "test-shared-memory.js",
+              "size": 30792,
+              "modified": "2025-08-14T15:45:57.541Z"
+            },
+            {
+              "path": "user-choice-handler.sh",
+              "size": 40034,
+              "modified": "2025-08-14T15:45:57.541Z"
+            },
+            {
+              "path": "agent-mappings.json",
+              "size": 5529,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "approaches.json",
+              "size": 5774,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "communication-protocol.json",
+              "size": 8185,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "integrations.json",
+              "size": 6293,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "orchestration.json",
+              "size": 5304,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "recovery-config.json",
+              "size": 6403,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "tech-stack.json",
+              "size": 10338,
+              "modified": "2025-08-14T15:45:57.581Z"
+            },
+            {
+              "path": "1-CONFIGURATION-SUMMARY.md",
+              "size": 7385,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-INTER-AGENT-COMMUNICATION-MATRIX.md",
+              "size": 7395,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-agent-communication-bridge.md",
+              "size": 14384,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-ceo-quality-control.md",
+              "size": 16133,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-context-flattener-specialist.md",
+              "size": 10931,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-deployment-pipeline-engineer.md",
+              "size": 13561,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-documentation-generator.md",
+              "size": 14069,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-engine-architect.md",
+              "size": 13815,
+              "modified": "2025-08-14T15:45:57.589Z"
+            },
+            {
+              "path": "1-error-recovery-specialist.md",
+              "size": 12273,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-intelligence-analyzer.md",
+              "size": 11246,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-mcp-integration-specialist.md",
+              "size": 10790,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-metrics-monitoring-engineer.md",
+              "size": 14247,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-neural-swarm-architect.md",
+              "size": 17374,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-orchestration-coordinator.md",
+              "size": 15384,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-performance-optimization-engineer.md",
+              "size": 16274,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-queen-controller-architect.md",
+              "size": 11975,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-resource-scheduler.md",
+              "size": 14471,
+              "modified": "2025-08-14T15:45:57.593Z"
+            },
+            {
+              "path": "1-security-compliance-auditor.md",
+              "size": 13773,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "1-sparc-methodology-implementer.md",
+              "size": 6673,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "1-state-persistence-manager.md",
+              "size": 8718,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "1-system-integration-specialist.md",
+              "size": 16066,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "1-test-automation-engineer.md",
+              "size": 13048,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "1-tmux-session-manager.md",
+              "size": 14471,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "1-workflow-language-designer.md",
+              "size": 15079,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "agent-config-generator.md",
+              "size": 38199,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "api-builder-agent.md",
+              "size": 12745,
+              "modified": "2025-08-14T15:45:57.597Z"
+            },
+            {
+              "path": "approach-selector-agent.md",
+              "size": 10106,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "code-analyzer-agent.md",
+              "size": 7289,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "complexity-analyzer-agent.md",
+              "size": 10237,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "configuration-pipeline-agent.md",
+              "size": 4166,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "database-architect-agent.md",
+              "size": 20221,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "deployment-engineer-agent.md",
+              "size": 17995,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "doc-generator-agent.md",
+              "size": 14543,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "document-customizer-agent.md",
+              "size": 10592,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "frontend-specialist-agent.md",
+              "size": 9364,
+              "modified": "2025-08-14T15:45:57.601Z"
+            },
+            {
+              "path": "github-git-specialist-agent.md",
+              "size": 15593,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "integration-coordinator-agent.md",
+              "size": 13232,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "mcp-workflow-integration-agent.md",
+              "size": 2854,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "pattern-sharing-agent.md",
+              "size": 3342,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "performance-optimizer-agent.md",
+              "size": 14609,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "recovery-specialist-agent.md",
+              "size": 10545,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "recovery-specialist.md",
+              "size": 1109,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "security-auditor.md",
+              "size": 4490,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "security-scanner-agent.md",
+              "size": 11620,
+              "modified": "2025-08-14T15:45:57.605Z"
+            },
+            {
+              "path": "sparc-methodology-agent.md",
+              "size": 11952,
+              "modified": "2025-08-14T15:45:57.609Z"
+            },
+            {
+              "path": "test-engineer.md",
+              "size": 5455,
+              "modified": "2025-08-14T15:45:57.609Z"
+            },
+            {
+              "path": "test-runner-agent.md",
+              "size": 7398,
+              "modified": "2025-08-14T15:45:57.609Z"
+            },
+            {
+              "path": "testing-validation-agent.md",
+              "size": 4358,
+              "modified": "2025-08-14T15:45:57.609Z"
+            },
+            {
+              "path": "workflow-orchestrator.md",
+              "size": 9150,
+              "modified": "2025-08-14T15:45:57.609Z"
+            }
+          ],
+          "checksums": {},
+          "size": 5345682,
+          "compressed": true,
+          "encrypted": false,
+          "compressedSize": 785607,
+          "archivePath": "/root/repo/.test-backups/full/backup-d6aa1547-11d9-4c11-b304-6fa079f3514c-1755186357635.tar.gz",
+          "verification": {
+            "valid": true,
+            "errors": [],
+            "checks": {
+              "archiveExists": true,
+              "archiveReadable": true,
+              "checksumValid": true,
+              "sizeValid": true
+            }
+          },
+          "duration": 380,
+          "endTime": 1755186357833,
+          "status": "completed"
+        },
+        {
+          "id": "e81e9898-83ce-444e-9411-493ef0205ae8",
+          "type": "test",
+          "timestamp": 1755186355441,
+          "startTime": 1755186355441,
+          "version": "1.0.0",
+          "components": {
+            "sharedMemory": {
+              "name": "sharedMemory",
+              "path": ".hive-mind",
+              "files": [
+                {
+                  "path": "backups/shared-memory-1755186138706.json",
+                  "size": 1060340,
+                  "modified": "2025-08-14T15:45:55.460Z"
+                },
+                {
+                  "path": "hive.db",
+                  "size": 307200,
+                  "modified": "2025-08-14T15:45:55.484Z"
+                },
+                {
+                  "path": "hive.db-shm",
+                  "size": 32768,
+                  "modified": "2025-08-14T15:45:55.488Z"
+                },
+                {
+                  "path": "hive.db-wal",
+                  "size": 0,
+                  "modified": "2025-08-14T15:45:52.308Z"
+                },
+                {
+                  "path": "memory.db",
+                  "size": 135168,
+                  "modified": "2025-08-14T15:45:55.488Z"
+                },
+                {
+                  "path": "memory.db-shm",
+                  "size": 32768,
+                  "modified": "2025-08-14T15:45:55.492Z"
+                },
+                {
+                  "path": "memory.db-wal",
+                  "size": 0,
+                  "modified": "2025-08-14T15:45:52.300Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755036061465-190jiauun.txt",
+                  "size": 5697,
+                  "modified": "2025-08-14T15:45:55.492Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755038190130-tiaxbw13m.txt",
+                  "size": 5703,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755039855984-kr93g29tm.txt",
+                  "size": 5697,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040540309-8jm9s8qcv.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040583416-mmlxsi9fp.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040698540-o0jq1fsgx.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040913555-dhwqkq5y0.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040953623-j1bwreovb.txt",
+                  "size": 5787,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755041006782-z02qvzqka.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/session-1755032286771-q5ta3okdy-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755032286771-q5ta3okdy-auto-save-1755032315293.json",
+                  "size": 2366,
+                  "modified": "2025-08-14T15:45:55.496Z"
+                },
+                {
+                  "path": "sessions/session-1755035015462-2iedcu4q8-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755035015462-2iedcu4q8-auto-save-1755035043838.json",
+                  "size": 3530,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755035483566-zqh0jwedl-auto-save-1755035511932.json",
+                  "size": 3422,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755036061485-jj006dzdc-auto-save-1755036089872.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755038190157-d410u8stp-auto-save-1755038218410.json",
+                  "size": 2338,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755039703145-jioprbud4-auto-save-1755039731348.json",
+                  "size": 3470,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-save-1755040568573.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-save-1755040611669.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755040698566-y581thdhr-auto-save-1755040726691.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755040913576-10mw6smss-auto-save-1755040941769.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755040953652-t8kcc3btq-auto-save-1755040981831.json",
+                  "size": 2374,
+                  "modified": "2025-08-14T15:45:55.500Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-save-1755041034981.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:45:55.504Z"
+                },
+                {
+                  "path": "shared-memory.json",
+                  "size": 1060340,
+                  "modified": "2025-08-14T15:45:55.504Z"
+                }
+              ],
+              "size": 2711472,
+              "checksum": "e160ef143d587324a7674644276aba6a548e034dd72ce9abc6e38fda47f1efbb",
+              "status": "completed"
+            },
+            "intelligence": {
+              "name": "intelligence",
+              "path": "intelligence-engine",
+              "files": [
+                {
+                  "path": ".hive-mind/shared-memory.json",
+                  "size": 518781,
+                  "modified": "2025-08-14T15:45:55.556Z"
+                },
+                {
+                  "path": "AGENT-OS-DOCUMENT-ANALYZER-README.md",
+                  "size": 17099,
+                  "modified": "2025-08-14T15:45:55.556Z"
+                },
+                {
+                  "path": "CLAUDE.md",
+                  "size": 885,
+                  "modified": "2025-08-14T15:45:55.556Z"
+                },
+                {
+                  "path": "NEURAL-LEARNING-SYSTEM.md",
+                  "size": 11776,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "README.md",
+                  "size": 915,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "SHARED-MEMORY-README.md",
+                  "size": 16242,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "agent-communication.js",
+                  "size": 35417,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "agent-os-document-analyzer.js",
+                  "size": 46928,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "agent-os-structure-handler.js",
+                  "size": 20912,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "agent-os-template-manager.js",
+                  "size": 25036,
+                  "modified": "2025-08-14T15:45:55.560Z"
+                },
+                {
+                  "path": "analysis-engines/api-analysis-engine.js",
+                  "size": 24155,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "analysis-engines/architecture-detection-engine.js",
+                  "size": 14825,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "analysis-engines/database-analysis-engine.js",
+                  "size": 22483,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "analysis-engines/pattern-detection-engine.js",
+                  "size": 11334,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "analysis-engines/performance-analysis-engine.js",
+                  "size": 19921,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "analysis-engines/security-analysis-engine.js",
+                  "size": 19860,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "analysis-engines/test-analysis-engine.js",
+                  "size": 16056,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "approach-selector.js",
+                  "size": 21512,
+                  "modified": "2025-08-14T15:45:55.564Z"
+                },
+                {
+                  "path": "backup-recovery-system.js",
+                  "size": 27912,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "claude-md-generator.js",
+                  "size": 31281,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "complexity-analyzer.js",
+                  "size": 21469,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "customization-manager.js",
+                  "size": 26681,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "database-connection-manager.js",
+                  "size": 25465,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "database-performance-monitor.js",
+                  "size": 20101,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "database-schema-manager.js",
+                  "size": 20738,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "decisions.md",
+                  "size": 430,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "deep-codebase-analyzer.js",
+                  "size": 21313,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "document-customizer.js",
+                  "size": 46083,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "document-generator-v2.js",
+                  "size": 25101,
+                  "modified": "2025-08-14T15:45:55.568Z"
+                },
+                {
+                  "path": "document-versioning.js",
+                  "size": 28160,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "enhanced-template-engine.js",
+                  "size": 28490,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "install-dependencies.sh",
+                  "size": 4324,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "instructions.md",
+                  "size": 722,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "integration-checker.js",
+                  "size": 12495,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "interactive-document-updater.js",
+                  "size": 78637,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "interactive-updater.js",
+                  "size": 17350,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "mcp-full-configurator.js",
+                  "size": 72927,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "memory-integration-example.js",
+                  "size": 20099,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "mission.md",
+                  "size": 411,
+                  "modified": "2025-08-14T15:45:55.572Z"
+                },
+                {
+                  "path": "neural-learning.js",
+                  "size": 68863,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "performance-cache-manager.js",
+                  "size": 29407,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "performance-integration.js",
+                  "size": 31563,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "performance-monitor.js",
+                  "size": 33457,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "phase6-orchestrator.js",
+                  "size": 18549,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "preservation-test-results.md",
+                  "size": 5439,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "project-scanner.js",
+                  "size": 12534,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "queen-controller.js",
+                  "size": 46824,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "resource-manager.js",
+                  "size": 29130,
+                  "modified": "2025-08-14T15:45:55.576Z"
+                },
+                {
+                  "path": "roadmap.md",
+                  "size": 432,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "shared-memory.js",
+                  "size": 74299,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "smart-tool-selector.js",
+                  "size": 16008,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "standards.md",
+                  "size": 574,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "sub-agent-manager.js",
+                  "size": 30467,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "test-agent-os-document-analyzer.js",
+                  "size": 9550,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "test-database-fixes.js",
+                  "size": 27147,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "test-installer-enhancements.js",
+                  "size": 4552,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "test-neural-learning.js",
+                  "size": 20341,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "test-phase3-implementation.js",
+                  "size": 13636,
+                  "modified": "2025-08-14T15:45:55.580Z"
+                },
+                {
+                  "path": "test-phase4-implementation.js",
+                  "size": 24544,
+                  "modified": "2025-08-14T15:45:55.584Z"
+                },
+                {
+                  "path": "test-phase5-implementation.js",
+                  "size": 40012,
+                  "modified": "2025-08-14T15:45:55.584Z"
+                },
+                {
+                  "path": "test-phase6-neural-integration.js",
+                  "size": 15895,
+                  "modified": "2025-08-14T15:45:55.584Z"
+                },
+                {
+                  "path": "test-preservation-features.js",
+                  "size": 7310,
+                  "modified": "2025-08-14T15:45:55.584Z"
+                },
+                {
+                  "path": "test-shared-memory.js",
+                  "size": 30792,
+                  "modified": "2025-08-14T15:45:55.584Z"
+                },
+                {
+                  "path": "user-choice-handler.sh",
+                  "size": 40034,
+                  "modified": "2025-08-14T15:45:55.584Z"
+                }
+              ],
+              "size": 2005685,
+              "checksum": "41363351d285a3ea9d042bb045fd1683fe07dac8e674d8feb0a1c8ded00eee93",
+              "status": "completed"
+            },
+            "configs": {
+              "name": "configs",
+              "path": "configs",
+              "files": [
+                {
+                  "path": "agent-mappings.json",
+                  "size": 5529,
+                  "modified": "2025-08-14T15:45:55.624Z"
+                },
+                {
+                  "path": "approaches.json",
+                  "size": 5774,
+                  "modified": "2025-08-14T15:45:55.628Z"
+                },
+                {
+                  "path": "communication-protocol.json",
+                  "size": 8185,
+                  "modified": "2025-08-14T15:45:55.628Z"
+                },
+                {
+                  "path": "integrations.json",
+                  "size": 6293,
+                  "modified": "2025-08-14T15:45:55.628Z"
+                },
+                {
+                  "path": "orchestration.json",
+                  "size": 5304,
+                  "modified": "2025-08-14T15:45:55.628Z"
+                },
+                {
+                  "path": "recovery-config.json",
+                  "size": 6403,
+                  "modified": "2025-08-14T15:45:55.628Z"
+                },
+                {
+                  "path": "tech-stack.json",
+                  "size": 10338,
+                  "modified": "2025-08-14T15:45:55.628Z"
+                }
+              ],
+              "size": 47826,
+              "checksum": "39c12a4e397d7308bb609500b43391f3b49b033d20c9be8df2aedf79e2573d11",
+              "status": "completed"
+            },
+            "agents": {
+              "name": "agents",
+              "path": ".claude/agents",
+              "files": [
+                {
+                  "path": "1-CONFIGURATION-SUMMARY.md",
+                  "size": 7385,
+                  "modified": "2025-08-14T15:45:55.648Z"
+                },
+                {
+                  "path": "1-INTER-AGENT-COMMUNICATION-MATRIX.md",
+                  "size": 7395,
+                  "modified": "2025-08-14T15:45:55.648Z"
+                },
+                {
+                  "path": "1-agent-communication-bridge.md",
+                  "size": 14384,
+                  "modified": "2025-08-14T15:45:55.648Z"
+                },
+                {
+                  "path": "1-ceo-quality-control.md",
+                  "size": 16133,
+                  "modified": "2025-08-14T15:45:55.648Z"
+                },
+                {
+                  "path": "1-context-flattener-specialist.md",
+                  "size": 10931,
+                  "modified": "2025-08-14T15:45:55.648Z"
+                },
+                {
+                  "path": "1-deployment-pipeline-engineer.md",
+                  "size": 13561,
+                  "modified": "2025-08-14T15:45:55.648Z"
+                },
+                {
+                  "path": "1-documentation-generator.md",
+                  "size": 14069,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-engine-architect.md",
+                  "size": 13815,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-error-recovery-specialist.md",
+                  "size": 12273,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-intelligence-analyzer.md",
+                  "size": 11246,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-mcp-integration-specialist.md",
+                  "size": 10790,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-metrics-monitoring-engineer.md",
+                  "size": 14247,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-neural-swarm-architect.md",
+                  "size": 17374,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-orchestration-coordinator.md",
+                  "size": 15384,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-performance-optimization-engineer.md",
+                  "size": 16274,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-queen-controller-architect.md",
+                  "size": 11975,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-resource-scheduler.md",
+                  "size": 14471,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-security-compliance-auditor.md",
+                  "size": 13773,
+                  "modified": "2025-08-14T15:45:55.652Z"
+                },
+                {
+                  "path": "1-sparc-methodology-implementer.md",
+                  "size": 6673,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "1-state-persistence-manager.md",
+                  "size": 8718,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "1-system-integration-specialist.md",
+                  "size": 16066,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "1-test-automation-engineer.md",
+                  "size": 13048,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "1-tmux-session-manager.md",
+                  "size": 14471,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "1-workflow-language-designer.md",
+                  "size": 15079,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "agent-config-generator.md",
+                  "size": 38199,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "api-builder-agent.md",
+                  "size": 12745,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "approach-selector-agent.md",
+                  "size": 10106,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "code-analyzer-agent.md",
+                  "size": 7289,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "complexity-analyzer-agent.md",
+                  "size": 10237,
+                  "modified": "2025-08-14T15:45:55.656Z"
+                },
+                {
+                  "path": "configuration-pipeline-agent.md",
+                  "size": 4166,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "database-architect-agent.md",
+                  "size": 20221,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "deployment-engineer-agent.md",
+                  "size": 17995,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "doc-generator-agent.md",
+                  "size": 14543,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "document-customizer-agent.md",
+                  "size": 10592,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "frontend-specialist-agent.md",
+                  "size": 9364,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "github-git-specialist-agent.md",
+                  "size": 15593,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "integration-coordinator-agent.md",
+                  "size": 13232,
+                  "modified": "2025-08-14T15:45:55.660Z"
+                },
+                {
+                  "path": "mcp-workflow-integration-agent.md",
+                  "size": 2854,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "pattern-sharing-agent.md",
+                  "size": 3342,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "performance-optimizer-agent.md",
+                  "size": 14609,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "recovery-specialist-agent.md",
+                  "size": 10545,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "recovery-specialist.md",
+                  "size": 1109,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "security-auditor.md",
+                  "size": 4490,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "security-scanner-agent.md",
+                  "size": 11620,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "sparc-methodology-agent.md",
+                  "size": 11952,
+                  "modified": "2025-08-14T15:45:55.664Z"
+                },
+                {
+                  "path": "test-engineer.md",
+                  "size": 5455,
+                  "modified": "2025-08-14T15:45:55.668Z"
+                },
+                {
+                  "path": "test-runner-agent.md",
+                  "size": 7398,
+                  "modified": "2025-08-14T15:45:55.668Z"
+                },
+                {
+                  "path": "testing-validation-agent.md",
+                  "size": 4358,
+                  "modified": "2025-08-14T15:45:55.668Z"
+                },
+                {
+                  "path": "workflow-orchestrator.md",
+                  "size": 9150,
+                  "modified": "2025-08-14T15:45:55.668Z"
+                }
+              ],
+              "size": 580699,
+              "checksum": "24024d5ad400c31104214ebc8592c229dfd0f9634eb001d0bbaf4586aa37e771",
+              "status": "completed"
+            },
+            "database": {
+              "name": "database",
+              "path": ".hive-mind/*.db",
+              "files": [],
+              "size": 0,
+              "checksum": null,
+              "status": "skipped",
+              "reason": "path_not_found"
+            }
+          },
+          "files": [
+            {
+              "path": "backups/shared-memory-1755186138706.json",
+              "size": 1060340,
+              "modified": "2025-08-14T15:45:55.460Z"
+            },
+            {
+              "path": "hive.db",
+              "size": 307200,
+              "modified": "2025-08-14T15:45:55.484Z"
+            },
+            {
+              "path": "hive.db-shm",
+              "size": 32768,
+              "modified": "2025-08-14T15:45:55.488Z"
+            },
+            {
+              "path": "hive.db-wal",
+              "size": 0,
+              "modified": "2025-08-14T15:45:52.308Z"
+            },
+            {
+              "path": "memory.db",
+              "size": 135168,
+              "modified": "2025-08-14T15:45:55.488Z"
+            },
+            {
+              "path": "memory.db-shm",
+              "size": 32768,
+              "modified": "2025-08-14T15:45:55.492Z"
+            },
+            {
+              "path": "memory.db-wal",
+              "size": 0,
+              "modified": "2025-08-14T15:45:52.300Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755036061465-190jiauun.txt",
+              "size": 5697,
+              "modified": "2025-08-14T15:45:55.492Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755038190130-tiaxbw13m.txt",
+              "size": 5703,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755039855984-kr93g29tm.txt",
+              "size": 5697,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040540309-8jm9s8qcv.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040583416-mmlxsi9fp.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040698540-o0jq1fsgx.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040913555-dhwqkq5y0.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040953623-j1bwreovb.txt",
+              "size": 5787,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755041006782-z02qvzqka.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/session-1755032286771-q5ta3okdy-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755032286771-q5ta3okdy-auto-save-1755032315293.json",
+              "size": 2366,
+              "modified": "2025-08-14T15:45:55.496Z"
+            },
+            {
+              "path": "sessions/session-1755035015462-2iedcu4q8-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755035015462-2iedcu4q8-auto-save-1755035043838.json",
+              "size": 3530,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755035483566-zqh0jwedl-auto-save-1755035511932.json",
+              "size": 3422,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755036061485-jj006dzdc-auto-save-1755036089872.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755038190157-d410u8stp-auto-save-1755038218410.json",
+              "size": 2338,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755039703145-jioprbud4-auto-save-1755039731348.json",
+              "size": 3470,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-save-1755040568573.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-save-1755040611669.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755040698566-y581thdhr-auto-save-1755040726691.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755040913576-10mw6smss-auto-save-1755040941769.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755040953652-t8kcc3btq-auto-save-1755040981831.json",
+              "size": 2374,
+              "modified": "2025-08-14T15:45:55.500Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-save-1755041034981.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:45:55.504Z"
+            },
+            {
+              "path": "shared-memory.json",
+              "size": 1060340,
+              "modified": "2025-08-14T15:45:55.504Z"
+            },
+            {
+              "path": ".hive-mind/shared-memory.json",
+              "size": 518781,
+              "modified": "2025-08-14T15:45:55.556Z"
+            },
+            {
+              "path": "AGENT-OS-DOCUMENT-ANALYZER-README.md",
+              "size": 17099,
+              "modified": "2025-08-14T15:45:55.556Z"
+            },
+            {
+              "path": "CLAUDE.md",
+              "size": 885,
+              "modified": "2025-08-14T15:45:55.556Z"
+            },
+            {
+              "path": "NEURAL-LEARNING-SYSTEM.md",
+              "size": 11776,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "README.md",
+              "size": 915,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "SHARED-MEMORY-README.md",
+              "size": 16242,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "agent-communication.js",
+              "size": 35417,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "agent-os-document-analyzer.js",
+              "size": 46928,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "agent-os-structure-handler.js",
+              "size": 20912,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "agent-os-template-manager.js",
+              "size": 25036,
+              "modified": "2025-08-14T15:45:55.560Z"
+            },
+            {
+              "path": "analysis-engines/api-analysis-engine.js",
+              "size": 24155,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "analysis-engines/architecture-detection-engine.js",
+              "size": 14825,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "analysis-engines/database-analysis-engine.js",
+              "size": 22483,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "analysis-engines/pattern-detection-engine.js",
+              "size": 11334,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "analysis-engines/performance-analysis-engine.js",
+              "size": 19921,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "analysis-engines/security-analysis-engine.js",
+              "size": 19860,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "analysis-engines/test-analysis-engine.js",
+              "size": 16056,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "approach-selector.js",
+              "size": 21512,
+              "modified": "2025-08-14T15:45:55.564Z"
+            },
+            {
+              "path": "backup-recovery-system.js",
+              "size": 27912,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "claude-md-generator.js",
+              "size": 31281,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "complexity-analyzer.js",
+              "size": 21469,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "customization-manager.js",
+              "size": 26681,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "database-connection-manager.js",
+              "size": 25465,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "database-performance-monitor.js",
+              "size": 20101,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "database-schema-manager.js",
+              "size": 20738,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "decisions.md",
+              "size": 430,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "deep-codebase-analyzer.js",
+              "size": 21313,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "document-customizer.js",
+              "size": 46083,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "document-generator-v2.js",
+              "size": 25101,
+              "modified": "2025-08-14T15:45:55.568Z"
+            },
+            {
+              "path": "document-versioning.js",
+              "size": 28160,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "enhanced-template-engine.js",
+              "size": 28490,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "install-dependencies.sh",
+              "size": 4324,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "instructions.md",
+              "size": 722,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "integration-checker.js",
+              "size": 12495,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "interactive-document-updater.js",
+              "size": 78637,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "interactive-updater.js",
+              "size": 17350,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "mcp-full-configurator.js",
+              "size": 72927,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "memory-integration-example.js",
+              "size": 20099,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "mission.md",
+              "size": 411,
+              "modified": "2025-08-14T15:45:55.572Z"
+            },
+            {
+              "path": "neural-learning.js",
+              "size": 68863,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "performance-cache-manager.js",
+              "size": 29407,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "performance-integration.js",
+              "size": 31563,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "performance-monitor.js",
+              "size": 33457,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "phase6-orchestrator.js",
+              "size": 18549,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "preservation-test-results.md",
+              "size": 5439,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "project-scanner.js",
+              "size": 12534,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "queen-controller.js",
+              "size": 46824,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "resource-manager.js",
+              "size": 29130,
+              "modified": "2025-08-14T15:45:55.576Z"
+            },
+            {
+              "path": "roadmap.md",
+              "size": 432,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "shared-memory.js",
+              "size": 74299,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "smart-tool-selector.js",
+              "size": 16008,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "standards.md",
+              "size": 574,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "sub-agent-manager.js",
+              "size": 30467,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "test-agent-os-document-analyzer.js",
+              "size": 9550,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "test-database-fixes.js",
+              "size": 27147,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "test-installer-enhancements.js",
+              "size": 4552,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "test-neural-learning.js",
+              "size": 20341,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "test-phase3-implementation.js",
+              "size": 13636,
+              "modified": "2025-08-14T15:45:55.580Z"
+            },
+            {
+              "path": "test-phase4-implementation.js",
+              "size": 24544,
+              "modified": "2025-08-14T15:45:55.584Z"
+            },
+            {
+              "path": "test-phase5-implementation.js",
+              "size": 40012,
+              "modified": "2025-08-14T15:45:55.584Z"
+            },
+            {
+              "path": "test-phase6-neural-integration.js",
+              "size": 15895,
+              "modified": "2025-08-14T15:45:55.584Z"
+            },
+            {
+              "path": "test-preservation-features.js",
+              "size": 7310,
+              "modified": "2025-08-14T15:45:55.584Z"
+            },
+            {
+              "path": "test-shared-memory.js",
+              "size": 30792,
+              "modified": "2025-08-14T15:45:55.584Z"
+            },
+            {
+              "path": "user-choice-handler.sh",
+              "size": 40034,
+              "modified": "2025-08-14T15:45:55.584Z"
+            },
+            {
+              "path": "agent-mappings.json",
+              "size": 5529,
+              "modified": "2025-08-14T15:45:55.624Z"
+            },
+            {
+              "path": "approaches.json",
+              "size": 5774,
+              "modified": "2025-08-14T15:45:55.628Z"
+            },
+            {
+              "path": "communication-protocol.json",
+              "size": 8185,
+              "modified": "2025-08-14T15:45:55.628Z"
+            },
+            {
+              "path": "integrations.json",
+              "size": 6293,
+              "modified": "2025-08-14T15:45:55.628Z"
+            },
+            {
+              "path": "orchestration.json",
+              "size": 5304,
+              "modified": "2025-08-14T15:45:55.628Z"
+            },
+            {
+              "path": "recovery-config.json",
+              "size": 6403,
+              "modified": "2025-08-14T15:45:55.628Z"
+            },
+            {
+              "path": "tech-stack.json",
+              "size": 10338,
+              "modified": "2025-08-14T15:45:55.628Z"
+            },
+            {
+              "path": "1-CONFIGURATION-SUMMARY.md",
+              "size": 7385,
+              "modified": "2025-08-14T15:45:55.648Z"
+            },
+            {
+              "path": "1-INTER-AGENT-COMMUNICATION-MATRIX.md",
+              "size": 7395,
+              "modified": "2025-08-14T15:45:55.648Z"
+            },
+            {
+              "path": "1-agent-communication-bridge.md",
+              "size": 14384,
+              "modified": "2025-08-14T15:45:55.648Z"
+            },
+            {
+              "path": "1-ceo-quality-control.md",
+              "size": 16133,
+              "modified": "2025-08-14T15:45:55.648Z"
+            },
+            {
+              "path": "1-context-flattener-specialist.md",
+              "size": 10931,
+              "modified": "2025-08-14T15:45:55.648Z"
+            },
+            {
+              "path": "1-deployment-pipeline-engineer.md",
+              "size": 13561,
+              "modified": "2025-08-14T15:45:55.648Z"
+            },
+            {
+              "path": "1-documentation-generator.md",
+              "size": 14069,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-engine-architect.md",
+              "size": 13815,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-error-recovery-specialist.md",
+              "size": 12273,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-intelligence-analyzer.md",
+              "size": 11246,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-mcp-integration-specialist.md",
+              "size": 10790,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-metrics-monitoring-engineer.md",
+              "size": 14247,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-neural-swarm-architect.md",
+              "size": 17374,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-orchestration-coordinator.md",
+              "size": 15384,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-performance-optimization-engineer.md",
+              "size": 16274,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-queen-controller-architect.md",
+              "size": 11975,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-resource-scheduler.md",
+              "size": 14471,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-security-compliance-auditor.md",
+              "size": 13773,
+              "modified": "2025-08-14T15:45:55.652Z"
+            },
+            {
+              "path": "1-sparc-methodology-implementer.md",
+              "size": 6673,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "1-state-persistence-manager.md",
+              "size": 8718,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "1-system-integration-specialist.md",
+              "size": 16066,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "1-test-automation-engineer.md",
+              "size": 13048,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "1-tmux-session-manager.md",
+              "size": 14471,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "1-workflow-language-designer.md",
+              "size": 15079,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "agent-config-generator.md",
+              "size": 38199,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "api-builder-agent.md",
+              "size": 12745,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "approach-selector-agent.md",
+              "size": 10106,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "code-analyzer-agent.md",
+              "size": 7289,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "complexity-analyzer-agent.md",
+              "size": 10237,
+              "modified": "2025-08-14T15:45:55.656Z"
+            },
+            {
+              "path": "configuration-pipeline-agent.md",
+              "size": 4166,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "database-architect-agent.md",
+              "size": 20221,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "deployment-engineer-agent.md",
+              "size": 17995,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "doc-generator-agent.md",
+              "size": 14543,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "document-customizer-agent.md",
+              "size": 10592,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "frontend-specialist-agent.md",
+              "size": 9364,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "github-git-specialist-agent.md",
+              "size": 15593,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "integration-coordinator-agent.md",
+              "size": 13232,
+              "modified": "2025-08-14T15:45:55.660Z"
+            },
+            {
+              "path": "mcp-workflow-integration-agent.md",
+              "size": 2854,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "pattern-sharing-agent.md",
+              "size": 3342,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "performance-optimizer-agent.md",
+              "size": 14609,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "recovery-specialist-agent.md",
+              "size": 10545,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "recovery-specialist.md",
+              "size": 1109,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "security-auditor.md",
+              "size": 4490,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "security-scanner-agent.md",
+              "size": 11620,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "sparc-methodology-agent.md",
+              "size": 11952,
+              "modified": "2025-08-14T15:45:55.664Z"
+            },
+            {
+              "path": "test-engineer.md",
+              "size": 5455,
+              "modified": "2025-08-14T15:45:55.668Z"
+            },
+            {
+              "path": "test-runner-agent.md",
+              "size": 7398,
+              "modified": "2025-08-14T15:45:55.668Z"
+            },
+            {
+              "path": "testing-validation-agent.md",
+              "size": 4358,
+              "modified": "2025-08-14T15:45:55.668Z"
+            },
+            {
+              "path": "workflow-orchestrator.md",
+              "size": 9150,
+              "modified": "2025-08-14T15:45:55.668Z"
+            }
+          ],
+          "checksums": {},
+          "size": 5345682,
+          "compressed": true,
+          "encrypted": false,
+          "compressedSize": 785594,
+          "archivePath": "/root/repo/.test-backups/full/backup-e81e9898-83ce-444e-9411-493ef0205ae8-1755186355700.tar.gz",
+          "verification": {
+            "valid": true,
+            "errors": [],
+            "checks": {
+              "archiveExists": true,
+              "archiveReadable": true,
+              "checksumValid": true,
+              "sizeValid": true
+            }
+          },
+          "duration": 503,
+          "endTime": 1755186355944,
+          "status": "completed"
+        },
+        {
+          "id": "b7665cd6-c447-4981-bfa9-3130c4d6b91a",
+          "type": "integration-test",
+          "timestamp": 1755186138294,
+          "startTime": 1755186138294,
+          "version": "1.0.0",
+          "components": {
+            "sharedMemory": {
+              "name": "sharedMemory",
+              "path": ".hive-mind",
+              "files": [
+                {
+                  "path": "hive.db",
+                  "size": 258048,
+                  "modified": "2025-08-14T15:42:18.293Z"
+                },
+                {
+                  "path": "hive.db-shm",
+                  "size": 32768,
+                  "modified": "2025-08-14T15:42:18.293Z"
+                },
+                {
+                  "path": "hive.db-wal",
+                  "size": 4120032,
+                  "modified": "2025-08-14T15:42:18.297Z"
+                },
+                {
+                  "path": "memory.db",
+                  "size": 81920,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "memory.db-shm",
+                  "size": 32768,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "memory.db-wal",
+                  "size": 103032,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755036061465-190jiauun.txt",
+                  "size": 5697,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755038190130-tiaxbw13m.txt",
+                  "size": 5703,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755039855984-kr93g29tm.txt",
+                  "size": 5697,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040540309-8jm9s8qcv.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040583416-mmlxsi9fp.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:42:18.301Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040698540-o0jq1fsgx.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040913555-dhwqkq5y0.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755040953623-j1bwreovb.txt",
+                  "size": 5787,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/hive-mind-prompt-swarm-1755041006782-z02qvzqka.txt",
+                  "size": 5700,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755032286771-q5ta3okdy-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755032286771-q5ta3okdy-auto-save-1755032315293.json",
+                  "size": 2366,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755035015462-2iedcu4q8-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755035015462-2iedcu4q8-auto-save-1755035043838.json",
+                  "size": 3530,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755035483566-zqh0jwedl-auto-save-1755035511932.json",
+                  "size": 3422,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755036061485-jj006dzdc-auto-save-1755036089872.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755038190157-d410u8stp-auto-save-1755038218410.json",
+                  "size": 2338,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755039703145-jioprbud4-auto-save-1755039731348.json",
+                  "size": 3470,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040540332-sbm2c3ibo-auto-save-1755040568573.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755040583439-froqprzo9-auto-save-1755040611669.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755040698566-y581thdhr-auto-save-1755040726691.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755040913576-10mw6smss-auto-save-1755040941769.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:42:18.305Z"
+                },
+                {
+                  "path": "sessions/session-1755040953652-t8kcc3btq-auto-save-1755040981831.json",
+                  "size": 2374,
+                  "modified": "2025-08-14T15:42:18.309Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-pause-claude.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-pause.json",
+                  "size": 0,
+                  "modified": "2025-08-14T13:57:04.073Z"
+                },
+                {
+                  "path": "sessions/session-1755041006811-95otb9dqc-auto-save-1755041034981.json",
+                  "size": 2334,
+                  "modified": "2025-08-14T15:42:18.309Z"
+                }
+              ],
+              "size": 4711456,
+              "checksum": "70e4640637209b017b391018eba5d9746527ada81b5474117b84f4d8835225bb",
+              "status": "completed"
+            },
+            "intelligence": {
+              "name": "intelligence",
+              "path": "intelligence-engine",
+              "files": [
+                {
+                  "path": ".hive-mind/shared-memory.json",
+                  "size": 518781,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "AGENT-OS-DOCUMENT-ANALYZER-README.md",
+                  "size": 17099,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "CLAUDE.md",
+                  "size": 885,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "NEURAL-LEARNING-SYSTEM.md",
+                  "size": 11776,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "README.md",
+                  "size": 915,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "SHARED-MEMORY-README.md",
+                  "size": 16242,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "agent-communication.js",
+                  "size": 35417,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "agent-os-document-analyzer.js",
+                  "size": 46928,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "agent-os-structure-handler.js",
+                  "size": 20912,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "agent-os-template-manager.js",
+                  "size": 25036,
+                  "modified": "2025-08-14T15:42:18.345Z"
+                },
+                {
+                  "path": "analysis-engines/api-analysis-engine.js",
+                  "size": 24155,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "analysis-engines/architecture-detection-engine.js",
+                  "size": 14825,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "analysis-engines/database-analysis-engine.js",
+                  "size": 22483,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "analysis-engines/pattern-detection-engine.js",
+                  "size": 11334,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "analysis-engines/performance-analysis-engine.js",
+                  "size": 19921,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "analysis-engines/security-analysis-engine.js",
+                  "size": 19860,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "analysis-engines/test-analysis-engine.js",
+                  "size": 16056,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "approach-selector.js",
+                  "size": 21512,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "backup-recovery-system.js",
+                  "size": 27912,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "claude-md-generator.js",
+                  "size": 31281,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "complexity-analyzer.js",
+                  "size": 21469,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "customization-manager.js",
+                  "size": 26681,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "database-connection-manager.js",
+                  "size": 25465,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "database-performance-monitor.js",
+                  "size": 20101,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "database-schema-manager.js",
+                  "size": 20738,
+                  "modified": "2025-08-14T15:42:18.349Z"
+                },
+                {
+                  "path": "decisions.md",
+                  "size": 430,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "deep-codebase-analyzer.js",
+                  "size": 21313,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "document-customizer.js",
+                  "size": 46083,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "document-generator-v2.js",
+                  "size": 25101,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "document-versioning.js",
+                  "size": 28160,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "enhanced-template-engine.js",
+                  "size": 28490,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "install-dependencies.sh",
+                  "size": 4324,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "instructions.md",
+                  "size": 722,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "integration-checker.js",
+                  "size": 12495,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "interactive-document-updater.js",
+                  "size": 78637,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "interactive-updater.js",
+                  "size": 17350,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "mcp-full-configurator.js",
+                  "size": 72927,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "memory-integration-example.js",
+                  "size": 20099,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "mission.md",
+                  "size": 411,
+                  "modified": "2025-08-14T15:42:18.353Z"
+                },
+                {
+                  "path": "neural-learning.js",
+                  "size": 68863,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "performance-cache-manager.js",
+                  "size": 29407,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "performance-integration.js",
+                  "size": 31563,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "performance-monitor.js",
+                  "size": 33457,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "phase6-orchestrator.js",
+                  "size": 18549,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "preservation-test-results.md",
+                  "size": 5439,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "project-scanner.js",
+                  "size": 12534,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "queen-controller.js",
+                  "size": 46824,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "resource-manager.js",
+                  "size": 29130,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "roadmap.md",
+                  "size": 432,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "shared-memory.js",
+                  "size": 74299,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "smart-tool-selector.js",
+                  "size": 16008,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "standards.md",
+                  "size": 574,
+                  "modified": "2025-08-14T15:42:18.357Z"
+                },
+                {
+                  "path": "sub-agent-manager.js",
+                  "size": 30467,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-agent-os-document-analyzer.js",
+                  "size": 9550,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-database-fixes.js",
+                  "size": 27147,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-installer-enhancements.js",
+                  "size": 4552,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-neural-learning.js",
+                  "size": 20341,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-phase3-implementation.js",
+                  "size": 13636,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-phase4-implementation.js",
+                  "size": 24544,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-phase5-implementation.js",
+                  "size": 40012,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-phase6-neural-integration.js",
+                  "size": 15895,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-preservation-features.js",
+                  "size": 7310,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "test-shared-memory.js",
+                  "size": 30792,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                },
+                {
+                  "path": "user-choice-handler.sh",
+                  "size": 40034,
+                  "modified": "2025-08-14T15:42:18.361Z"
+                }
+              ],
+              "size": 2005685,
+              "checksum": "41363351d285a3ea9d042bb045fd1683fe07dac8e674d8feb0a1c8ded00eee93",
+              "status": "completed"
+            },
+            "configs": {
+              "name": "configs",
+              "path": "configs",
+              "files": [
+                {
+                  "path": "agent-mappings.json",
+                  "size": 5529,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "approaches.json",
+                  "size": 5774,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "communication-protocol.json",
+                  "size": 8185,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "integrations.json",
+                  "size": 6293,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "orchestration.json",
+                  "size": 5304,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "recovery-config.json",
+                  "size": 6403,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "tech-stack.json",
+                  "size": 10338,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                }
+              ],
+              "size": 47826,
+              "checksum": "39c12a4e397d7308bb609500b43391f3b49b033d20c9be8df2aedf79e2573d11",
+              "status": "completed"
+            },
+            "agents": {
+              "name": "agents",
+              "path": ".claude/agents",
+              "files": [
+                {
+                  "path": "1-CONFIGURATION-SUMMARY.md",
+                  "size": 7385,
+                  "modified": "2025-08-14T15:42:18.393Z"
+                },
+                {
+                  "path": "1-INTER-AGENT-COMMUNICATION-MATRIX.md",
+                  "size": 7395,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-agent-communication-bridge.md",
+                  "size": 14384,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-ceo-quality-control.md",
+                  "size": 16133,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-context-flattener-specialist.md",
+                  "size": 10931,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-deployment-pipeline-engineer.md",
+                  "size": 13561,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-documentation-generator.md",
+                  "size": 14069,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-engine-architect.md",
+                  "size": 13815,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-error-recovery-specialist.md",
+                  "size": 12273,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-intelligence-analyzer.md",
+                  "size": 11246,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-mcp-integration-specialist.md",
+                  "size": 10790,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-metrics-monitoring-engineer.md",
+                  "size": 14247,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-neural-swarm-architect.md",
+                  "size": 17374,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-orchestration-coordinator.md",
+                  "size": 15384,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-performance-optimization-engineer.md",
+                  "size": 16274,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-queen-controller-architect.md",
+                  "size": 11975,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-resource-scheduler.md",
+                  "size": 14471,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-security-compliance-auditor.md",
+                  "size": 13773,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-sparc-methodology-implementer.md",
+                  "size": 6673,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-state-persistence-manager.md",
+                  "size": 8718,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-system-integration-specialist.md",
+                  "size": 16066,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-test-automation-engineer.md",
+                  "size": 13048,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-tmux-session-manager.md",
+                  "size": 14471,
+                  "modified": "2025-08-14T15:42:18.397Z"
+                },
+                {
+                  "path": "1-workflow-language-designer.md",
+                  "size": 15079,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "agent-config-generator.md",
+                  "size": 38199,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "api-builder-agent.md",
+                  "size": 12745,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "approach-selector-agent.md",
+                  "size": 10106,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "code-analyzer-agent.md",
+                  "size": 7289,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "complexity-analyzer-agent.md",
+                  "size": 10237,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "configuration-pipeline-agent.md",
+                  "size": 4166,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "database-architect-agent.md",
+                  "size": 20221,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "deployment-engineer-agent.md",
+                  "size": 17995,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "doc-generator-agent.md",
+                  "size": 14543,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "document-customizer-agent.md",
+                  "size": 10592,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "frontend-specialist-agent.md",
+                  "size": 9364,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "github-git-specialist-agent.md",
+                  "size": 15593,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "integration-coordinator-agent.md",
+                  "size": 13232,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "mcp-workflow-integration-agent.md",
+                  "size": 2854,
+                  "modified": "2025-08-14T15:42:18.401Z"
+                },
+                {
+                  "path": "pattern-sharing-agent.md",
+                  "size": 3342,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "performance-optimizer-agent.md",
+                  "size": 14609,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "recovery-specialist-agent.md",
+                  "size": 10545,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "recovery-specialist.md",
+                  "size": 1109,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "security-auditor.md",
+                  "size": 4490,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "security-scanner-agent.md",
+                  "size": 11620,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "sparc-methodology-agent.md",
+                  "size": 11952,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "test-engineer.md",
+                  "size": 5455,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "test-runner-agent.md",
+                  "size": 7398,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "testing-validation-agent.md",
+                  "size": 4358,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                },
+                {
+                  "path": "workflow-orchestrator.md",
+                  "size": 9150,
+                  "modified": "2025-08-14T15:42:18.405Z"
+                }
+              ],
+              "size": 580699,
+              "checksum": "24024d5ad400c31104214ebc8592c229dfd0f9634eb001d0bbaf4586aa37e771",
+              "status": "completed"
+            },
+            "database": {
+              "name": "database",
+              "path": ".hive-mind/*.db",
+              "files": [],
+              "size": 0,
+              "checksum": null,
+              "status": "skipped",
+              "reason": "path_not_found"
+            }
+          },
+          "files": [
+            {
+              "path": "hive.db",
+              "size": 258048,
+              "modified": "2025-08-14T15:42:18.293Z"
+            },
+            {
+              "path": "hive.db-shm",
+              "size": 32768,
+              "modified": "2025-08-14T15:42:18.293Z"
+            },
+            {
+              "path": "hive.db-wal",
+              "size": 4120032,
+              "modified": "2025-08-14T15:42:18.297Z"
+            },
+            {
+              "path": "memory.db",
+              "size": 81920,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "memory.db-shm",
+              "size": 32768,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "memory.db-wal",
+              "size": 103032,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755036061465-190jiauun.txt",
+              "size": 5697,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755038190130-tiaxbw13m.txt",
+              "size": 5703,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755039855984-kr93g29tm.txt",
+              "size": 5697,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040540309-8jm9s8qcv.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040583416-mmlxsi9fp.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:42:18.301Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040698540-o0jq1fsgx.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040913555-dhwqkq5y0.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755040953623-j1bwreovb.txt",
+              "size": 5787,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/hive-mind-prompt-swarm-1755041006782-z02qvzqka.txt",
+              "size": 5700,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755032286771-q5ta3okdy-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755032286771-q5ta3okdy-auto-save-1755032315293.json",
+              "size": 2366,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755035015462-2iedcu4q8-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755035015462-2iedcu4q8-auto-save-1755035043838.json",
+              "size": 3530,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755035483566-zqh0jwedl-auto-save-1755035511932.json",
+              "size": 3422,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755036061485-jj006dzdc-auto-save-1755036089872.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755038190157-d410u8stp-auto-save-1755038218410.json",
+              "size": 2338,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755039703145-jioprbud4-auto-save-1755039731348.json",
+              "size": 3470,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040540332-sbm2c3ibo-auto-save-1755040568573.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755040583439-froqprzo9-auto-save-1755040611669.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755040698566-y581thdhr-auto-save-1755040726691.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755040913576-10mw6smss-auto-save-1755040941769.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:42:18.305Z"
+            },
+            {
+              "path": "sessions/session-1755040953652-t8kcc3btq-auto-save-1755040981831.json",
+              "size": 2374,
+              "modified": "2025-08-14T15:42:18.309Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-pause-claude.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-pause.json",
+              "size": 0,
+              "modified": "2025-08-14T13:57:04.073Z"
+            },
+            {
+              "path": "sessions/session-1755041006811-95otb9dqc-auto-save-1755041034981.json",
+              "size": 2334,
+              "modified": "2025-08-14T15:42:18.309Z"
+            },
+            {
+              "path": ".hive-mind/shared-memory.json",
+              "size": 518781,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "AGENT-OS-DOCUMENT-ANALYZER-README.md",
+              "size": 17099,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "CLAUDE.md",
+              "size": 885,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "NEURAL-LEARNING-SYSTEM.md",
+              "size": 11776,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "README.md",
+              "size": 915,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "SHARED-MEMORY-README.md",
+              "size": 16242,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "agent-communication.js",
+              "size": 35417,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "agent-os-document-analyzer.js",
+              "size": 46928,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "agent-os-structure-handler.js",
+              "size": 20912,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "agent-os-template-manager.js",
+              "size": 25036,
+              "modified": "2025-08-14T15:42:18.345Z"
+            },
+            {
+              "path": "analysis-engines/api-analysis-engine.js",
+              "size": 24155,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "analysis-engines/architecture-detection-engine.js",
+              "size": 14825,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "analysis-engines/database-analysis-engine.js",
+              "size": 22483,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "analysis-engines/pattern-detection-engine.js",
+              "size": 11334,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "analysis-engines/performance-analysis-engine.js",
+              "size": 19921,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "analysis-engines/security-analysis-engine.js",
+              "size": 19860,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "analysis-engines/test-analysis-engine.js",
+              "size": 16056,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "approach-selector.js",
+              "size": 21512,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "backup-recovery-system.js",
+              "size": 27912,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "claude-md-generator.js",
+              "size": 31281,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "complexity-analyzer.js",
+              "size": 21469,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "customization-manager.js",
+              "size": 26681,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "database-connection-manager.js",
+              "size": 25465,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "database-performance-monitor.js",
+              "size": 20101,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "database-schema-manager.js",
+              "size": 20738,
+              "modified": "2025-08-14T15:42:18.349Z"
+            },
+            {
+              "path": "decisions.md",
+              "size": 430,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "deep-codebase-analyzer.js",
+              "size": 21313,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "document-customizer.js",
+              "size": 46083,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "document-generator-v2.js",
+              "size": 25101,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "document-versioning.js",
+              "size": 28160,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "enhanced-template-engine.js",
+              "size": 28490,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "install-dependencies.sh",
+              "size": 4324,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "instructions.md",
+              "size": 722,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "integration-checker.js",
+              "size": 12495,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "interactive-document-updater.js",
+              "size": 78637,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "interactive-updater.js",
+              "size": 17350,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "mcp-full-configurator.js",
+              "size": 72927,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "memory-integration-example.js",
+              "size": 20099,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "mission.md",
+              "size": 411,
+              "modified": "2025-08-14T15:42:18.353Z"
+            },
+            {
+              "path": "neural-learning.js",
+              "size": 68863,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "performance-cache-manager.js",
+              "size": 29407,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "performance-integration.js",
+              "size": 31563,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "performance-monitor.js",
+              "size": 33457,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "phase6-orchestrator.js",
+              "size": 18549,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "preservation-test-results.md",
+              "size": 5439,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "project-scanner.js",
+              "size": 12534,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "queen-controller.js",
+              "size": 46824,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "resource-manager.js",
+              "size": 29130,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "roadmap.md",
+              "size": 432,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "shared-memory.js",
+              "size": 74299,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "smart-tool-selector.js",
+              "size": 16008,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "standards.md",
+              "size": 574,
+              "modified": "2025-08-14T15:42:18.357Z"
+            },
+            {
+              "path": "sub-agent-manager.js",
+              "size": 30467,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-agent-os-document-analyzer.js",
+              "size": 9550,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-database-fixes.js",
+              "size": 27147,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-installer-enhancements.js",
+              "size": 4552,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-neural-learning.js",
+              "size": 20341,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-phase3-implementation.js",
+              "size": 13636,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-phase4-implementation.js",
+              "size": 24544,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-phase5-implementation.js",
+              "size": 40012,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-phase6-neural-integration.js",
+              "size": 15895,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-preservation-features.js",
+              "size": 7310,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "test-shared-memory.js",
+              "size": 30792,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "user-choice-handler.sh",
+              "size": 40034,
+              "modified": "2025-08-14T15:42:18.361Z"
+            },
+            {
+              "path": "agent-mappings.json",
+              "size": 5529,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "approaches.json",
+              "size": 5774,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "communication-protocol.json",
+              "size": 8185,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "integrations.json",
+              "size": 6293,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "orchestration.json",
+              "size": 5304,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "recovery-config.json",
+              "size": 6403,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "tech-stack.json",
+              "size": 10338,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "1-CONFIGURATION-SUMMARY.md",
+              "size": 7385,
+              "modified": "2025-08-14T15:42:18.393Z"
+            },
+            {
+              "path": "1-INTER-AGENT-COMMUNICATION-MATRIX.md",
+              "size": 7395,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-agent-communication-bridge.md",
+              "size": 14384,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-ceo-quality-control.md",
+              "size": 16133,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-context-flattener-specialist.md",
+              "size": 10931,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-deployment-pipeline-engineer.md",
+              "size": 13561,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-documentation-generator.md",
+              "size": 14069,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-engine-architect.md",
+              "size": 13815,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-error-recovery-specialist.md",
+              "size": 12273,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-intelligence-analyzer.md",
+              "size": 11246,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-mcp-integration-specialist.md",
+              "size": 10790,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-metrics-monitoring-engineer.md",
+              "size": 14247,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-neural-swarm-architect.md",
+              "size": 17374,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-orchestration-coordinator.md",
+              "size": 15384,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-performance-optimization-engineer.md",
+              "size": 16274,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-queen-controller-architect.md",
+              "size": 11975,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-resource-scheduler.md",
+              "size": 14471,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-security-compliance-auditor.md",
+              "size": 13773,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-sparc-methodology-implementer.md",
+              "size": 6673,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-state-persistence-manager.md",
+              "size": 8718,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-system-integration-specialist.md",
+              "size": 16066,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-test-automation-engineer.md",
+              "size": 13048,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-tmux-session-manager.md",
+              "size": 14471,
+              "modified": "2025-08-14T15:42:18.397Z"
+            },
+            {
+              "path": "1-workflow-language-designer.md",
+              "size": 15079,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "agent-config-generator.md",
+              "size": 38199,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "api-builder-agent.md",
+              "size": 12745,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "approach-selector-agent.md",
+              "size": 10106,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "code-analyzer-agent.md",
+              "size": 7289,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "complexity-analyzer-agent.md",
+              "size": 10237,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "configuration-pipeline-agent.md",
+              "size": 4166,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "database-architect-agent.md",
+              "size": 20221,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "deployment-engineer-agent.md",
+              "size": 17995,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "doc-generator-agent.md",
+              "size": 14543,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "document-customizer-agent.md",
+              "size": 10592,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "frontend-specialist-agent.md",
+              "size": 9364,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "github-git-specialist-agent.md",
+              "size": 15593,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "integration-coordinator-agent.md",
+              "size": 13232,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "mcp-workflow-integration-agent.md",
+              "size": 2854,
+              "modified": "2025-08-14T15:42:18.401Z"
+            },
+            {
+              "path": "pattern-sharing-agent.md",
+              "size": 3342,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "performance-optimizer-agent.md",
+              "size": 14609,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "recovery-specialist-agent.md",
+              "size": 10545,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "recovery-specialist.md",
+              "size": 1109,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "security-auditor.md",
+              "size": 4490,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "security-scanner-agent.md",
+              "size": 11620,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "sparc-methodology-agent.md",
+              "size": 11952,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "test-engineer.md",
+              "size": 5455,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "test-runner-agent.md",
+              "size": 7398,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "testing-validation-agent.md",
+              "size": 4358,
+              "modified": "2025-08-14T15:42:18.405Z"
+            },
+            {
+              "path": "workflow-orchestrator.md",
+              "size": 9150,
+              "modified": "2025-08-14T15:42:18.405Z"
+            }
+          ],
+          "checksums": {},
+          "size": 7345666,
+          "compressed": true,
+          "encrypted": false,
+          "compressedSize": 817600,
+          "archivePath": "/root/repo/.test-backups/full/backup-b7665cd6-c447-4981-bfa9-3130c4d6b91a-1755186138431.tar.gz",
+          "verification": {
+            "valid": true,
+            "errors": [],
+            "checks": {
+              "archiveExists": true,
+              "archiveReadable": true,
+              "checksumValid": true,
+              "sizeValid": true
+            }
+          },
+          "duration": 335,
+          "endTime": 1755186138629,
+          "status": "completed"
+        }
+      ],
+      "metrics": {
+        "totalBackups": 2,
+        "successfulBackups": 2,
+        "failedBackups": 0,
+        "totalDataBackedUp": 10691364,
+        "averageBackupTime": 441.5,
+        "lastBackupTime": 1755186357453,
+        "recoveryOperations": 0,
+        "successfulRecoveries": 0
+      },
+      "configuration": {
+        "backupDirectory": "/root/repo/.test-backups",
+        "maxBackups": 3,
+        "backupInterval": 0,
+        "automaticBackups": false,
+        "verificationEnabled": true,
+        "encryptionEnabled": false
+      },
+      "components": {
+        "sharedMemory": {
+          "enabled": true,
+          "path": ".hive-mind",
+          "priority": 1,
+          "size": 0
+        },
+        "intelligence": {
+          "enabled": true,
+          "path": "intelligence-engine",
+          "priority": 2,
+          "exclude": [
+            "node_modules",
+            "*.log",
+            "*.tmp"
+          ]
+        },
+        "configs": {
+          "enabled": true,
+          "path": "configs",
+          "priority": 3
+        },
+        "agents": {
+          "enabled": true,
+          "path": ".claude/agents",
+          "priority": 4
+        },
+        "database": {
+          "enabled": true,
+          "path": ".hive-mind/*.db",
+          "priority": 1
+        }
+      }
+    },
+    "resourceManager": {
+      "uptime": 5509,
+      "resources": {
+        "memory": {
+          "current": {
+            "system": {
+              "used": 660226048,
+              "total": 4133568512,
+              "percentage": 0.15972302045637413
+            },
+            "process": {
+              "rss": 71376896,
+              "heapTotal": 17137664,
+              "heapUsed": 8909624,
+              "external": 2624224
+            },
+            "timestamp": 1755186356373
+          },
+          "history": [
+            {
+              "system": {
+                "used": 660488192,
+                "total": 4133568512,
+                "percentage": 0.15978643878347795
+              },
+              "process": {
+                "rss": 62017536,
+                "heapTotal": 18472960,
+                "heapUsed": 9122336,
+                "external": 1940015
+              },
+              "timestamp": 1755186354373
+            },
+            {
+              "system": {
+                "used": 660226048,
+                "total": 4133568512,
+                "percentage": 0.15972302045637413
+              },
+              "process": {
+                "rss": 71376896,
+                "heapTotal": 17137664,
+                "heapUsed": 8909624,
+                "external": 2624224
+              },
+              "timestamp": 1755186356373
+            }
+          ],
+          "alerts": []
+        },
+        "cpu": {
+          "current": {
+            "usage": 0.027581700013744076,
+            "load": [
+              0,
+              0.01,
+              0
+            ],
+            "timestamp": 1755186357475
+          },
+          "history": [
+            {
+              "usage": 0.0006323305379144846,
+              "load": [
+                0,
+                0.01,
+                0
+              ],
+              "timestamp": 1755186353474
+            },
+            {
+              "usage": 0.0027138194154668616,
+              "load": [
+                0,
+                0.01,
+                0
+              ],
+              "timestamp": 1755186354473
+            },
+            {
+              "usage": 0.045886301452893,
+              "load": [
+                0,
+                0.01,
+                0
+              ],
+              "timestamp": 1755186355474
+            },
+            {
+              "usage": 0.0007300417130798765,
+              "load": [
+                0,
+                0.01,
+                0
+              ],
+              "timestamp": 1755186356474
+            },
+            {
+              "usage": 0.027581700013744076,
+              "load": [
+                0,
+                0.01,
+                0
+              ],
+              "timestamp": 1755186357475
+            }
+          ],
+          "alerts": []
+        },
+        "disk": {
+          "current": {
+            "used": 0,
+            "total": 0,
+            "percentage": 0
+          },
+          "history": [],
+          "alerts": []
+        },
+        "connections": {
+          "database": {
+            "active": 2,
+            "max": 100
+          },
+          "files": {
+            "active": 0,
+            "max": 1000
+          },
+          "network": {
+            "active": 0,
+            "max": 500
+          }
+        },
+        "processes": {
+          "active": {},
+          "count": 0,
+          "max": 50
+        }
+      },
+      "metrics": {
+        "resourceLeaks": 0,
+        "cleanupOperations": 2,
+        "alertsTriggered": 0,
+        "resourcesReleased": 1,
+        "memoryReclaimed": 0,
+        "startTime": 1755186352371
+      },
+      "configuration": {
+        "thresholds": {
+          "memory": {
+            "warning": 0.8,
+            "critical": 0.9
+          },
+          "cpu": {
+            "warning": 80,
+            "critical": 95
+          },
+          "disk": {
+            "warning": 0.85,
+            "critical": 0.95
+          }
+        },
+        "limits": {
+          "processes": 50,
+          "databaseConnections": 100,
+          "fileHandles": 1000
+        }
+      },
+      "managedResources": 1,
+      "cleanupTasks": 0
+    }
+  },
+  "testResults": [
+    {
+      "name": "Database Connections",
+      "status": "PASSED",
+      "duration": 3.0872599999999863,
+      "details": {
+        "dbStatus": "Fallback",
+        "concurrentOps": 20,
+        "totalEntries": 2143
+      }
+    },
+    {
+      "name": "Shared Memory",
+      "status": "FAILED",
+      "duration": 1.7183310000000063,
+      "error": "Atomic operation failed"
+    },
+    {
+      "name": "Agent Communication",
+      "status": "PASSED",
+      "duration": 2003.686521,
+      "details": {
+        "agentsRegistered": 5,
+        "messagesSent": 7,
+        "broadcastCount": 5,
+        "queueSize": 0,
+        "averageLatency": "50.97ms"
+      }
+    },
+    {
+      "name": "Garbage Collection",
+      "status": "PASSED",
+      "duration": 1008.2672509999998,
+      "details": {
+        "keysCreated": 100,
+        "keysRemaining": 0,
+        "gcRuns": 1,
+        "evictions": 0
+      }
+    },
+    {
+      "name": "Performance",
+      "status": "PASSED",
+      "duration": 46.562527000000046,
+      "details": {
+        "averageMessageTime": "0.24ms",
+        "averageMemoryTime": "0.03ms",
+        "concurrentOperationsTime": "6.30ms",
+        "messageLatency": "50.97ms",
+        "cacheHitRate": "2.91%",
+        "throughput": "10 msgs/sec"
+      }
+    },
+    {
+      "name": "Backup System",
+      "status": "PASSED",
+      "duration": 506.19316899999967,
+      "details": {
+        "backupId": "e81e9898-83ce-444e-9411-493ef0205ae8",
+        "backupSize": "5.1 MB",
+        "components": 5,
+        "verified": true
+      }
+    },
+    {
+      "name": "Resource Management",
+      "status": "PASSED",
+      "duration": 1505.0219219999994,
+      "details": {
+        "resourcesTracked": 1,
+        "dbConnections": 2,
+        "memoryUsage": "16.0%",
+        "cpuUsage": "0.0%"
+      }
+    },
+    {
+      "name": "System Integration",
+      "status": "PASSED",
+      "duration": 382.9791889999997,
+      "details": {
+        "dataFlowTest": "SUCCESS",
+        "resourceIntegration": "SUCCESS",
+        "backupIntegration": "SUCCESS",
+        "backupSize": "5.1 MB"
+      }
+    },
+    {
+      "name": "Stress Test",
+      "status": "PASSED",
+      "duration": 43.44334299999991,
+      "details": {
+        "totalOperations": 1500,
+        "successfulOperations": 1500,
+        "failedOperations": 0,
+        "successRate": "100.0%",
+        "finalMemoryUsage": "0.83%",
+        "messagesSent": 578,
+        "averageLatency": "206.19ms"
+      }
+    }
+  ]
+}

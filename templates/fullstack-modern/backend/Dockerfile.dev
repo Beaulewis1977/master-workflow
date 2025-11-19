@@ -1,0 +1,34 @@
+FROM rust:1.75-slim AS base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install cargo-watch for development
+RUN cargo install cargo-watch
+
+WORKDIR /app
+
+# Copy Cargo files
+COPY Cargo.toml Cargo.lock ./
+
+# Create dummy source to cache dependencies
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build && \
+    rm -rf src
+
+# Copy source code
+COPY src ./src
+COPY migrations ./migrations
+
+# Build for development
+RUN cargo build
+
+EXPOSE 8000
+
+# Start development server with auto-reload
+CMD ["cargo", "watch", "-x", "run"]

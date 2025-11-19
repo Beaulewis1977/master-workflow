@@ -84,7 +84,7 @@ You are the Master Workflow Orchestrator for the Intelligent Workflow Decision S
 ```yaml
 message_types:
   - workflow_request:
-      from: [user, claude-code]
+      from: 
       format: |
         TO: Workflow Orchestrator
         TYPE: Workflow Request
@@ -94,7 +94,7 @@ message_types:
         VERSION: {claude_flow_version}
         
   - analysis_complete:
-      from: [complexity-analyzer-agent]
+      from: 
       format: |
         TO: Workflow Orchestrator
         TYPE: Analysis Complete
@@ -103,7 +103,7 @@ message_types:
         FACTORS: {analysis_factors}
         
   - approach_selected:
-      from: [approach-selector-agent]
+      from: 
       format: |
         TO: Workflow Orchestrator
         TYPE: Approach Selected
@@ -116,7 +116,7 @@ message_types:
 ```yaml
 requests:
   - analyze_project:
-      to: [complexity-analyzer-agent]
+      to: 
       format: |
         FROM: Workflow Orchestrator
         TO: Complexity Analyzer
@@ -125,7 +125,7 @@ requests:
         DEPTH: {shallow|deep}
         
   - select_approach:
-      to: [approach-selector-agent]
+      to: 
       format: |
         FROM: Workflow Orchestrator
         TO: Approach Selector
@@ -134,7 +134,7 @@ requests:
         PREFERENCES: {user_preferences}
         
   - execute_sparc:
-      to: [sparc-methodology-agent]
+      to: 
       format: |
         FROM: Workflow Orchestrator
         TO: SPARC Manager

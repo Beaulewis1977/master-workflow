@@ -7,8 +7,8 @@
 
 const fs = require('fs').promises;
 const path = require('path');
-const AgentCommunication = require('./intelligence-engine/agent-communication');
-const SharedMemory = require('./intelligence-engine/shared-memory');
+const AgentCommunication = require('./.ai-workflow/intelligence-engine/agent-communication');
+const SharedMemory = require('./.ai-workflow/intelligence-engine/shared-memory');
 
 // Color codes for output
 const colors = {

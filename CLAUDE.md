@@ -25,31 +25,47 @@
 - Writing migration documentation
 - Generating implementation summaries
 
-## Project Analysis
-- **Complexity Score**: 39/100 (Supports up to 100 with Queen Controller)
+## Project Analysis - Updated August 14, 2025
+- **Complexity Score**: 82/100 (Advanced workflow orchestration system)
 - **Stage**: active
-- **Selected Approach**: Hive-Mind with Queen Controller
-- **Claude Flow Version**: alpha (experimental)
-- **Command**: `npx --yes claude-flow@latest hive-mind spawn "MASTER-WORKFLOW" --sparc --agents 10 --claude`
+- **Project Type**: AI-powered development workflow automation with multi-agent coordination
+- **Selected Approach**: Hive-Mind + SPARC (optimal for 80+ complexity)
+- **Claude Flow Version**: alpha (experimental features required)
+- **Recommended Command**: `npx --yes claude-flow@alpha hive-mind spawn "CLAUDE-FLOW-2.0-ANALYSIS-DEMO" --sparc --agents 10 --claude`
 
-## Technology Stack
-### Languages
-- JavaScript
-  - Use ES6+ features
-  - Async/await for asynchronous code
-  - Proper error handling
-- TypeScript
-  - Strict type checking
-  - Interface definitions
-  - Generic types where appropriate
+## Technology Stack - Advanced Multi-Agent System
+### Core Runtime
+- **Node.js**: v18+ (required for worker threads and clustering)
+- **JavaScript ES6+**: Modern async/await, destructuring, arrow functions
+- **Event-Driven Architecture**: EventEmitter, custom event systems
+- **Worker Threads**: Multi-threading for agent isolation
+- **Clustering**: CPU core utilization for scaling
+
+### System Architecture
+- **Queen Controller Pattern**: Master orchestrator for 4,462+ agents
+- **Cross-Platform Support**: Windows, macOS, Linux compatibility
+- **Real-time Monitoring**: WebSocket servers, Chart.js dashboards
+- **Shared Memory Store**: SQLite persistence with file fallback
+- **MCP Integration**: 100+ Model Context Protocol servers
+
+### Development Guidelines
+- Use strict error handling and graceful degradation
+- Implement proper resource cleanup for worker threads
+- Follow event-driven patterns for agent communication
+- Maintain cross-platform compatibility in all modules
+- Use optional dependencies for platform-specific features
 
 ## Feature Guidelines
 
-## Architecture: backend
-- RESTful API design
-- Service layer pattern
-- Repository pattern for data access
-- Authentication and authorization
+## Architecture: Advanced Workflow Orchestration
+- **Queen Controller**: Hierarchical agent management with unlimited scaling
+- **Event-Driven Coordination**: Real-time agent communication and task distribution
+- **Worker Thread Pool**: Isolated execution environments with 200k context per agent
+- **Cross-Platform Abstraction**: Unified API across Windows/macOS/Linux
+- **Plugin Architecture**: Dynamic MCP server discovery and integration
+- **Monitoring Dashboard**: Real-time performance metrics and agent health
+- **Fault Tolerance**: Automatic recovery and graceful degradation
+- **Resource Management**: Memory limits, timeouts, and cleanup procedures
 
 ## Stage-Specific Instructions (active)
 - Maintain consistent code quality

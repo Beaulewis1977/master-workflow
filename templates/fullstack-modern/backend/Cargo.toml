@@ -1,0 +1,89 @@
+[package]
+name = "{{projectName}}-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["ws", "multipart"] }
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tower = { version = "0.4", features = ["full"] }
+tower-http = { version = "0.5", features = ["fs", "cors", "trace", "auth"] }
+
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+futures = "0.3"
+
+# HTTP
+hyper = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Database
+sqlx = { version = "0.7", features = [
+    "runtime-tokio-rustls",
+    "postgres",
+    "chrono",
+    "uuid",
+    "json",
+    "migrate"
+] }
+
+# Redis
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
+
+# Authentication
+jsonwebtoken = "9.2"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Environment
+dotenv = "0.15"
+clap = { version = "4.4", features = ["derive"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Validation
+validator = { version = "0.16", features = ["derive"] }
+
+# WebSocket
+tokio-tungstenite = "0.21"
+
+# Monitoring
+sentry = { version = "0.32", features = ["tower", "tracing"] }
+sentry-tower = "0.32"
+
+# Configuration
+config = "0.14"
+
+# Security
+argon2 = "0.5"
+rand = "0.8"
+
+# Email (optional)
+lettre = { version = "0.11", optional = true }
+
+# File upload
+mime = "0.3"
+mime_guess = "2.0"
+
+# Rate limiting
+tower-governor = "0.3"
+
+[features]
+default = []
+email = ["lettre"]
+
+[dev-dependencies]
+tokio-test = "0.4"
