@@ -27,7 +27,7 @@ const require = createRequire(import.meta.url);
 
 // Import existing CommonJS systems
 const QueenController = require(join(__dirname, '../../.ai-workflow/intelligence-engine/queen-controller.js'));
-const { SharedMemoryStore } = require(join(__dirname, '../../.ai-workflow/intelligence-engine/shared-memory.js'));
+const SharedMemoryStore = require(join(__dirname, '../../.ai-workflow/intelligence-engine/shared-memory.js'));
 const { NeuralLearningSystem } = require(join(__dirname, '../../.ai-workflow/intelligence-engine/neural-learning.js'));
 
 /**
