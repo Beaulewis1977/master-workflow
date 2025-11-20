@@ -1,0 +1,37 @@
+{
+  "agent": {
+    "id": "performance-engineer",
+    "version": "1.0",
+    "capabilities": [
+      "performance-optimization",
+      "benchmarking",
+      "profiling"
+    ],
+    "maxConcurrentTasks": 2,
+    "specializations": [
+      "performance-validation",
+      "optimization"
+    ]
+  },
+  "execution": {
+    "timeout": 300000,
+    "retryAttempts": 3,
+    "memoryLimit": "512MB",
+    "cpuLimit": "2 cores"
+  },
+  "quality": {
+    "codeQualityThreshold": 8,
+    "testCoverageRequirement": "90%",
+    "documentationRequirement": "complete"
+  },
+  "communication": {
+    "emitProgressEvents": true,
+    "logLevel": "verbose",
+    "reportingInterval": 5000
+  },
+  "integration": {
+    "queenController": true,
+    "monitoringSystem": true,
+    "websocketSupport": true
+  }
+}

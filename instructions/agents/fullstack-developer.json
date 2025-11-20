@@ -1,0 +1,38 @@
+{
+  "agent": {
+    "id": "fullstack-developer",
+    "version": "1.0",
+    "capabilities": [
+      "javascript",
+      "nodejs",
+      "system-integration",
+      "api-development"
+    ],
+    "maxConcurrentTasks": 3,
+    "specializations": [
+      "engine-improvements",
+      "queen-controller-integration"
+    ]
+  },
+  "execution": {
+    "timeout": 300000,
+    "retryAttempts": 3,
+    "memoryLimit": "512MB",
+    "cpuLimit": "2 cores"
+  },
+  "quality": {
+    "codeQualityThreshold": 8,
+    "testCoverageRequirement": "90%",
+    "documentationRequirement": "complete"
+  },
+  "communication": {
+    "emitProgressEvents": true,
+    "logLevel": "verbose",
+    "reportingInterval": 5000
+  },
+  "integration": {
+    "queenController": true,
+    "monitoringSystem": true,
+    "websocketSupport": true
+  }
+}

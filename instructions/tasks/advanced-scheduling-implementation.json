@@ -1,0 +1,145 @@
+{
+  "task": {
+    "id": "advanced-scheduling-implementation",
+    "title": "Advanced Scheduling System Implementation",
+    "version": "1.0",
+    "agent": "fullstack-developer",
+    "priority": "high",
+    "estimatedTime": "10 minutes",
+    "dependencies": [
+      "circuit-breaker-implementation"
+    ]
+  },
+  "execution": {
+    "mode": "autonomous",
+    "retryAttempts": 3,
+    "timeout": 600000,
+    "parallelizable": false,
+    "validationRequired": true
+  },
+  "instructions": {
+    "objective": "Implement Advanced Scheduling System with multiple strategies",
+    "requirements": [
+      "Create AdvancedTaskScheduler with multiple strategies",
+      "Implement Capability, RoundRobin, LeastLoaded, Affinity strategies",
+      "Add resource-aware scheduling",
+      "Integrate with Work Stealing and Circuit Breaker",
+      "Achieve 25% faster task completion"
+    ],
+    "steps": [
+      {
+        "title": "Design scheduler architecture",
+        "description": "Create base scheduler and strategy interfaces",
+        "estimatedTime": "3 minutes"
+      },
+      {
+        "title": "Implement scheduling strategies",
+        "description": "Create all four scheduling strategies",
+        "estimatedTime": "4 minutes"
+      },
+      {
+        "title": "Add resource awareness",
+        "description": "Implement CPU/memory-aware scheduling",
+        "estimatedTime": "2 minutes"
+      },
+      {
+        "title": "Integrate with other systems",
+        "description": "Connect to work stealing and circuit breaker",
+        "estimatedTime": "1 minute"
+      }
+    ],
+    "deliverables": [
+      "advanced-scheduler.js implementation",
+      "Four scheduling strategy classes",
+      "Integration tests with other systems",
+      "Performance benchmarks"
+    ]
+  },
+  "technical": {
+    "specifications": {
+      "class": "AdvancedTaskScheduler",
+      "strategies": [
+        "CapabilitySchedulingStrategy",
+        "RoundRobinSchedulingStrategy",
+        "LeastLoadedSchedulingStrategy",
+        "AffinitySchedulingStrategy"
+      ],
+      "dependencies": [
+        "Work Stealing",
+        "Circuit Breaker",
+        "Resource Monitor"
+      ],
+      "patterns": [
+        "Strategy",
+        "Factory",
+        "Observer"
+      ]
+    },
+    "integration": {
+      "queenController": true,
+      "workStealing": true,
+      "circuitBreaker": true,
+      "monitoring": true
+    },
+    "performance": {
+      "targets": {
+        "taskCompletionTime": "25% improvement",
+        "schedulingLatency": "< 20ms",
+        "resourceUtilization": "85%"
+      },
+      "metrics": [
+        "task_completion_time",
+        "scheduling_efficiency",
+        "resource_utilization"
+      ]
+    },
+    "testing": {
+      "unit": true,
+      "integration": true,
+      "performance": true,
+      "coverage": "95%"
+    }
+  },
+  "output": {
+    "files": [
+      {
+        "path": ".ai-workflow/intelligence-engine/advanced-scheduler.js",
+        "type": "module",
+        "size": "~20KB"
+      },
+      {
+        "path": "./tests/advanced-scheduler.test.js",
+        "type": "test",
+        "size": "~10KB"
+      }
+    ],
+    "format": "ES6+ module",
+    "documentation": "JSDoc complete",
+    "validation": "ESLint + Prettier"
+  },
+  "quality": {
+    "codeQuality": "high",
+    "testCoverage": "95%",
+    "documentation": "complete",
+    "performance": "optimized"
+  },
+  "monitoring": {
+    "trackProgress": true,
+    "emitEvents": true,
+    "logLevel": "verbose",
+    "metrics": [
+      {
+        "name": "scheduling_strategy_used",
+        "type": "counter"
+      },
+      {
+        "name": "task_scheduling_latency",
+        "type": "histogram"
+      },
+      {
+        "name": "scheduling_efficiency",
+        "type": "gauge"
+      }
+    ]
+  }
+}

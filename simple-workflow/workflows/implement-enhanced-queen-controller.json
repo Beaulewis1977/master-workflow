@@ -1,0 +1,177 @@
+{
+  "workflow": "implement-enhanced-queen-controller",
+  "version": "1.0",
+  "description": "Implement Enhanced Queen Controller that uses JSON/XML instructions instead of strings",
+  "author": "Master Workflow 3.0",
+  "created": "2024-01-01",
+  
+  "variables": {
+    "project_path": "./",
+    "output_dir": "./src/autonomous-system/",
+    "queen_controller_path": ".ai-workflow/intelligence-engine/queen-controller.js",
+    "enable_monitoring": true,
+    "ui_port": "3003"
+  },
+  
+  "steps": [
+    {
+      "id": "launch-monitoring",
+      "name": "Launch Real-Time Monitoring",
+      "type": "system",
+      "command": "node src/platform/webui-server.js",
+      "background": true,
+      "description": "Start UI dashboard to monitor implementation progress"
+    },
+    {
+      "id": "analyze-current-queen-controller",
+      "name": "Analyze Current Queen Controller Implementation",
+      "type": "claude",
+      "prompt": "Analyze the current Queen Controller at {{queen_controller_path}} to understand: 1) How it currently handles agent instructions (strings), 2) Agent spawning and management, 3) Task execution flow, 4) Event system, 5) Integration points for enhancement. Focus on the instruction handling methods and agent execution patterns.",
+      "capture_output": "queen_controller_analysis"
+    },
+    {
+      "id": "design-instruction-parser",
+      "name": "Design Instruction Parser System",
+      "type": "claude",
+      "prompt": "Design a comprehensive instruction parser system that can: 1) Parse JSON task instructions with validation, 2) Parse XML workflow definitions with XSD validation, 3) Extract step-by-step execution plans, 4) Validate instruction schemas, 5) Convert structured instructions to agent-executable format, 6) Handle instruction dependencies and prerequisites.",
+      "capture_output": "instruction_parser_design"
+    },
+    {
+      "id": "implement-instruction-parser",
+      "name": "Implement Instruction Parser",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the InstructionParser class based on the design. Include: 1) JSON instruction parsing with JSON Schema validation, 2) XML workflow parsing with XSD validation, 3) Step extraction and sequencing, 4) Dependency resolution, 5) Error handling and validation, 6) Integration with existing Queen Controller architecture. Save to {{output_dir}}/instruction-parser.js",
+      "output": "instruction-parser-implemented",
+      "dependencies": ["design-instruction-parser"]
+    },
+    {
+      "id": "implement-enhanced-task-executor",
+      "name": "Implement Enhanced Task Executor",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the EnhancedTaskExecutor class that: 1) Executes JSON instructions step-by-step, 2) Tracks progress and emits events, 3) Validates each step completion, 4) Handles retries and error recovery, 5) Integrates with monitoring system, 6) Supports parallel and sequential execution, 7) Provides real-time progress reporting. Save to {{output_dir}}/enhanced-task-executor.js",
+      "output": "enhanced-task-executor-implemented",
+      "dependencies": ["implement-instruction-parser"]
+    },
+    {
+      "id": "implement-workflow-orchestrator",
+      "name": "Implement Workflow Orchestrator",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the WorkflowOrchestrator class that: 1) Parses XML workflow definitions, 2) Manages phase execution and dependencies, 3) Coordinates parallel task execution, 4) Handles workflow state management, 5) Integrates with task executor for individual tasks, 6) Provides workflow-level monitoring and reporting, 7) Supports workflow pause/resume/recovery. Save to {{output_dir}}/workflow-orchestrator.js",
+      "output": "workflow-orchestrator-implemented",
+      "dependencies": ["implement-enhanced-task-executor"]
+    },
+    {
+      "id": "implement-agent-factory",
+      "name": "Implement Enhanced Agent Factory",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the EnhancedAgentFactory class that: 1) Creates agents configured with JSON instructions, 2) Matches agent capabilities to task requirements, 3) Sets up agent validation and quality thresholds, 4) Configures agent communication and event handling, 5) Integrates with monitoring and progress tracking, 6) Supports dynamic agent specialization, 7) Handles agent lifecycle management. Save to {{output_dir}}/enhanced-agent-factory.js",
+      "output": "enhanced-agent-factory-implemented",
+      "dependencies": ["implement-workflow-orchestrator"]
+    },
+    {
+      "id": "create-enhanced-queen-controller",
+      "name": "Create Enhanced Queen Controller",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Create the EnhancedQueenController class that extends the existing Queen Controller to: 1) Use JSON/XML instructions instead of strings, 2) Integrate InstructionParser, EnhancedTaskExecutor, and WorkflowOrchestrator, 3) Maintain backward compatibility with existing string instructions, 4) Add new methods: executeTaskWithJSON(), executeWorkflowWithXML(), parseInstructions(), validateInstructions(), 5) Enhance event system for instruction-level tracking, 6) Integrate with real-time monitoring dashboard, 7) Provide migration path from string to structured instructions. Save to {{output_dir}}/enhanced-queen-controller.js",
+      "output": "enhanced-queen-controller-implemented",
+      "dependencies": ["implement-agent-factory"]
+    },
+    {
+      "id": "implement-instruction-validators",
+      "name": "Implement Instruction Validators",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement comprehensive validation system: 1) JSON Schema validators for task instructions, 2) XSD validators for XML workflows, 3) Quality threshold validators, 4) Performance requirement validators, 5) Integration dependency validators, 6) Agent capability validators, 7) Create validation schemas in {{output_dir}}/schemas/ directory. Save to {{output_dir}}/instruction-validators.js",
+      "output": "instruction-validators-implemented",
+      "dependencies": ["create-enhanced-queen-controller"]
+    },
+    {
+      "id": "integrate-with-existing-queen-controller",
+      "name": "Integrate with Existing Queen Controller",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Modify the existing Queen Controller at {{queen_controller_path}} to: 1) Import and initialize EnhancedQueenController components, 2) Add backward compatibility layer for existing string instructions, 3) Add new methods that delegate to enhanced system, 4) Maintain all existing functionality while adding new capabilities, 5) Add configuration option to enable/disable enhanced instruction system, 6) Update initialization to support both instruction types, 7) Ensure seamless migration without breaking existing code.",
+      "output": "queen-controller-enhanced",
+      "dependencies": ["implement-instruction-validators"]
+    },
+    {
+      "id": "create-migration-utilities",
+      "name": "Create Migration Utilities",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Create utilities to help migrate from string instructions to JSON/XML: 1) String-to-JSON instruction converter, 2) Existing agent configuration migrator, 3) Template conversion utilities, 4) Validation and testing tools for migration, 5) Rollback utilities if needed, 6) Migration progress tracking, 7) Documentation generation for migrated instructions. Save to {{output_dir}}/migration-utilities.js",
+      "output": "migration-utilities-created",
+      "dependencies": ["integrate-with-existing-queen-controller"]
+    },
+    {
+      "id": "create-comprehensive-tests",
+      "name": "Create Comprehensive Tests for Enhanced System",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Create comprehensive tests for the enhanced instruction system: 1) Unit tests for InstructionParser, EnhancedTaskExecutor, WorkflowOrchestrator, EnhancedAgentFactory, 2) Integration tests for EnhancedQueenController, 3) Backward compatibility tests for existing string instructions, 4) Performance tests for JSON vs XML instruction parsing, 5) Migration tests for conversion utilities, 6) End-to-end tests for complete workflow execution, 7) Load tests for concurrent instruction execution.",
+      "output": "enhanced-system-tests",
+      "dependencies": ["create-migration-utilities"]
+    },
+    {
+      "id": "test-enhanced-queen-controller",
+      "name": "Test Enhanced Queen Controller with JSON/XML Instructions",
+      "type": "system",
+      "command": "node -e \"import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js'; const qc = new EnhancedQueenController(); qc.executeTaskWithJSON('./instructions/tasks/work-stealing-implementation.json').then(console.log).catch(console.error);\"",
+      "description": "Test the enhanced system with actual JSON instructions",
+      "dependencies": ["create-comprehensive-tests"]
+    },
+    {
+      "id": "validate-backward-compatibility",
+      "name": "Validate Backward Compatibility",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Validate that the enhanced Queen Controller maintains full backward compatibility: 1) Test all existing string instruction templates, 2) Verify existing agent spawning still works, 3) Confirm existing event system unchanged, 4) Test existing monitoring integration, 5) Validate performance regression tests, 6) Test existing configuration options, 7) Ensure existing API endpoints unchanged.",
+      "output": "backward-compatibility-validated",
+      "dependencies": ["test-enhanced-queen-controller"]
+    },
+    {
+      "id": "update-documentation",
+      "name": "Update Documentation for Enhanced System",
+      "type": "claude",
+      "prompt": "Update all documentation to reflect the enhanced instruction system: 1) API documentation for new JSON/XML methods, 2) Migration guide from string to structured instructions, 3) Best practices for JSON task instructions, 4) XML workflow authoring guide, 5) Enhanced Queen Controller configuration guide, 6) Troubleshooting guide for instruction parsing issues, 7) Performance optimization guide for structured instructions.",
+      "output": "enhanced-documentation-updated",
+      "dependencies": ["validate-backward-compatibility"]
+    }
+  ],
+  
+  "monitoring": {
+    "track_implementation": true,
+    "show_instruction_parsing": true,
+    "display_agent_activity": true,
+    "monitor_backward_compatibility": true,
+    "real_time_updates": true
+  },
+  
+  "success_criteria": {
+    "instruction_parsing": "JSON and XML instructions parsed successfully",
+    "task_execution": "Step-by-step task execution with progress tracking",
+    "workflow_orchestration": "Complex XML workflows executed correctly",
+    "backward_compatibility": "All existing string instructions still work",
+    "performance": "No performance regression vs original system",
+    "migration": "Smooth migration path from string to structured instructions"
+  },
+  
+  "deliverables": {
+    "enhanced_queen_controller": "Enhanced Queen Controller with JSON/XML support",
+    "instruction_parser": "JSON/XML instruction parsing and validation",
+    "task_executor": "Step-by-step task execution with progress tracking",
+    "workflow_orchestrator": "XML workflow execution and coordination",
+    "agent_factory": "Enhanced agent creation with instruction configuration",
+    "migration_tools": "Utilities to migrate from string to structured instructions",
+    "comprehensive_tests": "Full test suite for enhanced system",
+    "updated_documentation": "Complete documentation for new capabilities"
+  },
+  
+  "on_success": "🚀 Enhanced Queen Controller implemented successfully! The system now supports JSON/XML instructions alongside existing string instructions with full backward compatibility. Test with: node -e \"import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js'; const qc = new EnhancedQueenController(); qc.executeTaskWithJSON('./instructions/tasks/work-stealing-implementation.json');\"",
+  "on_failure": "❌ Enhanced Queen Controller implementation failed. Check monitoring dashboard for details and review implementation logs."
+}

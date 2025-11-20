@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="work-stealing-implementation" version="1.0">
+    <metadata>
+        <title>Work Stealing Algorithm Implementation</title>
+        <agent>fullstack-developer</agent>
+        <priority>high</priority>
+        <estimatedTime>8 minutes</estimatedTime>
+        <created>2025-11-20T10:00:09.697Z</created>
+    </metadata>
+    
+    <execution>
+        <mode>autonomous</mode>
+        <retryAttempts>3</retryAttempts>
+        <timeout>600000</timeout>
+        <parallelizable>true</parallelizable>
+        <validationRequired>true</validationRequired>
+    </execution>
+    
+    <dependencies>
+        
+    </dependencies>
+    
+    <instructions>
+        <objective>Implement Work Stealing Algorithm for load balancing across agents</objective>
+        <requirements>
+            <requirement>Create WorkStealingCoordinator class</requirement>
+            <requirement>Implement agent workload tracking</requirement>
+            <requirement>Add steal threshold management</requirement>
+            <requirement>Integrate with Queen Controller</requirement>
+            <requirement>Optimize for 30% better resource utilization</requirement>
+        </requirements>
+        <steps>
+            
+            <step id="1">
+                <title>Design WorkStealingCoordinator class</title>
+                <description>Create class structure with required methods</description>
+                <estimatedTime>2 minutes</estimatedTime>
+            </step>
+            <step id="2">
+                <title>Implement workload tracking</title>
+                <description>Track agent task counts and resource usage</description>
+                <estimatedTime>2 minutes</estimatedTime>
+            </step>
+            <step id="3">
+                <title>Add steal logic</title>
+                <description>Implement work stealing algorithm with threshold management</description>
+                <estimatedTime>3 minutes</estimatedTime>
+            </step>
+            <step id="4">
+                <title>Integrate with Queen Controller</title>
+                <description>Connect to Queen Controller event system</description>
+                <estimatedTime>1 minute</estimatedTime>
+            </step>
+        </steps>
+    </instructions>
+    
+    <technical>
+        <specifications>
+            
+            <class>"WorkStealingCoordinator"</class>
+            <methods>["updateAgentWorkload()","findStealOpportunities()","executeWorkStealing()","getOptimalStealTarget()"]</methods>
+            <dependencies>["Queen Controller","Resource Monitor"]</dependencies>
+            <patterns>["Observer","Strategy"]</patterns>
+        </specifications>
+        <integration>
+            
+            <queenController>true</queenController>
+            <events>workload-update,steal-executed,agent-status-change</events>
+            <monitoring>true</monitoring>
+            <configuration>config/work-stealing.json</configuration>
+        </integration>
+    </technical>
+    
+    <output>
+        <files>
+            
+            <file>
+                <path>.ai-workflow/intelligence-engine/work-stealing.js</path>
+                <type>module</type>
+                <size>~15KB</size>
+            </file>
+            <file>
+                <path>./tests/work-stealing.test.js</path>
+                <type>test</type>
+                <size>~8KB</size>
+            </file>
+        </files>
+        <format>ES6+ module</format>
+        <documentation>JSDoc complete</documentation>
+    </output>
+    
+    <quality>
+        <codeQuality>high</codeQuality>
+        <testCoverage>95%</testCoverage>
+        <documentation>complete</documentation>
+        <performance>optimized</performance>
+    </quality>
+    
+    <monitoring>
+        <trackProgress>true</trackProgress>
+        <emitEvents>true</emitEvents>
+        <logLevel>verbose</logLevel>
+        <metrics>
+            
+            <metric name="work_stealing_attempts" type="counter" />
+            <metric name="work_stealing_success_rate" type="gauge" />
+            <metric name="load_balance_score" type="gauge" />
+        </metrics>
+    </monitoring>
+</task>

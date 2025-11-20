@@ -1,0 +1,282 @@
+{
+  "summary": {
+    "executionTime": "2025-11-20T05:44:15.051Z",
+    "totalDuration": 18,
+    "overallResults": {
+      "totalTests": 24,
+      "passed": 0,
+      "failed": 24,
+      "skipped": 0,
+      "successRate": "0.0"
+    },
+    "systemValidation": {
+      "claudeFlow2Integration": false,
+      "agentOSIntegration": false,
+      "subAgentOrchestration": false,
+      "endToEndWorkflows": false,
+      "performanceTargetsMet": false,
+      "scalabilityValidated": true,
+      "errorRecoveryTested": false
+    }
+  },
+  "suiteResults": [
+    {
+      "name": "Claude Flow 2.0 & Core Integration",
+      "passed": 0,
+      "total": 12,
+      "failed": 12,
+      "duration": 7.639510999999999,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Claude Flow 2.0 WASM Core Module Loading and Acceleration",
+          "passed": false,
+          "error": "WASM core module not found",
+          "duration": 0.8582930000000033,
+          "timestamp": "2025-11-20T05:44:15.038Z"
+        },
+        {
+          "name": "All 4 Topology Types (Hierarchical, Mesh, Ring, Star)",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/topology-manager.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.1796900000000008,
+          "timestamp": "2025-11-20T05:44:15.039Z"
+        },
+        {
+          "name": "Neural Agent Selection and Capability Matching",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/capability-matcher.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.15257799999999833,
+          "timestamp": "2025-11-20T05:44:15.039Z"
+        },
+        {
+          "name": "Performance Metrics Validation (2.8-4.4x speedup, 32.3% token reduction)",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.09346299999999985,
+          "timestamp": "2025-11-20T05:44:15.040Z"
+        },
+        {
+          "name": "Agent-OS Three-Layer Context Architecture",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.08645600000000186,
+          "timestamp": "2025-11-20T05:44:15.040Z"
+        },
+        {
+          "name": "Spec-Driven Development Commands",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.07837800000000072,
+          "timestamp": "2025-11-20T05:44:15.040Z"
+        },
+        {
+          "name": "Claude Code Sub-Agents Spawning (50+ Specialized Agents)",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.07397000000000276,
+          "timestamp": "2025-11-20T05:44:15.041Z"
+        },
+        {
+          "name": "200k Context Window Allocation Per Agent",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.07078199999999768,
+          "timestamp": "2025-11-20T05:44:15.041Z"
+        },
+        {
+          "name": "Auto-Delegation System and Queen Controller Orchestration",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.05916900000000069,
+          "timestamp": "2025-11-20T05:44:15.041Z"
+        },
+        {
+          "name": "End-to-End Workflow from Project Analysis to Deployment",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.05756399999999928,
+          "timestamp": "2025-11-20T05:44:15.041Z"
+        },
+        {
+          "name": "Performance and Scalability - 10 Concurrent Agents with Full Context",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.052510999999999086,
+          "timestamp": "2025-11-20T05:44:15.042Z"
+        },
+        {
+          "name": "Error Recovery and Resilience Mechanisms",
+          "passed": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.05333000000000254,
+          "timestamp": "2025-11-20T05:44:15.042Z"
+        }
+      ]
+    },
+    {
+      "name": "Agent-OS to Claude Flow Pipeline",
+      "passed": 0,
+      "total": 4,
+      "failed": 4,
+      "duration": 1.329193,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Agent-OS Spec Creation to Claude Flow Execution Pipeline",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/agent-os-claude-flow-pipeline-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.10324300000000264,
+          "timestamp": "2025-11-20T05:44:15.045Z"
+        },
+        {
+          "name": "Three-Layer Context Integration with Claude Flow",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/agent-os-claude-flow-pipeline-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.062115999999999616,
+          "timestamp": "2025-11-20T05:44:15.046Z"
+        },
+        {
+          "name": "Conditional File Loading with Claude Flow Optimization",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/agent-os-claude-flow-pipeline-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.04851599999999934,
+          "timestamp": "2025-11-20T05:44:15.046Z"
+        },
+        {
+          "name": "Product and Specification Generation Pipeline",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/agent-os-claude-flow-pipeline-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.27095299999999867,
+          "timestamp": "2025-11-20T05:44:15.046Z"
+        }
+      ]
+    },
+    {
+      "name": "Multi-Agent Collaboration",
+      "passed": 0,
+      "total": 3,
+      "failed": 3,
+      "duration": 0.9368789999999976,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Multi-Agent Collaborative Development Workflow",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/multi-agent-collaboration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.05731400000000164,
+          "timestamp": "2025-11-20T05:44:15.047Z"
+        },
+        {
+          "name": "Shared State Management Across Agents",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/multi-agent-collaboration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.05414800000000142,
+          "timestamp": "2025-11-20T05:44:15.047Z"
+        },
+        {
+          "name": "Cross-Agent Communication Patterns",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/multi-agent-collaboration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.0838039999999971,
+          "timestamp": "2025-11-20T05:44:15.048Z"
+        }
+      ]
+    },
+    {
+      "name": "Context Management & Overflow Protection",
+      "passed": 0,
+      "total": 5,
+      "failed": 5,
+      "duration": 1.279395000000001,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Context Overflow Detection and Prevention",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/context-management-overflow-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.05057899999999904,
+          "timestamp": "2025-11-20T05:44:15.048Z"
+        },
+        {
+          "name": "Intelligent Context Pruning and Prioritization",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/context-management-overflow-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.0626400000000018,
+          "timestamp": "2025-11-20T05:44:15.049Z"
+        },
+        {
+          "name": "Context Compression and Optimization",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/context-management-overflow-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.041684000000000054,
+          "timestamp": "2025-11-20T05:44:15.049Z"
+        },
+        {
+          "name": "Multi-Agent Context Synchronization",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/context-management-overflow-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.041814999999999714,
+          "timestamp": "2025-11-20T05:44:15.049Z"
+        },
+        {
+          "name": "Context Window Utilization Optimization",
+          "success": false,
+          "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/context-management-overflow-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+          "duration": 0.044313999999999965,
+          "timestamp": "2025-11-20T05:44:15.049Z"
+        }
+      ]
+    }
+  ],
+  "performanceAnalysis": {
+    "overallMetrics": {
+      "totalTestDuration": 18,
+      "averageTestDuration": 0.75,
+      "testsPerSecond": "1333.33"
+    },
+    "suitePerformance": [
+      {
+        "name": "Claude Flow 2.0 & Core Integration",
+        "duration": 7.639510999999999,
+        "testCount": 12,
+        "averageDuration": 0.6366259166666666,
+        "efficiency": "0.0"
+      },
+      {
+        "name": "Agent-OS to Claude Flow Pipeline",
+        "duration": 1.329193,
+        "testCount": 4,
+        "averageDuration": 0.33229825,
+        "efficiency": "0.0"
+      },
+      {
+        "name": "Multi-Agent Collaboration",
+        "duration": 0.9368789999999976,
+        "testCount": 3,
+        "averageDuration": 0.3122929999999992,
+        "efficiency": "0.0"
+      },
+      {
+        "name": "Context Management & Overflow Protection",
+        "duration": 1.279395000000001,
+        "testCount": 5,
+        "averageDuration": 0.2558790000000002,
+        "efficiency": "0.0"
+      }
+    ],
+    "recommendations": [
+      "Address failing test suites: Claude Flow 2.0 & Core Integration, Agent-OS to Claude Flow Pipeline, Multi-Agent Collaboration, Context Management & Overflow Protection"
+    ]
+  },
+  "recommendations": [
+    "Address failing test suites: Claude Flow 2.0 & Core Integration, Agent-OS to Claude Flow Pipeline, Multi-Agent Collaboration, Context Management & Overflow Protection",
+    "Investigate and fix failing tests to achieve >90% success rate"
+  ],
+  "testEnvironment": {
+    "nodeVersion": "v20.19.5",
+    "platform": "linux",
+    "architecture": "x64",
+    "workingDirectory": "/home/kngpnn/dev/master-workflow-1"
+  }
+}

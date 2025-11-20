@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="circuit-breaker-implementation" version="1.0">
+    <metadata>
+        <title>Circuit Breaker Pattern Implementation</title>
+        <agent>fullstack-developer</agent>
+        <priority>high</priority>
+        <estimatedTime>6 minutes</estimatedTime>
+        <created>2025-11-20T10:00:09.699Z</created>
+    </metadata>
+    
+    <execution>
+        <mode>autonomous</mode>
+        <retryAttempts>3</retryAttempts>
+        <timeout>600000</timeout>
+        <parallelizable>false</parallelizable>
+        <validationRequired>true</validationRequired>
+    </execution>
+    
+    <dependencies>
+        <dependency>work-stealing-implementation</dependency>
+    </dependencies>
+    
+    <instructions>
+        <objective>Implement Circuit Breaker Pattern for fault tolerance</objective>
+        <requirements>
+            <requirement>Create CircuitBreaker class with state management</requirement>
+            <requirement>Implement failure threshold tracking</requirement>
+            <requirement>Add automatic recovery mechanisms</requirement>
+            <requirement>Integrate with Queen Controller task execution</requirement>
+            <requirement>Achieve 50% faster failure recovery</requirement>
+        </requirements>
+        <steps>
+            
+            <step id="1">
+                <title>Design CircuitBreaker class</title>
+                <description>Create class with CLOSED, OPEN, HALF_OPEN states</description>
+                <estimatedTime>2 minutes</estimatedTime>
+            </step>
+            <step id="2">
+                <title>Implement state management</title>
+                <description>Add state transitions and threshold logic</description>
+                <estimatedTime>2 minutes</estimatedTime>
+            </step>
+            <step id="3">
+                <title>Add failure tracking</title>
+                <description>Implement sliding window failure counting</description>
+                <estimatedTime>1 minute</estimatedTime>
+            </step>
+            <step id="4">
+                <title>Integrate with Queen Controller</title>
+                <description>Wrap task execution with circuit breaker</description>
+                <estimatedTime>1 minute</estimatedTime>
+            </step>
+        </steps>
+    </instructions>
+    
+    <technical>
+        <specifications>
+            
+            <class>"CircuitBreaker"</class>
+            <methods>["execute()","onSuccess()","onFailure()","getState()","transitionTo()"]</methods>
+            <dependencies>["Queen Controller"]</dependencies>
+            <patterns>["State","Observer"]</patterns>
+        </specifications>
+        <integration>
+            
+            <queenController>true</queenController>
+            <events>state-change,circuit-opened,circuit-closed</events>
+            <monitoring>true</monitoring>
+            <configuration>config/circuit-breaker.json</configuration>
+        </integration>
+    </technical>
+    
+    <output>
+        <files>
+            
+            <file>
+                <path>.ai-workflow/intelligence-engine/circuit-breaker.js</path>
+                <type>module</type>
+                <size>~12KB</size>
+            </file>
+            <file>
+                <path>./tests/circuit-breaker.test.js</path>
+                <type>test</type>
+                <size>~6KB</size>
+            </file>
+        </files>
+        <format>ES6+ module</format>
+        <documentation>JSDoc complete</documentation>
+    </output>
+    
+    <quality>
+        <codeQuality>high</codeQuality>
+        <testCoverage>95%</testCoverage>
+        <documentation>complete</documentation>
+        <performance>optimized</performance>
+    </quality>
+    
+    <monitoring>
+        <trackProgress>true</trackProgress>
+        <emitEvents>true</emitEvents>
+        <logLevel>verbose</logLevel>
+        <metrics>
+            
+            <metric name="circuit_breaker_state" type="gauge" />
+            <metric name="circuit_breaker_failures" type="counter" />
+            <metric name="circuit_breaker_recovery_time" type="histogram" />
+        </metrics>
+    </monitoring>
+</task>

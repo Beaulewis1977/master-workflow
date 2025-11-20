@@ -1,0 +1,131 @@
+{
+  "workflow": "implement-engine-improvements",
+  "version": "1.0",
+  "description": "Implement all engine improvements from ENGINE_IMPROVEMENT_DOCS using Queen Controller",
+  "author": "Master Workflow 3.0",
+  "created": "2024-01-01",
+  
+  "variables": {
+    "project_path": "./",
+    "docs_path": "./ENGINE_IMPROVEMENT_DOCS/ORIGINAL_INTEGRATION",
+    "implementation_order": ["work-stealing", "circuit-breaker", "advanced-scheduling", "dependency-graph", "monitoring-metrics"],
+    "enable_monitoring": true,
+    "ui_port": "3003"
+  },
+  
+  "steps": [
+    {
+      "id": "launch-monitoring",
+      "name": "Launch Real-Time Monitoring",
+      "type": "system",
+      "command": "node src/platform/webui-server.js",
+      "background": true,
+      "description": "Start UI dashboard to monitor implementation progress"
+    },
+    {
+      "id": "analyze-engine-docs",
+      "name": "Analyze Engine Improvement Documentation",
+      "type": "claude",
+      "prompt": "Read and analyze all engine improvement documentation in {{docs_path}}. Extract implementation requirements for: Work Stealing, Circuit Breaker, Advanced Scheduling, Dependency Graph, and Monitoring & Metrics systems.",
+      "capture_output": "implementation_requirements"
+    },
+    {
+      "id": "implement-work-stealing",
+      "name": "Implement Work Stealing Algorithm",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the Work Stealing algorithm from the original Claude-Flow based on the specifications in 1-WORK-STEALING-INTEGRATION.md. Include: WorkStealingCoordinator class, load balancing logic, agent workload tracking, steal threshold management, and integration with Queen Controller. Save to .ai-workflow/intelligence-engine/work-stealing.js",
+      "output": "work-stealing-implemented",
+      "dependencies": ["analyze-engine-docs"]
+    },
+    {
+      "id": "implement-circuit-breaker",
+      "name": "Implement Circuit Breaker Pattern",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the Circuit Breaker pattern from 2-CIRCUIT-BREAKER-INTEGRATION.md. Include: CircuitBreaker class, state management (CLOSED/OPEN/HALF_OPEN), failure tracking, timeout handling, and Queen Controller integration. Save to .ai-workflow/intelligence-engine/circuit-breaker.js",
+      "output": "circuit-breaker-implemented",
+      "dependencies": ["implement-work-stealing"]
+    },
+    {
+      "id": "implement-advanced-scheduling",
+      "name": "Implement Advanced Scheduling System",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the Advanced Scheduling system from 3-ADVANCED-SCHEDULING-INTEGRATION.md. Include: AdvancedTaskScheduler, multiple scheduling strategies (Capability, RoundRobin, LeastLoaded, Affinity), task assignment optimization, and integration with work stealing and circuit breaker. Save to .ai-workflow/intelligence-engine/advanced-scheduler.js",
+      "output": "advanced-scheduling-implemented",
+      "dependencies": ["implement-circuit-breaker"]
+    },
+    {
+      "id": "implement-dependency-graph",
+      "name": "Implement Dependency Graph System",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the Dependency Graph system from 4-DEPENDENCY-GRAPH-INTEGRATION.md. Include: DependencyGraph class, topological sorting, circular dependency detection, execution ordering, task dependency management, and Queen Controller integration. Save to .ai-workflow/intelligence-engine/dependency-graph.js",
+      "output": "dependency-graph-implemented",
+      "dependencies": ["implement-advanced-scheduling"]
+    },
+    {
+      "id": "implement-monitoring-metrics",
+      "name": "Implement Monitoring & Metrics System",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Implement the Monitoring & Metrics system from 5-MONITORING-METRICS-INTEGRATION.md. Include: SystemMonitor class, real-time metrics collection, performance analytics, alert management, Prometheus integration, and comprehensive dashboard. Save to .ai-workflow/intelligence-engine/monitoring-system.js",
+      "output": "monitoring-metrics-implemented",
+      "dependencies": ["implement-dependency-graph"]
+    },
+    {
+      "id": "integrate-with-queen-controller",
+      "name": "Integrate All Improvements with Queen Controller",
+      "type": "claude-flow",
+      "mode": "hive-mind",
+      "prompt": "Modify the Queen Controller (.ai-workflow/intelligence-engine/queen-controller.js) to integrate all the new engine improvements: Work Stealing, Circuit Breaker, Advanced Scheduling, Dependency Graph, and Monitoring. Ensure proper initialization, event handling, and coordination between all systems.",
+      "output": "queen-controller-enhanced",
+      "dependencies": ["implement-monitoring-metrics"]
+    },
+    {
+      "id": "create-comprehensive-tests",
+      "name": "Create Tests for All Engine Improvements",
+      "type": "sub-agent",
+      "agent": "test-engineer",
+      "prompt": "Create comprehensive tests for all implemented engine improvements: unit tests for each component, integration tests for system interactions, performance tests for work stealing and scheduling, and end-to-end tests for the complete enhanced Queen Controller.",
+      "output": "tests-complete",
+      "dependencies": ["integrate-with-queen-controller"]
+    },
+    {
+      "id": "validate-performance-improvements",
+      "name": "Validate Performance Improvements",
+      "type": "sub-agent",
+      "agent": "performance-engineer",
+      "prompt": "Test and validate the performance improvements: measure work stealing efficiency (target: 30% better resource utilization), circuit breaker response time (target: 50% faster failure recovery), scheduling optimization (target: 25% faster task completion), and overall system throughput.",
+      "output": "performance-validation",
+      "dependencies": ["create-comprehensive-tests"]
+    },
+    {
+      "id": "update-documentation",
+      "name": "Update System Documentation",
+      "type": "claude",
+      "prompt": "Update all system documentation to reflect the new engine improvements: API documentation, architecture diagrams, setup guides, and usage examples. Include performance benchmarks and integration instructions.",
+      "output": "documentation-updated",
+      "dependencies": ["validate-performance-improvements"]
+    }
+  ],
+  
+  "monitoring": {
+    "track_implementation": true,
+    "show_performance_metrics": true,
+    "display_agent_activity": true,
+    "real_time_updates": true
+  },
+  
+  "success_criteria": {
+    "work_stealing_efficiency": "30% better resource utilization",
+    "circuit_breaker_response": "50% faster failure recovery",
+    "scheduling_optimization": "25% faster task completion",
+    "dependency_resolution": "100% accurate dependency ordering",
+    "monitoring_coverage": "Real-time metrics for all components"
+  },
+  
+  "on_success": "🚀 All engine improvements implemented successfully! Queen Controller now has Work Stealing, Circuit Breaker, Advanced Scheduling, Dependency Graph, and Monitoring & Metrics systems. Monitor performance at: http://localhost:{{ui_port}}",
+  "on_failure": "❌ Engine implementation failed. Check monitoring dashboard for details and retry failed components."
+}

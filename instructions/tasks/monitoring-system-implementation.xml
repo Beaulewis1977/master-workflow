@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="monitoring-system-implementation" version="1.0">
+    <metadata>
+        <title>Monitoring & Metrics System Implementation</title>
+        <agent>monitoring-specialist</agent>
+        <priority>high</priority>
+        <estimatedTime>12 minutes</estimatedTime>
+        <created>2025-11-20T10:00:09.704Z</created>
+    </metadata>
+    
+    <execution>
+        <mode>autonomous</mode>
+        <retryAttempts>3</retryAttempts>
+        <timeout>600000</timeout>
+        <parallelizable>false</parallelizable>
+        <validationRequired>true</validationRequired>
+    </execution>
+    
+    <dependencies>
+        <dependency>dependency-graph-implementation</dependency>
+    </dependencies>
+    
+    <instructions>
+        <objective>Implement comprehensive Monitoring & Metrics System</objective>
+        <requirements>
+            <requirement>Create SystemMonitor class with real-time metrics</requirement>
+            <requirement>Implement performance analytics and alerting</requirement>
+            <requirement>Add Prometheus integration and WebSocket streaming</requirement>
+            <requirement>Create comprehensive dashboard</requirement>
+            <requirement>Monitor all system components in real-time</requirement>
+        </requirements>
+        <steps>
+            
+            <step id="1">
+                <title>Design monitoring architecture</title>
+                <description>Create metrics collection and processing pipeline</description>
+                <estimatedTime>3 minutes</estimatedTime>
+            </step>
+            <step id="2">
+                <title>Implement metrics collection</title>
+                <description>Add CPU, memory, network, and custom metrics</description>
+                <estimatedTime>4 minutes</estimatedTime>
+            </step>
+            <step id="3">
+                <title>Add analytics and alerting</title>
+                <description>Implement performance analysis and alert management</description>
+                <estimatedTime>3 minutes</estimatedTime>
+            </step>
+            <step id="4">
+                <title>Create dashboard integration</title>
+                <description>Build WebSocket streaming and dashboard UI</description>
+                <estimatedTime>2 minutes</estimatedTime>
+            </step>
+        </steps>
+    </instructions>
+    
+    <technical>
+        <specifications>
+            
+            <class>"SystemMonitor"</class>
+            <components>["MetricsCollector","PerformanceAnalyzer","AlertManager","DashboardServer"]</components>
+            <dependencies>["Queen Controller","WebSocket Server"]</dependencies>
+            <patterns>["Observer","Publisher-Subscriber"]</patterns>
+        </specifications>
+        <integration>
+            
+            <queenController>true</queenController>
+            <webSocketServer>true</webSocketServer>
+            <prometheus>true</prometheus>
+            <dashboard>true</dashboard>
+        </integration>
+    </technical>
+    
+    <output>
+        <files>
+            
+            <file>
+                <path>.ai-workflow/intelligence-engine/monitoring-system.js</path>
+                <type>module</type>
+                <size>~25KB</size>
+            </file>
+            <file>
+                <path>./tests/monitoring-system.test.js</path>
+                <type>test</type>
+                <size>~12KB</size>
+            </file>
+        </files>
+        <format>ES6+ module</format>
+        <documentation>JSDoc complete</documentation>
+    </output>
+    
+    <quality>
+        <codeQuality>high</codeQuality>
+        <testCoverage>90%</testCoverage>
+        <documentation>complete</documentation>
+        <performance>optimized</performance>
+    </quality>
+    
+    <monitoring>
+        <trackProgress>true</trackProgress>
+        <emitEvents>true</emitEvents>
+        <logLevel>verbose</logLevel>
+        <metrics>
+            
+            <metric name="monitoring_system_cpu" type="gauge" />
+            <metric name="monitoring_system_memory" type="gauge" />
+            <metric name="metrics_collected" type="counter" />
+        </metrics>
+    </monitoring>
+</task>

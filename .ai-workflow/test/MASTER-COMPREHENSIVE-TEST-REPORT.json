@@ -1,0 +1,282 @@
+{
+  "summary": {
+    "executionTime": "2025-11-20T06:09:32.821Z",
+    "totalDuration": 90,
+    "overallResults": {
+      "totalTests": 24,
+      "passed": 0,
+      "failed": 24,
+      "skipped": 0,
+      "successRate": "0.0"
+    },
+    "systemValidation": {
+      "claudeFlow2Integration": false,
+      "agentOSIntegration": false,
+      "subAgentOrchestration": false,
+      "endToEndWorkflows": false,
+      "performanceTargetsMet": false,
+      "scalabilityValidated": true,
+      "errorRecoveryTested": false
+    }
+  },
+  "suiteResults": [
+    {
+      "name": "Claude Flow 2.0 & Core Integration",
+      "passed": 0,
+      "total": 12,
+      "failed": 12,
+      "duration": 42.792224,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Claude Flow 2.0 WASM Core Module Loading and Acceleration",
+          "passed": false,
+          "error": "Cannot read properties of undefined (reading 'bind')",
+          "duration": 3.765383,
+          "timestamp": "2025-11-20T06:09:32.738Z"
+        },
+        {
+          "name": "All 4 Topology Types (Hierarchical, Mesh, Ring, Star)",
+          "passed": false,
+          "error": "manager.addAgent is not a function",
+          "duration": 1.2891410000000008,
+          "timestamp": "2025-11-20T06:09:32.739Z"
+        },
+        {
+          "name": "Neural Agent Selection and Capability Matching",
+          "passed": false,
+          "error": "capabilityMatcher.registerAgent is not a function",
+          "duration": 4.938472000000001,
+          "timestamp": "2025-11-20T06:09:32.744Z"
+        },
+        {
+          "name": "Performance Metrics Validation (2.8-4.4x speedup, 32.3% token reduction)",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 5.6607809999999965,
+          "timestamp": "2025-11-20T06:09:32.750Z"
+        },
+        {
+          "name": "Agent-OS Three-Layer Context Architecture",
+          "passed": false,
+          "error": "Cannot read properties of undefined (reading 'replace')",
+          "duration": 9.817718999999997,
+          "timestamp": "2025-11-20T06:09:32.760Z"
+        },
+        {
+          "name": "Spec-Driven Development Commands",
+          "passed": false,
+          "error": "Cannot read properties of undefined (reading 'replace')",
+          "duration": 1.3298300000000012,
+          "timestamp": "2025-11-20T06:09:32.762Z"
+        },
+        {
+          "name": "Claude Code Sub-Agents Spawning (50+ Specialized Agents)",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.1651349999999994,
+          "timestamp": "2025-11-20T06:09:32.763Z"
+        },
+        {
+          "name": "200k Context Window Allocation Per Agent",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.0658579999999986,
+          "timestamp": "2025-11-20T06:09:32.764Z"
+        },
+        {
+          "name": "Auto-Delegation System and Queen Controller Orchestration",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.2243600000000043,
+          "timestamp": "2025-11-20T06:09:32.766Z"
+        },
+        {
+          "name": "End-to-End Workflow from Project Analysis to Deployment",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.0166539999999955,
+          "timestamp": "2025-11-20T06:09:32.767Z"
+        },
+        {
+          "name": "Performance and Scalability - 10 Concurrent Agents with Full Context",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.1093520000000012,
+          "timestamp": "2025-11-20T06:09:32.769Z"
+        },
+        {
+          "name": "Error Recovery and Resilience Mechanisms",
+          "passed": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.3654500000000027,
+          "timestamp": "2025-11-20T06:09:32.770Z"
+        }
+      ]
+    },
+    {
+      "name": "Agent-OS to Claude Flow Pipeline",
+      "passed": 0,
+      "total": 4,
+      "failed": 4,
+      "duration": 28.662891000000002,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Agent-OS Spec Creation to Claude Flow Execution Pipeline",
+          "success": false,
+          "error": "Cannot read properties of undefined (reading 'replace')",
+          "duration": 23.791240000000002,
+          "timestamp": "2025-11-20T06:09:32.801Z"
+        },
+        {
+          "name": "Three-Layer Context Integration with Claude Flow",
+          "success": false,
+          "error": "Cannot read properties of undefined (reading 'replace')",
+          "duration": 1.2694719999999933,
+          "timestamp": "2025-11-20T06:09:32.803Z"
+        },
+        {
+          "name": "Conditional File Loading with Claude Flow Optimization",
+          "success": false,
+          "error": "Cannot read properties of undefined (reading 'replace')",
+          "duration": 1.2635319999999979,
+          "timestamp": "2025-11-20T06:09:32.804Z"
+        },
+        {
+          "name": "Product and Specification Generation Pipeline",
+          "success": false,
+          "error": "Cannot read properties of undefined (reading 'replace')",
+          "duration": 1.1634679999999946,
+          "timestamp": "2025-11-20T06:09:32.805Z"
+        }
+      ]
+    },
+    {
+      "name": "Multi-Agent Collaboration",
+      "passed": 0,
+      "total": 3,
+      "failed": 3,
+      "duration": 5.700222999999994,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Multi-Agent Collaborative Development Workflow",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.4872330000000034,
+          "timestamp": "2025-11-20T06:09:32.808Z"
+        },
+        {
+          "name": "Shared State Management Across Agents",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.3624200000000002,
+          "timestamp": "2025-11-20T06:09:32.809Z"
+        },
+        {
+          "name": "Cross-Agent Communication Patterns",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.7153009999999966,
+          "timestamp": "2025-11-20T06:09:32.811Z"
+        }
+      ]
+    },
+    {
+      "name": "Context Management & Overflow Protection",
+      "passed": 0,
+      "total": 5,
+      "failed": 5,
+      "duration": 7.565128000000001,
+      "successRate": "0.0",
+      "details": [
+        {
+          "name": "Context Overflow Detection and Prevention",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.0043660000000045,
+          "timestamp": "2025-11-20T06:09:32.813Z"
+        },
+        {
+          "name": "Intelligent Context Pruning and Prioritization",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.0823970000000003,
+          "timestamp": "2025-11-20T06:09:32.815Z"
+        },
+        {
+          "name": "Context Compression and Optimization",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 1.0617099999999908,
+          "timestamp": "2025-11-20T06:09:32.816Z"
+        },
+        {
+          "name": "Multi-Agent Context Synchronization",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 0.9559869999999933,
+          "timestamp": "2025-11-20T06:09:32.818Z"
+        },
+        {
+          "name": "Context Window Utilization Optimization",
+          "success": false,
+          "error": "queen.initialize is not a function",
+          "duration": 0.914835999999994,
+          "timestamp": "2025-11-20T06:09:32.819Z"
+        }
+      ]
+    }
+  ],
+  "performanceAnalysis": {
+    "overallMetrics": {
+      "totalTestDuration": 90,
+      "averageTestDuration": 3.75,
+      "testsPerSecond": "266.67"
+    },
+    "suitePerformance": [
+      {
+        "name": "Claude Flow 2.0 & Core Integration",
+        "duration": 42.792224,
+        "testCount": 12,
+        "averageDuration": 3.5660186666666664,
+        "efficiency": "0.0"
+      },
+      {
+        "name": "Agent-OS to Claude Flow Pipeline",
+        "duration": 28.662891000000002,
+        "testCount": 4,
+        "averageDuration": 7.1657227500000005,
+        "efficiency": "0.0"
+      },
+      {
+        "name": "Multi-Agent Collaboration",
+        "duration": 5.700222999999994,
+        "testCount": 3,
+        "averageDuration": 1.9000743333333314,
+        "efficiency": "0.0"
+      },
+      {
+        "name": "Context Management & Overflow Protection",
+        "duration": 7.565128000000001,
+        "testCount": 5,
+        "averageDuration": 1.5130256000000002,
+        "efficiency": "0.0"
+      }
+    ],
+    "recommendations": [
+      "Address failing test suites: Claude Flow 2.0 & Core Integration, Agent-OS to Claude Flow Pipeline, Multi-Agent Collaboration, Context Management & Overflow Protection"
+    ]
+  },
+  "recommendations": [
+    "Address failing test suites: Claude Flow 2.0 & Core Integration, Agent-OS to Claude Flow Pipeline, Multi-Agent Collaboration, Context Management & Overflow Protection",
+    "Investigate and fix failing tests to achieve >90% success rate"
+  ],
+  "testEnvironment": {
+    "nodeVersion": "v20.19.5",
+    "platform": "linux",
+    "architecture": "x64",
+    "workingDirectory": "/home/kngpnn/dev/master-workflow-1/.ai-workflow"
+  }
+}

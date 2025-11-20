@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "total": 12,
+    "passed": 0,
+    "failed": 12,
+    "skipped": 0,
+    "successRate": "0.0",
+    "totalDuration": 38,
+    "timestamp": "2025-11-20T06:09:32.771Z"
+  },
+  "performance": {
+    "averageSpeedup": "N/A",
+    "averageTokenReduction": "N/A",
+    "averageResponseTime": "N/A",
+    "peakMemoryUsage": "N/A",
+    "maxConcurrentAgents": 0
+  },
+  "details": [
+    {
+      "name": "Claude Flow 2.0 WASM Core Module Loading and Acceleration",
+      "passed": false,
+      "error": "Cannot read properties of undefined (reading 'bind')",
+      "duration": 3.765383,
+      "timestamp": "2025-11-20T06:09:32.738Z"
+    },
+    {
+      "name": "All 4 Topology Types (Hierarchical, Mesh, Ring, Star)",
+      "passed": false,
+      "error": "manager.addAgent is not a function",
+      "duration": 1.2891410000000008,
+      "timestamp": "2025-11-20T06:09:32.739Z"
+    },
+    {
+      "name": "Neural Agent Selection and Capability Matching",
+      "passed": false,
+      "error": "capabilityMatcher.registerAgent is not a function",
+      "duration": 4.938472000000001,
+      "timestamp": "2025-11-20T06:09:32.744Z"
+    },
+    {
+      "name": "Performance Metrics Validation (2.8-4.4x speedup, 32.3% token reduction)",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 5.6607809999999965,
+      "timestamp": "2025-11-20T06:09:32.750Z"
+    },
+    {
+      "name": "Agent-OS Three-Layer Context Architecture",
+      "passed": false,
+      "error": "Cannot read properties of undefined (reading 'replace')",
+      "duration": 9.817718999999997,
+      "timestamp": "2025-11-20T06:09:32.760Z"
+    },
+    {
+      "name": "Spec-Driven Development Commands",
+      "passed": false,
+      "error": "Cannot read properties of undefined (reading 'replace')",
+      "duration": 1.3298300000000012,
+      "timestamp": "2025-11-20T06:09:32.762Z"
+    },
+    {
+      "name": "Claude Code Sub-Agents Spawning (50+ Specialized Agents)",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 1.1651349999999994,
+      "timestamp": "2025-11-20T06:09:32.763Z"
+    },
+    {
+      "name": "200k Context Window Allocation Per Agent",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 1.0658579999999986,
+      "timestamp": "2025-11-20T06:09:32.764Z"
+    },
+    {
+      "name": "Auto-Delegation System and Queen Controller Orchestration",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 1.2243600000000043,
+      "timestamp": "2025-11-20T06:09:32.766Z"
+    },
+    {
+      "name": "End-to-End Workflow from Project Analysis to Deployment",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 1.0166539999999955,
+      "timestamp": "2025-11-20T06:09:32.767Z"
+    },
+    {
+      "name": "Performance and Scalability - 10 Concurrent Agents with Full Context",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 1.1093520000000012,
+      "timestamp": "2025-11-20T06:09:32.769Z"
+    },
+    {
+      "name": "Error Recovery and Resilience Mechanisms",
+      "passed": false,
+      "error": "queen.initialize is not a function",
+      "duration": 1.3654500000000027,
+      "timestamp": "2025-11-20T06:09:32.770Z"
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v20.19.5",
+    "platform": "linux",
+    "arch": "x64",
+    "cpus": 32,
+    "memory": "61.59 GB"
+  }
+}
