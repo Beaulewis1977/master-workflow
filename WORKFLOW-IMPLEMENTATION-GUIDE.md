@@ -15,7 +15,7 @@ Both systems use **JSON-driven workflows** that the Queen Controller executes wi
 ### **🏗️ Recommended Build Order**
 
 #### **Phase 1: Engine Improvements (Build First)**
-```
+```text
 Engine Improvements → Autonomous System → Integration & Optimization
 ```
 

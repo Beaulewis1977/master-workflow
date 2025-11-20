@@ -23,28 +23,28 @@
         
         <phase id="engine-implementation" name="Engine Implementation">
             <tasks>
-                <task ref="work-stealing-implementation" />
-                <task ref="circuit-breaker-implementation" />
-                <task ref="advanced-scheduling-implementation" />
-                <task ref="dependency-graph-implementation" />
-                <task ref="monitoring-system-implementation" />
+                <task ref="work-stealing-implementation" dependsOn="project-analyzer-implementation" />
+                <task ref="circuit-breaker-implementation" dependsOn="work-stealing-implementation" />
+                <task ref="advanced-scheduling-implementation" dependsOn="work-stealing-implementation" />
+                <task ref="dependency-graph-implementation" dependsOn="circuit-breaker-implementation,advanced-scheduling-implementation" />
+                <task ref="monitoring-system-implementation" dependsOn="dependency-graph-implementation" />
             </tasks>
         </phase>
         
         <phase id="autonomous-implementation" name="Autonomous System Implementation">
             <tasks>
-                <task ref="documentation-generator-implementation" />
-                <task ref="specification-engine-implementation" />
-                <task ref="interactive-installer-implementation" />
-                <task ref="implementation-planner-implementation" />
+                <task ref="documentation-generator-implementation" dependsOn="monitoring-system-implementation" />
+                <task ref="specification-engine-implementation" dependsOn="documentation-generator-implementation" />
+                <task ref="interactive-installer-implementation" dependsOn="specification-engine-implementation" />
+                <task ref="implementation-planner-implementation" dependsOn="interactive-installer-implementation" />
             </tasks>
         </phase>
         
         <phase id="integration" name="Integration & Testing">
             <tasks>
-                <task ref="integration-testing" />
-                <task ref="performance-validation" />
-                <task ref="documentation-update" />
+                <task ref="integration-testing" dependsOn="implementation-planner-implementation" />
+                <task ref="performance-validation" dependsOn="integration-testing" />
+                <task ref="documentation-update" dependsOn="performance-validation" />
             </tasks>
         </phase>
     </phases>
