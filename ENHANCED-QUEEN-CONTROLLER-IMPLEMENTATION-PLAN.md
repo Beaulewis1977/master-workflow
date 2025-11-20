@@ -809,7 +809,7 @@ describe('Enhanced System Integration', () => {
 node workflow-runner-modular.js --workflow implement-enhanced-queen-controller
 
 # Test JSON instruction execution
-node -e "
+node --input-type=module -e "
 import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js';
 const qc = new EnhancedQueenController({ useEnhancedInstructions: true });
 qc.executeTaskWithJSON('./instructions/tasks/work-stealing-implementation.json')
@@ -818,7 +818,7 @@ qc.executeTaskWithJSON('./instructions/tasks/work-stealing-implementation.json')
 "
 
 # Test XML workflow execution
-node -e "
+node --input-type=module -e "
 import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js';
 const qc = new EnhancedQueenController({ useEnhancedInstructions: true });
 qc.executeWorkflowWithXML('./instructions/workflows/engine-improvements-workflow.xml')
@@ -830,7 +830,7 @@ qc.executeWorkflowWithXML('./instructions/workflows/engine-improvements-workflow
 ### **Migration**
 ```bash
 # Migrate existing string instructions to JSON
-node -e "
+node --input-type=module -e "
 import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js';
 const qc = new EnhancedQueenController();
 qc.migrateFromStringToJSON('agent-123', 'old string instruction')

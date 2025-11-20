@@ -245,7 +245,7 @@ open http://localhost:3003/monitoring
 node workflow-runner-modular.js --workflow implement-engine-improvements
 
 # Method B: Direct Queen Controller execution (more control)
-node -e "
+node --input-type=module -e "
 import EngineImprovementsImplementation from './src/autonomous-system/engine-improvements-implementation.js';
 import { MasterWorkflow3 } from './src/index.js';
 
@@ -261,7 +261,7 @@ await implementation.implementAllImprovements();
 "
 
 # Method C: Individual task execution (for debugging)
-node -e "
+node --input-type=module -e "
 import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js';
 const qc = new EnhancedQueenController();
 await qc.executeTaskWithJSON('./instructions/tasks/work-stealing-implementation.json');
@@ -277,7 +277,7 @@ node workflow-runner-modular.js --workflow implement-autonomous-docs
 node src/autonomous-system/autonomous-implementation-runner.js --interactive
 
 # Method C: XML workflow execution
-node -e "
+node --input-type=module -e "
 import EnhancedQueenController from './src/autonomous-system/enhanced-queen-controller.js';
 const qc = new EnhancedQueenController();
 await qc.executeWorkflowWithXML('./instructions/workflows/autonomous-system-workflow.xml');
@@ -290,7 +290,7 @@ await qc.executeWorkflowWithXML('./instructions/workflows/autonomous-system-work
 node workflow-runner-modular.js --workflow complete-implementation-workflow
 
 # Or execute all phases manually
-node -e "
+node --input-type=module -e "
 import { MasterWorkflow3 } from './src/index.js';
 
 const mw = new MasterWorkflow3({ 
@@ -421,7 +421,7 @@ npm test -- integration
 node -e "console.log(JSON.parse(require('fs').readFileSync('./instructions/tasks/work-stealing-implementation.json')))"
 
 # Test workflow validation
-node -e "
+node --input-type=module -e "
 import { WorkflowOrchestrator } from './src/autonomous-system/workflow-orchestrator.js';
 const orchestrator = new WorkflowOrchestrator();
 await orchestrator.validateXML('./instructions/workflows/engine-improvements-workflow.xml');

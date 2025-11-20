@@ -98,7 +98,7 @@ node src/platform/webui-server.js &
 node workflow-runner-modular.js --workflow implement-engine-improvements
 
 # Method B: Direct Queen Controller Integration (More Powerful)
-node -e "
+node --input-type=module -e "
 import EngineImprovementsImplementation from './src/autonomous-system/engine-improvements-implementation.js';
 import { MasterWorkflow3 } from './src/index.js';
 
