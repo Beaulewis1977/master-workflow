@@ -1,0 +1,141 @@
+{
+  "task": {
+    "id": "project-analyzer-implementation",
+    "title": "Project Analyzer Implementation",
+    "version": "1.0",
+    "agent": "code-archaeologist",
+    "priority": "high",
+    "estimatedTime": "15 minutes",
+    "dependencies": []
+  },
+  "execution": {
+    "mode": "autonomous",
+    "retryAttempts": 3,
+    "timeout": 600000,
+    "parallelizable": true,
+    "validationRequired": true
+  },
+  "instructions": {
+    "objective": "Implement Project Analyzer for deep codebase analysis",
+    "requirements": [
+      "Create ProjectAnalyzer class with deep analysis capabilities",
+      "Implement component detection and dependency mapping",
+      "Add pattern recognition and quality assessment",
+      "Support multiple programming languages",
+      "Achieve 95%+ component detection accuracy"
+    ],
+    "steps": [
+      {
+        "title": "Design analysis engine",
+        "description": "Create modular analysis architecture",
+        "estimatedTime": "4 minutes"
+      },
+      {
+        "title": "Implement component detection",
+        "description": "Add class, function, module detection",
+        "estimatedTime": "3 minutes"
+      },
+      {
+        "title": "Add dependency mapping",
+        "description": "Build import/export dependency graph",
+        "estimatedTime": "4 minutes"
+      },
+      {
+        "title": "Implement pattern recognition",
+        "description": "Add architectural pattern detection",
+        "estimatedTime": "4 minutes"
+      }
+    ],
+    "deliverables": [
+      "project-analyzer.js implementation",
+      "Multi-language parser support",
+      "Analysis report generator",
+      "Performance benchmarks"
+    ]
+  },
+  "technical": {
+    "specifications": {
+      "class": "ProjectAnalyzer",
+      "parsers": [
+        "JavaScript",
+        "TypeScript",
+        "JSON",
+        "Markdown"
+      ],
+      "algorithms": [
+        "AST_parsing",
+        "dependency_analysis",
+        "pattern_matching"
+      ],
+      "dependencies": [
+        "Babel Parser",
+        "Acorn"
+      ]
+    },
+    "integration": {
+      "autonomousSystem": true,
+      "documentationGenerator": true,
+      "monitoring": true
+    },
+    "performance": {
+      "targets": {
+        "analysisSpeed": "10,000 files in < 30 seconds",
+        "memoryUsage": "< 1GB for large projects",
+        "accuracy": "95%+ component detection"
+      },
+      "metrics": [
+        "analysis_speed",
+        "memory_usage",
+        "detection_accuracy"
+      ]
+    },
+    "testing": {
+      "unit": true,
+      "integration": true,
+      "performance": true,
+      "coverage": "90%"
+    }
+  },
+  "output": {
+    "files": [
+      {
+        "path": "src/autonomous-system/project-analyzer.js",
+        "type": "module",
+        "size": "~30KB"
+      },
+      {
+        "path": "./tests/project-analyzer.test.js",
+        "type": "test",
+        "size": "~15KB"
+      }
+    ],
+    "format": "ES6+ module",
+    "documentation": "JSDoc complete",
+    "validation": "ESLint + Prettier"
+  },
+  "quality": {
+    "codeQuality": "high",
+    "testCoverage": "90%",
+    "documentation": "complete",
+    "performance": "optimized"
+  },
+  "monitoring": {
+    "trackProgress": true,
+    "emitEvents": true,
+    "logLevel": "verbose",
+    "metrics": [
+      {
+        "name": "project_analysis_files_processed",
+        "type": "counter"
+      },
+      {
+        "name": "project_analysis_duration",
+        "type": "histogram"
+      },
+      {
+        "name": "project_analysis_accuracy",
+        "type": "gauge"
+      }
+    ]
+  }
+}

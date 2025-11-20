@@ -1,0 +1,37 @@
+{
+  "agent": {
+    "id": "code-archaeologist",
+    "version": "1.0",
+    "capabilities": [
+      "code-analysis",
+      "pattern-recognition",
+      "dependency-mapping"
+    ],
+    "maxConcurrentTasks": 2,
+    "specializations": [
+      "project-analysis",
+      "documentation-generation"
+    ]
+  },
+  "execution": {
+    "timeout": 300000,
+    "retryAttempts": 3,
+    "memoryLimit": "512MB",
+    "cpuLimit": "2 cores"
+  },
+  "quality": {
+    "codeQualityThreshold": 8,
+    "testCoverageRequirement": "90%",
+    "documentationRequirement": "complete"
+  },
+  "communication": {
+    "emitProgressEvents": true,
+    "logLevel": "verbose",
+    "reportingInterval": 5000
+  },
+  "integration": {
+    "queenController": true,
+    "monitoringSystem": true,
+    "websocketSupport": true
+  }
+}

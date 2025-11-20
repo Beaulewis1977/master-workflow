@@ -1,0 +1,144 @@
+{
+  "task": {
+    "id": "monitoring-system-implementation",
+    "title": "Monitoring & Metrics System Implementation",
+    "version": "1.0",
+    "agent": "monitoring-specialist",
+    "priority": "high",
+    "estimatedTime": "12 minutes",
+    "dependencies": [
+      "dependency-graph-implementation"
+    ]
+  },
+  "execution": {
+    "mode": "autonomous",
+    "retryAttempts": 3,
+    "timeout": 600000,
+    "parallelizable": false,
+    "validationRequired": true
+  },
+  "instructions": {
+    "objective": "Implement comprehensive Monitoring & Metrics System",
+    "requirements": [
+      "Create SystemMonitor class with real-time metrics",
+      "Implement performance analytics and alerting",
+      "Add Prometheus integration and WebSocket streaming",
+      "Create comprehensive dashboard",
+      "Monitor all system components in real-time"
+    ],
+    "steps": [
+      {
+        "title": "Design monitoring architecture",
+        "description": "Create metrics collection and processing pipeline",
+        "estimatedTime": "3 minutes"
+      },
+      {
+        "title": "Implement metrics collection",
+        "description": "Add CPU, memory, network, and custom metrics",
+        "estimatedTime": "4 minutes"
+      },
+      {
+        "title": "Add analytics and alerting",
+        "description": "Implement performance analysis and alert management",
+        "estimatedTime": "3 minutes"
+      },
+      {
+        "title": "Create dashboard integration",
+        "description": "Build WebSocket streaming and dashboard UI",
+        "estimatedTime": "2 minutes"
+      }
+    ],
+    "deliverables": [
+      "monitoring-system.js implementation",
+      "Prometheus metrics endpoint",
+      "WebSocket streaming server",
+      "Real-time dashboard"
+    ]
+  },
+  "technical": {
+    "specifications": {
+      "class": "SystemMonitor",
+      "components": [
+        "MetricsCollector",
+        "PerformanceAnalyzer",
+        "AlertManager",
+        "DashboardServer"
+      ],
+      "dependencies": [
+        "Queen Controller",
+        "WebSocket Server"
+      ],
+      "patterns": [
+        "Observer",
+        "Publisher-Subscriber"
+      ]
+    },
+    "integration": {
+      "queenController": true,
+      "webSocketServer": true,
+      "prometheus": true,
+      "dashboard": true
+    },
+    "performance": {
+      "targets": {
+        "metricsCollectionOverhead": "< 5%",
+        "dashboardUpdateLatency": "< 100ms",
+        "alertDetectionTime": "< 1s"
+      },
+      "metrics": [
+        "system_cpu",
+        "system_memory",
+        "agent_performance",
+        "task_metrics"
+      ]
+    },
+    "testing": {
+      "unit": true,
+      "integration": true,
+      "performance": true,
+      "coverage": "90%"
+    }
+  },
+  "output": {
+    "files": [
+      {
+        "path": ".ai-workflow/intelligence-engine/monitoring-system.js",
+        "type": "module",
+        "size": "~25KB"
+      },
+      {
+        "path": "./tests/monitoring-system.test.js",
+        "type": "test",
+        "size": "~12KB"
+      }
+    ],
+    "format": "ES6+ module",
+    "documentation": "JSDoc complete",
+    "validation": "ESLint + Prettier"
+  },
+  "quality": {
+    "codeQuality": "high",
+    "testCoverage": "90%",
+    "documentation": "complete",
+    "performance": "optimized"
+  },
+  "monitoring": {
+    "trackProgress": true,
+    "emitEvents": true,
+    "logLevel": "verbose",
+    "metrics": [
+      {
+        "name": "monitoring_system_cpu",
+        "type": "gauge"
+      },
+      {
+        "name": "monitoring_system_memory",
+        "type": "gauge"
+      },
+      {
+        "name": "metrics_collected",
+        "type": "counter"
+      }
+    ]
+  }
+}

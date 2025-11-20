@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<task id="project-analyzer-implementation" version="1.0">
+    <metadata>
+        <title>Project Analyzer Implementation</title>
+        <agent>code-archaeologist</agent>
+        <priority>high</priority>
+        <estimatedTime>15 minutes</estimatedTime>
+        <created>2025-11-20T09:24:55.158Z</created>
+    </metadata>
+    
+    <execution>
+        <mode>autonomous</mode>
+        <retryAttempts>3</retryAttempts>
+        <timeout>600000</timeout>
+        <parallelizable>true</parallelizable>
+        <validationRequired>true</validationRequired>
+    </execution>
+    
+    <dependencies>
+        
+    </dependencies>
+    
+    <instructions>
+        <objective>Implement Project Analyzer for deep codebase analysis</objective>
+        <requirements>
+            <requirement>Create ProjectAnalyzer class with deep analysis capabilities</requirement>
+            <requirement>Implement component detection and dependency mapping</requirement>
+            <requirement>Add pattern recognition and quality assessment</requirement>
+            <requirement>Support multiple programming languages</requirement>
+            <requirement>Achieve 95%+ component detection accuracy</requirement>
+        </requirements>
+        <steps>
+            
+            <step id="1">
+                <title>Design analysis engine</title>
+                <description>Create modular analysis architecture</description>
+                <estimatedTime>4 minutes</estimatedTime>
+            </step>
+            <step id="2">
+                <title>Implement component detection</title>
+                <description>Add class, function, module detection</description>
+                <estimatedTime>3 minutes</estimatedTime>
+            </step>
+            <step id="3">
+                <title>Add dependency mapping</title>
+                <description>Build import/export dependency graph</description>
+                <estimatedTime>4 minutes</estimatedTime>
+            </step>
+            <step id="4">
+                <title>Implement pattern recognition</title>
+                <description>Add architectural pattern detection</description>
+                <estimatedTime>4 minutes</estimatedTime>
+            </step>
+        </steps>
+    </instructions>
+    
+    <technical>
+        <specifications>
+            
+            <class>"ProjectAnalyzer"</class>
+            <parsers>["JavaScript","TypeScript","JSON","Markdown"]</parsers>
+            <algorithms>["AST_parsing","dependency_analysis","pattern_matching"]</algorithms>
+            <dependencies>["Babel Parser","Acorn"]</dependencies>
+        </specifications>
+        <integration>
+            
+            <autonomousSystem>true</autonomousSystem>
+            <documentationGenerator>true</documentationGenerator>
+            <monitoring>true</monitoring>
+        </integration>
+    </technical>
+    
+    <output>
+        <files>
+            
+            <file>
+                <path>src/autonomous-system/project-analyzer.js</path>
+                <type>module</type>
+                <size>~30KB</size>
+            </file>
+            <file>
+                <path>./tests/project-analyzer.test.js</path>
+                <type>test</type>
+                <size>~15KB</size>
+            </file>
+        </files>
+        <format>ES6+ module</format>
+        <documentation>JSDoc complete</documentation>
+    </output>
+    
+    <quality>
+        <codeQuality>high</codeQuality>
+        <testCoverage>90%</testCoverage>
+        <documentation>complete</documentation>
+        <performance>optimized</performance>
+    </quality>
+    
+    <monitoring>
+        <trackProgress>true</trackProgress>
+        <emitEvents>true</emitEvents>
+        <logLevel>verbose</logLevel>
+        <metrics>
+            
+            <metric name="project_analysis_files_processed" type="counter" />
+            <metric name="project_analysis_duration" type="histogram" />
+            <metric name="project_analysis_accuracy" type="gauge" />
+        </metrics>
+    </monitoring>
+</task>

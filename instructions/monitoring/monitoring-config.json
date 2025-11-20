@@ -1,0 +1,30 @@
+{
+  "agentMonitoring": {
+    "trackTaskProgress": true,
+    "emitPerformanceEvents": true,
+    "logLevel": "verbose",
+    "metricsInterval": 5000,
+    "alertThresholds": {
+      "taskFailureRate": 0.1,
+      "taskCompletionTime": 300000,
+      "memoryUsage": 0.8,
+      "cpuUsage": 0.9
+    }
+  },
+  "systemMonitoring": {
+    "trackResourceUsage": true,
+    "emitSystemEvents": true,
+    "healthChecks": {
+      "interval": 30000,
+      "endpoints": [
+        "/health",
+        "/metrics",
+        "/status"
+      ]
+    },
+    "performance": {
+      "benchmarkInterval": 60000,
+      "reportGeneration": true
+    }
+  }
+}

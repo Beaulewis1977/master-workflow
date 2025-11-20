@@ -1,0 +1,37 @@
+{
+  "agent": {
+    "id": "system-architect",
+    "version": "1.0",
+    "capabilities": [
+      "system-design",
+      "architecture-planning",
+      "technical-specifications"
+    ],
+    "maxConcurrentTasks": 2,
+    "specializations": [
+      "specification-engine",
+      "implementation-planning"
+    ]
+  },
+  "execution": {
+    "timeout": 300000,
+    "retryAttempts": 3,
+    "memoryLimit": "512MB",
+    "cpuLimit": "2 cores"
+  },
+  "quality": {
+    "codeQualityThreshold": 8,
+    "testCoverageRequirement": "90%",
+    "documentationRequirement": "complete"
+  },
+  "communication": {
+    "emitProgressEvents": true,
+    "logLevel": "verbose",
+    "reportingInterval": 5000
+  },
+  "integration": {
+    "queenController": true,
+    "monitoringSystem": true,
+    "websocketSupport": true
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "task": {
+    "id": "circuit-breaker-implementation",
+    "title": "Circuit Breaker Pattern Implementation",
+    "version": "1.0",
+    "agent": "fullstack-developer",
+    "priority": "high",
+    "estimatedTime": "6 minutes",
+    "dependencies": [
+      "work-stealing-implementation"
+    ]
+  },
+  "execution": {
+    "mode": "autonomous",
+    "retryAttempts": 3,
+    "timeout": 600000,
+    "parallelizable": false,
+    "validationRequired": true
+  },
+  "instructions": {
+    "objective": "Implement Circuit Breaker Pattern for fault tolerance",
+    "requirements": [
+      "Create CircuitBreaker class with state management",
+      "Implement failure threshold tracking",
+      "Add automatic recovery mechanisms",
+      "Integrate with Queen Controller task execution",
+      "Achieve 50% faster failure recovery"
+    ],
+    "steps": [
+      {
+        "title": "Design CircuitBreaker class",
+        "description": "Create class with CLOSED, OPEN, HALF_OPEN states",
+        "estimatedTime": "2 minutes"
+      },
+      {
+        "title": "Implement state management",
+        "description": "Add state transitions and threshold logic",
+        "estimatedTime": "2 minutes"
+      },
+      {
+        "title": "Add failure tracking",
+        "description": "Implement sliding window failure counting",
+        "estimatedTime": "1 minute"
+      },
+      {
+        "title": "Integrate with Queen Controller",
+        "description": "Wrap task execution with circuit breaker",
+        "estimatedTime": "1 minute"
+      }
+    ],
+    "deliverables": [
+      "circuit-breaker.js implementation",
+      "State management tests",
+      "Failure recovery tests",
+      "Performance benchmarks"
+    ]
+  },
+  "technical": {
+    "specifications": {
+      "class": "CircuitBreaker",
+      "methods": [
+        "execute()",
+        "onSuccess()",
+        "onFailure()",
+        "getState()",
+        "transitionTo()"
+      ],
+      "dependencies": [
+        "Queen Controller"
+      ],
+      "patterns": [
+        "State",
+        "Observer"
+      ]
+    },
+    "integration": {
+      "queenController": true,
+      "events": [
+        "state-change",
+        "circuit-opened",
+        "circuit-closed"
+      ],
+      "monitoring": true,
+      "configuration": "config/circuit-breaker.json"
+    },
+    "performance": {
+      "targets": {
+        "failureRecoveryTime": "50% improvement",
+        "stateTransitionLatency": "< 10ms",
+        "failureDetectionTime": "< 50ms"
+      },
+      "metrics": [
+        "circuit_state",
+        "failure_rate",
+        "recovery_time"
+      ]
+    },
+    "testing": {
+      "unit": true,
+      "integration": true,
+      "performance": true,
+      "coverage": "95%"
+    }
+  },
+  "output": {
+    "files": [
+      {
+        "path": ".ai-workflow/intelligence-engine/circuit-breaker.js",
+        "type": "module",
+        "size": "~12KB"
+      },
+      {
+        "path": "./tests/circuit-breaker.test.js",
+        "type": "test",
+        "size": "~6KB"
+      }
+    ],
+    "format": "ES6+ module",
+    "documentation": "JSDoc complete",
+    "validation": "ESLint + Prettier"
+  },
+  "quality": {
+    "codeQuality": "high",
+    "testCoverage": "95%",
+    "documentation": "complete",
+    "performance": "optimized"
+  },
+  "monitoring": {
+    "trackProgress": true,
+    "emitEvents": true,
+    "logLevel": "verbose",
+    "metrics": [
+      {
+        "name": "circuit_breaker_state",
+        "type": "gauge"
+      },
+      {
+        "name": "circuit_breaker_failures",
+        "type": "counter"
+      },
+      {
+        "name": "circuit_breaker_recovery_time",
+        "type": "histogram"
+      }
+    ]
+  }
+}
