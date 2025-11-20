@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Marketplace - Master Workflow 3.0</title>
+
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-darker);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-dark);
+            border-bottom: 2px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            max-width: 1920px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-search {
+            flex: 1;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .autocomplete-results.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--bg-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Sidebar + Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .sidebar-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .filter-label:hover {
+            background: var(--bg-dark);
+        }
+
+        .filter-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .filter-count {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Category Tags */
+        .category-tag {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            margin: 0.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-tag:hover,
+        .category-tag.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-trend {
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Agent Grid */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .agent-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px -10px rgba(102, 126, 234, 0.3);
+        }
+
+        .agent-card-header {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .agent-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .agent-card-info {
+            flex: 1;
+        }
+
+        .agent-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .agent-card-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .agent-card-description {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .agent-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .agent-card-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .agent-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.125rem;
+        }
+
+        .star {
+            color: var(--warning);
+        }
+
+        .star.empty {
+            color: var(--border);
+        }
+
+        .install-btn {
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .install-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .install-btn.installed {
+            background: var(--success);
+            cursor: default;
+        }
+
+        .install-btn.installing {
+            background: var(--text-muted);
+            cursor: wait;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-dark);
+            color: var(--text);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+        }
+
+        .modal-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .modal-footer {
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Reviews */
+        .review {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .review-content {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        /* Notification Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 0.375rem;
+            background: var(--error);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .agent-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-search {
+                max-width: 100%;
+            }
+
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Keyboard Focus */
+        *:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>🛒 Agent Marketplace</h1>
+            </div>
+            <div class="header-search">
+                <span class="search-icon" aria-hidden="true">🔍</span>
+                <input
+                    type="text"
+                    class="search-input"
+                    id="searchInput"
+                    placeholder="Search agents by name, category, or keyword..."
+                    aria-label="Search agents"
+                    autocomplete="off"
+                />
+                <div class="autocomplete-results" id="autocompleteResults" role="listbox"></div>
+            </div>
+            <div class="header-actions">
+                <a href="#my-agents" class="btn">
+                    📦 My Agents
+                    <span class="badge" id="updateBadge" style="display: none;">0</span>
+                </a>
+                <button class="btn btn-primary" onclick="showPublishModal()">
+                    ➕ Publish Agent
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-label">Total Agents</div>
+                <div class="stat-value" id="statTotalAgents">0</div>
+                <div class="stat-trend">↑ Growing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Downloads</div>
+                <div class="stat-value" id="statTotalDownloads">0</div>
+                <div class="stat-trend">↑ Trending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Rating</div>
+                <div class="stat-value" id="statAvgRating">0.0</div>
+                <div class="stat-trend">⭐ Quality</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Users</div>
+                <div class="stat-value" id="statActiveUsers">0</div>
+                <div class="stat-trend">↑ Community</div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="complementary" aria-label="Filters">
+                <!-- Categories -->
+                <div class="sidebar-section">
+                    <h2 class="sidebar-title">Categories</h2>
+                    <div class="filter-group" id="categoryFilters">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Rating Filter -->
+                <div class="sidebar-section">
+                    <h2 class="sidebar-title">Minimum Rating</h2>
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <input type="radio" name="rating" value="all" class="filter-checkbox" checked>
+                            <span>All Ratings</span>
+                        </label>
+                        <label class="filter-label">
+                            <input type="radio" name="rating" value="4" class="filter-checkbox">
+                            <span>4+ ⭐</span>
+                        </label>
+                        <label class="filter-label">
+                            <input type="radio" name="rating" value="3" class="filter-checkbox">
+                            <span>3+ ⭐</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Sort Options -->
+                <div class="sidebar-section">
+                    <h2 class="sidebar-title">Sort By</h2>
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            <input type="radio" name="sort" value="trending" class="filter-checkbox" checked>
+                            <span>Trending</span>
+                        </label>
+                        <label class="filter-label">
+                            <input type="radio" name="sort" value="downloads" class="filter-checkbox">
+                            <span>Most Downloaded</span>
+                        </label>
+                        <label class="filter-label">
+                            <input type="radio" name="sort" value="rating" class="filter-checkbox">
+                            <span>Highest Rated</span>
+                        </label>
+                        <label class="filter-label">
+                            <input type="radio" name="sort" value="recent" class="filter-checkbox">
+                            <span>Recently Added</span>
+                        </label>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" role="main">
+                <!-- Tabs -->
+                <div class="tabs" role="tablist">
+                    <button class="tab active" role="tab" aria-selected="true" data-tab="browse">
+                        🔍 Browse
+                    </button>
+                    <button class="tab" role="tab" aria-selected="false" data-tab="trending">
+                        🔥 Trending
+                    </button>
+                    <button class="tab" role="tab" aria-selected="false" data-tab="installed">
+                        📦 Installed
+                    </button>
+                    <button class="tab" role="tab" aria-selected="false" data-tab="updates">
+                        🔔 Updates
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Browse Tab -->
+                    <div id="browseTab" class="tab-pane active">
+                        <div class="agent-grid" id="agentGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Trending Tab -->
+                    <div id="trendingTab" class="tab-pane" style="display: none;">
+                        <div class="agent-grid" id="trendingGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Installed Tab -->
+                    <div id="installedTab" class="tab-pane" style="display: none;">
+                        <div class="agent-grid" id="installedGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Updates Tab -->
+                    <div id="updatesTab" class="tab-pane" style="display: none;">
+                        <div class="agent-grid" id="updatesGrid">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" style="display: none;">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading agents...</div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📦</div>
+                    <h2>No agents found</h2>
+                    <p>Try adjusting your filters or search query</p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Agent Details Modal -->
+    <div class="modal" id="agentModal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalTitle" class="modal-section-title">Agent Details</h2>
+                    <p id="modalAuthor" class="agent-card-author"></p>
+                </div>
+                <button class="modal-close" onclick="closeModal()" aria-label="Close modal">
+                    ✕
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Agent Info -->
+                <div class="modal-section">
+                    <div class="agent-card-header">
+                        <div class="agent-icon" id="modalIcon">🤖</div>
+                        <div class="agent-card-info">
+                            <div class="agent-card-stats">
+                                <div class="agent-stat">
+                                    <span class="rating-stars" id="modalStars"></span>
+                                    <span id="modalRating">0.0</span>
+                                </div>
+                                <div class="agent-stat">
+                                    📥 <span id="modalDownloads">0</span> downloads
+                                </div>
+                                <div class="agent-stat">
+                                    📅 Version <span id="modalVersion">1.0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="modalDescription"></p>
+                </div>
+
+                <!-- Tags -->
+                <div class="modal-section">
+                    <div class="modal-section-title">Tags</div>
+                    <div class="agent-card-tags" id="modalTags"></div>
+                </div>
+
+                <!-- Installation -->
+                <div class="modal-section" id="installSection">
+                    <div class="modal-section-title">Installation</div>
+                    <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+                        Click the button below to install this agent into your workflow system.
+                    </p>
+                    <button class="btn btn-primary" id="modalInstallBtn" onclick="installAgent()">
+                        📥 Install Agent
+                    </button>
+                    <div class="progress-bar-container" id="installProgress" style="display: none;">
+                        <div class="progress-bar" id="installProgressBar" style="width: 0%"></div>
+                    </div>
+                    <p id="installStatus" style="margin-top: 0.5rem; font-size: 0.875rem;"></p>
+                </div>
+
+                <!-- Reviews -->
+                <div class="modal-section">
+                    <div class="modal-section-title">Reviews (<span id="reviewCount">0</span>)</div>
+                    <div id="reviewsList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Write Review -->
+                <div class="modal-section">
+                    <div class="modal-section-title">Write a Review</div>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span>Rating:</span>
+                        <div class="rating-stars" id="userRatingStars">
+                            <span class="star" data-rating="1" onclick="setUserRating(1)">⭐</span>
+                            <span class="star" data-rating="2" onclick="setUserRating(2)">⭐</span>
+                            <span class="star" data-rating="3" onclick="setUserRating(3)">⭐</span>
+                            <span class="star" data-rating="4" onclick="setUserRating(4)">⭐</span>
+                            <span class="star" data-rating="5" onclick="setUserRating(5)">⭐</span>
+                        </div>
+                    </div>
+                    <textarea
+                        id="reviewText"
+                        placeholder="Share your experience with this agent..."
+                        style="width: 100%; min-height: 100px; padding: 0.75rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: inherit; resize: vertical;"
+                    ></textarea>
+                    <button class="btn btn-primary" onclick="submitReview()" style="margin-top: 1rem;">
+                        📝 Submit Review
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const config = {
+            apiUrl: 'http://localhost:3000/api/v1/marketplace',
+            apiKey: '', // Will be set from admin key
+            refreshInterval: 30000, // 30 seconds
+            autocompleteDelay: 300
+        };
+
+        // State
+        let state = {
+            agents: [],
+            filteredAgents: [],
+            installedAgents: new Set(),
+            selectedAgent: null,
+            userRating: 0,
+            filters: {
+                category: 'all',
+                rating: 'all',
+                sort: 'trending',
+                search: ''
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Initializing Agent Marketplace...');
+            setupEventListeners();
+            await loadMarketplaceData();
+            startAutoRefresh();
+        });
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Search input
+            const searchInput = document.getElementById('searchInput');
+            let searchTimeout;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    state.filters.search = e.target.value.toLowerCase();
+                    filterAndRenderAgents();
+                    showAutocomplete(e.target.value);
+                }, config.autocompleteDelay);
+            });
+
+            // Close autocomplete on blur
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    document.getElementById('autocompleteResults').classList.remove('show');
+                }, 200);
+            });
+
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+            });
+
+            // Filter radios
+            document.querySelectorAll('input[name="rating"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    state.filters.rating = e.target.value;
+                    filterAndRenderAgents();
+                });
+            });
+
+            document.querySelectorAll('input[name="sort"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    state.filters.sort = e.target.value;
+                    filterAndRenderAgents();
+                });
+            });
+
+            // Modal close on backdrop click
+            document.getElementById('agentModal').addEventListener('click', (e) => {
+                if (e.target.id === 'agentModal') {
+                    closeModal();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('agentModal').classList.contains('show')) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Load Marketplace Data
+        async function loadMarketplaceData() {
+            showLoading(true);
+
+            try {
+                // Fetch agents from API
+                const response = await fetch(`${config.apiUrl}/agents`, {
+                    headers: {
+                        'Authorization': `Bearer ${config.apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch agents');
+                }
+
+                const data = await response.json();
+                state.agents = data.agents || [];
+
+                // Load installed agents
+                await loadInstalledAgents();
+
+                // Update stats
+                updateStats();
+
+                // Render categories
+                renderCategories();
+
+                // Initial render
+                filterAndRenderAgents();
+
+                console.log(`✅ Loaded ${state.agents.length} agents`);
+            } catch (error) {
+                console.error('❌ Failed to load marketplace data:', error);
+                // Load mock data for demo
+                loadMockData();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Load Mock Data (for demo/offline mode)
+        function loadMockData() {
+            state.agents = [
+                {
+                    id: 'metrics-monitoring-engineer',
+                    name: 'Metrics Monitoring Engineer',
+                    author: 'Master Workflow Team',
+                    description: 'Advanced metrics collection and monitoring with real-time dashboards and alerting capabilities.',
+                    category: 'monitoring',
+                    tags: ['metrics', 'monitoring', 'performance', 'analytics'],
+                    version: '1.2.0',
+                    downloads: 1543,
+                    rating: 4.8,
+                    reviews: 47,
+                    icon: '📊',
+                    installed: false,
+                    hasUpdate: false
+                },
+                {
+                    id: 'devops-engineer',
+                    name: 'DevOps Engineer',
+                    author: 'Community',
+                    description: 'Complete CI/CD pipeline automation with Docker, Kubernetes, and cloud platform integration.',
+                    category: 'devops',
+                    tags: ['ci-cd', 'docker', 'kubernetes', 'automation'],
+                    version: '2.1.5',
+                    downloads: 2891,
+                    rating: 4.9,
+                    reviews: 123,
+                    icon: '🚀',
+                    installed: true,
+                    hasUpdate: false
+                },
+                {
+                    id: 'security-analyst',
+                    name: 'Security Analyst',
+                    author: 'Security Team',
+                    description: 'Comprehensive security scanning, vulnerability detection, and compliance checking agent.',
+                    category: 'security',
+                    tags: ['security', 'scanning', 'compliance', 'audit'],
+                    version: '1.5.2',
+                    downloads: 1247,
+                    rating: 4.7,
+                    reviews: 56,
+                    icon: '🔒',
+                    installed: false,
+                    hasUpdate: false
+                },
+                {
+                    id: 'ml-optimizer',
+                    name: 'ML Optimizer',
+                    author: 'AI Team',
+                    description: 'Machine learning model for workflow optimization with 95% accuracy and predictive analytics.',
+                    category: 'ai-ml',
+                    tags: ['machine-learning', 'optimization', 'analytics', 'ai'],
+                    version: '1.0.0',
+                    downloads: 876,
+                    rating: 4.6,
+                    reviews: 34,
+                    icon: '🧠',
+                    installed: true,
+                    hasUpdate: true
+                },
+                {
+                    id: 'database-architect',
+                    name: 'Database Architect',
+                    author: 'Data Team',
+                    description: 'Database design, optimization, and migration agent with support for PostgreSQL, MySQL, MongoDB.',
+                    category: 'database',
+                    tags: ['database', 'sql', 'optimization', 'migration'],
+                    version: '1.8.0',
+                    downloads: 1632,
+                    rating: 4.5,
+                    reviews: 78,
+                    icon: '🗄️',
+                    installed: false,
+                    hasUpdate: false
+                },
+                {
+                    id: 'frontend-specialist',
+                    name: 'Frontend Specialist',
+                    author: 'UI Team',
+                    description: 'Modern frontend development with React, Vue, Angular. Responsive design and accessibility expert.',
+                    category: 'frontend',
+                    tags: ['react', 'vue', 'ui-ux', 'responsive'],
+                    version: '2.0.1',
+                    downloads: 2134,
+                    rating: 4.9,
+                    reviews: 95,
+                    icon: '🎨',
+                    installed: true,
+                    hasUpdate: false
+                },
+                {
+                    id: 'backend-engineer',
+                    name: 'Backend Engineer',
+                    author: 'Backend Team',
+                    description: 'Scalable backend services with Node.js, Python, Go. REST APIs, microservices, and messaging.',
+                    category: 'backend',
+                    tags: ['api', 'microservices', 'nodejs', 'python'],
+                    version: '1.9.3',
+                    downloads: 2567,
+                    rating: 4.8,
+                    reviews: 112,
+                    icon: '⚙️',
+                    installed: false,
+                    hasUpdate: false
+                },
+                {
+                    id: 'test-automation',
+                    name: 'Test Automation Specialist',
+                    author: 'QA Team',
+                    description: 'Comprehensive testing with unit, integration, and E2E tests. Supports Jest, Cypress, Playwright.',
+                    category: 'testing',
+                    tags: ['testing', 'automation', 'qa', 'e2e'],
+                    version: '1.4.0',
+                    downloads: 1456,
+                    rating: 4.7,
+                    reviews: 67,
+                    icon: '🧪',
+                    installed: true,
+                    hasUpdate: true
+                }
+            ];
+
+            // Mark some as installed
+            state.installedAgents = new Set(
+                state.agents.filter(a => a.installed).map(a => a.id)
+            );
+
+            updateStats();
+            renderCategories();
+            filterAndRenderAgents();
+        }
+
+        // Load Installed Agents
+        async function loadInstalledAgents() {
+            try {
+                const response = await fetch(`${config.apiUrl}/installed`, {
+                    headers: {
+                        'Authorization': `Bearer ${config.apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    state.installedAgents = new Set(data.installed || []);
+                }
+            } catch (error) {
+                console.error('Failed to load installed agents:', error);
+            }
+        }
+
+        // Update Stats
+        function updateStats() {
+            const totalAgents = state.agents.length;
+            const totalDownloads = state.agents.reduce((sum, a) => sum + a.downloads, 0);
+            const avgRating = (state.agents.reduce((sum, a) => sum + a.rating, 0) / totalAgents).toFixed(1);
+            const activeUsers = Math.floor(totalDownloads / 10); // Mock calculation
+
+            document.getElementById('statTotalAgents').textContent = totalAgents;
+            document.getElementById('statTotalDownloads').textContent = totalDownloads.toLocaleString();
+            document.getElementById('statAvgRating').textContent = avgRating;
+            document.getElementById('statActiveUsers').textContent = activeUsers;
+
+            // Update badge count
+            const updateCount = state.agents.filter(a => a.hasUpdate && state.installedAgents.has(a.id)).length;
+            const updateBadge = document.getElementById('updateBadge');
+            if (updateCount > 0) {
+                updateBadge.textContent = updateCount;
+                updateBadge.style.display = 'inline-flex';
+            } else {
+                updateBadge.style.display = 'none';
+            }
+        }
+
+        // Render Categories
+        function renderCategories() {
+            const categories = {};
+            state.agents.forEach(agent => {
+                categories[agent.category] = (categories[agent.category] || 0) + 1;
+            });
+
+            const categoryFilters = document.getElementById('categoryFilters');
+            categoryFilters.innerHTML = `
+                <label class="filter-label">
+                    <input type="checkbox" value="all" class="filter-checkbox" checked onchange="toggleCategory('all')">
+                    <span>All Categories</span>
+                    <span class="filter-count">${state.agents.length}</span>
+                </label>
+                ${Object.entries(categories).map(([cat, count]) => `
+                    <label class="filter-label">
+                        <input type="checkbox" value="${cat}" class="filter-checkbox" onchange="toggleCategory('${cat}')">
+                        <span>${cat.charAt(0).toUpperCase() + cat.slice(1)}</span>
+                        <span class="filter-count">${count}</span>
+                    </label>
+                `).join('')}
+            `;
+        }
+
+        // Toggle Category Filter
+        function toggleCategory(category) {
+            if (category === 'all') {
+                state.filters.category = 'all';
+                document.querySelectorAll('#categoryFilters input[type="checkbox"]').forEach(cb => {
+                    cb.checked = cb.value === 'all';
+                });
+            } else {
+                document.querySelector('#categoryFilters input[value="all"]').checked = false;
+                state.filters.category = category;
+            }
+            filterAndRenderAgents();
+        }
+
+        // Filter and Render Agents
+        function filterAndRenderAgents() {
+            let filtered = [...state.agents];
+
+            // Category filter
+            if (state.filters.category !== 'all') {
+                filtered = filtered.filter(a => a.category === state.filters.category);
+            }
+
+            // Rating filter
+            if (state.filters.rating !== 'all') {
+                const minRating = parseFloat(state.filters.rating);
+                filtered = filtered.filter(a => a.rating >= minRating);
+            }
+
+            // Search filter
+            if (state.filters.search) {
+                const search = state.filters.search.toLowerCase();
+                filtered = filtered.filter(a =>
+                    a.name.toLowerCase().includes(search) ||
+                    a.description.toLowerCase().includes(search) ||
+                    a.tags.some(t => t.toLowerCase().includes(search))
+                );
+            }
+
+            // Sort
+            switch (state.filters.sort) {
+                case 'downloads':
+                    filtered.sort((a, b) => b.downloads - a.downloads);
+                    break;
+                case 'rating':
+                    filtered.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'recent':
+                    // Would need timestamp in real data
+                    filtered.reverse();
+                    break;
+                case 'trending':
+                default:
+                    // Trending = combination of downloads and rating
+                    filtered.sort((a, b) => (b.downloads * b.rating) - (a.downloads * a.rating));
+                    break;
+            }
+
+            state.filteredAgents = filtered;
+
+            // Render current tab
+            const activeTab = document.querySelector('.tab.active').dataset.tab;
+            renderAgents(activeTab);
+        }
+
+        // Render Agents
+        function renderAgents(tab) {
+            let agents = state.filteredAgents;
+            let gridId = 'agentGrid';
+
+            if (tab === 'trending') {
+                agents = [...state.filteredAgents].slice(0, 12); // Top 12
+                gridId = 'trendingGrid';
+            } else if (tab === 'installed') {
+                agents = state.filteredAgents.filter(a => state.installedAgents.has(a.id));
+                gridId = 'installedGrid';
+            } else if (tab === 'updates') {
+                agents = state.filteredAgents.filter(a => a.hasUpdate && state.installedAgents.has(a.id));
+                gridId = 'updatesGrid';
+            }
+
+            const grid = document.getElementById(gridId);
+
+            if (agents.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><h2>No agents found</h2><p>Try adjusting your filters or search query</p></div>';
+                return;
+            }
+
+            grid.innerHTML = agents.map(agent => createAgentCard(agent)).join('');
+        }
+
+        // Create Agent Card
+        function createAgentCard(agent) {
+            const isInstalled = state.installedAgents.has(agent.id);
+            const stars = renderStars(agent.rating);
+
+            return `
+                <div class="agent-card" onclick="showAgentDetails('${agent.id}')" role="button" tabindex="0" aria-label="View ${agent.name} details">
+                    <div class="agent-card-header">
+                        <div class="agent-icon">${agent.icon}</div>
+                        <div class="agent-card-info">
+                            <div class="agent-card-title">${agent.name}</div>
+                            <div class="agent-card-author">by ${agent.author}</div>
+                        </div>
+                    </div>
+                    <div class="agent-card-description">${agent.description}</div>
+                    <div class="agent-card-tags">
+                        ${agent.tags.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="agent-card-stats">
+                        <div style="display: flex; gap: 1rem;">
+                            <div class="agent-stat">
+                                ${stars}
+                                <span>${agent.rating}</span>
+                            </div>
+                            <div class="agent-stat">
+                                📥 ${agent.downloads.toLocaleString()}
+                            </div>
+                        </div>
+                        <button class="install-btn ${isInstalled ? 'installed' : ''}" onclick="event.stopPropagation(); ${isInstalled ? '' : `installAgentQuick('${agent.id}')`}">
+                            ${isInstalled ? '✓ Installed' : '📥 Install'}
+                        </button>
+                    </div>
+                    ${agent.hasUpdate && isInstalled ? '<div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--warning);">🔔 Update available</div>' : ''}
+                </div>
+            `;
+        }
+
+        // Render Stars
+        function renderStars(rating) {
+            const fullStars = Math.floor(rating);
+            const emptyStars = 5 - fullStars;
+
+            return `
+                <div class="rating-stars" role="img" aria-label="${rating} out of 5 stars">
+                    ${'<span class="star">⭐</span>'.repeat(fullStars)}
+                    ${'<span class="star empty">⭐</span>'.repeat(emptyStars)}
+                </div>
+            `;
+        }
+
+        // Show Agent Details
+        function showAgentDetails(agentId) {
+            const agent = state.agents.find(a => a.id === agentId);
+            if (!agent) return;
+
+            state.selectedAgent = agent;
+
+            // Populate modal
+            document.getElementById('modalTitle').textContent = agent.name;
+            document.getElementById('modalAuthor').textContent = `by ${agent.author}`;
+            document.getElementById('modalIcon').textContent = agent.icon;
+            document.getElementById('modalStars').innerHTML = renderStars(agent.rating).replace('role="img"', '').replace(/aria-label="[^"]*"/, '');
+            document.getElementById('modalRating').textContent = agent.rating;
+            document.getElementById('modalDownloads').textContent = agent.downloads.toLocaleString();
+            document.getElementById('modalVersion').textContent = agent.version;
+            document.getElementById('modalDescription').textContent = agent.description;
+            document.getElementById('modalTags').innerHTML = agent.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+
+            // Installation button
+            const isInstalled = state.installedAgents.has(agent.id);
+            const installBtn = document.getElementById('modalInstallBtn');
+            installBtn.textContent = isInstalled ? '✓ Already Installed' : '📥 Install Agent';
+            installBtn.disabled = isInstalled;
+            installBtn.className = `btn ${isInstalled ? 'btn-success' : 'btn-primary'}`;
+
+            // Load reviews
+            loadReviews(agentId);
+
+            // Show modal
+            document.getElementById('agentModal').classList.add('show');
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('agentModal').classList.remove('show');
+            state.selectedAgent = null;
+            state.userRating = 0;
+        }
+
+        // Install Agent (Quick)
+        async function installAgentQuick(agentId) {
+            const btn = event.target;
+            btn.classList.add('installing');
+            btn.textContent = '⏳ Installing...';
+            btn.disabled = true;
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate installation
+                state.installedAgents.add(agentId);
+                btn.classList.remove('installing');
+                btn.classList.add('installed');
+                btn.textContent = '✓ Installed';
+
+                // Update stats
+                const agent = state.agents.find(a => a.id === agentId);
+                if (agent) {
+                    agent.downloads++;
+                    agent.installed = true;
+                }
+                updateStats();
+            } catch (error) {
+                console.error('Installation failed:', error);
+                btn.classList.remove('installing');
+                btn.textContent = '❌ Failed';
+                setTimeout(() => {
+                    btn.textContent = '📥 Install';
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // Install Agent (from modal)
+        async function installAgent() {
+            if (!state.selectedAgent) return;
+
+            const agentId = state.selectedAgent.id;
+            const btn = document.getElementById('modalInstallBtn');
+            const progressContainer = document.getElementById('installProgress');
+            const progressBar = document.getElementById('installProgressBar');
+            const statusText = document.getElementById('installStatus');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Installing...';
+            progressContainer.style.display = 'block';
+            statusText.textContent = 'Downloading agent package...';
+
+            try {
+                // Simulate installation progress
+                for (let i = 0; i <= 100; i += 10) {
+                    progressBar.style.width = `${i}%`;
+                    await new Promise(resolve => setTimeout(resolve, 200));
+
+                    if (i === 30) statusText.textContent = 'Validating dependencies...';
+                    if (i === 60) statusText.textContent = 'Installing agent...';
+                    if (i === 90) statusText.textContent = 'Finalizing installation...';
+                }
+
+                state.installedAgents.add(agentId);
+                const agent = state.agents.find(a => a.id === agentId);
+                if (agent) {
+                    agent.downloads++;
+                    agent.installed = true;
+                }
+
+                btn.className = 'btn btn-success';
+                btn.textContent = '✓ Successfully Installed';
+                statusText.textContent = '✅ Installation complete!';
+                statusText.style.color = 'var(--success)';
+
+                updateStats();
+
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    closeModal();
+                    filterAndRenderAgents(); // Refresh display
+                }, 2000);
+
+            } catch (error) {
+                console.error('Installation failed:', error);
+                btn.textContent = '❌ Installation Failed';
+                btn.className = 'btn';
+                statusText.textContent = '❌ Installation failed. Please try again.';
+                statusText.style.color = 'var(--error)';
+
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = '📥 Install Agent';
+                    progressContainer.style.display = 'none';
+                    statusText.textContent = '';
+                }, 3000);
+            }
+        }
+
+        // Load Reviews
+        function loadReviews(agentId) {
+            const agent = state.agents.find(a => a.id === agentId);
+            if (!agent) return;
+
+            // Mock reviews
+            const reviews = [
+                {
+                    author: 'DevOps Expert',
+                    rating: 5,
+                    date: '2 days ago',
+                    text: 'Excellent agent! Works perfectly with our CI/CD pipeline.'
+                },
+                {
+                    author: 'Backend Dev',
+                    rating: 4,
+                    date: '1 week ago',
+                    text: 'Very useful, but could use better documentation.'
+                },
+                {
+                    author: 'Team Lead',
+                    rating: 5,
+                    date: '2 weeks ago',
+                    text: 'Game changer for our workflow automation!'
+                }
+            ];
+
+            document.getElementById('reviewCount').textContent = agent.reviews;
+
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = reviews.map(review => `
+                <div class="review">
+                    <div class="review-header">
+                        <div>
+                            <div class="review-author">${review.author}</div>
+                            ${renderStars(review.rating)}
+                        </div>
+                        <div class="review-date">${review.date}</div>
+                    </div>
+                    <div class="review-content">${review.text}</div>
+                </div>
+            `).join('');
+        }
+
+        // Set User Rating
+        function setUserRating(rating) {
+            state.userRating = rating;
+            const stars = document.querySelectorAll('#userRatingStars .star');
+            stars.forEach((star, index) => {
+                star.classList.toggle('empty', index >= rating);
+            });
+        }
+
+        // Submit Review
+        async function submitReview() {
+            if (!state.selectedAgent || state.userRating === 0) {
+                alert('Please select a rating');
+                return;
+            }
+
+            const reviewText = document.getElementById('reviewText').value.trim();
+            if (!reviewText) {
+                alert('Please write a review');
+                return;
+            }
+
+            try {
+                // Submit review to API
+                console.log('Submitting review:', {
+                    agentId: state.selectedAgent.id,
+                    rating: state.userRating,
+                    text: reviewText
+                });
+
+                // Show success message
+                alert('Thank you for your review!');
+
+                // Reset form
+                document.getElementById('reviewText').value = '';
+                setUserRating(0);
+
+                // Reload reviews
+                loadReviews(state.selectedAgent.id);
+
+            } catch (error) {
+                console.error('Failed to submit review:', error);
+                alert('Failed to submit review. Please try again.');
+            }
+        }
+
+        // Show Autocomplete
+        function showAutocomplete(query) {
+            const results = document.getElementById('autocompleteResults');
+
+            if (!query || query.length < 2) {
+                results.classList.remove('show');
+                return;
+            }
+
+            const matches = state.agents
+                .filter(a =>
+                    a.name.toLowerCase().includes(query) ||
+                    a.tags.some(t => t.toLowerCase().includes(query))
+                )
+                .slice(0, 5);
+
+            if (matches.length === 0) {
+                results.classList.remove('show');
+                return;
+            }
+
+            results.innerHTML = matches.map(agent => `
+                <div class="autocomplete-item" onclick="selectAutocomplete('${agent.id}')">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 1.5rem;">${agent.icon}</span>
+                        <div>
+                            <div style="font-weight: 600;">${agent.name}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">${agent.category}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            results.classList.add('show');
+        }
+
+        // Select Autocomplete
+        function selectAutocomplete(agentId) {
+            showAgentDetails(agentId);
+            document.getElementById('autocompleteResults').classList.remove('show');
+        }
+
+        // Switch Tab
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                const isActive = tab.dataset.tab === tabName;
+                tab.classList.toggle('active', isActive);
+                tab.setAttribute('aria-selected', isActive);
+            });
+
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.style.display = 'none';
+            });
+
+            // Show selected tab pane
+            const paneId = `${tabName}Tab`;
+            const pane = document.getElementById(paneId);
+            if (pane) {
+                pane.style.display = 'block';
+            }
+
+            // Render agents for the selected tab
+            renderAgents(tabName);
+        }
+
+        // Show Loading State
+        function showLoading(show) {
+            document.getElementById('loadingState').style.display = show ? 'block' : 'none';
+            document.querySelectorAll('.agent-grid').forEach(grid => {
+                grid.style.display = show ? 'none' : 'grid';
+            });
+        }
+
+        // Show Publish Modal
+        function showPublishModal() {
+            alert('Agent publishing feature coming soon!\n\nYou will be able to:\n- Upload your custom agents\n- Set pricing and licensing\n- Manage your published agents\n- Track downloads and reviews');
+        }
+
+        // Auto Refresh
+        function startAutoRefresh() {
+            setInterval(async () => {
+                console.log('🔄 Auto-refreshing marketplace data...');
+                await loadMarketplaceData();
+            }, config.refreshInterval);
+        }
+
+        // Initial load with mock data
+        loadMockData();
+    </script>
+</body>
+</html>

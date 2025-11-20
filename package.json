@@ -34,6 +34,9 @@
     "compactor:status": "node -e \"import('./src/context/context-compactor.js').then(m => console.log(new m.ContextCompactor().getStatus()))\"",
     "skills:list": "node -e \"import('./src/claude-flow/skills-system.js').then(m => new m.SkillsSystem().getSkills().forEach(s=>console.log(s.name)))\"",
     "system:status": "node -e \"import('./src/index.js').then(m => {const s=new m.MasterWorkflow3();s.initialize().then(()=>s.getStatus().then(console.log))})\"",
+    "marketplace:start": "node src/marketplace/agent-registry-api.js",
+    "marketplace:test": "node src/marketplace/test-api.js",
+    "marketplace:example": "node src/marketplace/api-client-example.js",
     "setup": "npm install && npm run install-sqlite && echo '✅ Setup complete! Run: npm run install:enhanced'",
     "quick-start": "npm run setup && npm run install:enhanced"
   },
