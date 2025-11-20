@@ -1,0 +1,111 @@
+{
+  "summary": {
+    "total": 12,
+    "passed": 0,
+    "failed": 12,
+    "skipped": 0,
+    "successRate": "0.0",
+    "totalDuration": 6,
+    "timestamp": "2025-11-20T05:44:15.042Z"
+  },
+  "performance": {
+    "averageSpeedup": "N/A",
+    "averageTokenReduction": "N/A",
+    "averageResponseTime": "N/A",
+    "peakMemoryUsage": "N/A",
+    "maxConcurrentAgents": 0
+  },
+  "details": [
+    {
+      "name": "Claude Flow 2.0 WASM Core Module Loading and Acceleration",
+      "passed": false,
+      "error": "WASM core module not found",
+      "duration": 0.8582930000000033,
+      "timestamp": "2025-11-20T05:44:15.038Z"
+    },
+    {
+      "name": "All 4 Topology Types (Hierarchical, Mesh, Ring, Star)",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/topology-manager.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.1796900000000008,
+      "timestamp": "2025-11-20T05:44:15.039Z"
+    },
+    {
+      "name": "Neural Agent Selection and Capability Matching",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/capability-matcher.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.15257799999999833,
+      "timestamp": "2025-11-20T05:44:15.039Z"
+    },
+    {
+      "name": "Performance Metrics Validation (2.8-4.4x speedup, 32.3% token reduction)",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.09346299999999985,
+      "timestamp": "2025-11-20T05:44:15.040Z"
+    },
+    {
+      "name": "Agent-OS Three-Layer Context Architecture",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.08645600000000186,
+      "timestamp": "2025-11-20T05:44:15.040Z"
+    },
+    {
+      "name": "Spec-Driven Development Commands",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/agent-os-integration.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.07837800000000072,
+      "timestamp": "2025-11-20T05:44:15.040Z"
+    },
+    {
+      "name": "Claude Code Sub-Agents Spawning (50+ Specialized Agents)",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.07397000000000276,
+      "timestamp": "2025-11-20T05:44:15.041Z"
+    },
+    {
+      "name": "200k Context Window Allocation Per Agent",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.07078199999999768,
+      "timestamp": "2025-11-20T05:44:15.041Z"
+    },
+    {
+      "name": "Auto-Delegation System and Queen Controller Orchestration",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.05916900000000069,
+      "timestamp": "2025-11-20T05:44:15.041Z"
+    },
+    {
+      "name": "End-to-End Workflow from Project Analysis to Deployment",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.05756399999999928,
+      "timestamp": "2025-11-20T05:44:15.041Z"
+    },
+    {
+      "name": "Performance and Scalability - 10 Concurrent Agents with Full Context",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.052510999999999086,
+      "timestamp": "2025-11-20T05:44:15.042Z"
+    },
+    {
+      "name": "Error Recovery and Resilience Mechanisms",
+      "passed": false,
+      "error": "Cannot find module '/home/kngpnn/dev/master-workflow-1/intelligence-engine/queen-controller.js'\nRequire stack:\n- /home/kngpnn/dev/master-workflow-1/test/comprehensive-integration-test.cjs\n- /home/kngpnn/dev/master-workflow-1/test/master-comprehensive-test-runner.cjs",
+      "duration": 0.05333000000000254,
+      "timestamp": "2025-11-20T05:44:15.042Z"
+    }
+  ],
+  "environment": {
+    "nodeVersion": "v20.19.5",
+    "platform": "linux",
+    "arch": "x64",
+    "cpus": 32,
+    "memory": "61.59 GB"
+  }
+}
