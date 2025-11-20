@@ -1,0 +1,88 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+documentation/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+azure-pipelines.yml
+
+# Development files
+.editorconfig
+.eslintrc*
+.prettierrc*
+.vscode/
+.idea/
+
+# Tests
+tests/
+test/
+*.test.js
+*.spec.js
+__tests__/
+coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+out/
+
+# Deployment files (not needed in container)
+deployment/
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Large files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Cache
+.cache/
+.npm/
+.eslintcache
+
+# IDE
+*.sublime-*
+*.code-workspace
+
+# Misc
+TODO
+CHANGELOG
+LICENSE

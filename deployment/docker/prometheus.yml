@@ -1,0 +1,57 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'master-workflow-docker'
+    environment: 'production'
+
+# Alerting configuration
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: []
+
+# Scrape configurations
+scrape_configs:
+# Prometheus itself
+- job_name: 'prometheus'
+  static_configs:
+  - targets: ['localhost:9090']
+
+# Queen Controller nodes
+- job_name: 'queen-controller'
+  static_configs:
+  - targets:
+    - 'queen-node-1:9090'
+    - 'queen-node-2:9090'
+    - 'queen-node-3:9090'
+    labels:
+      service: 'queen-controller'
+
+# Redis
+- job_name: 'redis'
+  static_configs:
+  - targets:
+    - 'redis-1:6379'
+    - 'redis-2:6379'
+    - 'redis-3:6379'
+    labels:
+      service: 'redis'
+
+# MongoDB
+- job_name: 'mongodb'
+  static_configs:
+  - targets:
+    - 'mongodb-1:9216'
+    - 'mongodb-2:9216'
+    - 'mongodb-3:9216'
+    labels:
+      service: 'mongodb'
+
+# Docker daemon metrics
+- job_name: 'docker'
+  static_configs:
+  - targets:
+    - 'host.docker.internal:9323'
+    labels:
+      service: 'docker'

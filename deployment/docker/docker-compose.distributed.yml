@@ -1,0 +1,541 @@
+version: '3.8'
+
+# Master Workflow 3.0 - Distributed Multi-Node Deployment
+# This configuration deploys 3 Queen Controller nodes with Redis, MongoDB, and monitoring
+
+networks:
+  master-workflow-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  redis-1-data:
+    driver: local
+  redis-2-data:
+    driver: local
+  redis-3-data:
+    driver: local
+  mongodb-1-data:
+    driver: local
+  mongodb-2-data:
+    driver: local
+  mongodb-3-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+services:
+  # Redis Cluster (3 nodes)
+  redis-1:
+    image: redis:7.2-alpine
+    container_name: master-workflow-redis-1
+    hostname: redis-1
+    restart: unless-stopped
+    command: >
+      redis-server
+      --port 6379
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-changeme}
+      --maxmemory 4gb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+      - "16379:16379"
+    volumes:
+      - redis-1-data:/data
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.10
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  redis-2:
+    image: redis:7.2-alpine
+    container_name: master-workflow-redis-2
+    hostname: redis-2
+    restart: unless-stopped
+    command: >
+      redis-server
+      --port 6379
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-changeme}
+      --maxmemory 4gb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6380:6379"
+      - "16380:16379"
+    volumes:
+      - redis-2-data:/data
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.11
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  redis-3:
+    image: redis:7.2-alpine
+    container_name: master-workflow-redis-3
+    hostname: redis-3
+    restart: unless-stopped
+    command: >
+      redis-server
+      --port 6379
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-changeme}
+      --maxmemory 4gb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6381:6379"
+      - "16381:16379"
+    volumes:
+      - redis-3-data:/data
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.12
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  # MongoDB Replica Set (3 nodes)
+  mongodb-1:
+    image: mongo:6.0
+    container_name: master-workflow-mongodb-1
+    hostname: mongodb-1
+    restart: unless-stopped
+    command: >
+      mongod
+      --replSet master-workflow-rs
+      --bind_ip_all
+      --port 27017
+      --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-changeme}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-1-data:/data/db
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.20
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  mongodb-2:
+    image: mongo:6.0
+    container_name: master-workflow-mongodb-2
+    hostname: mongodb-2
+    restart: unless-stopped
+    command: >
+      mongod
+      --replSet master-workflow-rs
+      --bind_ip_all
+      --port 27017
+      --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-changeme}
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-2-data:/data/db
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.21
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  mongodb-3:
+    image: mongo:6.0
+    container_name: master-workflow-mongodb-3
+    hostname: mongodb-3
+    restart: unless-stopped
+    command: >
+      mongod
+      --replSet master-workflow-rs
+      --bind_ip_all
+      --port 27017
+      --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-changeme}
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongodb-3-data:/data/db
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.22
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '1'
+          memory: 2G
+
+  # Queen Controller Node 1
+  queen-node-1:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile
+    image: master-workflow:3.0
+    container_name: master-workflow-queen-1
+    hostname: queen-node-1
+    restart: unless-stopped
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+      mongodb-1:
+        condition: service_healthy
+      mongodb-2:
+        condition: service_healthy
+      mongodb-3:
+        condition: service_healthy
+    environment:
+      # Node configuration
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=8192"
+      POD_NAME: queen-node-1
+      POD_IP: 172.20.0.30
+
+      # Queen Controller
+      MAX_CONCURRENT_AGENTS: 4462
+      UNLIMITED_SCALING: "true"
+      SAFETY_LIMIT: 1000
+      MEMORY_THRESHOLD: 0.85
+      CPU_THRESHOLD: 0.80
+
+      # Distributed mode
+      DISTRIBUTED_MODE: "true"
+      CLUSTER_NAME: master-workflow-cluster
+      LOAD_BALANCING_STRATEGY: consistent-hashing
+
+      # Redis
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis-1
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-changeme}
+
+      # MongoDB
+      MONGODB_ENABLED: "true"
+      MONGODB_HOST: mongodb-1,mongodb-2,mongodb-3
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: masterworkflow
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-changeme}
+      MONGODB_DATABASE: master-workflow
+
+      # WebSocket
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_PORT: 8080
+
+      # GPU
+      GPU_ENABLED: "true"
+      GPU_BACKEND: auto
+      GPU_FALLBACK_TO_CPU: "true"
+
+      # Monitoring
+      MONITORING_ENABLED: "true"
+      METRICS_PORT: 9090
+    ports:
+      - "3000:3000"   # Dashboard
+      - "8080:8080"   # WebSocket
+      - "9090:9090"   # Metrics
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.30
+    # Uncomment for GPU support
+    # runtime: nvidia
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9090/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Queen Controller Node 2
+  queen-node-2:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile
+    image: master-workflow:3.0
+    container_name: master-workflow-queen-2
+    hostname: queen-node-2
+    restart: unless-stopped
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+      mongodb-1:
+        condition: service_healthy
+      mongodb-2:
+        condition: service_healthy
+      mongodb-3:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=8192"
+      POD_NAME: queen-node-2
+      POD_IP: 172.20.0.31
+      MAX_CONCURRENT_AGENTS: 4462
+      UNLIMITED_SCALING: "true"
+      DISTRIBUTED_MODE: "true"
+      CLUSTER_NAME: master-workflow-cluster
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis-2
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-changeme}
+      MONGODB_ENABLED: "true"
+      MONGODB_HOST: mongodb-1,mongodb-2,mongodb-3
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: masterworkflow
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-changeme}
+      MONGODB_DATABASE: master-workflow
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_PORT: 8080
+      GPU_ENABLED: "true"
+      GPU_BACKEND: auto
+      MONITORING_ENABLED: "true"
+      METRICS_PORT: 9090
+    ports:
+      - "3001:3000"
+      - "8081:8080"
+      - "9091:9090"
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.31
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9090/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Queen Controller Node 3
+  queen-node-3:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile
+    image: master-workflow:3.0
+    container_name: master-workflow-queen-3
+    hostname: queen-node-3
+    restart: unless-stopped
+    depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+      mongodb-1:
+        condition: service_healthy
+      mongodb-2:
+        condition: service_healthy
+      mongodb-3:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=8192"
+      POD_NAME: queen-node-3
+      POD_IP: 172.20.0.32
+      MAX_CONCURRENT_AGENTS: 4462
+      UNLIMITED_SCALING: "true"
+      DISTRIBUTED_MODE: "true"
+      CLUSTER_NAME: master-workflow-cluster
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis-3
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-changeme}
+      MONGODB_ENABLED: "true"
+      MONGODB_HOST: mongodb-1,mongodb-2,mongodb-3
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: masterworkflow
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD:-changeme}
+      MONGODB_DATABASE: master-workflow
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_PORT: 8080
+      GPU_ENABLED: "true"
+      GPU_BACKEND: auto
+      MONITORING_ENABLED: "true"
+      METRICS_PORT: 9090
+    ports:
+      - "3002:3000"
+      - "8082:8080"
+      - "9092:9090"
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.32
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9090/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: master-workflow-prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9093:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.40
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 2G
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: master-workflow-grafana
+    hostname: grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: ""
+    ports:
+      - "3003:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/prometheus.yml:ro
+    depends_on:
+      - prometheus
+    networks:
+      master-workflow-network:
+        ipv4_address: 172.20.0.41
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
+        reservations:
+          cpus: '0.25'
+          memory: 512M

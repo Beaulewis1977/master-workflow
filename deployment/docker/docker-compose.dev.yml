@@ -1,0 +1,151 @@
+version: '3.8'
+
+# Master Workflow 3.0 - Development Environment
+# Single-node setup for local development and testing
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  redis-dev-data:
+  mongodb-dev-data:
+
+services:
+  # Redis (single instance)
+  redis:
+    image: redis:7.2-alpine
+    container_name: mw-dev-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 2gb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-dev-data:/data
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # MongoDB (single instance)
+  mongodb:
+    image: mongo:6.0
+    container_name: mw-dev-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: devpassword
+      MONGO_INITDB_DATABASE: master-workflow
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-dev-data:/data/db
+    networks:
+      - dev-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Queen Controller (development mode)
+  queen-controller:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile
+    image: master-workflow:3.0-dev
+    container_name: mw-dev-queen
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    environment:
+      # Development mode
+      NODE_ENV: development
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      DEBUG: "master-workflow:*"
+
+      # Simplified configuration for development
+      MAX_CONCURRENT_AGENTS: 100
+      UNLIMITED_SCALING: "true"
+      SAFETY_LIMIT: 50
+      DISTRIBUTED_MODE: "false"
+
+      # Redis
+      REDIS_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      # MongoDB
+      MONGODB_ENABLED: "true"
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: devpassword
+      MONGODB_DATABASE: master-workflow
+
+      # WebSocket
+      WEBSOCKET_ENABLED: "true"
+      WEBSOCKET_PORT: 8080
+
+      # GPU (disabled in dev)
+      GPU_ENABLED: "false"
+
+      # Monitoring
+      MONITORING_ENABLED: "true"
+      METRICS_PORT: 9090
+
+      # Hot reload
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3000:3000"   # Dashboard
+      - "8080:8080"   # WebSocket
+      - "9090:9090"   # Metrics
+    volumes:
+      # Mount source code for hot reload
+      - ../../:/app:cached
+      - /app/node_modules
+    networks:
+      - dev-network
+    command: node --inspect=0.0.0.0:9229 intelligence-engine/queen-controller.js
+
+  # Redis Commander (GUI for Redis)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: mw-dev-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - dev-network
+    depends_on:
+      - redis
+
+  # Mongo Express (GUI for MongoDB)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mw-dev-mongo-express
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: devpassword
+      ME_CONFIG_MONGODB_URL: mongodb://root:devpassword@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    ports:
+      - "8082:8081"
+    networks:
+      - dev-network
+    depends_on:
+      - mongodb

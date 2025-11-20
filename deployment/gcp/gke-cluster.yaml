@@ -1,0 +1,242 @@
+# GCP GKE Cluster Configuration for Master Workflow 3.0
+# Deploy with: gcloud container clusters create master-workflow-cluster --config=gke-cluster.yaml
+
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerCluster
+metadata:
+  name: master-workflow-cluster
+  labels:
+    environment: production
+    application: master-workflow
+    version: "3.0"
+spec:
+  location: us-central1
+  releaseChannel:
+    channel: REGULAR
+  network: projects/PROJECT_ID/global/networks/master-workflow-network
+  subnetwork: projects/PROJECT_ID/regions/us-central1/subnetworks/master-workflow-subnet
+
+  # Cluster configuration
+  initialNodeCount: 1
+  removeDefaultNodePool: true
+
+  # IP allocation
+  ipAllocationPolicy:
+    clusterSecondaryRangeName: pods
+    servicesSecondaryRangeName: services
+
+  # Networking
+  networkPolicy:
+    enabled: true
+    provider: CALICO
+
+  # Workload identity
+  workloadIdentityConfig:
+    workloadPool: PROJECT_ID.svc.id.goog
+
+  # Master authorized networks (optional - restrict access)
+  masterAuthorizedNetworksConfig:
+    enabled: true
+    cidrBlocks:
+    - cidrBlock: 0.0.0.0/0
+      displayName: All (update with specific IPs in production)
+
+  # Logging and monitoring
+  loggingService: logging.googleapis.com/kubernetes
+  monitoringService: monitoring.googleapis.com/kubernetes
+
+  # Maintenance window
+  maintenancePolicy:
+    window:
+      recurringWindow:
+        window:
+          startTime: "2024-01-01T03:00:00Z"
+          endTime: "2024-01-01T07:00:00Z"
+        recurrence: FREQ=WEEKLY;BYDAY=SU
+
+  # Add-ons
+  addonsConfig:
+    httpLoadBalancing:
+      disabled: false
+    horizontalPodAutoscaling:
+      disabled: false
+    networkPolicyConfig:
+      disabled: false
+    gcePersistentDiskCsiDriverConfig:
+      enabled: true
+
+  # Binary authorization
+  binaryAuthorization:
+    evaluationMode: PROJECT_SINGLETON_POLICY_ENFORCE
+
+  # Shielded nodes
+  shieldedNodes:
+    enabled: true
+
+  # Database encryption
+  databaseEncryption:
+    state: ENCRYPTED
+    keyName: projects/PROJECT_ID/locations/us-central1/keyRings/master-workflow/cryptoKeys/gke-key
+
+---
+# Node Pool: Queen Controller nodes
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerNodePool
+metadata:
+  name: queen-controller-pool
+  labels:
+    cluster: master-workflow-cluster
+    pool: queen-controller
+spec:
+  clusterRef:
+    name: master-workflow-cluster
+  location: us-central1
+
+  initialNodeCount: 3
+
+  autoscaling:
+    minNodeCount: 3
+    maxNodeCount: 10
+
+  management:
+    autoUpgrade: true
+    autoRepair: true
+
+  nodeConfig:
+    machineType: n2-standard-8  # 8 vCPU, 32 GB RAM
+    diskSizeGb: 100
+    diskType: pd-ssd
+    imageType: COS_CONTAINERD
+
+    # OAuth scopes
+    oauthScopes:
+    - https://www.googleapis.com/auth/cloud-platform
+
+    # Labels
+    labels:
+      role: queen-controller
+      workload: orchestration
+
+    # Metadata
+    metadata:
+      disable-legacy-endpoints: "true"
+
+    # Shielded instance config
+    shieldedInstanceConfig:
+      enableSecureBoot: true
+      enableIntegrityMonitoring: true
+
+    # Workload identity
+    workloadMetadataConfig:
+      mode: GKE_METADATA
+
+    # Taints
+    # (none for queen-controller)
+
+---
+# Node Pool: GPU nodes
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerNodePool
+metadata:
+  name: gpu-pool
+  labels:
+    cluster: master-workflow-cluster
+    pool: gpu
+spec:
+  clusterRef:
+    name: master-workflow-cluster
+  location: us-central1-a  # GPU availability is zone-specific
+
+  initialNodeCount: 1
+
+  autoscaling:
+    minNodeCount: 0
+    maxNodeCount: 5
+
+  management:
+    autoUpgrade: true
+    autoRepair: true
+
+  nodeConfig:
+    machineType: n1-standard-8  # 8 vCPU, 30 GB RAM
+    diskSizeGb: 100
+    diskType: pd-ssd
+    imageType: COS_CONTAINERD
+
+    # GPU accelerator
+    guestAccelerator:
+    - type: nvidia-tesla-t4
+      count: 1
+      gpuDriverInstallationConfig:
+        gpuDriverVersion: DEFAULT
+
+    oauthScopes:
+    - https://www.googleapis.com/auth/cloud-platform
+
+    labels:
+      role: gpu-worker
+      workload: gpu-acceleration
+      accelerator: nvidia-gpu
+
+    metadata:
+      disable-legacy-endpoints: "true"
+
+    shieldedInstanceConfig:
+      enableSecureBoot: true
+      enableIntegrityMonitoring: true
+
+    workloadMetadataConfig:
+      mode: GKE_METADATA
+
+    # Taint to prevent non-GPU workloads
+    taints:
+    - key: nvidia.com/gpu
+      value: "true"
+      effect: NO_SCHEDULE
+
+---
+# Node Pool: Database nodes
+apiVersion: container.cnrm.cloud.google.com/v1beta1
+kind: ContainerNodePool
+metadata:
+  name: database-pool
+  labels:
+    cluster: master-workflow-cluster
+    pool: database
+spec:
+  clusterRef:
+    name: master-workflow-cluster
+  location: us-central1
+
+  initialNodeCount: 3
+
+  autoscaling:
+    minNodeCount: 3
+    maxNodeCount: 6
+
+  management:
+    autoUpgrade: true
+    autoRepair: true
+
+  nodeConfig:
+    machineType: n2-highmem-8  # 8 vCPU, 64 GB RAM (memory optimized)
+    diskSizeGb: 200
+    diskType: pd-ssd
+    imageType: COS_CONTAINERD
+
+    oauthScopes:
+    - https://www.googleapis.com/auth/cloud-platform
+
+    labels:
+      role: database
+      workload: storage
+
+    metadata:
+      disable-legacy-endpoints: "true"
+
+    shieldedInstanceConfig:
+      enableSecureBoot: true
+      enableIntegrityMonitoring: true
+
+    workloadMetadataConfig:
+      mode: GKE_METADATA

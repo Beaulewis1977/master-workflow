@@ -1,0 +1,160 @@
+# Azure Cache for Redis Configuration (ARM Template)
+# Deploy with: az deployment group create --resource-group master-workflow-rg --template-file redis-cache.yaml
+
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "redisCacheName": {
+      "type": "string",
+      "defaultValue": "master-workflow-redis",
+      "metadata": {
+        "description": "Azure Cache for Redis instance name"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Azure region"
+      }
+    },
+    "redisSku": {
+      "type": "string",
+      "defaultValue": "Premium",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ],
+      "metadata": {
+        "description": "Redis SKU"
+      }
+    },
+    "redisFamily": {
+      "type": "string",
+      "defaultValue": "P",
+      "allowedValues": [
+        "C",
+        "P"
+      ],
+      "metadata": {
+        "description": "Redis family (C for Basic/Standard, P for Premium)"
+      }
+    },
+    "redisCapacity": {
+      "type": "int",
+      "defaultValue": 3,
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "metadata": {
+        "description": "Redis capacity (P3 = 26 GB)"
+      }
+    }
+  },
+  "variables": {
+    "redisFullName": "[concat(parameters('redisCacheName'), '-', uniqueString(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cache/redis",
+      "apiVersion": "2023-04-01",
+      "name": "[variables('redisFullName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "name": "[parameters('redisSku')]",
+          "family": "[parameters('redisFamily')]",
+          "capacity": "[parameters('redisCapacity')]"
+        },
+        "enableNonSslPort": false,
+        "minimumTlsVersion": "1.2",
+        "publicNetworkAccess": "Disabled",
+        "redisVersion": "7.0",
+        "redisConfiguration": {
+          "maxmemory-policy": "allkeys-lru",
+          "maxmemory-delta": "50",
+          "maxmemory-reserved": "50",
+          "notify-keyspace-events": "Ex"
+        },
+        "replicasPerMaster": 2,
+        "replicasPerPrimary": 2,
+        "shardCount": 3,
+        "zones": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      "tags": {
+        "Environment": "production",
+        "Application": "master-workflow"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/diagnosticSettings",
+      "apiVersion": "2021-05-01-preview",
+      "scope": "[format('Microsoft.Cache/redis/{0}', variables('redisFullName'))]",
+      "name": "redis-diagnostics",
+      "properties": {
+        "metrics": [
+          {
+            "category": "AllMetrics",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ],
+        "logs": [
+          {
+            "category": "ConnectedClientList",
+            "enabled": true,
+            "retentionPolicy": {
+              "days": 30,
+              "enabled": true
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Cache/redis', variables('redisFullName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "redisHostName": {
+      "type": "string",
+      "value": "[reference(variables('redisFullName')).hostName]"
+    },
+    "redisSslPort": {
+      "type": "int",
+      "value": "[reference(variables('redisFullName')).sslPort]"
+    },
+    "redisPrimaryKey": {
+      "type": "string",
+      "value": "[listKeys(variables('redisFullName'), '2023-04-01').primaryKey]"
+    }
+  }
+}
+
+---
+# Kubernetes Secret for Redis connection (create after deployment)
+# Get connection details with: az redis show --name <redis-name> --resource-group master-workflow-rg
+apiVersion: v1
+kind: Secret
+metadata:
+  name: azure-redis-connection
+  namespace: master-workflow
+type: Opaque
+stringData:
+  REDIS_HOST: <REDIS_HOSTNAME>
+  REDIS_PORT: "6380"
+  REDIS_PASSWORD: <REDIS_PRIMARY_KEY>
+  REDIS_SSL: "true"
