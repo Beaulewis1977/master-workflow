@@ -1,0 +1,351 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: master-workflow-ingress
+  namespace: master-workflow
+  labels:
+    app: master-workflow
+    component: ingress
+  annotations:
+    # NGINX Ingress Controller annotations
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # WebSocket support for Queen Controller
+    nginx.ingress.kubernetes.io/websocket-services: queen-controller-service
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+
+    # Request size limits
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+
+    # Rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "100"
+    nginx.ingress.kubernetes.io/limit-connections: "10"
+
+    # SSL/TLS configuration
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    nginx.ingress.kubernetes.io/ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
+
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains";
+
+spec:
+  tls:
+  - hosts:
+    - master-workflow.example.com
+    - dashboard.master-workflow.example.com
+    - grafana.master-workflow.example.com
+    - prometheus.master-workflow.example.com
+    secretName: master-workflow-tls
+
+  rules:
+  # Main application dashboard
+  - host: master-workflow.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: queen-controller-service
+            port:
+              number: 3000
+
+      # WebSocket endpoint for distributed coordination
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: queen-controller-service
+            port:
+              number: 8080
+
+  # Monitoring dashboard
+  - host: dashboard.master-workflow.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: queen-controller-service
+            port:
+              number: 3000
+
+  # Grafana
+  - host: grafana.master-workflow.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana-service
+            port:
+              number: 3000
+
+  # Prometheus (should be restricted in production)
+  - host: prometheus.master-workflow.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus-service
+            port:
+              number: 9090
+---
+# Network Policy to restrict access to monitoring tools
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-network-policy
+  namespace: master-workflow
+spec:
+  podSelector:
+    matchLabels:
+      component: monitoring
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 9090  # Prometheus
+    - protocol: TCP
+      port: 3000  # Grafana
+
+  # Allow ingress from same namespace
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 9090
+    - protocol: TCP
+      port: 3000
+
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+
+  # Allow egress to same namespace
+  - to:
+    - podSelector: {}
+
+  # Allow egress to internet for updates
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+---
+# Network Policy for Queen Controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: queen-controller-network-policy
+  namespace: master-workflow
+spec:
+  podSelector:
+    matchLabels:
+      app: queen-controller
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+  # Allow ingress from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080  # WebSocket
+    - protocol: TCP
+      port: 9090  # Metrics
+    - protocol: TCP
+      port: 3000  # Dashboard
+
+  # Allow ingress from other Queen Controller pods
+  - from:
+    - podSelector:
+        matchLabels:
+          app: queen-controller
+    ports:
+    - protocol: TCP
+      port: 8080
+
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+
+  # Allow access to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+
+  # Allow access to MongoDB
+  - to:
+    - podSelector:
+        matchLabels:
+          app: mongodb
+    ports:
+    - protocol: TCP
+      port: 27017
+
+  # Allow access to other Queen Controller pods
+  - to:
+    - podSelector:
+        matchLabels:
+          app: queen-controller
+    ports:
+    - protocol: TCP
+      port: 8080
+
+  # Allow egress to internet (for MCP servers, APIs, etc.)
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+---
+# Network Policy for Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-network-policy
+  namespace: master-workflow
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+  # Only allow access from Queen Controller
+  - from:
+    - podSelector:
+        matchLabels:
+          app: queen-controller
+    ports:
+    - protocol: TCP
+      port: 6379
+
+  # Allow Redis cluster communication
+  - from:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+    - protocol: TCP
+      port: 16379  # Cluster bus
+
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+
+  # Allow Redis cluster communication
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+    - protocol: TCP
+      port: 16379
+---
+# Network Policy for MongoDB
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-network-policy
+  namespace: master-workflow
+spec:
+  podSelector:
+    matchLabels:
+      app: mongodb
+  policyTypes:
+  - Ingress
+  - Egress
+
+  ingress:
+  # Only allow access from Queen Controller
+  - from:
+    - podSelector:
+        matchLabels:
+          app: queen-controller
+    ports:
+    - protocol: TCP
+      port: 27017
+
+  # Allow MongoDB replica set communication
+  - from:
+    - podSelector:
+        matchLabels:
+          app: mongodb
+    ports:
+    - protocol: TCP
+      port: 27017
+
+  egress:
+  # Allow DNS
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+
+  # Allow MongoDB replica set communication
+  - to:
+    - podSelector:
+        matchLabels:
+          app: mongodb
+    ports:
+    - protocol: TCP
+      port: 27017

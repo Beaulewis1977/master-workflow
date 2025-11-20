@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Workflow 3.0 - Advanced Monitoring Dashboard</title>
+
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-darker);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-dark);
+            border-bottom: 2px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            max-width: 1920px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.healthy {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning);
+            box-shadow: 0 0 10px var(--warning);
+        }
+
+        .status-indicator.critical {
+            background: var(--error);
+            box-shadow: 0 0 10px var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            border-color: var(--error);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+        }
+
+        /* Metrics */
+        .metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .metric-trend {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-trend.up {
+            color: var(--success);
+        }
+
+        .metric-trend.down {
+            color: var(--error);
+        }
+
+        /* Progress Bars */
+        .progress {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .progress-bar.warning {
+            background: linear-gradient(90deg, var(--warning), #fb923c);
+        }
+
+        .progress-bar.error {
+            background: linear-gradient(90deg, var(--error), #dc2626);
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Agent List */
+        .agent-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .agent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .agent-item:hover {
+            background: var(--bg-darker);
+            border-color: var(--primary);
+        }
+
+        .agent-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .agent-stats {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .agent-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .agent-badge.active {
+            background: var(--success);
+            color: white;
+        }
+
+        .agent-badge.idle {
+            background: var(--text-muted);
+            color: white;
+        }
+
+        /* Alerts */
+        .alerts-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-left: 4px solid;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-info {
+            border-color: var(--info);
+        }
+
+        .alert-warning {
+            border-color: var(--warning);
+        }
+
+        .alert-error {
+            border-color: var(--error);
+        }
+
+        .alert-success {
+            border-color: var(--success);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .alert-message {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bg-dark);
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 999;
+        }
+
+        .connection-status.connected {
+            border-color: var(--success);
+        }
+
+        .connection-status.disconnected {
+            border-color: var(--error);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: var(--bg-darker);
+            color: var(--text);
+            text-align: center;
+            border-radius: 6px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Master Workflow 3.0 - Advanced Monitoring</h1>
+                <div class="status-badge">
+                    <div class="status-indicator healthy" id="systemHealthIndicator"></div>
+                    <span id="systemHealthText">System Healthy</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="exportPrometheusMetrics()">
+                    📊 Export Prometheus
+                </button>
+                <button class="btn" onclick="exportGrafanaDashboard()">
+                    📈 Export Grafana
+                </button>
+                <button class="btn" onclick="refreshDashboard()">
+                    🔄 Refresh
+                </button>
+                <button class="btn btn-danger" onclick="clearAlerts()">
+                    🗑️ Clear Alerts
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- System Overview -->
+        <section class="grid grid-4">
+            <div class="card">
+                <div class="metric">
+                    <div class="metric-label">Active Agents</div>
+                    <div class="metric-value" id="activeAgents">0</div>
+                    <div class="metric-trend up">
+                        <span>↑</span>
+                        <span id="agentTrend">0</span>
+                        <span>/ 4,462 max</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="metric">
+                    <div class="metric-label">Memory Usage</div>
+                    <div class="metric-value" id="memoryUsage">0%</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="memoryBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="metric">
+                    <div class="metric-label">CPU Usage</div>
+                    <div class="metric-value" id="cpuUsage">0%</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="cpuBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="metric">
+                    <div class="metric-label">Tasks Completed</div>
+                    <div class="metric-value" id="tasksCompleted">0</div>
+                    <div class="metric-trend up">
+                        <span>↑</span>
+                        <span id="taskRate">0/min</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real-time Metrics -->
+        <section class="grid grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Agent Activity Over Time</div>
+                        <div class="card-subtitle">Last 5 minutes</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="agentActivityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Resource Utilization</div>
+                        <div class="card-subtitle">CPU, Memory, I/O</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="resourceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Metrics -->
+        <section class="grid grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Task Completion Rate</div>
+                        <div class="card-subtitle">Tasks per minute</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="taskCompletionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">Agent Type Distribution</div>
+                        <div class="card-subtitle">42+ agent types</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="agentTypeChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Agent Registry & Alerts -->
+        <section class="grid grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Agent Registry (42+ Types)</div>
+                    <input type="text" id="agentSearch" placeholder="Search agents..."
+                           style="padding: 0.5rem; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 6px; color: var(--text); width: 200px;">
+                </div>
+                <div class="agent-list" id="agentList">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">System Alerts & Notifications</div>
+                    <span id="alertCount" class="agent-badge active">0</span>
+                </div>
+                <div class="alerts-container" id="alertsContainer">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- System Statistics -->
+        <section class="card">
+            <div class="card-header">
+                <div class="card-title">Detailed System Statistics</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="statTotalAgents">0</div>
+                    <div class="stat-label">Total Agents Spawned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statAgentTypes">42</div>
+                    <div class="stat-label">Agent Types</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statMaxCapacity">4462</div>
+                    <div class="stat-label">Max Capacity</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statAvgLatency">0ms</div>
+                    <div class="stat-label">Avg Latency</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statErrorRate">0%</div>
+                    <div class="stat-label">Error Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statUptime">0h</div>
+                    <div class="stat-label">System Uptime</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="connection-status disconnected" id="connectionStatus">
+        <div class="spinner"></div>
+        <span>Connecting to WebSocket...</span>
+    </div>
+
+    <script>
+        // Configuration
+        const config = {
+            wsUrl: 'ws://localhost:8080',
+            updateInterval: 1000,
+            historyLength: 300, // 5 minutes at 1s intervals
+            prometheusPort: 9090
+        };
+
+        // State
+        let ws = null;
+        let isConnected = false;
+        let metrics = {
+            agents: { active: 0, total: 0, types: {} },
+            resources: { memory: 0, cpu: 0, io: 0 },
+            tasks: { completed: 0, rate: 0 },
+            alerts: [],
+            history: {
+                agents: [],
+                memory: [],
+                cpu: [],
+                tasks: [],
+                timestamps: []
+            }
+        };
+
+        // Charts
+        let charts = {};
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Initializing Advanced Monitoring Dashboard...');
+            initializeCharts();
+            connectWebSocket();
+            setupEventListeners();
+            startLocalUpdates();
+        });
+
+        // WebSocket Connection
+        function connectWebSocket() {
+            try {
+                ws = new WebSocket(config.wsUrl);
+
+                ws.onopen = () => {
+                    console.log('✅ WebSocket connected');
+                    isConnected = true;
+                    updateConnectionStatus(true);
+                };
+
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleWebSocketMessage(data);
+                    } catch (error) {
+                        console.error('Error parsing WebSocket message:', error);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('❌ WebSocket error:', error);
+                    updateConnectionStatus(false);
+                };
+
+                ws.onclose = () => {
+                    console.log('🔌 WebSocket disconnected');
+                    isConnected = false;
+                    updateConnectionStatus(false);
+                    // Reconnect after 5 seconds
+                    setTimeout(connectWebSocket, 5000);
+                };
+            } catch (error) {
+                console.error('Failed to connect WebSocket:', error);
+                updateConnectionStatus(false);
+                setTimeout(connectWebSocket, 5000);
+            }
+        }
+
+        // Handle WebSocket Messages
+        function handleWebSocketMessage(data) {
+            switch (data.type) {
+                case 'metrics':
+                    updateMetrics(data.payload);
+                    break;
+                case 'agent-update':
+                    updateAgentRegistry(data.payload);
+                    break;
+                case 'alert':
+                    addAlert(data.payload);
+                    break;
+                case 'system-status':
+                    updateSystemStatus(data.payload);
+                    break;
+                default:
+                    console.log('Unknown message type:', data.type);
+            }
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Agent Activity Chart
+            charts.agentActivity = new Chart(
+                document.getElementById('agentActivityChart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Active Agents',
+                            data: [],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#f1f5f9' } }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' }
+                            },
+                            y: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                }
+            );
+
+            // Resource Utilization Chart
+            charts.resources = new Chart(
+                document.getElementById('resourceChart'),
+                {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Memory %',
+                                data: [],
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4
+                            },
+                            {
+                                label: 'CPU %',
+                                data: [],
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#f1f5f9' } }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' }
+                            },
+                            y: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' },
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                }
+            );
+
+            // Task Completion Chart
+            charts.taskCompletion = new Chart(
+                document.getElementById('taskCompletionChart'),
+                {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Tasks/min',
+                            data: [],
+                            backgroundColor: '#3b82f6',
+                            borderColor: '#2563eb',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#f1f5f9' } }
+                        },
+                        scales: {
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' }
+                            },
+                            y: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#334155' },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                }
+            );
+
+            // Agent Type Distribution Chart
+            charts.agentTypes = new Chart(
+                document.getElementById('agentTypeChart'),
+                {
+                    type: 'doughnut',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: [
+                                '#667eea', '#764ba2', '#10b981', '#f59e0b',
+                                '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#f1f5f9' }
+                            }
+                        }
+                    }
+                }
+            );
+        }
+
+        // Update Metrics
+        function updateMetrics(data) {
+            // Update agent metrics
+            if (data.agents) {
+                metrics.agents = data.agents;
+                document.getElementById('activeAgents').textContent = data.agents.active || 0;
+                document.getElementById('agentTrend').textContent = data.agents.active || 0;
+            }
+
+            // Update resource metrics
+            if (data.resources) {
+                metrics.resources = data.resources;
+                const memPercent = (data.resources.memory * 100).toFixed(1);
+                const cpuPercent = (data.resources.cpu * 100).toFixed(1);
+
+                document.getElementById('memoryUsage').textContent = `${memPercent}%`;
+                document.getElementById('cpuUsage').textContent = `${cpuPercent}%`;
+
+                const memBar = document.getElementById('memoryBar');
+                const cpuBar = document.getElementById('cpuBar');
+
+                memBar.style.width = `${memPercent}%`;
+                cpuBar.style.width = `${cpuPercent}%`;
+
+                // Update bar colors based on thresholds
+                memBar.className = 'progress-bar ' + getBarClass(memPercent);
+                cpuBar.className = 'progress-bar ' + getBarClass(cpuPercent);
+            }
+
+            // Update task metrics
+            if (data.tasks) {
+                metrics.tasks = data.tasks;
+                document.getElementById('tasksCompleted').textContent = data.tasks.completed || 0;
+                document.getElementById('taskRate').textContent = `${data.tasks.rate || 0}/min`;
+            }
+
+            // Update history
+            updateHistory(data);
+
+            // Update charts
+            updateCharts();
+
+            // Update system health
+            updateSystemHealth(data);
+        }
+
+        // Update History
+        function updateHistory(data) {
+            const now = new Date().toLocaleTimeString();
+
+            metrics.history.timestamps.push(now);
+            metrics.history.agents.push(data.agents?.active || 0);
+            metrics.history.memory.push((data.resources?.memory || 0) * 100);
+            metrics.history.cpu.push((data.resources?.cpu || 0) * 100);
+            metrics.history.tasks.push(data.tasks?.rate || 0);
+
+            // Maintain history length
+            if (metrics.history.timestamps.length > config.historyLength) {
+                metrics.history.timestamps.shift();
+                metrics.history.agents.shift();
+                metrics.history.memory.shift();
+                metrics.history.cpu.shift();
+                metrics.history.tasks.shift();
+            }
+        }
+
+        // Update Charts
+        function updateCharts() {
+            // Agent Activity Chart
+            charts.agentActivity.data.labels = metrics.history.timestamps;
+            charts.agentActivity.data.datasets[0].data = metrics.history.agents;
+            charts.agentActivity.update('none');
+
+            // Resource Chart
+            charts.resources.data.labels = metrics.history.timestamps;
+            charts.resources.data.datasets[0].data = metrics.history.memory;
+            charts.resources.data.datasets[1].data = metrics.history.cpu;
+            charts.resources.update('none');
+
+            // Task Completion Chart
+            const recentTasks = metrics.history.tasks.slice(-10);
+            const recentTimestamps = metrics.history.timestamps.slice(-10);
+            charts.taskCompletion.data.labels = recentTimestamps;
+            charts.taskCompletion.data.datasets[0].data = recentTasks;
+            charts.taskCompletion.update('none');
+
+            // Agent Type Distribution Chart
+            if (metrics.agents.types && Object.keys(metrics.agents.types).length > 0) {
+                const types = Object.keys(metrics.agents.types).slice(0, 8);
+                const counts = types.map(t => metrics.agents.types[t]);
+                charts.agentTypes.data.labels = types;
+                charts.agentTypes.data.datasets[0].data = counts;
+                charts.agentTypes.update('none');
+            }
+        }
+
+        // Update Agent Registry
+        function updateAgentRegistry(agents) {
+            const agentList = document.getElementById('agentList');
+            const searchTerm = document.getElementById('agentSearch').value.toLowerCase();
+
+            const filteredAgents = agents.filter(agent =>
+                agent.name.toLowerCase().includes(searchTerm) ||
+                agent.type.toLowerCase().includes(searchTerm)
+            );
+
+            agentList.innerHTML = filteredAgents.map(agent => `
+                <div class="agent-item">
+                    <div class="agent-info">
+                        <div class="agent-name">${agent.name}</div>
+                        <div class="agent-stats">Type: ${agent.type} | Tasks: ${agent.tasks || 0}</div>
+                    </div>
+                    <span class="agent-badge ${agent.status}">${agent.status}</span>
+                </div>
+            `).join('');
+        }
+
+        // Add Alert
+        function addAlert(alert) {
+            metrics.alerts.unshift({
+                ...alert,
+                timestamp: new Date().toLocaleTimeString()
+            });
+
+            // Keep only last 50 alerts
+            if (metrics.alerts.length > 50) {
+                metrics.alerts = metrics.alerts.slice(0, 50);
+            }
+
+            renderAlerts();
+        }
+
+        // Render Alerts
+        function renderAlerts() {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alertCount = document.getElementById('alertCount');
+
+            alertCount.textContent = metrics.alerts.length;
+
+            if (metrics.alerts.length === 0) {
+                alertsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No alerts to display
+                    </div>
+                `;
+                return;
+            }
+
+            alertsContainer.innerHTML = metrics.alerts.map(alert => `
+                <div class="alert alert-${alert.severity || 'info'}">
+                    <div class="alert-header">
+                        <div class="alert-title">
+                            <span>${getAlertIcon(alert.severity)}</span>
+                            <span>${alert.title || 'System Alert'}</span>
+                        </div>
+                        <div class="alert-time">${alert.timestamp}</div>
+                    </div>
+                    <div class="alert-message">${alert.message}</div>
+                </div>
+            `).join('');
+        }
+
+        // Get Alert Icon
+        function getAlertIcon(severity) {
+            const icons = {
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️',
+                success: '✅'
+            };
+            return icons[severity] || 'ℹ️';
+        }
+
+        // Update System Status
+        function updateSystemStatus(status) {
+            document.getElementById('statTotalAgents').textContent = status.totalAgents || 0;
+            document.getElementById('statAgentTypes').textContent = status.agentTypes || 42;
+            document.getElementById('statMaxCapacity').textContent = status.maxCapacity || 4462;
+            document.getElementById('statAvgLatency').textContent = `${status.avgLatency || 0}ms`;
+            document.getElementById('statErrorRate').textContent = `${status.errorRate || 0}%`;
+            document.getElementById('statUptime').textContent = formatUptime(status.uptime || 0);
+        }
+
+        // Update System Health
+        function updateSystemHealth(data) {
+            const indicator = document.getElementById('systemHealthIndicator');
+            const text = document.getElementById('systemHealthText');
+
+            let health = 'healthy';
+
+            if (data.resources) {
+                if (data.resources.memory > 0.9 || data.resources.cpu > 0.9) {
+                    health = 'critical';
+                } else if (data.resources.memory > 0.8 || data.resources.cpu > 0.8) {
+                    health = 'warning';
+                }
+            }
+
+            indicator.className = `status-indicator ${health}`;
+            text.textContent = `System ${health.charAt(0).toUpperCase() + health.slice(1)}`;
+        }
+
+        // Update Connection Status
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connectionStatus');
+
+            if (connected) {
+                status.className = 'connection-status connected';
+                status.innerHTML = `
+                    <div class="status-indicator healthy"></div>
+                    <span>Connected to WebSocket</span>
+                `;
+            } else {
+                status.className = 'connection-status disconnected';
+                status.innerHTML = `
+                    <div class="spinner"></div>
+                    <span>Reconnecting...</span>
+                `;
+            }
+        }
+
+        // Export Prometheus Metrics
+        function exportPrometheusMetrics() {
+            const prometheusMetrics = generatePrometheusMetrics();
+            downloadFile('prometheus-metrics.txt', prometheusMetrics);
+            addAlert({
+                severity: 'success',
+                title: 'Prometheus Export',
+                message: 'Metrics exported successfully in Prometheus format'
+            });
+        }
+
+        // Generate Prometheus Metrics
+        function generatePrometheusMetrics() {
+            return `# HELP master_workflow_agents_active Number of active agents
+# TYPE master_workflow_agents_active gauge
+master_workflow_agents_active ${metrics.agents.active}
+
+# HELP master_workflow_agents_total Total agents spawned
+# TYPE master_workflow_agents_total counter
+master_workflow_agents_total ${metrics.agents.total}
+
+# HELP master_workflow_memory_usage Memory utilization (0-1)
+# TYPE master_workflow_memory_usage gauge
+master_workflow_memory_usage ${metrics.resources.memory}
+
+# HELP master_workflow_cpu_usage CPU utilization (0-1)
+# TYPE master_workflow_cpu_usage gauge
+master_workflow_cpu_usage ${metrics.resources.cpu}
+
+# HELP master_workflow_tasks_completed Total tasks completed
+# TYPE master_workflow_tasks_completed counter
+master_workflow_tasks_completed ${metrics.tasks.completed}
+
+# HELP master_workflow_task_rate Tasks per minute
+# TYPE master_workflow_task_rate gauge
+master_workflow_task_rate ${metrics.tasks.rate}
+
+# HELP master_workflow_alerts_total Total number of alerts
+# TYPE master_workflow_alerts_total gauge
+master_workflow_alerts_total ${metrics.alerts.length}
+`;
+        }
+
+        // Export Grafana Dashboard
+        function exportGrafanaDashboard() {
+            const grafanaDashboard = generateGrafanaDashboard();
+            downloadFile('grafana-dashboard.json', JSON.stringify(grafanaDashboard, null, 2));
+            addAlert({
+                severity: 'success',
+                title: 'Grafana Export',
+                message: 'Dashboard exported successfully for Grafana import'
+            });
+        }
+
+        // Generate Grafana Dashboard JSON
+        function generateGrafanaDashboard() {
+            return {
+                "dashboard": {
+                    "title": "Master Workflow 3.0 Monitoring",
+                    "tags": ["master-workflow", "agents", "monitoring"],
+                    "timezone": "browser",
+                    "panels": [
+                        {
+                            "id": 1,
+                            "title": "Active Agents",
+                            "type": "graph",
+                            "targets": [{
+                                "expr": "master_workflow_agents_active",
+                                "refId": "A"
+                            }]
+                        },
+                        {
+                            "id": 2,
+                            "title": "Resource Utilization",
+                            "type": "graph",
+                            "targets": [
+                                {
+                                    "expr": "master_workflow_memory_usage * 100",
+                                    "refId": "A",
+                                    "legendFormat": "Memory %"
+                                },
+                                {
+                                    "expr": "master_workflow_cpu_usage * 100",
+                                    "refId": "B",
+                                    "legendFormat": "CPU %"
+                                }
+                            ]
+                        },
+                        {
+                            "id": 3,
+                            "title": "Task Completion Rate",
+                            "type": "graph",
+                            "targets": [{
+                                "expr": "master_workflow_task_rate",
+                                "refId": "A"
+                            }]
+                        }
+                    ],
+                    "refresh": "5s",
+                    "time": {
+                        "from": "now-6h",
+                        "to": "now"
+                    }
+                }
+            };
+        }
+
+        // Download File
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Refresh Dashboard
+        function refreshDashboard() {
+            location.reload();
+        }
+
+        // Clear Alerts
+        function clearAlerts() {
+            metrics.alerts = [];
+            renderAlerts();
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            document.getElementById('agentSearch').addEventListener('input', (e) => {
+                updateAgentRegistry([]); // Will be populated by WebSocket
+            });
+        }
+
+        // Start Local Updates (for demo/offline mode)
+        function startLocalUpdates() {
+            if (!isConnected) {
+                setInterval(() => {
+                    // Generate mock data for demo
+                    updateMetrics({
+                        agents: {
+                            active: Math.floor(Math.random() * 100),
+                            total: 150,
+                            types: {
+                                'metrics-monitoring-engineer': 5,
+                                'devops-engineer': 8,
+                                'security-analyst': 3,
+                                'performance-optimizer': 4
+                            }
+                        },
+                        resources: {
+                            memory: Math.random() * 0.5,
+                            cpu: Math.random() * 0.3,
+                            io: Math.random() * 0.4
+                        },
+                        tasks: {
+                            completed: Math.floor(Math.random() * 1000),
+                            rate: Math.floor(Math.random() * 50)
+                        }
+                    });
+                }, config.updateInterval);
+            }
+        }
+
+        // Helper Functions
+        function getBarClass(percent) {
+            if (percent > 90) return 'error';
+            if (percent > 80) return 'warning';
+            return '';
+        }
+
+        function formatUptime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            return `${hours}h`;
+        }
+
+        // Initial alert
+        setTimeout(() => {
+            addAlert({
+                severity: 'info',
+                title: 'Dashboard Initialized',
+                message: 'Advanced monitoring dashboard is now active and collecting metrics'
+            });
+        }, 1000);
+    </script>
+</body>
+</html>

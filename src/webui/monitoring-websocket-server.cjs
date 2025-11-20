@@ -419,7 +419,7 @@ class MonitoringWebSocketServer extends EventEmitter {
         // Task flow update (every 2 seconds)
         this.intervals.set('taskFlow', setInterval(() => {
             this.updateAndBroadcastTaskFlow();
-        }, 2000);
+        }, 2000));
 
         // Heartbeat (every 30 seconds)
         this.intervals.set('heartbeat', setInterval(() => {

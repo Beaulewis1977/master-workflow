@@ -1,0 +1,73 @@
+# GCP Memorystore for Redis Configuration
+# Deploy with: gcloud redis instances create master-workflow-redis --config=memorystore-redis.yaml
+
+# Using gcloud command (alternative to Config Connector):
+# gcloud redis instances create master-workflow-redis \
+#   --size=16 \
+#   --region=us-central1 \
+#   --tier=STANDARD_HA \
+#   --redis-version=redis_7_0 \
+#   --network=projects/PROJECT_ID/global/networks/master-workflow-network \
+#   --connect-mode=PRIVATE_SERVICE_ACCESS \
+#   --enable-auth \
+#   --persistence-mode=RDB \
+#   --rdb-snapshot-period=24h \
+#   --labels=environment=production,application=master-workflow
+
+apiVersion: redis.cnrm.cloud.google.com/v1beta1
+kind: RedisInstance
+metadata:
+  name: master-workflow-redis
+  labels:
+    environment: production
+    application: master-workflow
+spec:
+  region: us-central1
+  tier: STANDARD_HA  # High availability with automatic failover
+  memorySizeGb: 16
+  redisVersion: REDIS_7_0
+
+  # Network
+  authorizedNetworkRef:
+    name: master-workflow-network
+
+  # Connection mode
+  connectMode: PRIVATE_SERVICE_ACCESS
+
+  # Redis configuration
+  redisConfigs:
+    maxmemory-policy: allkeys-lru
+    notify-keyspace-events: Ex
+    timeout: "300"
+    tcp-keepalive: "300"
+
+  # Authentication
+  authEnabled: true
+
+  # Persistence
+  persistenceMode: RDB
+  rdbSnapshotPeriod: ONE_DAY
+  rdbSnapshotStartTime: "03:00"
+
+  # Maintenance
+  maintenancePolicy:
+    weeklyMaintenanceWindow:
+    - day: SUNDAY
+      startTime:
+        hours: 3
+        minutes: 0
+
+  # Monitoring
+  displayName: Master Workflow Redis
+
+---
+# Secret to store Redis auth string
+apiVersion: v1
+kind: Secret
+metadata:
+  name: redis-auth
+  namespace: master-workflow
+type: Opaque
+stringData:
+  # Get auth string with: gcloud redis instances describe master-workflow-redis --region=us-central1 --format="value(authString)"
+  password: REDIS_AUTH_STRING

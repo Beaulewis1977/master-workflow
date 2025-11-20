@@ -1,0 +1,163 @@
+# Azure AKS Cluster Configuration for Master Workflow 3.0
+# Deploy with: az aks create --resource-group master-workflow-rg --name master-workflow-cluster --config-file aks-cluster.yaml
+
+# Note: Azure doesn't use YAML config files like EKS/GKE. This is a reference configuration.
+# Use the Azure CLI commands below or the provided ARM template.
+
+# Create Resource Group
+# az group create --name master-workflow-rg --location eastus
+
+# Create AKS Cluster
+# az aks create \
+#   --resource-group master-workflow-rg \
+#   --name master-workflow-cluster \
+#   --location eastus \
+#   --kubernetes-version 1.28.0 \
+#   --node-count 3 \
+#   --node-vm-size Standard_D8s_v3 \
+#   --enable-managed-identity \
+#   --enable-addons monitoring \
+#   --enable-cluster-autoscaler \
+#   --min-count 3 \
+#   --max-count 10 \
+#   --network-plugin azure \
+#   --network-policy calico \
+#   --load-balancer-sku standard \
+#   --vm-set-type VirtualMachineScaleSets \
+#   --nodepool-name queenpool \
+#   --nodepool-labels role=queen-controller workload=orchestration \
+#   --enable-encryption-at-host \
+#   --zones 1 2 3
+
+# Add GPU Node Pool
+# az aks nodepool add \
+#   --resource-group master-workflow-rg \
+#   --cluster-name master-workflow-cluster \
+#   --name gpupool \
+#   --node-count 1 \
+#   --node-vm-size Standard_NC6s_v3 \
+#   --enable-cluster-autoscaler \
+#   --min-count 0 \
+#   --max-count 5 \
+#   --nodepool-labels role=gpu-worker workload=gpu-acceleration accelerator=nvidia-gpu \
+#   --nodepool-taints nvidia.com/gpu=true:NoSchedule \
+#   --zones 1
+
+# Add Database Node Pool (memory optimized)
+# az aks nodepool add \
+#   --resource-group master-workflow-rg \
+#   --cluster-name master-workflow-cluster \
+#   --name dbpool \
+#   --node-count 3 \
+#   --node-vm-size Standard_E8s_v3 \
+#   --enable-cluster-autoscaler \
+#   --min-count 3 \
+#   --max-count 6 \
+#   --nodepool-labels role=database workload=storage \
+#   --zones 1 2 3
+
+---
+# ARM Template for complete deployment
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clusterName": {
+      "type": "string",
+      "defaultValue": "master-workflow-cluster",
+      "metadata": {
+        "description": "AKS cluster name"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": {
+        "description": "Azure region"
+      }
+    },
+    "kubernetesVersion": {
+      "type": "string",
+      "defaultValue": "1.28.0",
+      "metadata": {
+        "description": "Kubernetes version"
+      }
+    }
+  },
+  "variables": {
+    "resourceGroupName": "[resourceGroup().name]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('clusterName')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "kubernetesVersion": "[parameters('kubernetesVersion')]",
+        "dnsPrefix": "[parameters('clusterName')]",
+        "enableRBAC": true,
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "networkPolicy": "calico",
+          "loadBalancerSku": "standard",
+          "serviceCidr": "10.240.0.0/16",
+          "dnsServiceIP": "10.240.0.10",
+          "dockerBridgeCidr": "172.17.0.1/16"
+        },
+        "agentPoolProfiles": [
+          {
+            "name": "queenpool",
+            "count": 3,
+            "vmSize": "Standard_D8s_v3",
+            "mode": "System",
+            "type": "VirtualMachineScaleSets",
+            "enableAutoScaling": true,
+            "minCount": 3,
+            "maxCount": 10,
+            "availabilityZones": ["1", "2", "3"],
+            "nodeLabels": {
+              "role": "queen-controller",
+              "workload": "orchestration"
+            },
+            "osDiskSizeGB": 100,
+            "osDiskType": "Managed"
+          }
+        ],
+        "addonProfiles": {
+          "omsagent": {
+            "enabled": true
+          },
+          "azurepolicy": {
+            "enabled": true
+          }
+        },
+        "autoScalerProfile": {
+          "scale-down-delay-after-add": "10m",
+          "scale-down-unneeded-time": "10m"
+        },
+        "securityProfile": {
+          "defender": {
+            "securityMonitoring": {
+              "enabled": true
+            }
+          }
+        }
+      },
+      "tags": {
+        "Environment": "production",
+        "Application": "master-workflow",
+        "Version": "3.0"
+      }
+    }
+  ],
+  "outputs": {
+    "clusterFQDN": {
+      "type": "string",
+      "value": "[reference(parameters('clusterName')).fqdn]"
+    }
+  }
+}

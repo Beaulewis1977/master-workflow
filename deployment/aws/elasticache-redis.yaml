@@ -1,0 +1,176 @@
+# AWS ElastiCache Redis Configuration (CloudFormation)
+# Alternative to self-hosted Redis in Kubernetes
+# Deploy with: aws cloudformation create-stack --stack-name mw-redis --template-body file://elasticache-redis.yaml
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'ElastiCache Redis for Master Workflow 3.0'
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC ID where Redis cluster will be deployed
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subnet IDs for Redis cluster (minimum 2)
+
+  NodeType:
+    Type: String
+    Default: cache.r6g.2xlarge
+    Description: Redis node instance type
+    AllowedValues:
+      - cache.r6g.xlarge
+      - cache.r6g.2xlarge
+      - cache.r6g.4xlarge
+      - cache.r6g.8xlarge
+
+  NumCacheNodes:
+    Type: Number
+    Default: 3
+    MinValue: 1
+    MaxValue: 6
+    Description: Number of cache nodes in the cluster
+
+Resources:
+  # Security Group
+  RedisSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: master-workflow-redis-sg
+      GroupDescription: Security group for Master Workflow Redis
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6379
+          SourceSecurityGroupId: !Ref EKSSecurityGroup
+          Description: Allow Redis access from EKS cluster
+      Tags:
+        - Key: Name
+          Value: master-workflow-redis-sg
+        - Key: Application
+          Value: master-workflow
+
+  # Subnet Group
+  RedisSubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      Description: Subnet group for Master Workflow Redis
+      SubnetIds: !Ref SubnetIds
+      CacheSubnetGroupName: master-workflow-redis-subnet-group
+
+  # Parameter Group
+  RedisParameterGroup:
+    Type: AWS::ElastiCache::ParameterGroup
+    Properties:
+      CacheParameterGroupFamily: redis7
+      Description: Parameter group for Master Workflow Redis
+      Properties:
+        maxmemory-policy: allkeys-lru
+        timeout: '300'
+        tcp-keepalive: '300'
+
+  # Replication Group (Redis Cluster)
+  RedisReplicationGroup:
+    Type: AWS::ElastiCache::ReplicationGroup
+    Properties:
+      ReplicationGroupId: master-workflow-redis
+      ReplicationGroupDescription: Redis cluster for Master Workflow 3.0
+      Engine: redis
+      EngineVersion: '7.0'
+      CacheNodeType: !Ref NodeType
+      NumCacheClusters: !Ref NumCacheNodes
+      AutomaticFailoverEnabled: true
+      MultiAZEnabled: true
+      CacheSubnetGroupName: !Ref RedisSubnetGroup
+      SecurityGroupIds:
+        - !Ref RedisSecurityGroup
+      CacheParameterGroupName: !Ref RedisParameterGroup
+      AtRestEncryptionEnabled: true
+      TransitEncryptionEnabled: true
+      AuthToken: !Sub '{{resolve:secretsmanager:master-workflow/redis:SecretString:password}}'
+      SnapshotRetentionLimit: 7
+      SnapshotWindow: '03:00-05:00'
+      PreferredMaintenanceWindow: 'sun:05:00-sun:07:00'
+      NotificationTopicArn: !Ref RedisNotificationTopic
+      Tags:
+        - Key: Name
+          Value: master-workflow-redis
+        - Key: Application
+          Value: master-workflow
+        - Key: Environment
+          Value: production
+
+  # SNS Topic for notifications
+  RedisNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: master-workflow-redis-notifications
+      DisplayName: Master Workflow Redis Notifications
+      Tags:
+        - Key: Application
+          Value: master-workflow
+
+  # CloudWatch Alarms
+  RedisCPUAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: master-workflow-redis-cpu-high
+      AlarmDescription: Redis CPU utilization is high
+      MetricName: CPUUtilization
+      Namespace: AWS/ElastiCache
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 75
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: ReplicationGroupId
+          Value: !Ref RedisReplicationGroup
+      AlarmActions:
+        - !Ref RedisNotificationTopic
+
+  RedisMemoryAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: master-workflow-redis-memory-high
+      AlarmDescription: Redis memory utilization is high
+      MetricName: DatabaseMemoryUsagePercentage
+      Namespace: AWS/ElastiCache
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 90
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: ReplicationGroupId
+          Value: !Ref RedisReplicationGroup
+      AlarmActions:
+        - !Ref RedisNotificationTopic
+
+  # EKS Security Group (placeholder - replace with actual EKS SG)
+  EKSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: master-workflow-eks-sg
+      GroupDescription: Security group for Master Workflow EKS cluster
+      VpcId: !Ref VpcId
+
+Outputs:
+  RedisPrimaryEndpoint:
+    Description: Redis primary endpoint
+    Value: !GetAtt RedisReplicationGroup.PrimaryEndPoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-PrimaryEndpoint'
+
+  RedisReaderEndpoint:
+    Description: Redis reader endpoint
+    Value: !GetAtt RedisReplicationGroup.ReaderEndPoint.Address
+    Export:
+      Name: !Sub '${AWS::StackName}-ReaderEndpoint'
+
+  RedisPort:
+    Description: Redis port
+    Value: !GetAtt RedisReplicationGroup.PrimaryEndPoint.Port
+    Export:
+      Name: !Sub '${AWS::StackName}-Port'

@@ -1,0 +1,161 @@
+# AWS EKS Cluster Configuration for Master Workflow 3.0
+# eksctl create cluster -f eks-cluster.yaml
+
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: master-workflow-cluster
+  region: us-east-1
+  version: "1.28"
+  tags:
+    Environment: production
+    Application: master-workflow
+    Version: "3.0"
+
+# IAM configuration
+iam:
+  withOIDC: true
+  serviceAccounts:
+  - metadata:
+      name: master-workflow-sa
+      namespace: master-workflow
+    attachPolicyARNs:
+    - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+    - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+
+# VPC configuration
+vpc:
+  cidr: 10.0.0.0/16
+  nat:
+    gateway: HighlyAvailable
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+
+# Availability zones
+availabilityZones:
+- us-east-1a
+- us-east-1b
+- us-east-1c
+
+# Node groups
+managedNodeGroups:
+# Standard compute nodes for Queen Controller
+- name: queen-controller-nodes
+  instanceType: m5.2xlarge  # 8 vCPU, 32 GB RAM
+  minSize: 3
+  maxSize: 10
+  desiredCapacity: 3
+  volumeSize: 100
+  volumeType: gp3
+  volumeIOPS: 3000
+  volumeThroughput: 125
+  privateNetworking: true
+  ssh:
+    allow: false
+  labels:
+    role: queen-controller
+    workload: orchestration
+  tags:
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/master-workflow-cluster: "owned"
+  iam:
+    withAddonPolicies:
+      autoScaler: true
+      cloudWatch: true
+      ebs: true
+      efs: true
+  availabilityZones:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+
+# GPU nodes for GPU-accelerated workloads (optional)
+- name: gpu-nodes
+  instanceType: g4dn.2xlarge  # 1 GPU, 8 vCPU, 32 GB RAM
+  minSize: 0
+  maxSize: 5
+  desiredCapacity: 1
+  volumeSize: 100
+  volumeType: gp3
+  privateNetworking: true
+  ssh:
+    allow: false
+  labels:
+    role: gpu-worker
+    workload: gpu-acceleration
+    accelerator: nvidia-gpu
+  taints:
+  - key: nvidia.com/gpu
+    value: "true"
+    effect: NoSchedule
+  tags:
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/master-workflow-cluster: "owned"
+    k8s.io/cluster-autoscaler/node-template/label/accelerator: nvidia-gpu
+  iam:
+    withAddonPolicies:
+      autoScaler: true
+      cloudWatch: true
+  availabilityZones:
+  - us-east-1a
+
+# Database nodes (for Redis and MongoDB)
+- name: database-nodes
+  instanceType: r5.2xlarge  # 8 vCPU, 64 GB RAM (memory optimized)
+  minSize: 3
+  maxSize: 6
+  desiredCapacity: 3
+  volumeSize: 200
+  volumeType: gp3
+  volumeIOPS: 3000
+  volumeThroughput: 125
+  privateNetworking: true
+  ssh:
+    allow: false
+  labels:
+    role: database
+    workload: storage
+  tags:
+    k8s.io/cluster-autoscaler/enabled: "true"
+    k8s.io/cluster-autoscaler/master-workflow-cluster: "owned"
+  iam:
+    withAddonPolicies:
+      autoScaler: true
+      cloudWatch: true
+      ebs: true
+  availabilityZones:
+  - us-east-1a
+  - us-east-1b
+  - us-east-1c
+
+# Add-ons
+addons:
+- name: vpc-cni
+  version: latest
+  attachPolicyARNs:
+  - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+- name: coredns
+  version: latest
+- name: kube-proxy
+  version: latest
+- name: aws-ebs-csi-driver
+  version: latest
+  attachPolicyARNs:
+  - arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
+- name: aws-efs-csi-driver
+  version: latest
+
+# CloudWatch logging
+cloudWatch:
+  clusterLogging:
+    enableTypes:
+    - api
+    - audit
+    - authenticator
+    - controllerManager
+    - scheduler
+    logRetentionInDays: 30
