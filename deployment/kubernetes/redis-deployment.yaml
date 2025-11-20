@@ -37,6 +37,11 @@ spec:
         app: redis
         component: database
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999  # Redis user
+        fsGroup: 999
+
       affinity:
         # Spread Redis pods across different nodes
         podAntiAffinity:
@@ -55,6 +60,15 @@ spec:
       - name: redis
         image: redis:7.2-alpine
         imagePullPolicy: IfNotPresent
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          readOnlyRootFilesystem: false  # Redis needs write access to /data
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 
         ports:
         - containerPort: 6379

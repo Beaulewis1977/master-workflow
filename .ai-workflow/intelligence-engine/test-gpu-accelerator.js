@@ -72,6 +72,7 @@ class GPUAcceleratorTestSuite {
 
     /**
      * Test 1: GPU Detection
+     * BUG FIX #4: No GPU resources to clean up in this test
      */
     async testGPUDetection() {
         console.log('Test 1: GPU Detection and Capability Assessment');
@@ -104,17 +105,18 @@ class GPUAcceleratorTestSuite {
 
     /**
      * Test 2: GPU Accelerator Initialization
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testGPUAcceleratorInit() {
         console.log('Test 2: GPU Accelerator Initialization');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'auto',
-                enableMemoryPool: true,
-                fallbackToCPU: true
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'auto',
+            enableMemoryPool: true,
+            fallbackToCPU: true
+        });
 
+        try {
             const initialized = await accelerator.initialize();
 
             this.assert(
@@ -135,25 +137,27 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ GPU Available: ${status.gpuAvailable}`);
             console.log(`  ✓ Initialization successful\n`);
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('GPU Accelerator Initialization', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 3: Neural Forward Pass
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testNeuralForwardPass() {
         console.log('Test 3: GPU-Accelerated Neural Forward Pass');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'auto',
-                enableProfiling: true
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'auto',
+            enableProfiling: true
+        });
 
+        try {
             await accelerator.initialize();
 
             const architecture = {
@@ -210,24 +214,26 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ Output shape: [${output.length}]`);
             console.log(`  ✓ Output sum (softmax): ${sum.toFixed(4)}\n`);
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('Neural Forward Pass', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 4: Batch Predictions
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testBatchPredictions() {
         console.log('Test 4: Batch Prediction Processing');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'auto'
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'auto'
+        });
 
+        try {
             await accelerator.initialize();
 
             const architecture = {
@@ -271,24 +277,26 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ Total time: ${batchTime}ms`);
             console.log(`  ✓ Avg time per sample: ${avgTimePerSample.toFixed(2)}ms\n`);
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('Batch Predictions', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 5: Cosine Similarity
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testCosineSimilarity() {
         console.log('Test 5: GPU-Accelerated Cosine Similarity');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'auto'
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'auto'
+        });
 
+        try {
             await accelerator.initialize();
 
             const vectorSize = 32;
@@ -320,26 +328,28 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ Random vectors similarity: ${similarity.toFixed(4)}`);
             console.log(`  ✓ Identical vectors similarity: ${identicalSimilarity.toFixed(4)}\n`);
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('Cosine Similarity', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 6: Memory Pool
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testMemoryPool() {
         console.log('Test 6: GPU Memory Pool Management');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'auto',
-                enableMemoryPool: true,
-                memoryPoolSize: 128 * 1024 * 1024  // 128MB
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'auto',
+            enableMemoryPool: true,
+            memoryPoolSize: 128 * 1024 * 1024  // 128MB
+        });
 
+        try {
             await accelerator.initialize();
 
             this.assert(
@@ -372,25 +382,27 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ Reuses: ${stats.reuses}`);
             console.log(`  ✓ Reuse rate: ${stats.reuseRate}\n`);
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('Memory Pool', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 7: Performance Benchmark
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testPerformanceBenchmark() {
         console.log('Test 7: Performance Benchmarking (Target: 3.6x)');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'auto',
-                enableProfiling: true
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'auto',
+            enableProfiling: true
+        });
 
+        try {
             await accelerator.initialize();
 
             const stats = accelerator.getPerformanceStats();
@@ -416,25 +428,27 @@ class GPUAcceleratorTestSuite {
 
             console.log('');
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('Performance Benchmark', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 8: CPU Fallback
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testCPUFallback() {
         console.log('Test 8: CPU Fallback Behavior');
 
-        try {
-            const accelerator = new GPUAccelerator({
-                preferredBackend: 'cpu',  // Force CPU mode
-                fallbackToCPU: true
-            });
+        const accelerator = new GPUAccelerator({
+            preferredBackend: 'cpu',  // Force CPU mode
+            fallbackToCPU: true
+        });
 
+        try {
             await accelerator.initialize();
 
             const status = accelerator.getStatus();
@@ -466,33 +480,35 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ CPU fallback operational`);
             console.log(`  ✓ Output computed successfully\n`);
 
-            await accelerator.shutdown();
-
         } catch (error) {
             this.fail('CPU Fallback', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await accelerator.shutdown();
         }
     }
 
     /**
      * Test 9: Neural Learning Integration
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testNeuralLearningIntegration() {
         console.log('Test 9: Neural Learning System Integration');
 
+        // Initialize neural learning system
+        const neuralSystem = new NeuralLearningSystem({
+            persistencePath: '/tmp/test-neural-gpu',
+            autoSave: false
+        });
+
+        await neuralSystem.initialize();
+
+        // Add GPU acceleration
+        const gpuNeural = new GPUNeuralAccelerator(neuralSystem, {
+            preferredBackend: 'auto'
+        });
+
         try {
-            // Initialize neural learning system
-            const neuralSystem = new NeuralLearningSystem({
-                persistencePath: '/tmp/test-neural-gpu',
-                autoSave: false
-            });
-
-            await neuralSystem.initialize();
-
-            // Add GPU acceleration
-            const gpuNeural = new GPUNeuralAccelerator(neuralSystem, {
-                preferredBackend: 'auto'
-            });
-
             const initialized = await gpuNeural.initialize();
 
             this.assert(
@@ -531,44 +547,46 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ Success probability: ${(prediction.successProbability * 100).toFixed(1)}%`);
             console.log(`  ✓ Confidence: ${(prediction.confidence * 100).toFixed(1)}%\n`);
 
-            await gpuNeural.shutdown();
-
         } catch (error) {
             this.fail('Neural Learning Integration', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await gpuNeural.shutdown();
         }
     }
 
     /**
      * Test 10: Queen Controller Integration
+     * BUG FIX #4: Added try/finally for guaranteed resource cleanup
      */
     async testQueenControllerIntegration() {
         console.log('Test 10: Queen Controller Integration (Simulated)');
 
+        // Simulate Queen Controller integration
+        const mockQueenController = {
+            neuralLearning: new NeuralLearningSystem({
+                persistencePath: '/tmp/test-queen-gpu',
+                autoSave: false
+            }),
+            selectOptimalAgent: async function(task) {
+                return {
+                    agentType: 'code-analyzer',
+                    prediction: {
+                        successProbability: 0.89,
+                        confidence: 0.92
+                    }
+                };
+            }
+        };
+
+        await mockQueenController.neuralLearning.initialize();
+
+        const gpuAccelerator = new GPUNeuralAccelerator(
+            mockQueenController.neuralLearning,
+            { preferredBackend: 'auto' }
+        );
+
         try {
-            // Simulate Queen Controller integration
-            const mockQueenController = {
-                neuralLearning: new NeuralLearningSystem({
-                    persistencePath: '/tmp/test-queen-gpu',
-                    autoSave: false
-                }),
-                selectOptimalAgent: async function(task) {
-                    return {
-                        agentType: 'code-analyzer',
-                        prediction: {
-                            successProbability: 0.89,
-                            confidence: 0.92
-                        }
-                    };
-                }
-            };
-
-            await mockQueenController.neuralLearning.initialize();
-
-            const gpuAccelerator = new GPUNeuralAccelerator(
-                mockQueenController.neuralLearning,
-                { preferredBackend: 'auto' }
-            );
-
             await gpuAccelerator.initialize();
 
             // Simulate agent selection with GPU acceleration
@@ -593,10 +611,11 @@ class GPUAcceleratorTestSuite {
             console.log(`  ✓ Agent selected: ${selection.agentType}`);
             console.log(`  ✓ Success probability: ${(selection.prediction.successProbability * 100).toFixed(1)}%\n`);
 
-            await gpuAccelerator.shutdown();
-
         } catch (error) {
             this.fail('Queen Controller Integration', error);
+        } finally {
+            // BUG FIX #4: Guarantee shutdown even on test failure
+            await gpuAccelerator.shutdown();
         }
     }
 

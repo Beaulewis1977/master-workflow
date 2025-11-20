@@ -7,7 +7,22 @@
 const http = require('http');
 const EventEmitter = require('events');
 
+/**
+ * Prometheus Metrics Server for exposing system metrics
+ * Provides /metrics endpoint in Prometheus text format
+ * @class
+ * @extends EventEmitter
+ */
 class PrometheusMetricsServer extends EventEmitter {
+    /**
+     * Create a Prometheus metrics server
+     * @param {Object} [options={}] - Configuration options
+     * @param {number} [options.port=9090] - Server port
+     * @param {string} [options.host='localhost'] - Server host
+     * @param {string} [options.metricsPath='/metrics'] - Metrics endpoint path
+     * @param {string} [options.healthPath='/health'] - Health check endpoint path
+     * @param {number} [options.updateInterval=5000] - Metrics collection interval in ms
+     */
     constructor(options = {}) {
         super();
 
@@ -56,7 +71,10 @@ class PrometheusMetricsServer extends EventEmitter {
     }
 
     /**
-     * Start the Prometheus metrics server
+     * Start the Prometheus metrics server and begin metrics collection
+     * @returns {Promise<void>}
+     * @throws {Error} If server fails to start
+     * @fires PrometheusMetricsServer#started
      */
     async start() {
         if (this.isRunning) {
@@ -87,6 +105,8 @@ class PrometheusMetricsServer extends EventEmitter {
 
     /**
      * Stop the Prometheus metrics server
+     * @returns {Promise<void>}
+     * @fires PrometheusMetricsServer#stopped
      */
     async stop() {
         if (!this.isRunning) {
@@ -111,7 +131,9 @@ class PrometheusMetricsServer extends EventEmitter {
     }
 
     /**
-     * Create HTTP server for metrics
+     * Create HTTP server for metrics with routing for /metrics, /health, and /api endpoints
+     * @returns {Promise<void>}
+     * @private
      */
     async createHttpServer() {
         this.server = http.createServer((req, res) => {
@@ -167,7 +189,9 @@ class PrometheusMetricsServer extends EventEmitter {
     }
 
     /**
-     * Generate Prometheus-formatted metrics
+     * Generate Prometheus-formatted metrics text output
+     * @returns {string} Prometheus-formatted metrics
+     * @private
      */
     generatePrometheusMetrics() {
         const lines = [];
@@ -380,6 +404,11 @@ class PrometheusMetricsServer extends EventEmitter {
 
     /**
      * Collect metrics from Queen Controller and Resource Monitor
+     * Updates internal metrics state with current system values
+     * @returns {Promise<void>}
+     * @fires PrometheusMetricsServer#metrics-collected
+     * @fires PrometheusMetricsServer#collection-error
+     * @private
      */
     async collectMetrics() {
         try {
@@ -417,7 +446,10 @@ class PrometheusMetricsServer extends EventEmitter {
     }
 
     /**
-     * Connect to Queen Controller
+     * Connect to Queen Controller and listen for events
+     * Sets up event listeners for task and agent events to update metrics
+     * @param {Object} queenController - Queen Controller instance
+     * @returns {void}
      */
     connectToQueenController(queenController) {
         this.queenController = queenController;
@@ -447,7 +479,9 @@ class PrometheusMetricsServer extends EventEmitter {
     }
 
     /**
-     * Connect to Resource Monitor
+     * Connect to Resource Monitor and listen for metric updates
+     * @param {Object} resourceMonitor - Resource Monitor instance
+     * @returns {void}
      */
     connectToResourceMonitor(resourceMonitor) {
         this.resourceMonitor = resourceMonitor;

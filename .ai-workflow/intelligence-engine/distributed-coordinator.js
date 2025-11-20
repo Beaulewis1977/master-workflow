@@ -29,7 +29,24 @@ const EventEmitter = require('events');
 const crypto = require('crypto');
 const os = require('os');
 
+/**
+ * Distributed Coordinator for multi-node agent orchestration
+ * @extends EventEmitter
+ */
 class DistributedCoordinator extends EventEmitter {
+  /**
+   * Create a distributed coordinator
+   * @param {Object} [options={}] - Configuration options
+   * @param {string} [options.nodeId] - Unique node identifier (auto-generated if not provided)
+   * @param {string} [options.nodeName] - Human-readable node name
+   * @param {Object} [options.redis] - Redis configuration
+   * @param {Object} [options.mongodb] - MongoDB configuration
+   * @param {Object} [options.websocket] - WebSocket configuration
+   * @param {Object} [options.discovery] - Node discovery configuration
+   * @param {Object} [options.loadBalancing] - Load balancing configuration
+   * @param {Object} [options.faultTolerance] - Fault tolerance configuration
+   * @param {Object} [options.stateSynchronization] - State sync configuration
+   */
   constructor(options = {}) {
     super();
 
@@ -162,7 +179,15 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Initialize distributed coordinator
+   * Initialize distributed coordinator with Redis, MongoDB, and WebSocket
+   * Attempts to connect to distributed backends and falls back to standalone mode if unavailable
+   * @returns {Promise<Object>} Initialization result with success status, mode, and nodeId
+   * @fires DistributedCoordinator#initialized
+   * @fires DistributedCoordinator#initialization-error
+   * @example
+   * const coordinator = new DistributedCoordinator();
+   * const result = await coordinator.initialize();
+   * console.log(result.mode); // 'distributed' or 'standalone'
    */
   async initialize() {
     console.log(`Initializing Distributed Coordinator - Node: ${this.nodeId} (${this.nodeName})`);
@@ -227,7 +252,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Initialize Redis connection
+   * Initialize Redis connection for distributed state and pub/sub
+   * @returns {Promise<boolean>} True if connection successful, false otherwise
+   * @fires DistributedCoordinator#redis-connected
+   * @private
    */
   async initializeRedis() {
     if (!this.config.redis.enabled) {
@@ -294,7 +322,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Initialize MongoDB connection
+   * Initialize MongoDB connection for persistent distributed storage
+   * @returns {Promise<boolean>} True if connection successful, false otherwise
+   * @fires DistributedCoordinator#mongodb-connected
+   * @private
    */
   async initializeMongoDb() {
     if (!this.config.mongodb.enabled) {
@@ -345,7 +376,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Initialize WebSocket server for cross-node communication
+   * Initialize WebSocket server for low-latency cross-node communication
+   * @returns {Promise<boolean>} True if initialization successful, false otherwise
+   * @fires DistributedCoordinator#websocket-ready
+   * @private
    */
   async initializeWebSocket() {
     if (!this.config.websocket.enabled) {
@@ -395,7 +429,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Setup Redis pub/sub for cluster communication
+   * Setup Redis pub/sub channels for cluster-wide communication
+   * Subscribes to heartbeat, agent, event, and direct message channels
+   * @returns {Promise<void>}
+   * @private
    */
   async setupRedisPubSub() {
     if (!this.redisSubscriber) return;
@@ -417,7 +454,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Handle Redis pub/sub messages
+   * Handle incoming Redis pub/sub messages and route to appropriate handlers
+   * @param {string} channel - Redis channel name
+   * @param {string} message - JSON-encoded message
+   * @private
    */
   handleRedisMessage(channel, message) {
     try {
@@ -441,7 +481,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Handle node connection via WebSocket
+   * Handle new node connection via WebSocket
+   * Sets up event listeners for node registration, agent operations, and messages
+   * @param {Object} socket - Socket.io socket instance
+   * @private
    */
   handleNodeConnection(socket) {
     console.log(`New node connection: ${socket.id}`);
@@ -476,7 +519,14 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Register a node in the cluster
+   * Register a node in the cluster and update hash ring
+   * @param {Object} nodeInfo - Node information
+   * @param {string} nodeInfo.nodeId - Unique node identifier
+   * @param {string} nodeInfo.nodeName - Human-readable node name
+   * @param {Object} [nodeInfo.capabilities] - Node capabilities
+   * @param {Object} [nodeInfo.resourceUsage] - Current resource usage
+   * @returns {Promise<void>}
+   * @fires DistributedCoordinator#node-registered
    */
   async registerNode(nodeInfo) {
     const { nodeId, nodeName, capabilities, resourceUsage } = nodeInfo;
@@ -507,7 +557,9 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Start node discovery and heartbeat
+   * Start node discovery with periodic heartbeat and health checks
+   * @returns {Promise<void>}
+   * @private
    */
   async startNodeDiscovery() {
     // Register this node
@@ -533,7 +585,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Send heartbeat to cluster
+   * Send heartbeat to cluster via Redis pub/sub
+   * Broadcasts node health, resource usage, and agent count to all nodes
+   * @returns {Promise<void>}
+   * @private
    */
   async sendHeartbeat() {
     const heartbeat = {
@@ -567,7 +622,14 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Handle heartbeat message from other nodes
+   * Handle heartbeat message from other nodes and update cluster state
+   * @param {Object} data - Heartbeat data
+   * @param {string} data.nodeId - Node identifier
+   * @param {string} data.nodeName - Node name
+   * @param {string} data.status - Node status
+   * @param {Object} data.resourceUsage - Resource usage metrics
+   * @param {number} data.agentCount - Number of agents on node
+   * @private
    */
   handleHeartbeatMessage(data) {
     const { nodeId, nodeName, status, resourceUsage, agentCount } = data;
@@ -588,7 +650,11 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Check cluster health and detect failed nodes
+   * Check cluster health and detect failed nodes based on heartbeat timeouts
+   * Triggers failover for agents on failed nodes if fault tolerance is enabled
+   * @returns {Promise<void>}
+   * @fires DistributedCoordinator#nodes-failed
+   * @private
    */
   async checkClusterHealth() {
     const now = Date.now();
@@ -617,7 +683,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Handle node failure and migrate agents
+   * Handle node failure by migrating all agents to healthy nodes
+   * @param {string} failedNodeId - ID of the failed node
+   * @returns {Promise<void>}
+   * @fires DistributedCoordinator#node-failover-complete
    */
   async handleNodeFailure(failedNodeId) {
     console.log(`Handling failure of node: ${failedNodeId}`);
@@ -655,7 +724,13 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Migrate an agent from one node to another
+   * Migrate an agent from one node to another with state transfer
+   * @param {string} agentId - Agent identifier
+   * @param {string} fromNodeId - Source node ID
+   * @param {string} [toNodeId=null] - Target node ID (auto-selected if not provided)
+   * @returns {Promise<void>}
+   * @throws {Error} If agent state not found or migration fails
+   * @fires DistributedCoordinator#agent-migrated
    */
   async migrateAgent(agentId, fromNodeId, toNodeId = null) {
     // Select target node if not specified
@@ -727,7 +802,9 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Select optimal node for agent placement
+   * Select optimal node for agent placement based on load balancing strategy
+   * @param {string} agentId - Agent identifier for consistent hashing
+   * @returns {Promise<string>} Selected node ID
    */
   async selectNodeForAgent(agentId) {
     const strategy = this.config.loadBalancing.strategy;
@@ -745,7 +822,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Select node using consistent hashing
+   * Select node using consistent hashing for even distribution
+   * @param {string} key - Key to hash (typically agent ID)
+   * @returns {string} Node ID
+   * @private
    */
   selectNodeByConsistentHash(key) {
     if (this.hashRing.size === 0) {
@@ -958,7 +1038,11 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Register local agent
+   * Register agent on local node and broadcast to cluster
+   * @param {string} agentId - Agent identifier
+   * @param {Object} agentInfo - Agent information
+   * @returns {Promise<void>}
+   * @fires DistributedCoordinator#agent-registered
    */
   async registerLocalAgent(agentId, agentInfo) {
     this.localAgents.set(agentId, {
@@ -1048,7 +1132,11 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Send message to specific node
+   * Send message to specific node via WebSocket or Redis pub/sub
+   * @param {string} targetNodeId - Target node identifier
+   * @param {Object} message - Message payload
+   * @returns {Promise<Object>} Result with success status and latency
+   * @throws {Error} If no communication channel available
    */
   async sendMessageToNode(targetNodeId, message) {
     const startTime = Date.now();
@@ -1324,7 +1412,8 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Get cluster status
+   * Get current cluster status including nodes, agents, and metrics
+   * @returns {Object} Cluster status with node info, agent counts, and performance metrics
    */
   getClusterStatus() {
     return {
@@ -1344,7 +1433,10 @@ class DistributedCoordinator extends EventEmitter {
   }
 
   /**
-   * Shutdown coordinator
+   * Shutdown coordinator and close all connections
+   * Clears timers and disconnects from Redis, MongoDB, and WebSocket servers
+   * @returns {Promise<void>}
+   * @fires DistributedCoordinator#shutdown-complete
    */
   async shutdown() {
     console.log('Shutting down Distributed Coordinator...');

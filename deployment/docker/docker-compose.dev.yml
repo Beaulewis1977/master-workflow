@@ -20,8 +20,12 @@ services:
     command: >
       redis-server
       --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-devpassword}
       --maxmemory 2gb
       --maxmemory-policy allkeys-lru
+      --rename-command FLUSHALL ""
+      --rename-command FLUSHDB ""
+      --rename-command CONFIG "CONFIG_${REDIS_PASSWORD:-devpassword}"
     ports:
       - "6379:6379"
     volumes:
@@ -29,7 +33,7 @@ services:
     networks:
       - dev-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-devpassword}", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -40,9 +44,9 @@ services:
     container_name: mw-dev-mongodb
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: devpassword
-      MONGO_INITDB_DATABASE: master-workflow
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-devpassword}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-master-workflow}
     ports:
       - "27017:27017"
     volumes:
@@ -84,14 +88,15 @@ services:
       REDIS_ENABLED: "true"
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-devpassword}
 
       # MongoDB
       MONGODB_ENABLED: "true"
       MONGODB_HOST: mongodb
       MONGODB_PORT: 27017
-      MONGODB_USERNAME: root
-      MONGODB_PASSWORD: devpassword
-      MONGODB_DATABASE: master-workflow
+      MONGODB_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      MONGODB_PASSWORD: ${MONGODB_ROOT_PASSWORD:-devpassword}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-master-workflow}
 
       # WebSocket
       WEBSOCKET_ENABLED: "true"
@@ -124,7 +129,7 @@ services:
     container_name: mw-dev-redis-commander
     restart: unless-stopped
     environment:
-      REDIS_HOSTS: local:redis:6379
+      REDIS_HOSTS: local:redis:6379:0:${REDIS_PASSWORD:-devpassword}
     ports:
       - "8081:8081"
     networks:
@@ -138,11 +143,11 @@ services:
     container_name: mw-dev-mongo-express
     restart: unless-stopped
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: devpassword
-      ME_CONFIG_MONGODB_URL: mongodb://root:devpassword@mongodb:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD:-devpassword}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_ROOT_USERNAME:-root}:${MONGODB_ROOT_PASSWORD:-devpassword}@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD:-admin}
     ports:
       - "8082:8081"
     networks:

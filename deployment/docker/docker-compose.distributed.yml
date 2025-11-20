@@ -45,6 +45,9 @@ services:
       --requirepass ${REDIS_PASSWORD:-changeme}
       --maxmemory 4gb
       --maxmemory-policy allkeys-lru
+      --rename-command FLUSHALL ""
+      --rename-command FLUSHDB ""
+      --rename-command CONFIG "CONFIG_${REDIS_PASSWORD:-changeme}"
     ports:
       - "6379:6379"
       - "16379:16379"
@@ -54,7 +57,7 @@ services:
       master-workflow-network:
         ipv4_address: 172.20.0.10
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "--raw", "incr", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -82,6 +85,9 @@ services:
       --requirepass ${REDIS_PASSWORD:-changeme}
       --maxmemory 4gb
       --maxmemory-policy allkeys-lru
+      --rename-command FLUSHALL ""
+      --rename-command FLUSHDB ""
+      --rename-command CONFIG "CONFIG_${REDIS_PASSWORD:-changeme}"
     ports:
       - "6380:6379"
       - "16380:16379"
@@ -91,7 +97,7 @@ services:
       master-workflow-network:
         ipv4_address: 172.20.0.11
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "--raw", "incr", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -119,6 +125,9 @@ services:
       --requirepass ${REDIS_PASSWORD:-changeme}
       --maxmemory 4gb
       --maxmemory-policy allkeys-lru
+      --rename-command FLUSHALL ""
+      --rename-command FLUSHDB ""
+      --rename-command CONFIG "CONFIG_${REDIS_PASSWORD:-changeme}"
     ports:
       - "6381:6379"
       - "16381:16379"
@@ -128,7 +137,7 @@ services:
       master-workflow-network:
         ipv4_address: 172.20.0.12
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "--raw", "incr", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -149,13 +158,14 @@ services:
     restart: unless-stopped
     command: >
       mongod
-      --replSet master-workflow-rs
+      --replSet ${MONGODB_REPLICA_SET:-master-workflow-rs}
       --bind_ip_all
       --port 27017
       --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-changeme}
+      MONGODB_REPLICA_SET: ${MONGODB_REPLICA_SET:-master-workflow-rs}
     ports:
       - "27017:27017"
     volumes:
@@ -184,13 +194,14 @@ services:
     restart: unless-stopped
     command: >
       mongod
-      --replSet master-workflow-rs
+      --replSet ${MONGODB_REPLICA_SET:-master-workflow-rs}
       --bind_ip_all
       --port 27017
       --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-changeme}
+      MONGODB_REPLICA_SET: ${MONGODB_REPLICA_SET:-master-workflow-rs}
     ports:
       - "27018:27017"
     volumes:
@@ -219,13 +230,14 @@ services:
     restart: unless-stopped
     command: >
       mongod
-      --replSet master-workflow-rs
+      --replSet ${MONGODB_REPLICA_SET:-master-workflow-rs}
       --bind_ip_all
       --port 27017
       --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-changeme}
+      MONGODB_REPLICA_SET: ${MONGODB_REPLICA_SET:-master-workflow-rs}
     ports:
       - "27019:27017"
     volumes:

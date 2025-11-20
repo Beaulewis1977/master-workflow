@@ -32,7 +32,7 @@ The Advanced Monitoring Dashboard provides comprehensive real-time observability
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Queen Controller                         │
 │                  (4,462+ Agent Capacity)                    │
@@ -165,7 +165,7 @@ const resourceMonitor = new ResourceMonitor({
 **Update**: Every 5 seconds
 
 **Available Metrics**:
-```
+```text
 # Agent Metrics
 master_workflow_agents_active          - Currently active agents
 master_workflow_agents_idle            - Idle agents in pool
@@ -295,7 +295,7 @@ master_workflow_health{status}         - System health status
 
 #### Prometheus Export
 Click "📊 Export Prometheus" to download `prometheus-metrics.txt`:
-```
+```text
 # HELP master_workflow_agents_active Number of active agents
 # TYPE master_workflow_agents_active gauge
 master_workflow_agents_active 42

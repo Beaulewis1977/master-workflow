@@ -1703,7 +1703,7 @@ kubectl delete namespace master-workflow
 
 ### A. Architecture Diagrams
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     Load Balancer / Ingress                 │
 └────────────────────┬────────────────────────────────────────┘

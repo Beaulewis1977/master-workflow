@@ -28,7 +28,15 @@ const ResourceMonitor = require('../.ai-workflow/intelligence-engine/resource-mo
 const AgentPoolManager = require('../.ai-workflow/intelligence-engine/agent-pool-manager');
 const NeuralLearningSystem = require('../.ai-workflow/intelligence-engine/neural-learning');
 
+/**
+ * Phase 9 Performance Benchmark Suite
+ * Comprehensive testing for distributed coordination, GPU acceleration, and monitoring
+ * @class
+ */
 class Phase9PerformanceBenchmark {
+  /**
+   * Create a benchmark suite instance
+   */
   constructor() {
     this.startTime = Date.now();
     this.results = {
@@ -117,6 +125,8 @@ class Phase9PerformanceBenchmark {
 
   /**
    * Run complete Phase 9 benchmark suite
+   * Executes all benchmark categories and generates comprehensive report
+   * @returns {Promise<Object>} Benchmark results with summary, metrics, and recommendations
    */
   async run() {
     console.log('╔════════════════════════════════════════════════════════════════╗');
@@ -160,7 +170,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * Initialize all Phase 9 components
+   * Initialize all Phase 9 components including Queen Controller, shared memory, and neural learning
+   * @returns {Promise<void>}
+   * @throws {Error} If component initialization fails
    */
   async initializeComponents() {
     console.log('⚙️  Initializing Phase 9 Components...');
@@ -225,7 +237,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * 1. Distributed Coordination Benchmarks
+   * Run distributed coordination benchmarks
+   * Tests cluster formation, multi-node spawning, cross-node latency, state sync, load balancing, and failover
+   * @returns {Promise<void>}
    */
   async runDistributedCoordinationBenchmarks() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -439,7 +453,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * 2. GPU Acceleration Benchmarks
+   * Run GPU acceleration benchmarks
+   * Tests neural prediction speedup, batch processing, memory management, CPU fallback, and sustained throughput
+   * @returns {Promise<void>}
    */
   async runGPUAccelerationBenchmarks() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -625,7 +641,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * 3. Monitoring System Benchmarks
+   * Run monitoring system benchmarks
+   * Tests WebSocket latency, Prometheus scraping, dashboard updates, alert generation, and metrics volume
+   * @returns {Promise<void>}
    */
   async runMonitoringSystemBenchmarks() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -787,7 +805,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * 4. Scalability Benchmarks
+   * Run scalability benchmarks
+   * Tests performance with 10, 50, 100, 500, and 1000 concurrent agents
+   * @returns {Promise<void>}
    */
   async runScalabilityBenchmarks() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -879,7 +899,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * 5. Integration Benchmarks
+   * Run integration benchmarks
+   * Tests end-to-end workflow latency, concurrent workflows, and resource cleanup
+   * @returns {Promise<void>}
    */
   async runIntegrationBenchmarks() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -982,7 +1004,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * 6. Stress Testing
+   * Run stress testing
+   * Tests sustained load, spike load, and resource exhaustion behavior
+   * @returns {Promise<void>}
    */
   async runStressTesting() {
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -1132,7 +1156,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * Calculate final metrics and comparisons
+   * Calculate final metrics and comparisons with Phase 8 baseline
+   * Computes success rate, improvements, and generates recommendations
+   * @returns {void}
    */
   calculateFinalMetrics() {
     // Calculate success rate
@@ -1155,7 +1181,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * Generate optimization recommendations
+   * Generate optimization recommendations based on benchmark results
+   * Identifies areas below target performance and suggests improvements
+   * @returns {void}
    */
   generateRecommendations() {
     const recs = this.results.recommendations;
@@ -1204,7 +1232,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * Generate comprehensive report
+   * Generate comprehensive benchmark report with results and recommendations
+   * Displays summary, performance metrics, comparisons, and final verdict
+   * @returns {void}
    */
   generateReport() {
     console.log('\n╔════════════════════════════════════════════════════════════════╗');
@@ -1315,7 +1345,9 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * Export results to JSON and CSV
+   * Export benchmark results to JSON and CSV files
+   * Creates timestamped files with complete results and summary
+   * @returns {void}
    */
   exportResults() {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
@@ -1339,7 +1371,13 @@ class Phase9PerformanceBenchmark {
   }
 
   /**
-   * Record individual test result
+   * Record individual test result in appropriate category
+   * @param {string} category - Test category (distributed, gpu, monitoring, scalability, integration, stress)
+   * @param {string} testName - Name of the test
+   * @param {boolean} success - Whether test passed
+   * @param {number} value - Test metric value
+   * @param {string|null} [error=null] - Error message if test failed
+   * @returns {void}
    */
   recordTestResult(category, testName, success, value, error = null) {
     this.results.summary.totalTests++;
@@ -1500,14 +1538,27 @@ class Phase9PerformanceBenchmark {
     const startCleanup = Date.now();
 
     try {
+      // Shutdown Queen Controller first (manages all agents)
+      if (this.components.queen) {
+        await this.components.queen.shutdown();
+      }
+
+      // Shutdown neural learning system
+      if (this.components.neuralLearning) {
+        await this.components.neuralLearning.shutdown();
+      }
+
+      // Stop resource monitor
       if (this.components.resourceMonitor) {
         this.components.resourceMonitor.stop();
       }
 
+      // Shutdown agent pool manager
       if (this.components.agentPool) {
         await this.components.agentPool.shutdown();
       }
 
+      // Cleanup shared memory
       if (this.components.sharedMemory) {
         await this.components.sharedMemory.cleanup();
       }

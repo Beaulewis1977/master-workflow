@@ -9,7 +9,7 @@ node src/webui/example-integration.js
 ```
 
 You'll see output like:
-```
+```text
 🚀 Starting Master Workflow 3.0 Advanced Monitoring Demo...
 ✅ Queen Controller initialized
 ✅ Resource Monitor started
@@ -98,7 +98,7 @@ Press `Ctrl+C` in the terminal where you ran `example-integration.js`
 
 ## Dashboard Layout Description
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ Master Workflow 3.0 - Advanced Monitoring    [Status: ●]   │
 │ [Export Prometheus] [Export Grafana] [Refresh] [Clear]     │

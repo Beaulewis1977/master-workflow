@@ -37,6 +37,11 @@ spec:
         app: mongodb
         component: database
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999  # MongoDB user
+        fsGroup: 999
+
       affinity:
         # Spread MongoDB pods across different nodes
         podAntiAffinity:
@@ -61,8 +66,15 @@ spec:
         - -c
         - |
           mkdir -p /data/db
-          chown -R 999:999 /data/db
           chmod -R 755 /data/db
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db
@@ -71,6 +83,15 @@ spec:
       - name: mongodb
         image: mongo:6.0
         imagePullPolicy: IfNotPresent
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          readOnlyRootFilesystem: false  # MongoDB needs write access to /data
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 
         ports:
         - containerPort: 27017
@@ -97,13 +118,15 @@ spec:
               key: MONGODB_PASSWORD
         - name: MONGODB_DATABASE
           value: "master-workflow"
+        - name: MONGODB_REPLICA_SET
+          value: "master-workflow-rs"
 
         command:
         - mongod
         - --config
         - /etc/mongodb/mongod.conf
         - --replSet
-        - master-workflow-rs
+        - $(MONGODB_REPLICA_SET)
 
         volumeMounts:
         - name: mongodb-config
@@ -146,6 +169,15 @@ spec:
       - name: mongodb-exporter
         image: percona/mongodb_exporter:0.39
         imagePullPolicy: IfNotPresent
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 
         ports:
         - containerPort: 9216
@@ -201,15 +233,29 @@ spec:
         app: mongodb-init
     spec:
       restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
       containers:
       - name: mongodb-init
         image: mongo:6.0
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 999
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         env:
         - name: MONGODB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: master-workflow-secrets
               key: MONGODB_ROOT_PASSWORD
+        - name: MONGODB_REPLICA_SET
+          value: "master-workflow-rs"
         command:
         - sh
         - -c
@@ -217,14 +263,17 @@ spec:
           echo "Waiting for MongoDB pods to be ready..."
           sleep 60
 
-          echo "Initializing MongoDB replica set..."
+          # Use environment variable for replica set name
+          REPLICA_SET_NAME="${MONGODB_REPLICA_SET:-master-workflow-rs}"
+
+          echo "Initializing MongoDB replica set: $REPLICA_SET_NAME..."
           mongo mongodb-0.mongodb-service.master-workflow.svc.cluster.local:27017 \
             --username root \
             --password $MONGODB_ROOT_PASSWORD \
             --authenticationDatabase admin \
             --eval '
               rs.initiate({
-                _id: "master-workflow-rs",
+                _id: "'"$REPLICA_SET_NAME"'",
                 members: [
                   { _id: 0, host: "mongodb-0.mongodb-service.master-workflow.svc.cluster.local:27017" },
                   { _id: 1, host: "mongodb-1.mongodb-service.master-workflow.svc.cluster.local:27017" },

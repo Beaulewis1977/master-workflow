@@ -19,7 +19,7 @@ This directory contains comprehensive deployment templates for Master Workflow 3
 
 ## Directory Structure
 
-```
+```text
 deployment/
 ├── README.md                           # This file
 ├── DEPLOYMENT-GUIDE.md                 # Comprehensive deployment guide
@@ -229,7 +229,7 @@ kubectl apply -f namespace.yaml
 
 ## System Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                     Load Balancer / Ingress                 │
 └────────────────────┬────────────────────────────────────────┘

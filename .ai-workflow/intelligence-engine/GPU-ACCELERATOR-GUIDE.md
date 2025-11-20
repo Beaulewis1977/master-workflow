@@ -26,7 +26,7 @@ The GPU Accelerator provides hardware-accelerated neural computations for the Ma
 
 ### Component Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                  GPU Accelerator                         │
 ├─────────────────────────────────────────────────────────┤

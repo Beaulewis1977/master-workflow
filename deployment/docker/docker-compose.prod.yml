@@ -52,6 +52,10 @@ services:
       --timeout 300
       --tcp-keepalive 300
       --maxclients 10000
+      --rename-command FLUSHALL ""
+      --rename-command FLUSHDB ""
+      --rename-command CONFIG "CONFIG_${REDIS_PASSWORD}"
+      --rename-command SHUTDOWN "SHUTDOWN_${REDIS_PASSWORD}"
     ports:
       - "127.0.0.1:6379:6379"
     volumes:
@@ -59,7 +63,7 @@ services:
     networks:
       - prod-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "--raw", "incr", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5

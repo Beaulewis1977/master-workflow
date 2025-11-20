@@ -8,7 +8,22 @@ const MonitoringWebSocketServer = require('./monitoring-websocket-server.cjs');
 const PrometheusMetricsServer = require('./prometheus-metrics-server.cjs');
 const EventEmitter = require('events');
 
+/**
+ * Monitoring Integration for advanced analytics and real-time dashboards
+ * Coordinates WebSocket and Prometheus servers with Queen Controller
+ * @class
+ * @extends EventEmitter
+ */
 class MonitoringIntegration extends EventEmitter {
+    /**
+     * Create a monitoring integration instance
+     * @param {Object} [options={}] - Configuration options
+     * @param {number} [options.websocketPort=8080] - WebSocket server port
+     * @param {number} [options.prometheusPort=9090] - Prometheus metrics port
+     * @param {boolean} [options.enableWebSocket=true] - Enable WebSocket server
+     * @param {boolean} [options.enablePrometheus=true] - Enable Prometheus server
+     * @param {boolean} [options.autoStart=true] - Auto-start servers on initialization
+     */
     constructor(options = {}) {
         super();
 
@@ -30,11 +45,20 @@ class MonitoringIntegration extends EventEmitter {
         this.websocketServer = null;
         this.prometheusServer = null;
 
+        // Event listener tracking for cleanup
+        this.eventListeners = [];
+
         this.isInitialized = false;
     }
 
     /**
-     * Initialize monitoring integration
+     * Initialize monitoring integration with Queen Controller components
+     * @param {Object} queenController - Queen Controller instance
+     * @param {Object} resourceMonitor - Resource Monitor instance
+     * @param {Object} agentRegistry - Agent Registry instance
+     * @returns {Promise<void>}
+     * @throws {Error} If initialization fails
+     * @fires MonitoringIntegration#initialized
      */
     async initialize(queenController, resourceMonitor, agentRegistry) {
         if (this.isInitialized) {
@@ -82,7 +106,9 @@ class MonitoringIntegration extends EventEmitter {
     }
 
     /**
-     * Initialize WebSocket server
+     * Initialize WebSocket server for real-time monitoring
+     * @returns {Promise<void>}
+     * @private
      */
     async initializeWebSocketServer() {
         console.log('🔌 Initializing WebSocket server...');
@@ -101,7 +127,9 @@ class MonitoringIntegration extends EventEmitter {
     }
 
     /**
-     * Initialize Prometheus server
+     * Initialize Prometheus metrics server
+     * @returns {Promise<void>}
+     * @private
      */
     async initializePrometheusServer() {
         console.log('📊 Initializing Prometheus metrics server...');
@@ -120,34 +148,43 @@ class MonitoringIntegration extends EventEmitter {
 
     /**
      * Setup event forwarding from Queen Controller to monitoring servers
+     * Connects events like agent-spawned, task-completed to WebSocket broadcasts
+     * @returns {void}
+     * @private
      */
     setupEventForwarding() {
         console.log('🔗 Setting up event forwarding...');
 
         // Queen Controller events
         if (this.queenController && this.queenController.on) {
-            this.queenController.on('agent-spawned', (agent) => {
+            const agentSpawnedHandler = (agent) => {
                 this.broadcastWebSocket('agent-update', {
                     type: 'spawned',
                     agent: this.sanitizeAgentData(agent)
                 });
-            });
+            };
+            this.queenController.on('agent-spawned', agentSpawnedHandler);
+            this.eventListeners.push({ emitter: this.queenController, event: 'agent-spawned', handler: agentSpawnedHandler });
 
-            this.queenController.on('agent-terminated', (agent) => {
+            const agentTerminatedHandler = (agent) => {
                 this.broadcastWebSocket('agent-update', {
                     type: 'terminated',
                     agent: this.sanitizeAgentData(agent)
                 });
-            });
+            };
+            this.queenController.on('agent-terminated', agentTerminatedHandler);
+            this.eventListeners.push({ emitter: this.queenController, event: 'agent-terminated', handler: agentTerminatedHandler });
 
-            this.queenController.on('task-completed', (task) => {
+            const taskCompletedHandler = (task) => {
                 this.broadcastWebSocket('task-update', {
                     type: 'completed',
                     task: this.sanitizeTaskData(task)
                 });
-            });
+            };
+            this.queenController.on('task-completed', taskCompletedHandler);
+            this.eventListeners.push({ emitter: this.queenController, event: 'task-completed', handler: taskCompletedHandler });
 
-            this.queenController.on('task-failed', (task, error) => {
+            const taskFailedHandler = (task, error) => {
                 this.broadcastWebSocket('task-update', {
                     type: 'failed',
                     task: this.sanitizeTaskData(task),
@@ -155,25 +192,33 @@ class MonitoringIntegration extends EventEmitter {
                 });
 
                 this.broadcastAlert('error', 'Task Failed', error.message);
-            });
+            };
+            this.queenController.on('task-failed', taskFailedHandler);
+            this.eventListeners.push({ emitter: this.queenController, event: 'task-failed', handler: taskFailedHandler });
         }
 
         // Resource Monitor events
         if (this.resourceMonitor && this.resourceMonitor.on) {
-            this.resourceMonitor.on('metrics-updated', (data) => {
+            const metricsUpdatedHandler = (data) => {
                 this.broadcastMetrics(data.metrics);
-            });
+            };
+            this.resourceMonitor.on('metrics-updated', metricsUpdatedHandler);
+            this.eventListeners.push({ emitter: this.resourceMonitor, event: 'metrics-updated', handler: metricsUpdatedHandler });
 
-            this.resourceMonitor.on('threshold-exceeded', (alert) => {
+            const thresholdExceededHandler = (alert) => {
                 this.broadcastAlert('warning', 'Resource Threshold Exceeded', alert.recommendation);
-            });
+            };
+            this.resourceMonitor.on('threshold-exceeded', thresholdExceededHandler);
+            this.eventListeners.push({ emitter: this.resourceMonitor, event: 'threshold-exceeded', handler: thresholdExceededHandler });
         }
 
         console.log('✅ Event forwarding configured');
     }
 
     /**
-     * Start all monitoring servers
+     * Start all monitoring servers (WebSocket and Prometheus)
+     * @returns {Promise<void>}
+     * @fires MonitoringIntegration#started
      */
     async start() {
         console.log('🚀 Starting monitoring servers...');
@@ -196,10 +241,20 @@ class MonitoringIntegration extends EventEmitter {
     }
 
     /**
-     * Stop all monitoring servers
+     * Stop all monitoring servers and clean up event listeners
+     * @returns {Promise<void>}
+     * @fires MonitoringIntegration#stopped
      */
     async stop() {
         console.log('🛑 Stopping monitoring servers...');
+
+        // Remove all event listeners
+        for (const { emitter, event, handler } of this.eventListeners) {
+            if (emitter && emitter.removeListener) {
+                emitter.removeListener(event, handler);
+            }
+        }
+        this.eventListeners = [];
 
         const stopPromises = [];
 
@@ -214,6 +269,7 @@ class MonitoringIntegration extends EventEmitter {
         await Promise.all(stopPromises);
 
         this.emit('stopped');
+        console.log('✅ Monitoring servers stopped and listeners cleaned up');
     }
 
     /**
@@ -365,7 +421,8 @@ class MonitoringIntegration extends EventEmitter {
     }
 
     /**
-     * Get monitoring status
+     * Get current monitoring status including server states and client counts
+     * @returns {Object} Status object with websocket and prometheus server information
      */
     getStatus() {
         return {

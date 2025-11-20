@@ -237,10 +237,23 @@ spec:
         component: monitoring
     spec:
       serviceAccountName: prometheus
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534  # nobody user
+        fsGroup: 65534
       containers:
       - name: prometheus
         image: prom/prometheus:v2.48.0
         imagePullPolicy: IfNotPresent
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65534
+          readOnlyRootFilesystem: false  # Prometheus needs write access to /prometheus
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 
         ports:
         - containerPort: 9090
@@ -368,10 +381,23 @@ spec:
         app: grafana
         component: monitoring
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 472  # Grafana user
+        fsGroup: 472
       containers:
       - name: grafana
         image: grafana/grafana:10.2.2
         imagePullPolicy: IfNotPresent
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 472
+          readOnlyRootFilesystem: false  # Grafana needs write access to /var/lib/grafana
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 
         ports:
         - containerPort: 3000
@@ -386,7 +412,7 @@ spec:
             secretKeyRef:
               name: master-workflow-secrets
               key: GRAFANA_ADMIN_PASSWORD
-              optional: true
+              optional: false
         - name: GF_INSTALL_PLUGINS
           value: ""
         - name: GF_SERVER_ROOT_URL

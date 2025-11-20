@@ -69,7 +69,7 @@ node test/phase9-performance-benchmark.js
 ## Output Format
 
 ### Console Output
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║     Phase 9 Performance Benchmark Suite                        ║
 ║     Master Workflow 3.0 - Multi-Node Scaling & Analytics      ║
