@@ -494,3 +494,4 @@ class AgentOSIntegration {
 }
 
 module.exports = AgentOSIntegration;
+module.exports.AgentOSIntegration = AgentOSIntegration;

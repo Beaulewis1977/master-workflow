@@ -43,6 +43,8 @@ class CapabilityMatcher extends EventEmitter {
       taskPatterns: 0
     };
     
+    this.registeredAgents = new Map();
+    
     // Advanced matching algorithms
     this.matchingAlgorithms = {
       NEURAL_VECTOR: 'neural_vector',

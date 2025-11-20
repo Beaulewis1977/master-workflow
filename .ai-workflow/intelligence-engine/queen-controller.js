@@ -2017,3 +2017,4 @@ context_window: 200000
 }
 
 module.exports = QueenController;
+module.exports.QueenController = QueenController;
