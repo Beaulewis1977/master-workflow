@@ -135,6 +135,13 @@ Thumbs.db
 .claude-flow/cache/
 .agent-os/cache/
 
+# Generated output directories
+autonomous-output/
+loop-output/
+test-output/
+.ai-workflow/models/
+.ai-workflow/generated/
+
 # Temporary test files
 test-queen-controller.js
 

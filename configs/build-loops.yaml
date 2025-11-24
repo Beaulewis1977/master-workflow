@@ -1,0 +1,363 @@
+# Build Loop System Configuration
+# ================================
+# Defines the 5 loop profiles for autonomous development workflows
+
+version: "1.0"
+
+defaults:
+  maxIterations: 10
+  timeoutMinutes: 60
+  requireHumanApproval: false
+  autoSaveProgress: true
+  verboseLogging: false
+
+profiles:
+  # ============================================
+  # 1. Architecture & Planning Loop (Docs-First)
+  # ============================================
+  planning:
+    name: "Architecture & Planning Loop"
+    description: "Docs-first planning for new and existing projects"
+    shortName: "planning"
+    
+    useCases:
+      - "New or existing projects where architecture is incomplete"
+      - "Early-phase work where stack decisions are not solid"
+      - "Projects needing clear roadmaps before implementation"
+    
+    phases:
+      - name: "gather"
+        description: "Gather all inputs (prompt, existing docs, code)"
+        actions:
+          - "analyzeExistingDocs"
+          - "scanCodebase"
+          - "identifyStakeholders"
+        timeout: 10
+        
+      - name: "architecture"
+        description: "Create/refine architecture documentation"
+        actions:
+          - "generateArchitectureDocs"
+          - "createSystemDiagrams"
+          - "defineInterfaces"
+        timeout: 15
+        
+      - name: "prd"
+        description: "Create Product Requirements Document"
+        actions:
+          - "generatePRD"
+          - "defineUserStories"
+          - "prioritizeFeatures"
+        timeout: 15
+        
+      - name: "roadmap"
+        description: "Create phased implementation roadmap"
+        actions:
+          - "generateRoadmap"
+          - "defineEpics"
+          - "estimateTimelines"
+        timeout: 10
+    
+    maxIterations: 8
+    
+    exitCriteria:
+      requireArchitectureDoc: true
+      requirePRD: true
+      requireProjectPlan: true
+      minDocQuality: 0.7
+    
+    outputs:
+      - "docs/ARCHITECTURE.md"
+      - "docs/PRD.md"
+      - "docs/ROADMAP.md"
+      - "plans/IMPLEMENTATION_PLAN.md"
+
+  # ============================================
+  # 2. Spec-Driven App Build Loop
+  # ============================================
+  spec-driven:
+    name: "Spec-Driven App Build Loop"
+    description: "Spec-first loop for new apps and major features"
+    shortName: "spec-driven"
+    
+    useCases:
+      - "New projects / greenfield development"
+      - "Major new features requiring specs"
+      - "Projects where good docs are priority from day one"
+    
+    phases:
+      - name: "intent"
+        description: "Clarify intent and requirements"
+        actions:
+          - "parseUserIntent"
+          - "identifyRequirements"
+          - "defineScope"
+        timeout: 5
+        
+      - name: "analysis"
+        description: "Analyze existing code and dependencies"
+        actions:
+          - "runProjectAnalysis"
+          - "identifyDependencies"
+          - "assessComplexity"
+        timeout: 10
+        
+      - name: "specs"
+        description: "Generate technical specifications"
+        actions:
+          - "generateSystemSpecs"
+          - "generateComponentSpecs"
+          - "generateAPISpecs"
+        timeout: 15
+        
+      - name: "implementation"
+        description: "Implement based on specs"
+        actions:
+          - "generateCode"
+          - "implementFeatures"
+          - "refactorAsNeeded"
+        timeout: 30
+        
+      - name: "testing"
+        description: "Write and run tests"
+        actions:
+          - "generateTests"
+          - "runTests"
+          - "validateCoverage"
+        timeout: 15
+        
+      - name: "refinement"
+        description: "Refine based on test results"
+        actions:
+          - "fixFailingTests"
+          - "improveCodeQuality"
+          - "updateDocs"
+        timeout: 10
+    
+    maxIterations: 10
+    
+    exitCriteria:
+      requireSpecsApproved: true
+      requireAllFeatureTestsPass: true
+      requireNoCriticalLints: true
+      minCoverage: 0.7
+    
+    outputs:
+      - "specs/SYSTEM_SPECS.md"
+      - "specs/COMPONENT_SPECS.md"
+      - "src/**/*.js"
+      - "test/**/*.test.js"
+
+  # ============================================
+  # 3. Incremental TDD Loop
+  # ============================================
+  tdd:
+    name: "Incremental TDD Loop"
+    description: "Test-first loop for in-progress or mostly-done projects"
+    shortName: "tdd"
+    
+    useCases:
+      - "Existing projects that are mostly working"
+      - "Features in progress that need safe completion"
+      - "Bug fixes where regression safety is critical"
+    
+    phases:
+      - name: "red"
+        description: "Write failing test first"
+        actions:
+          - "identifyTestCase"
+          - "writeFailingTest"
+          - "verifyTestFails"
+        timeout: 10
+        
+      - name: "green"
+        description: "Minimal code to pass test"
+        actions:
+          - "implementMinimalCode"
+          - "runTest"
+          - "verifyTestPasses"
+        timeout: 15
+        
+      - name: "refactor"
+        description: "Improve code while keeping tests green"
+        actions:
+          - "refactorCode"
+          - "runAllTests"
+          - "verifyNoRegressions"
+        timeout: 10
+        
+      - name: "coverage"
+        description: "Check and improve coverage"
+        actions:
+          - "measureCoverage"
+          - "identifyGaps"
+          - "addMissingTests"
+        timeout: 10
+    
+    maxIterations: 20
+    
+    exitCriteria:
+      requireNewTestsGreen: true
+      forbidNewRegressions: true
+      minCoverageIncrease: 0.05
+    
+    outputs:
+      - "test/**/*.test.js"
+      - "src/**/*.js"
+      - "coverage/report.html"
+
+  # ============================================
+  # 4. Legacy Rescue Loop
+  # ============================================
+  legacy-rescue:
+    name: "Legacy Rescue Loop"
+    description: "Conservative loop for old/messy codebases"
+    shortName: "legacy-rescue"
+    
+    useCases:
+      - "Older, messy, monolithic repos"
+      - "Systems with low test coverage and high risk"
+      - "Big ball of mud architectures"
+    
+    phases:
+      - name: "discovery"
+        description: "Discover and classify code"
+        actions:
+          - "runCodeArchaeology"
+          - "identifyHotspots"
+          - "mapDependencies"
+        timeout: 15
+        
+      - name: "characterization"
+        description: "Write characterization tests"
+        actions:
+          - "identifyCriticalPaths"
+          - "writeCharacterizationTests"
+          - "establishBaseline"
+        timeout: 20
+        
+      - name: "strangler"
+        description: "Apply strangler pattern incrementally"
+        actions:
+          - "identifyStranglerTarget"
+          - "createNewImplementation"
+          - "routeTraffic"
+        timeout: 25
+        
+      - name: "modernize"
+        description: "Modernize behind safety net"
+        actions:
+          - "refactorSafely"
+          - "updateDependencies"
+          - "improveStructure"
+        timeout: 20
+        
+      - name: "validate"
+        description: "Validate no regressions"
+        actions:
+          - "runAllTests"
+          - "compareBaselines"
+          - "verifyBehavior"
+        timeout: 10
+    
+    maxIterations: 30
+    rescueMode: true
+    
+    exitCriteria:
+      minBaselineCoverage: 0.4
+      minHotspotRefactors: 3
+      forbidBehaviorChanges: true
+    
+    outputs:
+      - "test/characterization/**/*.test.js"
+      - "docs/LEGACY_ANALYSIS.md"
+      - "src/**/*.js"
+
+  # ============================================
+  # 5. Polish & Optimization Loop
+  # ============================================
+  polish:
+    name: "Polish & Optimization Loop"
+    description: "Refinement loop for performance and UX polish"
+    shortName: "polish"
+    
+    useCases:
+      - "Late in feature/app lifecycle"
+      - "Before release or performance milestones"
+      - "When functionality is correct but not efficient"
+    
+    phases:
+      - name: "baseline"
+        description: "Capture baseline metrics"
+        actions:
+          - "measurePerformance"
+          - "measureCodeQuality"
+          - "measureUX"
+        timeout: 10
+        
+      - name: "analyze"
+        description: "Identify optimization opportunities"
+        actions:
+          - "profilePerformance"
+          - "identifyBottlenecks"
+          - "prioritizeImprovements"
+        timeout: 10
+        
+      - name: "optimize"
+        description: "Apply optimizations"
+        actions:
+          - "optimizeCode"
+          - "optimizeQueries"
+          - "optimizeAssets"
+        timeout: 20
+        
+      - name: "measure"
+        description: "Re-measure and compare"
+        actions:
+          - "measurePerformance"
+          - "compareToBaseline"
+          - "validateImprovement"
+        timeout: 10
+        
+      - name: "document"
+        description: "Document changes and results"
+        actions:
+          - "updateDocs"
+          - "createChangeLog"
+          - "reportMetrics"
+        timeout: 5
+    
+    maxIterations: 15
+    
+    exitCriteria:
+      targetMetrics:
+        - metric: "latency.p95"
+          target: "<= 300ms"
+        - metric: "lighthouse.performance"
+          target: ">= 90"
+        - metric: "codeQuality.score"
+          target: ">= 8"
+    
+    outputs:
+      - "docs/PERFORMANCE_REPORT.md"
+      - "docs/OPTIMIZATION_LOG.md"
+
+# Safety & Governance
+safety:
+  nonDestructiveDefaults: true
+  requireApprovalForDeletion: true
+  maxFilesPerIteration: 50
+  backupBeforeChanges: true
+  
+  humanInTheLoop:
+    enabled: false
+    requiredForProfiles:
+      - "legacy-rescue"
+    approvalTimeout: 300  # seconds
+
+# Logging & Auditing
+logging:
+  level: "info"  # debug, info, warn, error
+  logIterations: true
+  logDecisions: true
+  outputDir: ".ai-workflow/logs"
