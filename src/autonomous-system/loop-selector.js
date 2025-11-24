@@ -324,7 +324,9 @@ export class LoopSelector extends EventEmitter {
     if (!this.projectConfig?.overrides) return null;
 
     for (const [pattern, profile] of Object.entries(this.projectConfig.overrides)) {
-      const regex = new RegExp(pattern.replace(/\*/g, '.*'));
+      // Escape regex special chars except *, then convert * to .*
+      const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(escaped.replace(/\*/g, '.*'));
       if (regex.test(filePath)) {
         return {
           profile,

@@ -34,35 +34,65 @@ export class EngineManager extends EventEmitter {
 
   async initialize() {
     this.log('Initializing Engine Manager...');
+    const errors = [];
 
     if (this.options.enableGPU) {
-      this.engines.gpu = new GPUAccelerator({ verbose: this.options.verbose });
-      await this.engines.gpu.initialize();
+      try {
+        this.engines.gpu = new GPUAccelerator({ verbose: this.options.verbose });
+        await this.engines.gpu.initialize();
+      } catch (error) {
+        this.log(`GPU engine failed to initialize: ${error.message}`);
+        errors.push({ engine: 'gpu', error: error.message });
+      }
     }
 
     if (this.options.enablePrediction) {
-      this.engines.prediction = new PredictiveAnalytics({ verbose: this.options.verbose });
-      await this.engines.prediction.initialize();
+      try {
+        this.engines.prediction = new PredictiveAnalytics({ verbose: this.options.verbose });
+        await this.engines.prediction.initialize();
+      } catch (error) {
+        this.log(`Prediction engine failed to initialize: ${error.message}`);
+        errors.push({ engine: 'prediction', error: error.message });
+      }
     }
 
     if (this.options.enableTuning) {
-      this.engines.tuner = new AutoTuner({ verbose: this.options.verbose });
-      await this.engines.tuner.initialize();
+      try {
+        this.engines.tuner = new AutoTuner({ verbose: this.options.verbose });
+        await this.engines.tuner.initialize();
+      } catch (error) {
+        this.log(`Tuner engine failed to initialize: ${error.message}`);
+        errors.push({ engine: 'tuner', error: error.message });
+      }
     }
 
     if (this.options.enableSwarm) {
-      this.engines.swarm = new SwarmIntelligence({ verbose: this.options.verbose });
-      await this.engines.swarm.initialize();
+      try {
+        this.engines.swarm = new SwarmIntelligence({ verbose: this.options.verbose });
+        await this.engines.swarm.initialize();
+      } catch (error) {
+        this.log(`Swarm engine failed to initialize: ${error.message}`);
+        errors.push({ engine: 'swarm', error: error.message });
+      }
     }
 
     if (this.options.enablePatterns) {
-      this.engines.patterns = new PatternDiscovery({ verbose: this.options.verbose });
-      await this.engines.patterns.initialize();
+      try {
+        this.engines.patterns = new PatternDiscovery({ verbose: this.options.verbose });
+        await this.engines.patterns.initialize();
+      } catch (error) {
+        this.log(`Patterns engine failed to initialize: ${error.message}`);
+        errors.push({ engine: 'patterns', error: error.message });
+      }
     }
 
     this.initialized = true;
+    this.initErrors = errors;
     this.log(`✅ Engine Manager initialized with ${Object.keys(this.engines).length} engines`);
-    this.emit('initialized', { engines: Object.keys(this.engines) });
+    if (errors.length > 0) {
+      this.log(`⚠️ ${errors.length} engine(s) failed to initialize`);
+    }
+    this.emit('initialized', { engines: Object.keys(this.engines), errors });
     
     return this;
   }
@@ -118,7 +148,7 @@ export class EngineManager extends EventEmitter {
   }
 
   // Combined operations
-  async analyzeAndOptimize(codebasePath, optimizationGoal) {
+  async analyzeAndOptimize(codebasePath, _optimizationGoal) {
     this.log('Running combined analysis and optimization...');
 
     // Analyze patterns first
@@ -189,6 +219,19 @@ export class EngineManager extends EventEmitter {
 
   async shutdown() {
     this.log('Shutting down engines...');
+    
+    // Cleanup individual engines if they have shutdown methods
+    for (const [name, engine] of Object.entries(this.engines)) {
+      if (typeof engine.shutdown === 'function') {
+        try {
+          await engine.shutdown();
+          this.log(`Shut down ${name} engine`);
+        } catch (error) {
+          this.log(`Error shutting down ${name}: ${error.message}`);
+        }
+      }
+    }
+    
     this.engines = {};
     this.initialized = false;
     this.emit('shutdown');

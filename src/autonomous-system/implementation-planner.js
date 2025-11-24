@@ -552,13 +552,13 @@ export class ImplementationPlanner extends EventEmitter {
   }
 
   parseDuration(duration) {
-    const match = duration.match(/(\d+)\s*(week|day|month)/i);
+    const match = duration.match(/(\d+)\s*(weeks?|days?|months?)/i);
     if (!match) return 1;
     const value = parseInt(match[1]);
     const unit = match[2].toLowerCase();
-    if (unit === 'day') return Math.ceil(value / 5);
-    if (unit === 'month') return value * 4;
-    return value;
+    if (unit.startsWith('day')) return Math.ceil(value / 5);
+    if (unit.startsWith('month')) return value * 4;
+    return value; // weeks
   }
 }
 

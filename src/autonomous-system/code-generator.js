@@ -114,13 +114,15 @@ export class CodeGenerator extends EventEmitter {
    */
   async generateApi(api) {
     const { name, endpoints, middleware } = api;
-    const code = this.jsApiTemplate({
+    const lang = this.options.language;
+    const template = this.templates[lang]?.api || this.jsApiTemplate;
+    const code = template.call(this, {
       name,
       endpoints: endpoints || [],
       middleware: middleware || []
     });
 
-    const filePath = this.getFilePath(name, 'api', 'javascript');
+    const filePath = this.getFilePath(name, 'api', lang);
     
     if (!this.options.dryRun) {
       await this.writeFile(filePath, code);
@@ -135,13 +137,15 @@ export class CodeGenerator extends EventEmitter {
    */
   async generateTest(testSpec) {
     const { name, target, cases } = testSpec;
-    const code = this.jsTestTemplate({
+    const lang = this.options.language;
+    const template = this.templates[lang]?.test || this.jsTestTemplate;
+    const code = template.call(this, {
       name,
       target: target || name,
       cases: cases || []
     });
 
-    const filePath = this.getFilePath(`${name}.test`, 'test', 'javascript');
+    const filePath = this.getFilePath(`${name}.test`, 'test', lang);
     
     if (!this.options.dryRun) {
       await this.writeFile(filePath, code);

@@ -227,7 +227,6 @@ export class DocumentationGenerator extends EventEmitter {
   async generateSetupDocumentation() {
     this.log('⚙️ Generating setup documentation...');
     const deps = this.analysis.dependencies || {};
-    const structure = this.analysis.structure || {};
 
     let content = `# Setup & Installation\n\n`;
     content += `## Prerequisites\n\n`;

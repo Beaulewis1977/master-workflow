@@ -161,10 +161,16 @@ export class ProgressTracker extends EventEmitter {
       task.progress = 100;
       this.progress.metrics.completedTasks++;
       if (oldStatus === 'in-progress') this.progress.metrics.inProgressTasks--;
+      if (oldStatus === 'blocked') this.progress.metrics.blockedTasks--;
     }
     if (status === 'blocked') {
       this.progress.metrics.blockedTasks++;
       if (oldStatus === 'in-progress') this.progress.metrics.inProgressTasks--;
+    }
+    
+    // Handle unblocking via direct status update
+    if (oldStatus === 'blocked' && status !== 'blocked' && status !== 'completed') {
+      this.progress.metrics.blockedTasks--;
     }
 
     this.progress.lastUpdate = new Date().toISOString();
@@ -191,11 +197,14 @@ export class ProgressTracker extends EventEmitter {
     const task = this.progress.tasks.get(taskId);
     if (!task) return false;
 
+    const oldStatus = task.status;
     task.status = 'blocked';
     task.blockedBy.push({ by: blockedBy, reason, time: new Date().toISOString() });
+    if (oldStatus === 'in-progress') this.progress.metrics.inProgressTasks--;
     this.progress.metrics.blockedTasks++;
     
     this.progress.lastUpdate = new Date().toISOString();
+    this.addHistoryEntry('task', taskId, oldStatus, 'blocked');
     this.emit('task:blocked', { task: taskId, blockedBy, reason });
     return true;
   }

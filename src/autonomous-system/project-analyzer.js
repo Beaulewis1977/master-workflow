@@ -312,7 +312,7 @@ export class ProjectAnalyzer extends EventEmitter {
   async findCodeFiles() {
     const files = [];
     const collect = async (tree) => {
-      for (const [name, item] of Object.entries(tree)) {
+      for (const [, item] of Object.entries(tree)) {
         if (item.type === 'file' && this.languageMap[item.extension]) files.push(item);
         else if (item.type === 'directory' && item.children) await collect(item.children);
       }
@@ -324,7 +324,7 @@ export class ProjectAnalyzer extends EventEmitter {
   async findDocFiles() {
     const files = [];
     const collect = async (tree) => {
-      for (const [name, item] of Object.entries(tree)) {
+      for (const [, item] of Object.entries(tree)) {
         if (item.type === 'file' && ['.md', '.txt', '.rst'].includes(item.extension)) files.push(item);
         else if (item.type === 'directory' && item.children) await collect(item.children);
       }

@@ -287,7 +287,6 @@ export class SpecificationEngine extends EventEmitter {
 
   async generatePerformanceSpecifications() {
     this.log('⚡ Generating performance specifications...');
-    const metrics = this.analysis.metrics || {};
 
     let content = `# Performance Specifications\n\n`;
     content += `**Generated:** ${new Date().toISOString()}\n\n`;
