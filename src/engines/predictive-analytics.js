@@ -306,7 +306,8 @@ export class PredictiveAnalytics extends EventEmitter {
    * Predict resource usage
    */
   async predictResources(task) {
-    const features = this.extractFeatures(task);
+    // Features extracted for future ML model integration
+    const _features = this.extractFeatures(task);
     const complexity = task.complexity || 1;
     
     return {
@@ -550,7 +551,6 @@ class LogisticRegression extends LinearRegression {
   train(data) {
     if (data.length === 0) return;
     
-    const n = data.length;
     const featureCount = data[0].features.length;
     
     this.weights = new Array(featureCount).fill(0).map(() => (Math.random() - 0.5) * 0.1);

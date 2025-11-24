@@ -291,7 +291,7 @@ export class AutoTuner extends EventEmitter {
     return {
       bestConfig: this.bestConfig,
       bestScore: this.bestScore,
-      arms: arms.map(a => ({ config: a.config, avgReward: a.totalReward / a.pulls })),
+      arms: arms.map(a => ({ config: a.config, avgReward: a.pulls > 0 ? a.totalReward / a.pulls : 0 })),
       history: this.history,
       metrics: this.metrics
     };

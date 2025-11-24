@@ -374,7 +374,6 @@ export class ImplementationPlanner extends EventEmitter {
 
   // Helper methods
   calculatePhases() {
-    const gaps = this.analysis.gaps || [];
     const complexity = this.analysis.metrics?.complexity?.estimated || 'medium';
     const phases = [];
 

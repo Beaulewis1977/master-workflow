@@ -122,7 +122,7 @@ async function main() {
 
   try {
     switch (options.command) {
-      case 'analyze':
+      case 'analyze': {
         console.log('🔍 Running project analysis...\n');
         const analysis = await system.analyzeOnly();
         console.log('\n✅ Analysis complete!');
@@ -130,29 +130,33 @@ async function main() {
         console.log(`   Files: ${analysis.structure?.totalFiles || 0}`);
         console.log(`   Gaps: ${analysis.gaps?.length || 0}`);
         break;
+      }
 
-      case 'docs':
+      case 'docs': {
         console.log('📚 Generating documentation...\n');
         const docs = await system.generateDocs();
         console.log('\n✅ Documentation generated!');
         console.log(`   Files: ${docs.size}`);
         break;
+      }
 
-      case 'specs':
+      case 'specs': {
         console.log('📋 Generating specifications...\n');
         const specs = await system.generateSpecs();
         console.log('\n✅ Specifications generated!');
         console.log(`   Files: ${specs.size}`);
         break;
+      }
 
-      case 'plans':
+      case 'plans': {
         console.log('📅 Generating implementation plans...\n');
         const plans = await system.generatePlans();
         console.log('\n✅ Plans generated!');
         console.log(`   Files: ${plans.size}`);
         break;
+      }
 
-      case 'quality':
+      case 'quality': {
         console.log('🔍 Running quality validation...\n');
         const quality = await system.validateQuality();
         console.log('\n✅ Quality validation complete!');
@@ -160,8 +164,9 @@ async function main() {
         console.log(`   Score: ${quality.overall?.score || 0}%`);
         console.log(`   Issues: ${quality.issues?.length || 0}`);
         break;
+      }
 
-      case 'loops':
+      case 'loops': {
         console.log('📋 Available loop profiles:\n');
         const loops = await system.getAvailableLoops();
         for (const loop of loops) {
@@ -170,8 +175,9 @@ async function main() {
           console.log(`    Max iterations: ${loop.maxIterations}\n`);
         }
         break;
+      }
 
-      case 'loop:select':
+      case 'loop:select': {
         console.log('🔍 Selecting best loop profile...\n');
         const selection = await system.selectLoop();
         console.log(`\n✅ Recommended Loop: ${selection.profileData?.name || selection.profile}`);
@@ -185,8 +191,9 @@ async function main() {
           console.log(`     - ${alt.name} (${alt.profile})`);
         }
         break;
+      }
 
-      case 'loop':
+      case 'loop': {
         console.log('🔄 Running auto-selected build loop...\n');
         const loopResult = await system.runLoop();
         console.log(`\n✅ Loop complete!`);
@@ -194,6 +201,7 @@ async function main() {
         console.log(`   Success: ${loopResult.success}`);
         console.log(`   Exit reason: ${loopResult.exitReason}`);
         break;
+      }
 
       case 'loop:planning':
         console.log('🏗️ Running Architecture & Planning loop...\n');

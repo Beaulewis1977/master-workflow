@@ -241,9 +241,7 @@ export class LoopSelector extends EventEmitter {
       isLegacy
     } = characteristics;
 
-    let profile = 'spec-driven';
-    let confidence = 0.7;
-    let reason = '';
+    let profile, confidence, reason;
     const factors = [];
 
     // Rule 1: Legacy rescue for problematic codebases

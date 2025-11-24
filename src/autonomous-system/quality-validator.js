@@ -450,7 +450,7 @@ export class QualityValidator extends EventEmitter {
     content += `| Category | Score | Status |\n`;
     content += `|----------|-------|--------|\n`;
     
-    for (const [key, cat] of this.validationResults.categories) {
+    for (const [, cat] of this.validationResults.categories) {
       const status = cat.passed ? '✅' : '❌';
       content += `| ${cat.name} | ${cat.score}/${cat.maxScore} | ${status} |\n`;
     }

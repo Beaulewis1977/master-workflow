@@ -214,9 +214,15 @@ export class TestRunner extends EventEmitter {
       throws: async (fn, msg) => {
         try {
           await fn();
-          throw new Error(msg || 'Expected function to throw');
+          throw new Error('Expected function to throw');
         } catch (e) {
-          if (e.message === msg || e.message === 'Expected function to throw') throw e;
+          // If we caught our own "Expected function to throw" error, re-throw it
+          if (e.message === 'Expected function to throw') throw e;
+          // Otherwise, the function threw as expected - success
+          // Optionally check message if provided
+          if (msg && !e.message.includes(msg)) {
+            throw new Error(`Expected error message to include "${msg}", got "${e.message}"`);
+          }
         }
       },
       notThrows: async (fn, msg) => {

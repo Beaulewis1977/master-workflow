@@ -518,7 +518,7 @@ export class SpecificationEngine extends EventEmitter {
     if (deps.mongodb || deps.mongoose) integrations.push({ service: 'MongoDB', package: 'mongoose', protocol: 'TCP', purpose: 'Database' });
     if (deps.redis || deps.ioredis) integrations.push({ service: 'Redis', package: 'redis', protocol: 'TCP', purpose: 'Cache' });
     if (deps.pg) integrations.push({ service: 'PostgreSQL', package: 'pg', protocol: 'TCP', purpose: 'Database' });
-    if (deps.axios || deps.node-fetch) integrations.push({ service: 'HTTP Client', package: 'axios', protocol: 'HTTP', purpose: 'External APIs' });
+    if (deps.axios || deps['node-fetch']) integrations.push({ service: 'HTTP Client', package: 'axios', protocol: 'HTTP', purpose: 'External APIs' });
     if (deps['socket.io']) integrations.push({ service: 'Socket.IO', package: 'socket.io', protocol: 'WebSocket', purpose: 'Real-time' });
     if (deps.graphql) integrations.push({ service: 'GraphQL', package: 'graphql', protocol: 'HTTP', purpose: 'API' });
 

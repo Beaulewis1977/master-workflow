@@ -58,22 +58,40 @@ export class CodeGenerator extends EventEmitter {
 
     if (spec.components) {
       for (const component of spec.components) {
-        const result = await this.generateComponent(component);
-        results.push(result);
+        try {
+          const result = await this.generateComponent(component);
+          results.push(result);
+        } catch (error) {
+          this.log(`Failed to generate component ${component.name}: ${error.message}`);
+          results.push({ type: 'component', name: component.name, success: false, error: error.message });
+          this.emit('generation:error', { component: component.name, error });
+        }
       }
     }
 
     if (spec.apis) {
       for (const api of spec.apis) {
-        const result = await this.generateApi(api);
-        results.push(result);
+        try {
+          const result = await this.generateApi(api);
+          results.push(result);
+        } catch (error) {
+          this.log(`Failed to generate API ${api.name}: ${error.message}`);
+          results.push({ type: 'api', name: api.name, success: false, error: error.message });
+          this.emit('generation:error', { api: api.name, error });
+        }
       }
     }
 
     if (spec.tests) {
       for (const test of spec.tests) {
-        const result = await this.generateTest(test);
-        results.push(result);
+        try {
+          const result = await this.generateTest(test);
+          results.push(result);
+        } catch (error) {
+          this.log(`Failed to generate test ${test.name}: ${error.message}`);
+          results.push({ type: 'test', name: test.name, success: false, error: error.message });
+          this.emit('generation:error', { test: test.name, error });
+        }
       }
     }
 

@@ -422,9 +422,12 @@ export class BuildLoopOrchestrator extends EventEmitter {
     this.state.status = 'completed';
     this.state.metrics.totalDuration = Date.now() - this.state.startTime;
 
-    // Save progress
+    // Save progress and stop auto-save timer
     if (this.options.autoSaveProgress && this.tracker) {
       await this.tracker.save();
+      if (typeof this.tracker.stop === 'function') {
+        await this.tracker.stop(); // Clear the auto-save timer
+      }
     }
 
     // Save loop results

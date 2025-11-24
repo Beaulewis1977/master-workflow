@@ -264,7 +264,7 @@ export class ProgressTracker extends EventEmitter {
 
   // Progress calculations
   recalculatePhaseProgress() {
-    for (const [phaseName, phase] of this.progress.phases) {
+    for (const [, phase] of this.progress.phases) {
       if (phase.tasks.length === 0) continue;
 
       let totalProgress = 0;

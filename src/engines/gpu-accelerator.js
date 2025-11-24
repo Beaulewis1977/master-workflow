@@ -7,8 +7,9 @@
  */
 
 import { EventEmitter } from 'events';
-import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 import os from 'os';
+// Worker threads imported but reserved for future parallel worker pool implementation
+// import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 
 export class GPUAccelerator extends EventEmitter {
   constructor(options = {}) {

@@ -287,7 +287,6 @@ export class SwarmIntelligence extends EventEmitter {
         
         // Assign task
         worker.busy = true;
-        const startTime = Date.now();
         
         // Simulate task execution
         const duration = selectedTask.estimatedDuration * (0.8 + Math.random() * 0.4);
