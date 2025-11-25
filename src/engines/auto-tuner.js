@@ -241,7 +241,8 @@ export class AutoTuner extends EventEmitter {
     for (const [key, spec] of Object.entries(paramSpace)) {
       if (spec.type === 'continuous' || spec.type === 'integer') {
         // Normalize to [0, 1]
-        vector.push((config[key] - spec.min) / (spec.max - spec.min));
+        const range = spec.max - spec.min;
+        vector.push(range !== 0 ? (config[key] - spec.min) / range : 0);
       } else if (spec.type === 'categorical') {
         // One-hot encode
         for (let i = 0; i < spec.values.length; i++) {

@@ -319,12 +319,20 @@ export class AutonomousSystem extends EventEmitter {
 
     // Stop progress tracker auto-save timer
     if (this.tracker && typeof this.tracker.stop === 'function') {
-      await this.tracker.stop();
+      try {
+        await this.tracker.stop();
+      } catch (error) {
+        this.log(`Warning: tracker stop failed: ${error.message}`);
+      }
     }
 
     // Stop loop orchestrator if running
     if (this.loopOrchestrator && typeof this.loopOrchestrator.stop === 'function') {
-      await this.loopOrchestrator.stop();
+      try {
+        await this.loopOrchestrator.stop();
+      } catch (error) {
+        this.log(`Warning: loop orchestrator stop failed: ${error.message}`);
+      }
     }
 
     // Clear references

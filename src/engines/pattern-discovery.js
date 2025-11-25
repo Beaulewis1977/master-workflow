@@ -356,7 +356,7 @@ export class PatternDiscovery extends EventEmitter {
           loc: node.loc?.start
         };
         
-        node.body.body.forEach(member => {
+        (node.body?.body || []).forEach(member => {
           if (member.type === 'ClassMethod') {
             classInfo.methods.push({
               name: member.key?.name || 'anonymous',
