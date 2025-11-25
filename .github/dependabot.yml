@@ -1,19 +1,5 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    groups:
-      minor-and-patch:
-        patterns: ["*"]
-        update-types: ["minor", "patch"]
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-version: 2
-updates:
   # Enable version updates for npm
   - package-ecosystem: "npm"
     directory: "/"
@@ -22,8 +8,6 @@ updates:
       day: "monday"
       time: "08:00"
     open-pull-requests-limit: 10
-    reviewers:
-      - "Beaulewis1977"
     labels:
       - "dependencies"
       - "automated"
@@ -32,12 +16,14 @@ updates:
       include: "scope"
     pull-request-branch-name:
       separator: "-"
-    allow:
-      - dependency-type: "all"
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     ignore:
-      # Add any dependencies you want to ignore here
-      # - dependency-name: "example-package"
-      #   versions: ["1.x", "2.x"]
+      # Ignore major version updates for stability
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -47,8 +33,6 @@ updates:
       day: "monday"
       time: "08:00"
     open-pull-requests-limit: 5
-    reviewers:
-      - "Beaulewis1977"
     labels:
       - "github-actions"
       - "automated"
