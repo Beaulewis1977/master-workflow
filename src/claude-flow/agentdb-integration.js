@@ -1,5 +1,5 @@
 /**
- * AGENTDB v1.3.9 INTEGRATION
+ * AGENTDB v1.6.1 INTEGRATION
  * ===========================
  * Ultra-fast semantic search with 96x-164x performance improvement
  *
@@ -23,7 +23,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 
 /**
- * AgentDB v1.3.9 - Ultra-fast Semantic Search with Reinforcement Learning
+ * AgentDB v1.6.1 - Ultra-fast Semantic Search with Reinforcement Learning
  *
  * @class AgentDB
  * @extends EventEmitter
@@ -100,7 +100,7 @@ export class AgentDB extends EventEmitter {
    * console.log('Patterns loaded:', db.patterns.size);
    */
   async initialize() {
-    console.log('\n🚀 Initializing AgentDB v1.3.9...');
+    console.log('\n🚀 Initializing AgentDB v1.6.1...');
 
     // Create database directory
     await mkdir(join(this.dbPath, '..'), { recursive: true });
@@ -387,6 +387,88 @@ export class AgentDB extends EventEmitter {
     };
   }
 
+  /**
+   * Store a vector with associated data
+   * @async
+   * @param {string} id - Unique identifier
+   * @param {string} content - Text content to vectorize
+   * @param {Object} [metadata={}] - Additional metadata
+   * @returns {Promise<Object>} Stored entry
+   */
+  async storeVector(id, content, metadata = {}) {
+    const vector = this._textToVector(content);
+    const entry = {
+      id,
+      content,
+      vector,
+      metadata: {
+        ...metadata,
+        timestamp: Date.now()
+      }
+    };
+
+    this.vectors.set(id, entry);
+    this.emit('stored', { id, content: content.substring(0, 50) });
+
+    return entry;
+  }
+
+  /**
+   * Retrieve memories using semantic search
+   * Compatible with claude-flow v2.7 API
+   * @async
+   * @param {string} query - Search query
+   * @param {Object} [options={}] - Search options
+   * @param {string} [options.namespace] - Namespace filter (alias for domain)
+   * @param {string} [options.domain] - Domain filter
+   * @param {number} [options.limit=10] - Maximum results
+   * @returns {Promise<Array<Object>>} Matching memories
+   */
+  async retrieveMemories(query, options = {}) {
+    // Handle namespace/domain parameter mismatch (v2.7 fix)
+    const domain = options.namespace || options.domain;
+    const searchOptions = {
+      limit: options.limit || 10,
+      threshold: options.threshold || 0.5
+    };
+
+    const results = await this.semanticSearch(query, searchOptions);
+
+    // Filter by domain if specified
+    let filtered = results.results;
+    if (domain) {
+      filtered = filtered.filter(r => 
+        r.metadata?.namespace === domain || 
+        r.metadata?.domain === domain
+      );
+    }
+
+    return filtered.map(r => ({
+      id: r.id,
+      content: r.data?.content || r.data,
+      similarity: r.similarity,
+      metadata: r.metadata
+    }));
+  }
+
+  /**
+   * Store a memory (alias for storeVector with namespace support)
+   * @async
+   * @param {Object} memory - Memory to store
+   * @param {string} memory.content - Content to store
+   * @param {string} [memory.namespace] - Namespace for organization
+   * @returns {Promise<Object>} Stored memory
+   */
+  async storeMemory(memory) {
+    const id = memory.id || this._generateId();
+    return this.storeVector(id, memory.content, {
+      namespace: memory.namespace,
+      domain: memory.namespace,
+      type: memory.type || 'memory',
+      ...memory.metadata
+    });
+  }
+
   // ========== PRIVATE METHODS ==========
 
   /**
@@ -633,7 +715,7 @@ export class AgentDB extends EventEmitter {
       trajectories: [],
       causalGraph: [],
       metadata: {
-        version: '1.3.9',
+        version: '1.6.1',
         created: Date.now(),
         quantization: this.quantization,
         rlAlgorithm: this.rlAlgorithm
@@ -663,7 +745,7 @@ export class AgentDB extends EventEmitter {
       trajectories: Array.from(this.trajectories.entries()),
       causalGraph: Array.from(this.causalGraph.entries()),
       metadata: {
-        version: '1.3.9',
+        version: '1.6.1',
         updated: Date.now(),
         quantization: this.quantization,
         rlAlgorithm: this.rlAlgorithm,
