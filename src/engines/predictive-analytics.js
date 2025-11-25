@@ -911,6 +911,12 @@ class LSTMModel {
     this.featureCount = featureCount;
     this.initialized = true;
     
+    // Dispose any existing model to avoid memory/GPU leaks before reinitialization
+    if (this.model) {
+      this.model.dispose();
+      this.model = null;
+    }
+    
     // Build LSTM model
     this.model = tf.sequential();
     
@@ -1119,6 +1125,7 @@ class LSTMModel {
     try {
       this.model = await tf.loadLayersModel(`file://${modelPath}/model.json`);
       this.isTrained = true;
+      this.initialized = true;
     } catch (error) {
       console.warn(`Failed to load LSTM model: ${error.message}`);
     }
