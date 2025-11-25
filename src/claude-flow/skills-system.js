@@ -1,14 +1,15 @@
 /**
- * SKILLS SYSTEM - 25 Specialized Skills
- * ======================================
+ * SKILLS SYSTEM v1.2.0 - 25 Specialized Skills
+ * =============================================
  * Natural language activation for specialized capabilities
  *
  * Features:
  * - 25 specialized skills across 6 categories
  * - Natural language activation (no commands needed)
- * - Context-aware skill selection
- * - Automatic skill chaining
- * - Performance tracking per skill
+ * - Context-aware skill selection with confidence scoring
+ * - Automatic skill chaining for complex tasks
+ * - Performance tracking and caching per skill
+ * - Skill recommendation based on context
  *
  * Categories:
  * 1. Development & Methodology (3 skills)
@@ -729,6 +730,137 @@ export class SkillsSystem extends EventEmitter {
       history: this.skillHistory.length,
       activeSkills: this.activeSkills.size
     };
+  }
+
+  /**
+   * Get skill recommendations based on input context
+   * Uses trigger matching with confidence scoring
+   *
+   * @param {string} input - User input to analyze
+   * @returns {Array<Object>} Recommended skills with confidence scores
+   */
+  getRecommendations(input) {
+    const inputLower = input.toLowerCase();
+    const recommendations = [];
+
+    for (const [id, skill] of this.skills) {
+      let confidence = 0;
+      let matchedTriggers = [];
+
+      for (const trigger of skill.triggers) {
+        const triggerLower = trigger.toLowerCase();
+        if (inputLower.includes(triggerLower)) {
+          confidence += 0.3;
+          matchedTriggers.push(trigger);
+        } else {
+          // Partial word matching
+          const words = triggerLower.split(/\s+/);
+          const matchedWords = words.filter(w => inputLower.includes(w));
+          if (matchedWords.length > 0) {
+            confidence += 0.1 * (matchedWords.length / words.length);
+          }
+        }
+      }
+
+      if (confidence > 0) {
+        // Boost confidence based on past success rate
+        const stats = this.stats.get(id);
+        if (stats.uses > 0) {
+          const successRate = stats.successes / stats.uses;
+          confidence *= (0.8 + 0.2 * successRate);
+        }
+
+        recommendations.push({
+          id,
+          name: skill.name,
+          category: skill.category,
+          confidence: Math.min(1, confidence),
+          matchedTriggers,
+          description: skill.description
+        });
+      }
+    }
+
+    return recommendations.sort((a, b) => b.confidence - a.confidence);
+  }
+
+  /**
+   * Chain multiple skills together for complex tasks
+   *
+   * @param {Array<string>} skillIds - Skill IDs to chain
+   * @param {Object} context - Shared context
+   * @returns {Promise<Object>} Combined results
+   */
+  async chainSkills(skillIds, context) {
+    const results = [];
+    let chainContext = { ...context };
+
+    for (const skillId of skillIds) {
+      const skill = this.skills.get(skillId);
+      if (!skill) {
+        results.push({ skillId, error: 'Skill not found' });
+        continue;
+      }
+
+      try {
+        const result = await this._executeSkill(skill, chainContext);
+        results.push({ skillId, name: skill.name, result, success: true });
+        
+        // Pass result to next skill in chain
+        chainContext = { ...chainContext, previousResult: result };
+      } catch (error) {
+        results.push({ skillId, name: skill.name, error: error.message, success: false });
+      }
+    }
+
+    return {
+      chain: skillIds,
+      results,
+      success: results.every(r => r.success)
+    };
+  }
+
+  /**
+   * Get skill by ID
+   *
+   * @param {string} skillId - Skill ID
+   * @returns {Object|null} Skill or null if not found
+   */
+  getSkill(skillId) {
+    const skill = this.skills.get(skillId);
+    if (!skill) return null;
+
+    return {
+      ...skill,
+      stats: this.stats.get(skillId)
+    };
+  }
+
+  /**
+   * Get skills by category
+   *
+   * @param {string} category - Category name
+   * @returns {Array<Object>} Skills in category
+   */
+  getSkillsByCategory(category) {
+    return this.getSkills().filter(s => s.category === category);
+  }
+
+  /**
+   * Reset all statistics
+   */
+  resetStats() {
+    for (const [id] of this.skills) {
+      this.stats.set(id, {
+        uses: 0,
+        successes: 0,
+        failures: 0,
+        totalLatency: 0,
+        avgLatency: 0
+      });
+    }
+    this.skillHistory = [];
+    this.activeSkills.clear();
   }
 }
 

@@ -1,8 +1,16 @@
 /**
- * Swarm Intelligence Engine
- * ==========================
+ * Swarm Intelligence Engine v1.2.0
+ * =================================
  * Real collective intelligence: stigmergic coordination, ant colony optimization,
  * particle swarm optimization, and emergent behavior patterns.
+ *
+ * Features:
+ * - PSO with adaptive inertia weight and velocity clamping
+ * - ACO with pheromone evaporation and deposit
+ * - Firefly algorithm for multi-modal optimization
+ * - Collective problem solving with emergent behavior
+ * - Stigmergic coordination for task assignment
+ * - Swarm diversity tracking
  */
 
 import { EventEmitter } from 'events';
@@ -474,6 +482,141 @@ export class SwarmIntelligence extends EventEmitter {
 
   distance(a, b) {
     return Math.sqrt(a.reduce((sum, val, i) => sum + Math.pow(val - b[i], 2), 0));
+  }
+
+  /**
+   * Firefly Algorithm optimization
+   * Light intensity-based attraction for multi-modal optimization
+   */
+  async fireflyOptimize(objectiveFn, bounds, options = {}) {
+    // Input validation
+    if (typeof objectiveFn !== 'function') {
+      throw new TypeError('fireflyOptimize: objectiveFn must be a function');
+    }
+    if (!Array.isArray(bounds) || bounds.length === 0) {
+      throw new TypeError('fireflyOptimize: bounds must be a non-empty array');
+    }
+    for (const b of bounds) {
+      if (!b || typeof b.min !== 'number' || typeof b.max !== 'number' || b.min > b.max) {
+        throw new TypeError('fireflyOptimize: each bound must have numeric min <= max');
+      }
+    }
+
+    const numFireflies = options.numFireflies || this.options.swarmSize;
+    const maxIter = options.maxIterations || this.options.maxIterations;
+    const alpha = options.randomness || 0.2;  // Randomness parameter
+    const beta0 = options.attractiveness || 1.0;  // Base attractiveness
+    const gamma = options.absorption || 1.0;  // Light absorption coefficient
+
+    if (!Number.isInteger(numFireflies) || numFireflies <= 0) {
+      throw new TypeError('fireflyOptimize: numFireflies must be a positive integer');
+    }
+    if (!Number.isInteger(maxIter) || maxIter <= 0) {
+      throw new TypeError('fireflyOptimize: maxIterations must be a positive integer');
+    }
+
+    if (typeof this.metrics.errors !== 'number') {
+      this.metrics.errors = 0;
+    }
+
+    this.log(`Starting Firefly Algorithm with ${numFireflies} fireflies...`);
+
+    // Reset global best state for this optimization run
+    this.globalBest = null;
+    this.globalBestScore = -Infinity;
+
+    // Initialize fireflies
+    const fireflies = [];
+    for (let i = 0; i < numFireflies; i++) {
+      const position = this.randomPosition(bounds);
+      let brightness;
+      try {
+        brightness = await objectiveFn(position);
+      } catch (error) {
+        this.metrics.errors++;
+        this.log(`Firefly initialization error: ${error.message}`);
+        this.emit('error', { algorithm: 'firefly', stage: 'init', error });
+        brightness = -Infinity;
+      }
+      fireflies.push({ position, brightness });
+
+      if (brightness > this.globalBestScore) {
+        this.globalBestScore = brightness;
+        this.globalBest = [...position];
+      }
+    }
+
+    // Main loop
+    for (let iter = 0; iter < maxIter; iter++) {
+      this.metrics.iterations++;
+
+      for (let i = 0; i < numFireflies; i++) {
+        for (let j = 0; j < numFireflies; j++) {
+          if (fireflies[j].brightness > fireflies[i].brightness) {
+            // Calculate distance
+            const r = this.distance(fireflies[i].position, fireflies[j].position);
+            
+            // Calculate attractiveness (decreases with distance)
+            const beta = beta0 * Math.exp(-gamma * r * r);
+
+            // Move firefly i towards j
+            for (let d = 0; d < bounds.length; d++) {
+              fireflies[i].position[d] += 
+                beta * (fireflies[j].position[d] - fireflies[i].position[d]) +
+                alpha * (Math.random() - 0.5) * (bounds[d].max - bounds[d].min);
+              
+              // Clamp to bounds
+              fireflies[i].position[d] = Math.max(bounds[d].min,
+                Math.min(bounds[d].max, fireflies[i].position[d]));
+            }
+
+            // Update brightness
+            try {
+              fireflies[i].brightness = await objectiveFn(fireflies[i].position);
+            } catch (error) {
+              this.metrics.errors++;
+              this.log(`Firefly evaluation error: ${error.message}`);
+              this.emit('error', { algorithm: 'firefly', stage: 'iterate', error });
+              fireflies[i].brightness = -Infinity;
+            }
+
+            if (fireflies[i].brightness > this.globalBestScore) {
+              this.globalBestScore = fireflies[i].brightness;
+              this.globalBest = [...fireflies[i].position];
+              this.log(`New best: ${this.globalBestScore.toFixed(4)}`);
+            }
+          }
+        }
+      }
+
+      this.emit('iteration', { iter, best: this.globalBestScore });
+    }
+
+    return {
+      bestPosition: this.globalBest,
+      bestScore: this.globalBestScore,
+      fireflies: fireflies.map(f => ({ position: f.position, brightness: f.brightness })),
+      metrics: this.metrics
+    };
+  }
+
+  /**
+   * Adaptive inertia weight for PSO
+   * Decreases linearly from wMax to wMin over iterations
+   */
+  adaptiveInertia(iter, maxIter, wMax = 0.9, wMin = 0.4) {
+    return wMax - (wMax - wMin) * (iter / maxIter);
+  }
+
+  /**
+   * Velocity clamping to prevent explosion
+   */
+  clampVelocity(velocity, bounds, vMax = 0.2) {
+    return velocity.map((v, d) => {
+      const range = bounds[d].max - bounds[d].min;
+      const maxV = range * vMax;
+      return Math.max(-maxV, Math.min(maxV, v));
+    });
   }
 
   getStatus() {

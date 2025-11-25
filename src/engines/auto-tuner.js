@@ -1,8 +1,16 @@
 /**
- * Auto-Tuner Engine
- * ==================
+ * Auto-Tuner Engine v1.2.0
+ * =========================
  * Real optimization algorithms: Bayesian optimization with Gaussian Process,
  * genetic algorithms, simulated annealing, and multi-armed bandits.
+ *
+ * Features:
+ * - Bayesian optimization with GP surrogate and EI acquisition
+ * - Genetic algorithm with adaptive mutation
+ * - Simulated annealing with exponential cooling
+ * - Thompson sampling multi-armed bandits
+ * - Early stopping and convergence detection
+ * - Parallel candidate evaluation support
  */
 
 import { EventEmitter } from 'events';
@@ -27,7 +35,16 @@ export class AutoTuner extends EventEmitter {
     this.metrics = {
       iterations: 0,
       improvements: 0,
-      convergenceRate: 0
+      convergenceRate: 0,
+      earlyStops: 0,
+      totalEvaluations: 0
+    };
+
+    // Early stopping configuration
+    this.earlyStopConfig = {
+      patience: options.patience || 20,
+      minDelta: options.minDelta || 0.001,
+      noImprovementCount: 0
     };
   }
 
@@ -119,6 +136,12 @@ export class AutoTuner extends EventEmitter {
       // Evaluate best candidate
       const score = await objectiveFn(bestCandidate);
       this.recordObservation(bestCandidate, score);
+
+      // Early stopping based on improvement over best score
+      if (this.checkEarlyStop(score)) {
+        this.emit('earlyStop', { algorithm: 'bayesian', iter, bestScore: this.bestScore });
+        break;
+      }
 
       if (score > this.bestScore) {
         this.bestScore = score;
@@ -313,9 +336,16 @@ export class AutoTuner extends EventEmitter {
       // Sort by fitness
       population.sort((a, b) => b.score - a.score);
 
+      // Early stopping based on best individual in population
+      const bestGenScore = population[0].score;
+      if (this.checkEarlyStop(bestGenScore)) {
+        this.emit('earlyStop', { algorithm: 'genetic', generation: gen, bestScore: this.bestScore });
+        break;
+      }
+
       // Update best
-      if (population[0].score > this.bestScore) {
-        this.bestScore = population[0].score;
+      if (bestGenScore > this.bestScore) {
+        this.bestScore = bestGenScore;
         this.bestConfig = population[0].config;
         this.metrics.improvements++;
       }
@@ -386,6 +416,12 @@ export class AutoTuner extends EventEmitter {
         }
       }
 
+      // Early stopping based on current score
+      if (this.checkEarlyStop(currentScore)) {
+        this.emit('earlyStop', { algorithm: 'annealing', iter, bestScore: this.bestScore, temperature });
+        break;
+      }
+
       // Cool down
       temperature *= coolingRate;
       this.emit('iteration', { iter, score: currentScore, temp: temperature });
@@ -444,6 +480,12 @@ export class AutoTuner extends EventEmitter {
       else bestArm.beta++;
 
       this.recordObservation(bestArm.config, score);
+
+      // Early stopping based on reward signal
+      if (this.checkEarlyStop(score)) {
+        this.emit('earlyStop', { algorithm: 'bandit', iter, bestScore: this.bestScore });
+        break;
+      }
 
       if (score > this.bestScore) {
         this.bestScore = score;
@@ -566,6 +608,64 @@ export class AutoTuner extends EventEmitter {
       bestConfig: this.bestConfig,
       bestScore: this.bestScore,
       metrics: this.getMetrics()
+    };
+  }
+
+  /**
+   * Check for early stopping condition
+   * @returns {boolean} Whether to stop early
+   */
+  checkEarlyStop(currentScore) {
+    if (currentScore > this.bestScore + this.earlyStopConfig.minDelta) {
+      this.earlyStopConfig.noImprovementCount = 0;
+      return false;
+    }
+
+    this.earlyStopConfig.noImprovementCount++;
+    if (this.earlyStopConfig.noImprovementCount >= this.earlyStopConfig.patience) {
+      this.metrics.earlyStops++;
+      this.log(`Early stopping: no improvement for ${this.earlyStopConfig.patience} iterations`);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Evaluate multiple candidates in parallel
+   * @param {Function} objectiveFn - Objective function
+   * @param {Array} candidates - Candidates to evaluate
+   * @returns {Promise<Array>} Evaluation results
+   */
+  async evaluateParallel(objectiveFn, candidates) {
+    const results = await Promise.all(
+      candidates.map(async (config) => {
+        try {
+          const score = await objectiveFn(config);
+          this.metrics.totalEvaluations++;
+          return { config, score, success: true };
+        } catch (error) {
+          this.metrics.totalEvaluations++;
+          return { config, score: -Infinity, success: false, error: error.message };
+        }
+      })
+    );
+    return results;
+  }
+
+  /**
+   * Reset optimizer state for new optimization run
+   */
+  reset() {
+    this.history = [];
+    this.bestConfig = null;
+    this.bestScore = -Infinity;
+    this.earlyStopConfig.noImprovementCount = 0;
+    this.metrics = {
+      iterations: 0,
+      improvements: 0,
+      convergenceRate: 0,
+      earlyStops: 0,
+      totalEvaluations: 0
     };
   }
 }

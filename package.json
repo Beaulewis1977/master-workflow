@@ -13,7 +13,7 @@
     "flow": "node src/cli/flow-cli.js",
     "agent": "node src/cli/agent-cli.js",
     "build:app": "node src/builder/autonomous-builder.js",
-    "test": "node test/test-runner.js",
+    "test": "node test/test-runner.mjs",
     "test:new": "node --test src/**/*.test.js",
     "test:interactive": "node test/run-interactive-ai-tests.js",
     "test:interactive:quick": "node test/run-interactive-ai-tests.js --mode quick",
@@ -56,9 +56,10 @@
   "author": "",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "optionalDependencies": {
+    "better-sqlite3": "^11.10.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   },
