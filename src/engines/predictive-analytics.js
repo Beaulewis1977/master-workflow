@@ -10,23 +10,40 @@ import { EventEmitter } from 'events';
 import fs from 'fs/promises';
 import path from 'path';
 
-// Isolation Forest for anomaly detection (with fallback)
+// ML module references (initialized lazily)
 let IsolationForest = null;
-try {
-  const iforestModule = await import('ml-isolation-forest');
-  IsolationForest = iforestModule.IsolationForest || iforestModule.default;
-} catch (e) {
-  // Will use Z-score fallback
-}
-
-// TensorFlow.js for LSTM models (with fallback to simple models)
 let tf = null;
 let tfAvailable = false;
-try {
-  tf = await import('@tensorflow/tfjs-node');
-  tfAvailable = true;
-} catch (e) {
-  // Will use LinearRegression/LogisticRegression fallback
+let modulesInitialized = false;
+
+/**
+ * Initialize async ML dependencies for PredictiveAnalytics.
+ * Called automatically on first use, but can be called explicitly for eager loading.
+ * @returns {Promise<{isolationForest: boolean, tensorflow: boolean}>} Status of loaded modules
+ */
+export async function initializePredictiveAnalyticsDeps() {
+  if (modulesInitialized) {
+    return { isolationForest: !!IsolationForest, tensorflow: tfAvailable };
+  }
+
+  // Isolation Forest for anomaly detection
+  try {
+    const iforestModule = await import('ml-isolation-forest');
+    IsolationForest = iforestModule.IsolationForest || iforestModule.default;
+  } catch (e) {
+    // Will use Z-score fallback
+  }
+
+  // TensorFlow.js for LSTM models
+  try {
+    tf = await import('@tensorflow/tfjs-node');
+    tfAvailable = true;
+  } catch (e) {
+    // Will use LinearRegression/LogisticRegression fallback
+  }
+
+  modulesInitialized = true;
+  return { isolationForest: !!IsolationForest, tensorflow: tfAvailable };
 }
 
 export class PredictiveAnalytics extends EventEmitter {
@@ -99,6 +116,10 @@ export class PredictiveAnalytics extends EventEmitter {
 
   async initialize() {
     this.log('Initializing Predictive Analytics Engine...');
+    
+    // Initialize ML dependencies if not already done
+    await initializePredictiveAnalyticsDeps();
+    
     this.log(`TensorFlow.js available: ${tfAvailable}`);
     this.log(`Using LSTM models: ${this.usingLSTM}`);
     
@@ -534,7 +555,7 @@ export class PredictiveAnalytics extends EventEmitter {
     // Get anomaly scores (-1 for anomalies, 1 for normal)
     const predictions = forest.predict(features);
     const scores = forest.anomalyScore ? forest.anomalyScore(features) : 
-                   features.map(() => 0); // Fallback if method not available
+                   predictions.map(p => p === -1 ? 1 : 0); // Fallback: 1 for anomaly, 0 for normal
 
     // Calculate threshold based on contamination
     const sortedScores = [...scores].sort((a, b) => b - a);
@@ -844,7 +865,8 @@ class ARIMAModel {
 
 /**
  * LSTM Model using TensorFlow.js
- * Provides deep learning-based prediction with Monte Carlo dropout for confidence intervals
+ * Provides deep learning-based prediction with heuristic confidence intervals.
+ * Note: True Monte Carlo dropout is not implemented - dropout is only active during training.
  */
 class LSTMModel {
   constructor(options = {}) {
@@ -857,6 +879,7 @@ class LSTMModel {
     this.model = null;
     this.featureCount = 6; // Default feature count
     this.isTrained = false;
+    this.initialized = false; // Track if initialize() has been called
     this.trainingHistory = [];
     
     // Fallback model for when LSTM isn't available or fails
@@ -866,14 +889,18 @@ class LSTMModel {
   }
 
   /**
-   * Initialize the LSTM model architecture
+   * Initialize the LSTM model architecture.
+   * Must be called before using LSTM predictions.
+   * @param {number} featureCount - Number of input features
+   * @throws {Error} If TensorFlow.js is not available
    */
   async initialize(featureCount = 6) {
     if (!tf) {
-      throw new Error('TensorFlow.js not available');
+      throw new Error('TensorFlow.js not available. Call initializePredictiveAnalyticsDeps() first.');
     }
 
     this.featureCount = featureCount;
+    this.initialized = true;
     
     // Build LSTM model
     this.model = tf.sequential();
@@ -981,17 +1008,20 @@ class LSTMModel {
   }
 
   /**
-   * Make a prediction
+   * Make a prediction.
+   * Note: For single predictions, features are repeated to fill the sequence.
+   * This is a simplified approach - for better temporal modeling, use predictWithHistory().
    */
   predict(features) {
-    // Use fallback if LSTM not ready
-    if (!this.isTrained || !this.model || !tf) {
+    // Use fallback if LSTM not ready or not initialized
+    if (!this.isTrained || !this.model || !tf || !this.initialized) {
       return this.fallbackModel.predict(features);
     }
 
     try {
       // For single prediction, we need to create a sequence
-      // Use the features repeated to fill the sequence (simplified approach)
+      // Note: This repeats features which doesn't capture temporal patterns.
+      // For production use with temporal data, maintain a sliding window of historical features.
       const sequence = Array(this.sequenceLength).fill(features);
       
       const inputTensor = tf.tensor3d([sequence]);
@@ -1008,13 +1038,17 @@ class LSTMModel {
   }
 
   /**
-   * Predict with Monte Carlo dropout for confidence intervals
+   * Predict with heuristic confidence intervals.
+   * Note: This does NOT use true Monte Carlo dropout. TensorFlow.js dropout is only active
+   * during training by default. This method provides heuristic confidence intervals based
+   * on fixed multipliers. For true uncertainty estimation, consider ensemble methods or
+   * Bayesian neural networks.
    * @param {Array} features - Input features
-   * @param {number} numSamples - Number of Monte Carlo samples
-   * @returns {Object} Prediction with confidence interval
+   * @param {number} _numSamples - Unused, kept for API compatibility
+   * @returns {Object} Prediction with heuristic confidence interval
    */
-  async predictWithConfidence(features, numSamples = 50) {
-    if (!this.isTrained || !this.model || !tf) {
+  async predictWithConfidence(features, _numSamples = 50) {
+    if (!this.isTrained || !this.model || !tf || !this.initialized) {
       const prediction = this.fallbackModel.predict(features);
       return {
         prediction,
@@ -1027,13 +1061,15 @@ class LSTMModel {
     try {
       const sequence = Array(this.sequenceLength).fill(features);
       const inputTensor = tf.tensor3d([sequence]);
-      const prediction = this.model.predict(inputTensor).dataSync()[0];
+      const predictionTensor = this.model.predict(inputTensor);
+      const prediction = predictionTensor.dataSync()[0];
       inputTensor.dispose();
+      predictionTensor.dispose();
 
-      // Without true MC dropout, use heuristic confidence based on training metrics
+      // Heuristic confidence based on training metrics (not true MC dropout)
       return {
         prediction,
-        confidence: 0.8, // Heuristic - could be based on validation loss
+        confidence: 0.8,
         lower: prediction * 0.85,
         upper: prediction * 1.15
       };

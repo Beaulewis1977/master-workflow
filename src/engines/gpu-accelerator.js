@@ -97,18 +97,17 @@ class GPUMemoryPool {
   /**
    * Create a new buffer (typed array for GPU-like operations)
    * @param {number} size - Size in bytes
-   * @returns {Float64Array} New buffer
+   * @returns {Uint8Array} New buffer with exact byte size
    */
   createBuffer(size) {
-    // Use Float64Array for numerical operations (8 bytes per element)
-    const elementCount = Math.ceil(size / 8);
-    return new Float64Array(elementCount);
+    // Use Uint8Array for precise byte-level control
+    return new Uint8Array(size);
   }
 
   /**
    * Release a buffer back to the pool
    * @param {Object} buffer - Buffer to release
-   * @param {number} size - Size of the buffer (optional, for verification)
+   * @param {number} size - Size of the buffer (optional, for validation)
    */
   release(buffer, size = null) {
     const metadata = this.inUse.get(buffer);
@@ -117,7 +116,15 @@ class GPUMemoryPool {
       return false;
     }
 
-    const alignedSize = metadata.size; // Use tracked size, ignore passed size
+    const alignedSize = metadata.size;
+    
+    // Validate passed size if provided
+    if (size !== null) {
+      const expectedAligned = this.alignSize(size);
+      if (expectedAligned !== alignedSize) {
+        console.warn(`Buffer size mismatch on release: passed ${size} (aligned: ${expectedAligned}), tracked ${alignedSize}`);
+      }
+    }
 
     // Remove from in-use tracking
     this.inUse.delete(buffer);
@@ -147,10 +154,9 @@ class GPUMemoryPool {
 
   /**
    * Compact the pool by removing unused buffers
-   * @param {number} maxAge - Maximum age in ms for unused buffers (default: 60000)
+   * @param {number} _maxAge - Unused, kept for API compatibility
    */
-  compact(maxAge = 60000) {
-    const now = Date.now();
+  compact(_maxAge = 60000) {
     let freedBytes = 0;
 
     for (const [size, pool] of this.pools.entries()) {
@@ -393,8 +399,8 @@ export class GPUAccelerator extends EventEmitter {
     
     // Use typed arrays with memory pool for better performance
     if (this.options.useTypedArrays) {
-      // Allocate from memory pool
-      const sizeA = rowsA * colsA * 8; // 8 bytes per Float64
+      // Allocate from memory pool (8 bytes per Float64)
+      const sizeA = rowsA * colsA * 8;
       const sizeB = colsA * colsB * 8;
       const sizeResult = rowsA * colsB * 8;
       
@@ -402,9 +408,10 @@ export class GPUAccelerator extends EventEmitter {
       const allocB = this.memoryPool.allocate(sizeB);
       const allocResult = this.memoryPool.allocate(sizeResult);
       
-      const flatA = allocA.buffer;
-      const flatB = allocB.buffer;
-      const flatResult = allocResult.buffer;
+      // Create Float64Array views over the Uint8Array buffers
+      const flatA = new Float64Array(allocA.buffer.buffer);
+      const flatB = new Float64Array(allocB.buffer.buffer);
+      const flatResult = new Float64Array(allocResult.buffer.buffer);
       
       // Zero out result buffer
       flatResult.fill(0);
@@ -437,10 +444,10 @@ export class GPUAccelerator extends EventEmitter {
         result.push(Array.from(flatResult.slice(i * colsB, (i + 1) * colsB)));
       }
       
-      // Release buffers back to pool
-      this.memoryPool.release(flatA, sizeA);
-      this.memoryPool.release(flatB, sizeB);
-      this.memoryPool.release(flatResult, sizeResult);
+      // Release buffers back to pool (pass the original Uint8Array buffer)
+      this.memoryPool.release(allocA.buffer);
+      this.memoryPool.release(allocB.buffer);
+      this.memoryPool.release(allocResult.buffer);
       
       return result;
     }
