@@ -11,6 +11,203 @@ import os from 'os';
 // Worker threads imported but reserved for future parallel worker pool implementation
 // import { Worker, isMainThread, parentPort, workerData } from 'worker_threads';
 
+/**
+ * GPU Memory Pool
+ * ================
+ * Efficient memory pooling for GPU operations with aligned allocation,
+ * buffer reuse, and fragmentation tracking.
+ */
+class GPUMemoryPool {
+  constructor(options = {}) {
+    this.alignment = options.alignment || 256; // GPU memory alignment (256 bytes)
+    this.maxPoolSize = options.maxPoolSize || 1024 * 1024 * 512; // 512MB default
+    this.pools = new Map(); // size -> [available buffers]
+    this.inUse = new Map(); // buffer -> { size, allocatedAt }
+    this.stats = {
+      allocations: 0,
+      reuses: 0,
+      releases: 0,
+      totalBytesAllocated: 0,
+      currentBytesInUse: 0,
+      peakBytesInUse: 0,
+      fragmentationRatio: 0
+    };
+  }
+
+  /**
+   * Align size to GPU memory alignment requirements
+   * @param {number} size - Requested size in bytes
+   * @returns {number} Aligned size
+   */
+  alignSize(size) {
+    return Math.ceil(size / this.alignment) * this.alignment;
+  }
+
+  /**
+   * Allocate a buffer from the pool
+   * @param {number} size - Requested size in bytes
+   * @returns {Object} Allocated buffer with metadata
+   */
+  allocate(size) {
+    const alignedSize = this.alignSize(size);
+    
+    // Check if we have a suitable buffer in the pool
+    const pool = this.pools.get(alignedSize);
+    if (pool && pool.length > 0) {
+      const buffer = pool.pop();
+      this.inUse.set(buffer, { size: alignedSize, allocatedAt: Date.now() });
+      this.stats.reuses++;
+      this.stats.currentBytesInUse += alignedSize;
+      this.stats.peakBytesInUse = Math.max(this.stats.peakBytesInUse, this.stats.currentBytesInUse);
+      
+      return {
+        buffer,
+        size: alignedSize,
+        requestedSize: size,
+        reused: true
+      };
+    }
+
+    // Check if we can allocate more memory
+    if (this.stats.totalBytesAllocated + alignedSize > this.maxPoolSize) {
+      // Try to free some memory first
+      this.compact();
+      
+      if (this.stats.totalBytesAllocated + alignedSize > this.maxPoolSize) {
+        throw new Error(`GPU memory pool exhausted. Max: ${this.maxPoolSize}, Current: ${this.stats.totalBytesAllocated}, Requested: ${alignedSize}`);
+      }
+    }
+
+    // Allocate new buffer
+    const buffer = this.createBuffer(alignedSize);
+    this.inUse.set(buffer, { size: alignedSize, allocatedAt: Date.now() });
+    this.stats.allocations++;
+    this.stats.totalBytesAllocated += alignedSize;
+    this.stats.currentBytesInUse += alignedSize;
+    this.stats.peakBytesInUse = Math.max(this.stats.peakBytesInUse, this.stats.currentBytesInUse);
+
+    return {
+      buffer,
+      size: alignedSize,
+      requestedSize: size,
+      reused: false
+    };
+  }
+
+  /**
+   * Create a new buffer (typed array for GPU-like operations)
+   * @param {number} size - Size in bytes
+   * @returns {Float64Array} New buffer
+   */
+  createBuffer(size) {
+    // Use Float64Array for numerical operations (8 bytes per element)
+    const elementCount = Math.ceil(size / 8);
+    return new Float64Array(elementCount);
+  }
+
+  /**
+   * Release a buffer back to the pool
+   * @param {Object} buffer - Buffer to release
+   * @param {number} size - Size of the buffer (optional, for verification)
+   */
+  release(buffer, size = null) {
+    const metadata = this.inUse.get(buffer);
+    if (!metadata) {
+      // Buffer not tracked, ignore
+      return false;
+    }
+
+    const bufferSize = size || metadata.size;
+    const alignedSize = this.alignSize(bufferSize);
+
+    // Remove from in-use tracking
+    this.inUse.delete(buffer);
+    this.stats.currentBytesInUse -= metadata.size;
+    this.stats.releases++;
+
+    // Add to pool for reuse
+    if (!this.pools.has(alignedSize)) {
+      this.pools.set(alignedSize, []);
+    }
+    this.pools.get(alignedSize).push(buffer);
+
+    this.updateFragmentationRatio();
+    return true;
+  }
+
+  /**
+   * Clear all pools and release memory
+   */
+  clear() {
+    this.pools.clear();
+    this.inUse.clear();
+    this.stats.totalBytesAllocated = 0;
+    this.stats.currentBytesInUse = 0;
+    this.updateFragmentationRatio();
+  }
+
+  /**
+   * Compact the pool by removing unused buffers
+   * @param {number} maxAge - Maximum age in ms for unused buffers (default: 60000)
+   */
+  compact(maxAge = 60000) {
+    const now = Date.now();
+    let freedBytes = 0;
+
+    for (const [size, pool] of this.pools.entries()) {
+      // Keep at most 2 buffers of each size
+      while (pool.length > 2) {
+        pool.pop();
+        freedBytes += size;
+        this.stats.totalBytesAllocated -= size;
+      }
+    }
+
+    this.updateFragmentationRatio();
+    return freedBytes;
+  }
+
+  /**
+   * Update fragmentation ratio
+   */
+  updateFragmentationRatio() {
+    if (this.stats.totalBytesAllocated === 0) {
+      this.stats.fragmentationRatio = 0;
+      return;
+    }
+
+    // Calculate fragmentation as ratio of pooled (unused) memory to total allocated
+    let pooledBytes = 0;
+    for (const [size, pool] of this.pools.entries()) {
+      pooledBytes += size * pool.length;
+    }
+
+    this.stats.fragmentationRatio = pooledBytes / this.stats.totalBytesAllocated;
+  }
+
+  /**
+   * Get pool statistics
+   * @returns {Object} Pool statistics
+   */
+  getStats() {
+    const poolSizes = {};
+    for (const [size, pool] of this.pools.entries()) {
+      poolSizes[size] = pool.length;
+    }
+
+    return {
+      ...this.stats,
+      poolSizes,
+      inUseCount: this.inUse.size,
+      maxPoolSize: this.maxPoolSize,
+      alignment: this.alignment,
+      utilizationRatio: this.stats.totalBytesAllocated > 0 
+        ? this.stats.currentBytesInUse / this.stats.totalBytesAllocated 
+        : 0
+    };
+  }
+}
+
 export class GPUAccelerator extends EventEmitter {
   constructor(options = {}) {
     super();
@@ -28,6 +225,13 @@ export class GPUAccelerator extends EventEmitter {
     this.gpuInstance = null;
     this.gpuInfo = null;
     this.workers = [];
+    
+    // Initialize memory pool
+    this.memoryPool = new GPUMemoryPool({
+      alignment: options.memoryAlignment || 256,
+      maxPoolSize: options.maxPoolSize || 1024 * 1024 * 512 // 512MB
+    });
+    
     this.metrics = {
       operationsProcessed: 0,
       gpuOperations: 0,
@@ -188,11 +392,23 @@ export class GPUAccelerator extends EventEmitter {
     const colsA = a[0].length;
     const colsB = b[0].length;
     
-    // Use typed arrays for better performance
+    // Use typed arrays with memory pool for better performance
     if (this.options.useTypedArrays) {
-      const flatA = new Float64Array(rowsA * colsA);
-      const flatB = new Float64Array(colsA * colsB);
-      const flatResult = new Float64Array(rowsA * colsB);
+      // Allocate from memory pool
+      const sizeA = rowsA * colsA * 8; // 8 bytes per Float64
+      const sizeB = colsA * colsB * 8;
+      const sizeResult = rowsA * colsB * 8;
+      
+      const allocA = this.memoryPool.allocate(sizeA);
+      const allocB = this.memoryPool.allocate(sizeB);
+      const allocResult = this.memoryPool.allocate(sizeResult);
+      
+      const flatA = allocA.buffer;
+      const flatB = allocB.buffer;
+      const flatResult = allocResult.buffer;
+      
+      // Zero out result buffer
+      flatResult.fill(0);
 
       // Flatten matrices
       for (let i = 0; i < rowsA; i++) {
@@ -221,6 +437,12 @@ export class GPUAccelerator extends EventEmitter {
       for (let i = 0; i < rowsA; i++) {
         result.push(Array.from(flatResult.slice(i * colsB, (i + 1) * colsB)));
       }
+      
+      // Release buffers back to pool
+      this.memoryPool.release(flatA, sizeA);
+      this.memoryPool.release(flatB, sizeB);
+      this.memoryPool.release(flatResult, sizeResult);
+      
       return result;
     }
 
@@ -346,8 +568,42 @@ export class GPUAccelerator extends EventEmitter {
       gpuInfo: this.gpuInfo,
       avgOperationTime: this.metrics.operationsProcessed > 0 
         ? this.metrics.totalTime / this.metrics.operationsProcessed 
-        : 0
+        : 0,
+      memoryPool: this.memoryPool.getStats()
     };
+  }
+
+  /**
+   * Get memory pool statistics
+   * @returns {Object} Memory pool stats
+   */
+  getMemoryPoolStats() {
+    return this.memoryPool.getStats();
+  }
+
+  /**
+   * Allocate memory from the pool
+   * @param {number} size - Size in bytes
+   * @returns {Object} Allocated buffer
+   */
+  allocateMemory(size) {
+    return this.memoryPool.allocate(size);
+  }
+
+  /**
+   * Release memory back to the pool
+   * @param {Object} buffer - Buffer to release
+   * @param {number} size - Size of buffer
+   */
+  releaseMemory(buffer, size) {
+    return this.memoryPool.release(buffer, size);
+  }
+
+  /**
+   * Compact the memory pool
+   */
+  compactMemoryPool() {
+    return this.memoryPool.compact();
   }
 
   getStatus() {
@@ -363,6 +619,14 @@ export class GPUAccelerator extends EventEmitter {
    * Clean up GPU resources and workers
    */
   destroy() {
+    // Clear memory pool
+    if (this.memoryPool) {
+      this.log('Clearing memory pool...');
+      const poolStats = this.memoryPool.getStats();
+      this.log(`  Released ${poolStats.totalBytesAllocated} bytes`);
+      this.memoryPool.clear();
+    }
+    
     // Destroy GPU.js instance if available
     if (this.gpuInstance) {
       try {
