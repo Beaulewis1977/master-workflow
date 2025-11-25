@@ -32,8 +32,7 @@ jobs:
         continue-on-error: true
 
       - name: Check for security vulnerabilities
-        run: npm audit --audit-level=high || true
-        continue-on-error: true
+        run: npm audit --audit-level=high
 
   # Test suite
   test:
@@ -56,11 +55,9 @@ jobs:
 
       - name: Run engine tests
         run: node src/engines/test-engines.js
-        continue-on-error: true
 
       - name: Run test suite
-        run: npm test || true
-        continue-on-error: true
+        run: npm test
 
   # Build verification
   build:
@@ -89,7 +86,10 @@ jobs:
           node -e "import('./src/engines/index.js').then(m => console.log('✅ Engines loaded:', Object.keys(m)))"
 
       - name: Check package.json validity
-        run: node -e "console.log('✅ Package:', require('./package.json').name, require('./package.json').version)"
+        run: |
+          NAME=$(jq -r .name package.json)
+          VERSION=$(jq -r .version package.json)
+          echo "✅ Package: $NAME $VERSION"
 
   # Claude-Flow integration check
   claude-flow:
