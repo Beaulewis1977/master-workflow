@@ -309,6 +309,46 @@ export class AutonomousSystem extends EventEmitter {
     if (!this.loopSelector) await this.initializeLoopSystem();
     return this.loopSelector.getAvailableProfiles();
   }
+
+  /**
+   * Shutdown the autonomous system and clean up resources
+   */
+  async shutdown() {
+    this.log('🛑 Shutting down Autonomous System...');
+    this.emit('system:shutting-down');
+
+    // Stop progress tracker auto-save timer
+    if (this.tracker && typeof this.tracker.stop === 'function') {
+      try {
+        await this.tracker.stop();
+      } catch (error) {
+        this.log(`Warning: tracker stop failed: ${error.message}`);
+      }
+    }
+
+    // Stop loop orchestrator if running
+    if (this.loopOrchestrator && typeof this.loopOrchestrator.stop === 'function') {
+      try {
+        await this.loopOrchestrator.stop();
+      } catch (error) {
+        this.log(`Warning: loop orchestrator stop failed: ${error.message}`);
+      }
+    }
+
+    // Clear references
+    this.analyzer = null;
+    this.docGenerator = null;
+    this.specEngine = null;
+    this.planner = null;
+    this.tracker = null;
+    this.validator = null;
+    this.loopSelector = null;
+    this.loopOrchestrator = null;
+
+    this.emit('system:shutdown');
+    this.log('✅ Autonomous System shutdown complete');
+    return true;
+  }
 }
 
 // Export all components

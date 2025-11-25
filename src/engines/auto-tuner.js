@@ -1,11 +1,12 @@
 /**
  * Auto-Tuner Engine
  * ==================
- * Real optimization algorithms: Bayesian optimization, genetic algorithms,
- * simulated annealing, and multi-armed bandits.
+ * Real optimization algorithms: Bayesian optimization with Gaussian Process,
+ * genetic algorithms, simulated annealing, and multi-armed bandits.
  */
 
 import { EventEmitter } from 'events';
+import { Matrix, inverse, pseudoInverse } from 'ml-matrix';
 
 export class AutoTuner extends EventEmitter {
   constructor(options = {}) {
@@ -74,10 +75,17 @@ export class AutoTuner extends EventEmitter {
    */
   async bayesianOptimization(objectiveFn, paramSpace, options = {}) {
     const maxIter = options.maxIterations || this.options.maxIterations;
-    const explorationRate = options.explorationRate || this.options.explorationRate;
+    const xi = options.xi || 0.01; // Exploration-exploitation trade-off
+    
+    // GP hyperparameters
+    this.gpParams = {
+      lengthScale: options.lengthScale || 1.0,
+      signalVariance: options.signalVariance || 1.0,
+      noiseVariance: options.noiseVariance || 0.01
+    };
     
     // Initialize with random samples
-    const initialSamples = 5;
+    const initialSamples = Math.min(5, Math.max(3, Object.keys(paramSpace).length + 1));
     for (let i = 0; i < initialSamples; i++) {
       const config = this.sampleRandom(paramSpace);
       const score = await objectiveFn(config);
@@ -88,13 +96,20 @@ export class AutoTuner extends EventEmitter {
     for (let iter = 0; iter < maxIter - initialSamples; iter++) {
       this.metrics.iterations++;
 
-      // Acquisition function: Expected Improvement with exploration
-      const candidates = this.generateCandidates(paramSpace, 100);
+      // Generate candidate points
+      const candidates = this.generateCandidates(paramSpace, 200);
+      
+      // Fit Gaussian Process to current observations
+      const gpModel = this.fitGaussianProcess(paramSpace);
+      
+      // Find best candidate using Expected Improvement
       let bestCandidate = null;
       let bestAcquisition = -Infinity;
 
       for (const candidate of candidates) {
-        const acquisition = this.expectedImprovement(candidate, explorationRate);
+        const { mean, variance } = this.gpPredict(candidate, gpModel, paramSpace);
+        const acquisition = this.calculateExpectedImprovement(mean, variance, this.bestScore, xi);
+        
         if (acquisition > bestAcquisition) {
           bestAcquisition = acquisition;
           bestCandidate = candidate;
@@ -109,10 +124,10 @@ export class AutoTuner extends EventEmitter {
         this.bestScore = score;
         this.bestConfig = bestCandidate;
         this.metrics.improvements++;
-        this.log(`New best: ${score.toFixed(4)}`);
+        this.log(`New best: ${score.toFixed(4)} at iteration ${iter}`);
       }
 
-      this.emit('iteration', { iter, score, best: this.bestScore });
+      this.emit('iteration', { iter, score, best: this.bestScore, acquisition: bestAcquisition });
     }
 
     return {
@@ -121,6 +136,157 @@ export class AutoTuner extends EventEmitter {
       history: this.history,
       metrics: this.metrics
     };
+  }
+
+  /**
+   * Fit a Gaussian Process model to the current observations
+   */
+  fitGaussianProcess(paramSpace) {
+    const n = this.history.length;
+    if (n === 0) return null;
+
+    // Extract X (configurations) and y (scores)
+    const X = this.history.map(h => this.configToVector(h.config, paramSpace));
+    const y = this.history.map(h => h.score);
+
+    // Normalize y
+    const yMean = y.reduce((a, b) => a + b, 0) / n;
+    const yStd = Math.sqrt(y.reduce((sum, val) => sum + Math.pow(val - yMean, 2), 0) / n) || 1;
+    const yNorm = y.map(val => (val - yMean) / yStd);
+
+    // Build covariance matrix K
+    const K = new Matrix(n, n);
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        K.set(i, j, this.rbfKernel(X[i], X[j]));
+      }
+      // Add noise variance to diagonal
+      K.set(i, i, K.get(i, i) + this.gpParams.noiseVariance);
+    }
+
+    // Compute K inverse (with regularization for numerical stability)
+    let Kinv;
+    try {
+      Kinv = inverse(K);
+    } catch (e) {
+      // Fall back to pseudo-inverse if singular
+      Kinv = pseudoInverse(K);
+    }
+
+    // Precompute alpha = K^-1 * y
+    const yMatrix = Matrix.columnVector(yNorm);
+    const alpha = Kinv.mmul(yMatrix);
+
+    return {
+      X,
+      y: yNorm,
+      yMean,
+      yStd,
+      K,
+      Kinv,
+      alpha
+    };
+  }
+
+  /**
+   * Predict mean and variance at a new point using the GP model
+   */
+  gpPredict(config, gpModel, paramSpace) {
+    if (!gpModel) {
+      return { mean: 0, variance: 1 };
+    }
+
+    const x = this.configToVector(config, paramSpace);
+    const n = gpModel.X.length;
+
+    // Compute k* (covariance between new point and training points)
+    const kStar = [];
+    for (let i = 0; i < n; i++) {
+      kStar.push(this.rbfKernel(x, gpModel.X[i]));
+    }
+    const kStarMatrix = Matrix.rowVector(kStar);
+
+    // Compute k** (variance of new point)
+    const kStarStar = this.rbfKernel(x, x);
+
+    // Predictive mean: k* . alpha
+    const meanNorm = kStarMatrix.mmul(gpModel.alpha).get(0, 0);
+    const mean = meanNorm * gpModel.yStd + gpModel.yMean;
+
+    // Predictive variance: k** - k* . K^-1 . k*^T
+    const kStarCol = Matrix.columnVector(kStar);
+    const varianceNorm = kStarStar - kStarMatrix.mmul(gpModel.Kinv).mmul(kStarCol).get(0, 0);
+    const variance = Math.max(0, varianceNorm) * gpModel.yStd * gpModel.yStd;
+
+    return { mean, variance };
+  }
+
+  /**
+   * RBF (Squared Exponential) kernel
+   */
+  rbfKernel(x1, x2) {
+    const { lengthScale, signalVariance } = this.gpParams;
+    let sqDist = 0;
+    for (let i = 0; i < x1.length; i++) {
+      sqDist += Math.pow((x1[i] - x2[i]) / lengthScale, 2);
+    }
+    return signalVariance * Math.exp(-0.5 * sqDist);
+  }
+
+  /**
+   * Convert config object to normalized vector
+   */
+  configToVector(config, paramSpace) {
+    const vector = [];
+    for (const [key, spec] of Object.entries(paramSpace)) {
+      if (spec.type === 'continuous' || spec.type === 'integer') {
+        // Normalize to [0, 1]
+        const range = spec.max - spec.min;
+        vector.push(range !== 0 ? (config[key] - spec.min) / range : 0);
+      } else if (spec.type === 'categorical') {
+        // One-hot encode
+        for (let i = 0; i < spec.values.length; i++) {
+          vector.push(config[key] === spec.values[i] ? 1 : 0);
+        }
+      }
+    }
+    return vector;
+  }
+
+  /**
+   * Calculate Expected Improvement acquisition function
+   */
+  calculateExpectedImprovement(mean, variance, bestScore, xi = 0.01) {
+    if (variance <= 0) return 0;
+    
+    const std = Math.sqrt(variance);
+    const z = (mean - bestScore - xi) / std;
+    
+    // EI = (mean - best - xi) * Phi(z) + std * phi(z)
+    const phi = Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+    const Phi = 0.5 * (1 + this.erf(z / Math.sqrt(2)));
+    
+    return (mean - bestScore - xi) * Phi + std * phi;
+  }
+
+  /**
+   * Error function approximation
+   */
+  erf(x) {
+    const a1 =  0.254829592;
+    const a2 = -0.284496736;
+    const a3 =  1.421413741;
+    const a4 = -1.453152027;
+    const a5 =  1.061405429;
+    const p  =  0.3275911;
+
+    const sign = x < 0 ? -1 : 1;
+    x = Math.abs(x);
+
+    const t = 1.0 / (1.0 + p * x);
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+    return sign * y;
   }
 
   /**
@@ -318,30 +484,6 @@ export class AutoTuner extends EventEmitter {
       candidates.push(this.sampleRandom(paramSpace));
     }
     return candidates;
-  }
-
-  expectedImprovement(config, exploration) {
-    if (this.history.length === 0) return Math.random();
-    
-    // Simple surrogate: distance-weighted average
-    const distances = this.history.map(h => this.configDistance(config, h.config));
-    const weights = distances.map(d => 1 / (d + 0.001));
-    const totalWeight = weights.reduce((a, b) => a + b, 0);
-    
-    const mean = this.history.reduce((sum, h, i) => sum + h.score * weights[i], 0) / totalWeight;
-    const variance = exploration * Math.min(...distances);
-    
-    return mean + variance;
-  }
-
-  configDistance(a, b) {
-    let dist = 0;
-    for (const key of Object.keys(a)) {
-      if (typeof a[key] === 'number') {
-        dist += Math.pow(a[key] - (b[key] || 0), 2);
-      }
-    }
-    return Math.sqrt(dist);
   }
 
   crossover(p1, p2, paramSpace) {
