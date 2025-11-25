@@ -379,9 +379,18 @@ export class AgentDB extends EventEmitter {
     // Use RL algorithm to determine best approach
     const bestTrajectory = this._selectBestTrajectory(similar.results);
 
+    // Handle case where trajectory might not have actions
+    if (!bestTrajectory || !bestTrajectory.actions || bestTrajectory.actions.length === 0) {
+      return {
+        approach: 'explore',
+        confidence: similar.results[0]?.similarity || 0.5,
+        reasoning: `Found ${similar.results.length} similar items but no action patterns`
+      };
+    }
+
     return {
       approach: bestTrajectory.actions[0].type,
-      confidence: bestTrajectory.reward,
+      confidence: bestTrajectory.reward || 0.5,
       reasoning: `Based on ${similar.results.length} similar experiences`,
       actions: bestTrajectory.actions
     };
