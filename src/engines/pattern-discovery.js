@@ -712,29 +712,39 @@ export class PatternDiscovery extends EventEmitter {
    * M = E - N + 2P where E=edges, N=nodes, P=connected components
    */
   calculateCyclomaticComplexity(content) {
-    let complexity = 1; // Base complexity
-
-    // Decision points that increase complexity
-    const decisionPatterns = [
-      /\bif\s*\(/g,
-      /\belse\s+if\s*\(/g,
-      /\bfor\s*\(/g,
-      /\bwhile\s*\(/g,
-      /\bcase\s+/g,
-      /\bcatch\s*\(/g,
-      /\?.*:/g,  // Ternary
-      /&&/g,
-      /\|\|/g
-    ];
-
-    for (const pattern of decisionPatterns) {
-      const matches = content.match(pattern);
-      if (matches) {
-        complexity += matches.length;
-      }
+    // Input validation
+    if (typeof content !== 'string' || !content) {
+      return 1; // Return base complexity for invalid input
     }
 
-    return complexity;
+    try {
+      let complexity = 1; // Base complexity
+
+      // Decision points that increase complexity
+      const decisionPatterns = [
+        /\bif\s*\(/g,
+        /\belse\s+if\s*\(/g,
+        /\bfor\s*\(/g,
+        /\bwhile\s*\(/g,
+        /\bcase\s+/g,
+        /\bcatch\s*\(/g,
+        /\?.*:/g,  // Ternary
+        /&&/g,
+        /\|\|/g
+      ];
+
+      for (const pattern of decisionPatterns) {
+        const matches = content.match(pattern);
+        if (matches) {
+          complexity += matches.length;
+        }
+      }
+
+      return complexity;
+    } catch (error) {
+      this.log(`Error calculating cyclomatic complexity: ${error.message}`);
+      return 1; // Return base complexity on error
+    }
   }
 
   /**
@@ -743,17 +753,27 @@ export class PatternDiscovery extends EventEmitter {
    * V=Halstead Volume, G=Cyclomatic Complexity, L=Lines of Code
    */
   calculateMaintainabilityIndex(content) {
-    const lines = content.split('\n').length;
-    const complexity = this.calculateCyclomaticComplexity(content);
-    
-    // Simplified Halstead Volume approximation
-    const operators = (content.match(/[+\-*/%=<>!&|^~?:]+/g) || []).length;
-    const operands = (content.match(/\b[a-zA-Z_]\w*\b/g) || []).length;
-    const volume = (operators + operands) * Math.log2(Math.max(1, operators + operands));
+    // Input validation
+    if (typeof content !== 'string' || !content) {
+      return 0; // Return minimum MI for invalid input
+    }
 
-    // Calculate MI (clamped to 0-100)
-    const mi = 171 - 5.2 * Math.log(Math.max(1, volume)) - 0.23 * complexity - 16.2 * Math.log(Math.max(1, lines));
-    return Math.max(0, Math.min(100, mi));
+    try {
+      const lines = content.split('\n').length;
+      const complexity = this.calculateCyclomaticComplexity(content);
+      
+      // Simplified Halstead Volume approximation
+      const operators = (content.match(/[+\-*/%=<>!&|^~?:]+/g) || []).length;
+      const operands = (content.match(/\b[a-zA-Z_]\w*\b/g) || []).length;
+      const volume = (operators + operands) * Math.log2(Math.max(1, operators + operands));
+
+      // Calculate MI (clamped to 0-100)
+      const mi = 171 - 5.2 * Math.log(Math.max(1, volume)) - 0.23 * complexity - 16.2 * Math.log(Math.max(1, lines));
+      return Math.max(0, Math.min(100, mi));
+    } catch (error) {
+      this.log(`Error calculating maintainability index: ${error.message}`);
+      return 0; // Return minimum MI on error
+    }
   }
 
   /**
@@ -775,7 +795,7 @@ export class PatternDiscovery extends EventEmitter {
       metrics: {
         ...this.metrics,
         totalFiles: this.metrics.filesAnalyzed,
-        avgComplexity: this.patterns.size > 0 ? 
+        avgPatternsPerFile: this.metrics.filesAnalyzed > 0 ? 
           Math.round(this.metrics.patternsFound / this.metrics.filesAnalyzed) : 0
       }
     };
