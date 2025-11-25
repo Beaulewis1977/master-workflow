@@ -56,6 +56,7 @@ export class PredictiveAnalytics extends EventEmitter {
     };
 
     this.modelsTrained = false;
+    this.initialized = false;
   }
 
   log(msg) { if (this.options.verbose) console.log(`[Predict] ${msg}`); }
@@ -71,6 +72,7 @@ export class PredictiveAnalytics extends EventEmitter {
       this.log('No saved models found, starting fresh');
     }
     
+    this.initialized = true;
     this.emit('initialized');
     return true;
   }
@@ -277,32 +279,54 @@ export class PredictiveAnalytics extends EventEmitter {
    * Predict task duration
    */
   async predictDuration(task) {
-    const features = this.extractFeatures(task);
-    const prediction = this.models.duration.predict(features);
-    
-    this.metrics.predictions++;
-    
-    return {
-      predicted: Math.max(0, prediction),
-      confidence: this.calculateConfidence(prediction),
-      factors: this.explainPrediction(features, 'duration')
-    };
+    try {
+      const rawFeatures = this.extractFeatures(task);
+      const features = this.scaler.transform(rawFeatures);
+      const prediction = this.models.duration.predict(features);
+      
+      this.metrics.predictions++;
+      
+      return {
+        predicted: Math.max(0, prediction),
+        confidence: this.calculateConfidence(prediction),
+        factors: this.explainPrediction(rawFeatures, 'duration')
+      };
+    } catch (error) {
+      this.emit('prediction:error', { type: 'duration', error, task });
+      this.log(`Duration prediction failed: ${error.message}`);
+      return {
+        predicted: 0,
+        confidence: 0,
+        factors: []
+      };
+    }
   }
 
   /**
    * Predict failure probability
    */
   async predictFailure(task) {
-    const features = this.extractFeatures(task);
-    const probability = this.models.failure.predict(features);
-    
-    this.metrics.predictions++;
-    
-    return {
-      probability: Math.min(1, Math.max(0, probability)),
-      risk: probability > 0.7 ? 'high' : probability > 0.3 ? 'medium' : 'low',
-      factors: this.explainPrediction(features, 'failure')
-    };
+    try {
+      const rawFeatures = this.extractFeatures(task);
+      const features = this.scaler.transform(rawFeatures);
+      const probability = this.models.failure.predict(features);
+      
+      this.metrics.predictions++;
+      
+      return {
+        probability: Math.min(1, Math.max(0, probability)),
+        risk: probability > 0.7 ? 'high' : probability > 0.3 ? 'medium' : 'low',
+        factors: this.explainPrediction(rawFeatures, 'failure')
+      };
+    } catch (error) {
+      this.emit('prediction:error', { type: 'failure', error, task });
+      this.log(`Failure prediction failed: ${error.message}`);
+      return {
+        probability: 0,
+        risk: 'low',
+        factors: []
+      };
+    }
   }
 
   /**
@@ -400,14 +424,14 @@ export class PredictiveAnalytics extends EventEmitter {
     return {
       ...this.metrics,
       historySize: this.history.tasks.length,
-      modelsReady: this.history.tasks.length >= 10
+      modelsReady: this.modelsTrained
     };
   }
 
   getStatus() {
     return {
-      initialized: true,
-      modelsReady: this.history.tasks.length >= 10,
+      initialized: this.initialized,
+      modelsReady: this.modelsTrained,
       historySize: this.history.tasks.length,
       metrics: this.getMetrics()
     };
@@ -429,7 +453,7 @@ class FeatureScaler {
     const featureCount = data[0].length;
     
     this.means = new Array(featureCount).fill(0);
-    this.stds = new Array(featureCount).fill(1);
+    this.stds = new Array(featureCount).fill(0);
 
     // Calculate means
     for (const row of data) {

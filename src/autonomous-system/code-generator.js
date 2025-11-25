@@ -296,11 +296,18 @@ export function withErrorHandling(fn, context = '${componentName}') {
 `;
     
     const filePath = path.join(this.options.outputDir, 'utils', `${componentName}-error-handler.js`);
-    if (!this.options.dryRun) {
-      await this.writeFile(filePath, code);
+
+    try {
+      if (!this.options.dryRun) {
+        await this.writeFile(filePath, code);
+      }
+
+      return { type: 'error-handler', name: componentName, path: filePath, success: true };
+    } catch (error) {
+      this.log(`Failed to generate error handler for ${componentName}: ${error.message}`);
+      this.emit('generation:error', { component: componentName, error });
+      return { type: 'error-handler', name: componentName, success: false, error: error.message };
     }
-    
-    return { type: 'error-handler', name: componentName, path: filePath, success: true };
   }
 
   // ============================================

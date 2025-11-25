@@ -81,6 +81,7 @@ export class GPUAccelerator extends EventEmitter {
       }).setOutput([1]);
       
       testKernel();
+      testKernel.destroy();
       
       this.gpuInfo = {
         name: 'GPU.js Accelerated',
@@ -240,16 +241,30 @@ export class GPUAccelerator extends EventEmitter {
    * Accelerated vector operations
    */
   async vectorAdd(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) {
+      throw new Error('Both arguments must be arrays');
+    }
+    if (a.length !== b.length) {
+      throw new Error(`Vector length mismatch: a has ${a.length} elements, b has ${b.length} elements`);
+    }
+
     const start = Date.now();
-    const result = a.map((val, i) => val + (b[i] || 0));
+    const result = a.map((val, i) => val + b[i]);
     this.metrics.operationsProcessed++;
     this.metrics.totalTime += Date.now() - start;
     return result;
   }
 
   async vectorDot(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b)) {
+      throw new Error('Both arguments must be arrays');
+    }
+    if (a.length !== b.length) {
+      throw new Error(`Vector length mismatch: a has ${a.length} elements, b has ${b.length} elements`);
+    }
+
     const start = Date.now();
-    const result = a.reduce((sum, val, i) => sum + val * (b[i] || 0), 0);
+    const result = a.reduce((sum, val, i) => sum + val * b[i], 0);
     this.metrics.operationsProcessed++;
     this.metrics.totalTime += Date.now() - start;
     return result;

@@ -190,8 +190,18 @@ export class SwarmIntelligence extends EventEmitter {
    * Collective Problem Solving
    */
   async collectiveSolve(problem, options = {}) {
-    const agents = options.agents || this.options.swarmSize;
+    const agents = options.agents ?? this.options.swarmSize;
     const rounds = options.rounds || 10;
+
+    if (agents <= 0) {
+      return {
+        bestSolution: null,
+        bestScore: 0,
+        collectiveIQ: 100,
+        solutions: [],
+        metrics: this.metrics
+      };
+    }
 
     this.log(`Starting collective problem solving with ${agents} agents...`);
 
@@ -265,6 +275,14 @@ export class SwarmIntelligence extends EventEmitter {
    */
   async stigmergicCoordinate(tasks, workers, options = {}) {
     this.log('Starting stigmergic coordination...');
+
+    if (!workers || workers.length === 0) {
+      this.log('No workers available for coordination');
+      return { assignments: [], efficiency: 0, pheromones: {} };
+    }
+    if (!tasks || tasks.length === 0) {
+      return { assignments: [], efficiency: 1, pheromones: {} };
+    }
 
     // Initialize task pheromones
     const taskPheromones = new Map();
@@ -438,7 +456,7 @@ export class SwarmIntelligence extends EventEmitter {
   calculateEfficiency(assignments, tasks) {
     const totalEstimated = tasks.reduce((sum, t) => sum + t.estimatedDuration, 0);
     const totalActual = assignments.reduce((sum, a) => sum + a.duration, 0);
-    return totalEstimated / totalActual;
+    return totalActual > 0 ? totalEstimated / totalActual : 0;
   }
 
   updateMetrics() {
