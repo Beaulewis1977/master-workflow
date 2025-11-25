@@ -457,10 +457,94 @@ export class ReasoningBank extends EventEmitter {
     };
   }
 
+  /**
+   * Retrieve memories using semantic search (claude-flow v2.7 compatible API)
+   * Alias for search() with flat result structure
+   *
+   * @async
+   * @param {string} query - Search query
+   * @param {Object} [options={}] - Search options
+   * @param {string} [options.namespace] - Namespace filter
+   * @param {string} [options.domain] - Domain filter (alias for namespace)
+   * @param {number} [options.limit=10] - Maximum results
+   * @returns {Promise<Array<Object>>} Flat array of matching memories
+   *
+   * @example
+   * const memories = await bank.retrieveMemories('authentication', { namespace: 'auth' });
+   */
+  async retrieveMemories(query, options = {}) {
+    // Handle namespace/domain parameter mismatch (v2.7 fix)
+    const namespace = options.namespace || options.domain;
+    const searchOptions = {
+      namespace,
+      limit: options.limit || 10,
+      threshold: options.threshold || 0.5
+    };
+
+    const result = await this.search(query, searchOptions);
+
+    // Return flat structure for v2.7 compatibility
+    return result.results.map(r => ({
+      id: r.id,
+      content: r.content,
+      similarity: r.score,
+      namespace: r.namespace,
+      metadata: r.metadata
+    }));
+  }
+
   // ========== PRIVATE METHODS ==========
 
   async _initializeSQLite() {
-    // Try to use sqlite3 if available
+    // Try better-sqlite3 first (faster, synchronous), then sqlite3
+    try {
+      const Database = require('better-sqlite3');
+      this.db = new Database(this.dbPath);
+      this.dbType = 'better-sqlite3';
+      
+      // Create tables synchronously
+      this.db.exec(`
+        CREATE TABLE IF NOT EXISTS memories (
+          id TEXT PRIMARY KEY,
+          content TEXT NOT NULL,
+          namespace TEXT NOT NULL,
+          metadata TEXT,
+          embedding BLOB,
+          timestamp INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS patterns (
+          id TEXT PRIMARY KEY,
+          type TEXT,
+          trigger TEXT,
+          actions TEXT,
+          success INTEGER,
+          reward REAL,
+          observations INTEGER,
+          timestamp INTEGER
+        );
+
+        CREATE TABLE IF NOT EXISTS links (
+          id TEXT PRIMARY KEY,
+          from_id TEXT,
+          to_id TEXT,
+          relationship TEXT,
+          strength REAL,
+          observations INTEGER,
+          timestamp INTEGER
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_namespace ON memories(namespace);
+        CREATE INDEX IF NOT EXISTS idx_timestamp ON memories(timestamp);
+      `);
+
+      console.log('   ✓ better-sqlite3 database initialized');
+      return;
+    } catch (e) {
+      // Fall through to sqlite3
+    }
+
+    // Try sqlite3 as fallback
     try {
       const sqlite3 = require('sqlite3');
       const { open } = require('sqlite');
@@ -469,6 +553,7 @@ export class ReasoningBank extends EventEmitter {
         filename: this.dbPath,
         driver: sqlite3.Database
       });
+      this.dbType = 'sqlite3';
 
       // Create tables
       await this.db.exec(`
@@ -528,8 +613,13 @@ export class ReasoningBank extends EventEmitter {
 
   async _loadMemories() {
     if (this.db) {
-      // Load from SQLite
-      const rows = await this.db.all('SELECT * FROM memories');
+      // Load from SQLite (handle both better-sqlite3 and sqlite3)
+      let rows;
+      if (this.dbType === 'better-sqlite3') {
+        rows = this.db.prepare('SELECT * FROM memories').all();
+      } else {
+        rows = await this.db.all('SELECT * FROM memories');
+      }
 
       for (const row of rows) {
         const entry = {
@@ -554,15 +644,21 @@ export class ReasoningBank extends EventEmitter {
   }
 
   async _persistToSQLite(entry) {
-    await this.db.run(
-      'INSERT OR REPLACE INTO memories (id, content, namespace, metadata, embedding, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
+    const sql = 'INSERT OR REPLACE INTO memories (id, content, namespace, metadata, embedding, timestamp) VALUES (?, ?, ?, ?, ?, ?)';
+    const params = [
       entry.id,
       entry.content,
       entry.namespace,
       JSON.stringify(entry.metadata),
       JSON.stringify(entry.embedding),
       entry.timestamp
-    );
+    ];
+
+    if (this.dbType === 'better-sqlite3') {
+      this.db.prepare(sql).run(...params);
+    } else {
+      await this.db.run(sql, ...params);
+    }
   }
 
   async _persistToFile(entry) {
