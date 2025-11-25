@@ -10,6 +10,42 @@ import { EventEmitter } from 'events';
 import fs from 'fs/promises';
 import path from 'path';
 
+// ML module references (initialized lazily)
+let IsolationForest = null;
+let tf = null;
+let tfAvailable = false;
+let modulesInitialized = false;
+
+/**
+ * Initialize async ML dependencies for PredictiveAnalytics.
+ * Called automatically on first use, but can be called explicitly for eager loading.
+ * @returns {Promise<{isolationForest: boolean, tensorflow: boolean}>} Status of loaded modules
+ */
+export async function initializePredictiveAnalyticsDeps() {
+  if (modulesInitialized) {
+    return { isolationForest: !!IsolationForest, tensorflow: tfAvailable };
+  }
+
+  // Isolation Forest for anomaly detection
+  try {
+    const iforestModule = await import('ml-isolation-forest');
+    IsolationForest = iforestModule.IsolationForest || iforestModule.default;
+  } catch (e) {
+    // Will use Z-score fallback
+  }
+
+  // TensorFlow.js for LSTM models
+  try {
+    tf = await import('@tensorflow/tfjs-node');
+    tfAvailable = true;
+  } catch (e) {
+    // Will use LinearRegression/LogisticRegression fallback
+  }
+
+  modulesInitialized = true;
+  return { isolationForest: !!IsolationForest, tensorflow: tfAvailable };
+}
+
 export class PredictiveAnalytics extends EventEmitter {
   constructor(options = {}) {
     super();
@@ -26,13 +62,26 @@ export class PredictiveAnalytics extends EventEmitter {
       verbose: options.verbose || false
     };
 
-    // Model state
+    // LSTM configuration (useLSTM will be determined in initialize() after deps are loaded)
+    this.lstmConfig = {
+      sequenceLength: options.sequenceLength || 10,
+      lstmUnits: options.lstmUnits || [50, 25],
+      dropoutRate: options.dropoutRate || 0.2,
+      epochs: options.lstmEpochs || 50,
+      batchSize: options.lstmBatchSize || 32,
+      useLSTM: options.useLSTM !== false // User preference, actual availability checked in initialize()
+    };
+
+    // Model state - initialized with fallback models, upgraded to LSTM in initialize() if available
     this.models = {
       duration: new LinearRegression({ regularization: this.options.regularization }),
       resources: new LinearRegression({ regularization: this.options.regularization }),
       failure: new LogisticRegression({ regularization: this.options.regularization }),
       timeSeries: new ARIMAModel()
     };
+
+    // Track if using LSTM (set in initialize() after checking TF availability)
+    this.usingLSTM = false;
 
     // Feature scaler for normalization
     this.scaler = new FeatureScaler();
@@ -64,6 +113,39 @@ export class PredictiveAnalytics extends EventEmitter {
   async initialize() {
     this.log('Initializing Predictive Analytics Engine...');
     
+    // Initialize ML dependencies if not already done
+    await initializePredictiveAnalyticsDeps();
+    
+    // Now determine if we should use LSTM based on actual TF availability and user preference
+    const shouldUseLSTM = this.lstmConfig.useLSTM && tfAvailable;
+    this.log(`TensorFlow.js available: ${tfAvailable}`);
+    this.log(`User wants LSTM: ${this.lstmConfig.useLSTM}`);
+    this.log(`Will use LSTM models: ${shouldUseLSTM}`);
+    
+    // Create LSTM models if TensorFlow is available and user wants them
+    if (shouldUseLSTM) {
+      try {
+        // Create and initialize LSTM models
+        this.models.duration = new LSTMModel({ ...this.lstmConfig, outputType: 'regression' });
+        this.models.failure = new LSTMModel({ ...this.lstmConfig, outputType: 'classification' });
+        
+        await this.models.duration.initialize();
+        await this.models.failure.initialize();
+        
+        this.usingLSTM = true;
+        this.log('LSTM models initialized successfully');
+      } catch (error) {
+        this.log(`LSTM initialization failed, using fallback models: ${error.message}`);
+        this.usingLSTM = false;
+        // Revert to fallback models
+        this.models.duration = new LinearRegression({ regularization: this.options.regularization });
+        this.models.failure = new LogisticRegression({ regularization: this.options.regularization });
+      }
+    } else {
+      this.usingLSTM = false;
+      this.log('Using fallback models (LinearRegression/LogisticRegression)');
+    }
+    
     // Try to load saved models
     try {
       await this.loadModels();
@@ -81,6 +163,19 @@ export class PredictiveAnalytics extends EventEmitter {
    * Save models to disk
    */
   async saveModels() {
+    await fs.mkdir(this.options.modelPath, { recursive: true });
+
+    // Save LSTM models separately if using them
+    if (this.usingLSTM) {
+      try {
+        await this.models.duration.saveModel(path.join(this.options.modelPath, 'lstm-duration'));
+        await this.models.failure.saveModel(path.join(this.options.modelPath, 'lstm-failure'));
+        this.log('LSTM models saved');
+      } catch (error) {
+        this.log(`Failed to save LSTM models: ${error.message}`);
+      }
+    }
+
     const modelData = {
       duration: this.models.duration.serialize(),
       resources: this.models.resources.serialize(),
@@ -88,10 +183,10 @@ export class PredictiveAnalytics extends EventEmitter {
       scaler: this.scaler.serialize(),
       metrics: this.metrics,
       historySize: this.history.tasks.length,
+      usingLSTM: this.usingLSTM,
       savedAt: new Date().toISOString()
     };
 
-    await fs.mkdir(this.options.modelPath, { recursive: true });
     await fs.writeFile(
       path.join(this.options.modelPath, 'predictive-models.json'),
       JSON.stringify(modelData, null, 2)
@@ -103,8 +198,19 @@ export class PredictiveAnalytics extends EventEmitter {
    * Load models from disk
    */
   async loadModels() {
-    const modelPath = path.join(this.options.modelPath, 'predictive-models.json');
-    const data = JSON.parse(await fs.readFile(modelPath, 'utf8'));
+    const modelFilePath = path.join(this.options.modelPath, 'predictive-models.json');
+    const data = JSON.parse(await fs.readFile(modelFilePath, 'utf8'));
+    
+    // Load LSTM models if they were saved and we're using LSTM
+    if (data.usingLSTM && this.usingLSTM) {
+      try {
+        await this.models.duration.loadModel(path.join(this.options.modelPath, 'lstm-duration'));
+        await this.models.failure.loadModel(path.join(this.options.modelPath, 'lstm-failure'));
+        this.log('LSTM models loaded');
+      } catch (error) {
+        this.log(`Failed to load LSTM models: ${error.message}`);
+      }
+    }
     
     this.models.duration.deserialize(data.duration);
     this.models.resources.deserialize(data.resources);
@@ -113,7 +219,7 @@ export class PredictiveAnalytics extends EventEmitter {
     this.metrics = data.metrics;
     this.modelsTrained = true;
     
-    this.log(`Loaded models (trained on ${data.historySize} samples)`);
+    this.log(`Loaded models (trained on ${data.historySize} samples, LSTM: ${data.usingLSTM})`);
   }
 
   /**
@@ -400,14 +506,95 @@ export class PredictiveAnalytics extends EventEmitter {
   }
 
   /**
-   * Anomaly detection
+   * Anomaly detection using Isolation Forest with Z-score fallback
+   * @param {number[]} data - Array of numeric values to analyze
+   * @param {Object} options - Detection options
+   * @param {number} options.contamination - Expected proportion of anomalies (default: 0.1)
+   * @param {number} options.nEstimators - Number of trees in the forest (default: 100)
+   * @returns {Array} Array of detected anomalies with scores
    */
-  async detectAnomalies(data) {
+  async detectAnomalies(data, options = {}) {
     if (data.length < 10) return [];
 
+    const contamination = options.contamination || 0.1;
+    const nEstimators = options.nEstimators || 100;
+
+    // Try Isolation Forest first
+    if (IsolationForest) {
+      try {
+        return await this._detectAnomaliesIsolationForest(data, { contamination, nEstimators });
+      } catch (error) {
+        this.log(`Isolation Forest failed, using Z-score fallback: ${error.message}`);
+      }
+    }
+
+    // Fallback to Z-score method
+    return this._detectAnomaliesZScore(data);
+  }
+
+  /**
+   * Isolation Forest anomaly detection
+   * @private
+   */
+  async _detectAnomaliesIsolationForest(data, options) {
+    const { contamination, nEstimators } = options;
+
+    // Prepare data as 2D array (required by ml-isolation-forest)
+    const features = data.map((value, index) => {
+      // Create feature vector: [value, index_normalized, rolling_mean_diff]
+      const windowSize = Math.min(5, index);
+      const window = data.slice(Math.max(0, index - windowSize), index + 1);
+      const rollingMean = window.reduce((a, b) => a + b, 0) / window.length;
+      return [
+        value,
+        index / data.length, // Normalized position
+        value - rollingMean   // Deviation from rolling mean
+      ];
+    });
+
+    // Create and fit Isolation Forest
+    const forest = new IsolationForest({
+      nEstimators,
+      contamination,
+      maxSamples: Math.min(256, data.length)
+    });
+
+    forest.fit(features);
+
+    // Get anomaly scores (-1 for anomalies, 1 for normal)
+    const predictions = forest.predict(features);
+    const scores = forest.anomalyScore ? forest.anomalyScore(features) : 
+                   predictions.map(p => p === -1 ? 1 : 0); // Fallback: 1 for anomaly, 0 for normal
+
+    // Calculate threshold based on contamination
+    const sortedScores = [...scores].sort((a, b) => b - a);
+    const thresholdIndex = Math.floor(data.length * contamination);
+    const threshold = sortedScores[thresholdIndex] || 0.5;
+
+    const results = data.map((value, index) => {
+      const score = scores[index] || 0;
+      const isAnomaly = predictions[index] === -1 || score > threshold;
+      return {
+        index,
+        value,
+        anomalyScore: score,
+        isAnomaly,
+        method: 'isolation_forest',
+        threshold
+      };
+    });
+
+    this.log(`Isolation Forest detected ${results.filter(r => r.isAnomaly).length} anomalies`);
+    return results.filter(item => item.isAnomaly);
+  }
+
+  /**
+   * Z-score based anomaly detection (fallback method)
+   * @private
+   */
+  _detectAnomaliesZScore(data, zThreshold = 2.5) {
     const mean = data.reduce((a, b) => a + b, 0) / data.length;
     const std = Math.sqrt(data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length);
-    const threshold = 2.5; // Z-score threshold
 
     return data.map((value, index) => {
       const zScore = std > 0 ? (value - mean) / std : 0;
@@ -415,7 +602,10 @@ export class PredictiveAnalytics extends EventEmitter {
         index,
         value,
         zScore,
-        isAnomaly: Math.abs(zScore) > threshold
+        anomalyScore: Math.abs(zScore) / zThreshold, // Normalized score
+        isAnomaly: Math.abs(zScore) > zThreshold,
+        method: 'z_score',
+        threshold: zThreshold
       };
     }).filter(item => item.isAnomaly);
   }
@@ -679,6 +869,301 @@ class ARIMAModel {
     this.coefficients = data.coefficients || [];
     this.intercept = data.intercept || 0;
     this.p = data.p || 2;
+  }
+}
+
+/**
+ * LSTM Model using TensorFlow.js
+ * Provides deep learning-based prediction with heuristic confidence intervals.
+ * Note: True Monte Carlo dropout is not implemented - dropout is only active during training.
+ */
+class LSTMModel {
+  constructor(options = {}) {
+    this.sequenceLength = options.sequenceLength || 10;
+    this.lstmUnits = options.lstmUnits || [50, 25];
+    this.dropoutRate = options.dropoutRate || 0.2;
+    this.epochs = options.epochs || 50;
+    this.batchSize = options.batchSize || 32;
+    this.outputType = options.outputType || 'regression'; // 'regression' or 'classification'
+    this.model = null;
+    this.featureCount = 6; // Default feature count
+    this.isTrained = false;
+    this.initialized = false; // Track if initialize() has been called
+    this.trainingHistory = [];
+    
+    // Fallback model for when LSTM isn't available or fails
+    this.fallbackModel = this.outputType === 'classification'
+      ? new LogisticRegression({ regularization: 0.001 })
+      : new LinearRegression({ regularization: 0.001 });
+  }
+
+  /**
+   * Initialize the LSTM model architecture.
+   * Must be called before using LSTM predictions.
+   * @param {number} featureCount - Number of input features
+   * @throws {Error} If TensorFlow.js is not available
+   */
+  async initialize(featureCount = 6) {
+    if (!tf) {
+      throw new Error('TensorFlow.js not available. Call initializePredictiveAnalyticsDeps() first.');
+    }
+
+    this.featureCount = featureCount;
+    this.initialized = true;
+    
+    // Dispose any existing model to avoid memory/GPU leaks before reinitialization
+    if (this.model) {
+      this.model.dispose();
+      this.model = null;
+    }
+    
+    // Build LSTM model
+    this.model = tf.sequential();
+    
+    // First LSTM layer with return sequences
+    this.model.add(tf.layers.lstm({
+      units: this.lstmUnits[0],
+      inputShape: [this.sequenceLength, this.featureCount],
+      returnSequences: this.lstmUnits.length > 1
+    }));
+    this.model.add(tf.layers.dropout({ rate: this.dropoutRate }));
+    
+    // Additional LSTM layers
+    for (let i = 1; i < this.lstmUnits.length; i++) {
+      const isLast = i === this.lstmUnits.length - 1;
+      this.model.add(tf.layers.lstm({
+        units: this.lstmUnits[i],
+        returnSequences: !isLast
+      }));
+      this.model.add(tf.layers.dropout({ rate: this.dropoutRate }));
+    }
+    
+    // Output layer
+    if (this.outputType === 'classification') {
+      this.model.add(tf.layers.dense({ units: 1, activation: 'sigmoid' }));
+      this.model.compile({
+        optimizer: tf.train.adam(0.001),
+        loss: 'binaryCrossentropy',
+        metrics: ['accuracy']
+      });
+    } else {
+      this.model.add(tf.layers.dense({ units: 1 }));
+      this.model.compile({
+        optimizer: tf.train.adam(0.001),
+        loss: 'meanSquaredError',
+        metrics: ['mae']
+      });
+    }
+
+    return true;
+  }
+
+  /**
+   * Prepare sequences for LSTM training
+   */
+  prepareSequences(data) {
+    const sequences = [];
+    const targets = [];
+    
+    // Need at least sequenceLength + 1 samples
+    if (data.length < this.sequenceLength + 1) {
+      return { sequences: [], targets: [] };
+    }
+
+    for (let i = this.sequenceLength; i < data.length; i++) {
+      const sequence = data.slice(i - this.sequenceLength, i).map(d => d.features);
+      sequences.push(sequence);
+      targets.push([data[i].target]);
+    }
+
+    return { sequences, targets };
+  }
+
+  /**
+   * Train the LSTM model
+   */
+  async train(data) {
+    // Always train fallback model
+    this.fallbackModel.train(data);
+
+    if (!this.model || !tf || data.length < this.sequenceLength + 10) {
+      return;
+    }
+
+    try {
+      const { sequences, targets } = this.prepareSequences(data);
+      
+      if (sequences.length === 0) {
+        return;
+      }
+
+      // Convert to tensors
+      const xs = tf.tensor3d(sequences);
+      const ys = tf.tensor2d(targets);
+
+      // Train model
+      const history = await this.model.fit(xs, ys, {
+        epochs: this.epochs,
+        batchSize: Math.min(this.batchSize, sequences.length),
+        validationSplit: 0.2,
+        shuffle: true,
+        verbose: 0
+      });
+
+      this.trainingHistory = history.history;
+      this.isTrained = true;
+
+      // Clean up tensors
+      xs.dispose();
+      ys.dispose();
+
+    } catch (error) {
+      console.warn(`LSTM training failed, using fallback: ${error.message}`);
+    }
+  }
+
+  /**
+   * Make a prediction.
+   * Note: For single predictions, features are repeated to fill the sequence.
+   * This is a simplified approach - for better temporal modeling, use predictWithHistory().
+   */
+  predict(features) {
+    // Use fallback if LSTM not ready or not initialized
+    if (!this.isTrained || !this.model || !tf || !this.initialized) {
+      return this.fallbackModel.predict(features);
+    }
+
+    try {
+      // For single prediction, we need to create a sequence
+      // Note: This repeats features which doesn't capture temporal patterns.
+      // For production use with temporal data, maintain a sliding window of historical features.
+      const sequence = Array(this.sequenceLength).fill(features);
+      
+      const inputTensor = tf.tensor3d([sequence]);
+      const prediction = this.model.predict(inputTensor);
+      const result = prediction.dataSync()[0];
+      
+      inputTensor.dispose();
+      prediction.dispose();
+      
+      return result;
+    } catch (error) {
+      return this.fallbackModel.predict(features);
+    }
+  }
+
+  /**
+   * Predict with heuristic confidence intervals.
+   * Note: This does NOT use true Monte Carlo dropout. TensorFlow.js dropout is only active
+   * during training by default. This method provides heuristic confidence intervals based
+   * on fixed multipliers. For true uncertainty estimation, consider ensemble methods or
+   * Bayesian neural networks.
+   * @param {Array} features - Input features
+   * @param {number} _numSamples - Unused, kept for API compatibility
+   * @returns {Object} Prediction with heuristic confidence interval
+   */
+  async predictWithConfidence(features, _numSamples = 50) {
+    if (!this.isTrained || !this.model || !tf || !this.initialized) {
+      const prediction = this.fallbackModel.predict(features);
+      return {
+        prediction,
+        confidence: 0.7,
+        lower: prediction * 0.8,
+        upper: prediction * 1.2
+      };
+    }
+
+    try {
+      const sequence = Array(this.sequenceLength).fill(features);
+      const inputTensor = tf.tensor3d([sequence]);
+      const predictionTensor = this.model.predict(inputTensor);
+      const prediction = predictionTensor.dataSync()[0];
+      inputTensor.dispose();
+      predictionTensor.dispose();
+
+      // Heuristic confidence based on training metrics (not true MC dropout)
+      return {
+        prediction,
+        confidence: 0.8,
+        lower: prediction * 0.85,
+        upper: prediction * 1.15
+      };
+    } catch (error) {
+      const prediction = this.fallbackModel.predict(features);
+      return {
+        prediction,
+        confidence: 0.7,
+        lower: prediction * 0.8,
+        upper: prediction * 1.2
+      };
+    }
+  }
+
+  /**
+   * Save the model to disk
+   */
+  async saveModel(modelPath) {
+    if (!this.model || !tf) {
+      return;
+    }
+
+    try {
+      await this.model.save(`file://${modelPath}`);
+    } catch (error) {
+      console.warn(`Failed to save LSTM model: ${error.message}`);
+    }
+  }
+
+  /**
+   * Load the model from disk
+   */
+  async loadModel(modelPath) {
+    if (!tf) {
+      return;
+    }
+
+    try {
+      this.model = await tf.loadLayersModel(`file://${modelPath}/model.json`);
+      this.isTrained = true;
+      this.initialized = true;
+    } catch (error) {
+      console.warn(`Failed to load LSTM model: ${error.message}`);
+    }
+  }
+
+  /**
+   * Serialize model metadata (not the weights)
+   */
+  serialize() {
+    return {
+      type: 'lstm',
+      sequenceLength: this.sequenceLength,
+      lstmUnits: this.lstmUnits,
+      dropoutRate: this.dropoutRate,
+      outputType: this.outputType,
+      isTrained: this.isTrained,
+      featureCount: this.featureCount,
+      fallback: this.fallbackModel.serialize()
+    };
+  }
+
+  /**
+   * Deserialize model metadata
+   */
+  deserialize(data) {
+    if (data && data.type === 'lstm') {
+      this.sequenceLength = data.sequenceLength || this.sequenceLength;
+      this.lstmUnits = data.lstmUnits || this.lstmUnits;
+      this.dropoutRate = data.dropoutRate || this.dropoutRate;
+      this.outputType = data.outputType || this.outputType;
+      this.featureCount = data.featureCount || this.featureCount;
+      if (data.fallback) {
+        this.fallbackModel.deserialize(data.fallback);
+      }
+    } else if (data) {
+      // Legacy format - just deserialize to fallback
+      this.fallbackModel.deserialize(data);
+    }
   }
 }
 
