@@ -8,6 +8,11 @@
 import { EventEmitter } from 'events';
 import fs from 'fs/promises';
 import path from 'path';
+import * as babelParser from '@babel/parser';
+import _traverse from '@babel/traverse';
+
+// Handle both ESM and CJS default exports
+const traverse = _traverse.default || _traverse;
 
 export class PatternDiscovery extends EventEmitter {
   constructor(options = {}) {
@@ -249,8 +254,20 @@ export class PatternDiscovery extends EventEmitter {
   async analyzeFile(filePath) {
     const content = await fs.readFile(filePath, 'utf8');
     const metrics = this.calculateFileMetrics(content);
+    
+    // Try AST-based analysis for JS/TS files
+    const ext = path.extname(filePath);
+    if (['.js', '.jsx', '.ts', '.tsx'].includes(ext)) {
+      try {
+        const astMetrics = await this.analyzeAST(content, filePath, ext);
+        Object.assign(metrics, astMetrics);
+      } catch (error) {
+        this.log(`AST parsing failed for ${filePath}: ${error.message}`);
+        // Fall back to regex-based analysis
+      }
+    }
 
-    // Detect design patterns
+    // Detect design patterns (regex fallback + AST-enhanced)
     for (const [key, pattern] of Object.entries(this.knownPatterns)) {
       if (pattern.regex.test(content)) {
         this.recordPattern(key, pattern, filePath);
@@ -287,6 +304,185 @@ export class PatternDiscovery extends EventEmitter {
         this.bugPredictions.push(bugRisk);
       }
     }
+  }
+
+  /**
+   * AST-based code analysis using Babel
+   */
+  async analyzeAST(content, filePath, ext) {
+    const isTypeScript = ext === '.ts' || ext === '.tsx';
+    const isJSX = ext === '.jsx' || ext === '.tsx';
+    
+    const ast = babelParser.parse(content, {
+      sourceType: 'module',
+      plugins: [
+        'classProperties',
+        'classPrivateProperties',
+        'classPrivateMethods',
+        'decorators-legacy',
+        'exportDefaultFrom',
+        'dynamicImport',
+        'optionalChaining',
+        'nullishCoalescingOperator',
+        ...(isTypeScript ? ['typescript'] : []),
+        ...(isJSX ? ['jsx'] : [])
+      ],
+      errorRecovery: true
+    });
+
+    const astMetrics = {
+      classes: [],
+      functions: [],
+      imports: [],
+      exports: [],
+      complexity: 0,
+      maxNesting: 0,
+      asyncFunctions: 0,
+      arrowFunctions: 0,
+      callbacks: 0,
+      promises: 0
+    };
+
+    let currentNesting = 0;
+
+    traverse(ast, {
+      // Track classes
+      ClassDeclaration: (nodePath) => {
+        const node = nodePath.node;
+        const classInfo = {
+          name: node.id?.name || 'anonymous',
+          methods: [],
+          properties: [],
+          loc: node.loc?.start
+        };
+        
+        node.body.body.forEach(member => {
+          if (member.type === 'ClassMethod') {
+            classInfo.methods.push({
+              name: member.key?.name || 'anonymous',
+              async: member.async,
+              static: member.static,
+              kind: member.kind
+            });
+          } else if (member.type === 'ClassProperty') {
+            classInfo.properties.push({
+              name: member.key?.name || 'anonymous',
+              static: member.static
+            });
+          }
+        });
+        
+        astMetrics.classes.push(classInfo);
+        
+        // Detect Singleton pattern via AST
+        const hasPrivateInstance = classInfo.properties.some(p => 
+          p.name === 'instance' && p.static
+        );
+        const hasGetInstance = classInfo.methods.some(m => 
+          m.name === 'getInstance' && m.static
+        );
+        if (hasPrivateInstance || hasGetInstance) {
+          this.recordPattern('singleton', this.knownPatterns.singleton, filePath);
+        }
+      },
+
+      // Track functions
+      FunctionDeclaration: (nodePath) => {
+        const node = nodePath.node;
+        astMetrics.functions.push({
+          name: node.id?.name || 'anonymous',
+          async: node.async,
+          params: node.params.length,
+          loc: node.loc?.start
+        });
+        if (node.async) astMetrics.asyncFunctions++;
+      },
+
+      // Track arrow functions
+      ArrowFunctionExpression: () => {
+        astMetrics.arrowFunctions++;
+      },
+
+      // Track imports
+      ImportDeclaration: (nodePath) => {
+        const node = nodePath.node;
+        astMetrics.imports.push({
+          source: node.source.value,
+          specifiers: node.specifiers.map(s => s.local?.name)
+        });
+      },
+
+      // Track exports
+      ExportNamedDeclaration: () => {
+        astMetrics.exports.push({ type: 'named' });
+      },
+      ExportDefaultDeclaration: () => {
+        astMetrics.exports.push({ type: 'default' });
+      },
+
+      // Calculate cyclomatic complexity
+      IfStatement: () => { astMetrics.complexity++; },
+      ConditionalExpression: () => { astMetrics.complexity++; },
+      SwitchCase: () => { astMetrics.complexity++; },
+      ForStatement: () => { astMetrics.complexity++; },
+      ForInStatement: () => { astMetrics.complexity++; },
+      ForOfStatement: () => { astMetrics.complexity++; },
+      WhileStatement: () => { astMetrics.complexity++; },
+      DoWhileStatement: () => { astMetrics.complexity++; },
+      CatchClause: () => { astMetrics.complexity++; },
+      LogicalExpression: (nodePath) => {
+        if (nodePath.node.operator === '&&' || nodePath.node.operator === '||') {
+          astMetrics.complexity++;
+        }
+      },
+
+      // Track nesting depth
+      BlockStatement: {
+        enter: () => {
+          currentNesting++;
+          astMetrics.maxNesting = Math.max(astMetrics.maxNesting, currentNesting);
+        },
+        exit: () => {
+          currentNesting--;
+        }
+      },
+
+      // Detect callback patterns
+      CallExpression: (nodePath) => {
+        const node = nodePath.node;
+        const callee = node.callee;
+        
+        // Check for .then() - Promise pattern
+        if (callee.type === 'MemberExpression' && callee.property?.name === 'then') {
+          astMetrics.promises++;
+        }
+        
+        // Check for callbacks (function as last argument)
+        const lastArg = node.arguments[node.arguments.length - 1];
+        if (lastArg && (lastArg.type === 'FunctionExpression' || lastArg.type === 'ArrowFunctionExpression')) {
+          astMetrics.callbacks++;
+        }
+
+        // Detect Observer pattern
+        if (callee.type === 'MemberExpression') {
+          const methodName = callee.property?.name;
+          if (['addEventListener', 'on', 'subscribe', 'emit'].includes(methodName)) {
+            this.recordPattern('observer', this.knownPatterns.observer, filePath);
+          }
+        }
+
+        // Detect Factory pattern
+        if (callee.type === 'Identifier' && /^create[A-Z]/.test(callee.name)) {
+          this.recordPattern('factory', this.knownPatterns.factory, filePath);
+        }
+      }
+    });
+
+    // Calculate derived metrics
+    astMetrics.cyclomaticComplexity = astMetrics.complexity + 1;
+    astMetrics.methodCount = astMetrics.classes.reduce((sum, c) => sum + c.methods.length, 0) + astMetrics.functions.length;
+    
+    return astMetrics;
   }
 
   calculateFileMetrics(content) {
