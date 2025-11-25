@@ -1,8 +1,16 @@
 /**
- * Swarm Intelligence Engine
- * ==========================
+ * Swarm Intelligence Engine v1.2.0
+ * =================================
  * Real collective intelligence: stigmergic coordination, ant colony optimization,
  * particle swarm optimization, and emergent behavior patterns.
+ *
+ * Features:
+ * - PSO with adaptive inertia weight and velocity clamping
+ * - ACO with pheromone evaporation and deposit
+ * - Firefly algorithm for multi-modal optimization
+ * - Collective problem solving with emergent behavior
+ * - Stigmergic coordination for task assignment
+ * - Swarm diversity tracking
  */
 
 import { EventEmitter } from 'events';
@@ -474,6 +482,98 @@ export class SwarmIntelligence extends EventEmitter {
 
   distance(a, b) {
     return Math.sqrt(a.reduce((sum, val, i) => sum + Math.pow(val - b[i], 2), 0));
+  }
+
+  /**
+   * Firefly Algorithm optimization
+   * Light intensity-based attraction for multi-modal optimization
+   */
+  async fireflyOptimize(objectiveFn, bounds, options = {}) {
+    const numFireflies = options.numFireflies || this.options.swarmSize;
+    const maxIter = options.maxIterations || this.options.maxIterations;
+    const alpha = options.randomness || 0.2;  // Randomness parameter
+    const beta0 = options.attractiveness || 1.0;  // Base attractiveness
+    const gamma = options.absorption || 1.0;  // Light absorption coefficient
+
+    this.log(`Starting Firefly Algorithm with ${numFireflies} fireflies...`);
+
+    // Initialize fireflies
+    const fireflies = [];
+    for (let i = 0; i < numFireflies; i++) {
+      const position = this.randomPosition(bounds);
+      const brightness = await objectiveFn(position);
+      fireflies.push({ position, brightness });
+
+      if (brightness > this.globalBestScore) {
+        this.globalBestScore = brightness;
+        this.globalBest = [...position];
+      }
+    }
+
+    // Main loop
+    for (let iter = 0; iter < maxIter; iter++) {
+      this.metrics.iterations++;
+
+      for (let i = 0; i < numFireflies; i++) {
+        for (let j = 0; j < numFireflies; j++) {
+          if (fireflies[j].brightness > fireflies[i].brightness) {
+            // Calculate distance
+            const r = this.distance(fireflies[i].position, fireflies[j].position);
+            
+            // Calculate attractiveness (decreases with distance)
+            const beta = beta0 * Math.exp(-gamma * r * r);
+
+            // Move firefly i towards j
+            for (let d = 0; d < bounds.length; d++) {
+              fireflies[i].position[d] += 
+                beta * (fireflies[j].position[d] - fireflies[i].position[d]) +
+                alpha * (Math.random() - 0.5) * (bounds[d].max - bounds[d].min);
+              
+              // Clamp to bounds
+              fireflies[i].position[d] = Math.max(bounds[d].min,
+                Math.min(bounds[d].max, fireflies[i].position[d]));
+            }
+
+            // Update brightness
+            fireflies[i].brightness = await objectiveFn(fireflies[i].position);
+
+            if (fireflies[i].brightness > this.globalBestScore) {
+              this.globalBestScore = fireflies[i].brightness;
+              this.globalBest = [...fireflies[i].position];
+              this.log(`New best: ${this.globalBestScore.toFixed(4)}`);
+            }
+          }
+        }
+      }
+
+      this.emit('iteration', { iter, best: this.globalBestScore });
+    }
+
+    return {
+      bestPosition: this.globalBest,
+      bestScore: this.globalBestScore,
+      fireflies: fireflies.map(f => ({ position: f.position, brightness: f.brightness })),
+      metrics: this.metrics
+    };
+  }
+
+  /**
+   * Adaptive inertia weight for PSO
+   * Decreases linearly from wMax to wMin over iterations
+   */
+  adaptiveInertia(iter, maxIter, wMax = 0.9, wMin = 0.4) {
+    return wMax - (wMax - wMin) * (iter / maxIter);
+  }
+
+  /**
+   * Velocity clamping to prevent explosion
+   */
+  clampVelocity(velocity, bounds, vMax = 0.2) {
+    return velocity.map((v, d) => {
+      const range = bounds[d].max - bounds[d].min;
+      const maxV = range * vMax;
+      return Math.max(-maxV, Math.min(maxV, v));
+    });
   }
 
   getStatus() {
