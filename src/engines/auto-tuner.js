@@ -614,9 +614,14 @@ export class AutoTuner extends EventEmitter {
   async evaluateParallel(objectiveFn, candidates) {
     const results = await Promise.all(
       candidates.map(async (config) => {
-        const score = await objectiveFn(config);
-        this.metrics.totalEvaluations++;
-        return { config, score };
+        try {
+          const score = await objectiveFn(config);
+          this.metrics.totalEvaluations++;
+          return { config, score, success: true };
+        } catch (error) {
+          this.metrics.totalEvaluations++;
+          return { config, score: -Infinity, success: false, error: error.message };
+        }
       })
     );
     return results;
