@@ -489,11 +489,35 @@ export class SwarmIntelligence extends EventEmitter {
    * Light intensity-based attraction for multi-modal optimization
    */
   async fireflyOptimize(objectiveFn, bounds, options = {}) {
+    // Input validation
+    if (typeof objectiveFn !== 'function') {
+      throw new TypeError('fireflyOptimize: objectiveFn must be a function');
+    }
+    if (!Array.isArray(bounds) || bounds.length === 0) {
+      throw new TypeError('fireflyOptimize: bounds must be a non-empty array');
+    }
+    for (const b of bounds) {
+      if (!b || typeof b.min !== 'number' || typeof b.max !== 'number' || b.min > b.max) {
+        throw new TypeError('fireflyOptimize: each bound must have numeric min <= max');
+      }
+    }
+
     const numFireflies = options.numFireflies || this.options.swarmSize;
     const maxIter = options.maxIterations || this.options.maxIterations;
     const alpha = options.randomness || 0.2;  // Randomness parameter
     const beta0 = options.attractiveness || 1.0;  // Base attractiveness
     const gamma = options.absorption || 1.0;  // Light absorption coefficient
+
+    if (!Number.isInteger(numFireflies) || numFireflies <= 0) {
+      throw new TypeError('fireflyOptimize: numFireflies must be a positive integer');
+    }
+    if (!Number.isInteger(maxIter) || maxIter <= 0) {
+      throw new TypeError('fireflyOptimize: maxIterations must be a positive integer');
+    }
+
+    if (typeof this.metrics.errors !== 'number') {
+      this.metrics.errors = 0;
+    }
 
     this.log(`Starting Firefly Algorithm with ${numFireflies} fireflies...`);
 
@@ -505,7 +529,15 @@ export class SwarmIntelligence extends EventEmitter {
     const fireflies = [];
     for (let i = 0; i < numFireflies; i++) {
       const position = this.randomPosition(bounds);
-      const brightness = await objectiveFn(position);
+      let brightness;
+      try {
+        brightness = await objectiveFn(position);
+      } catch (error) {
+        this.metrics.errors++;
+        this.log(`Firefly initialization error: ${error.message}`);
+        this.emit('error', { algorithm: 'firefly', stage: 'init', error });
+        brightness = -Infinity;
+      }
       fireflies.push({ position, brightness });
 
       if (brightness > this.globalBestScore) {
@@ -539,7 +571,14 @@ export class SwarmIntelligence extends EventEmitter {
             }
 
             // Update brightness
-            fireflies[i].brightness = await objectiveFn(fireflies[i].position);
+            try {
+              fireflies[i].brightness = await objectiveFn(fireflies[i].position);
+            } catch (error) {
+              this.metrics.errors++;
+              this.log(`Firefly evaluation error: ${error.message}`);
+              this.emit('error', { algorithm: 'firefly', stage: 'iterate', error });
+              fireflies[i].brightness = -Infinity;
+            }
 
             if (fireflies[i].brightness > this.globalBestScore) {
               this.globalBestScore = fireflies[i].brightness;

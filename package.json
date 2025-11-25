@@ -13,7 +13,7 @@
     "flow": "node src/cli/flow-cli.js",
     "agent": "node src/cli/agent-cli.js",
     "build:app": "node src/builder/autonomous-builder.js",
-    "test": "node test/test-runner.js",
+    "test": "node test/test-runner.mjs",
     "test:new": "node --test src/**/*.test.js",
     "test:interactive": "node test/run-interactive-ai-tests.js",
     "test:interactive:quick": "node test/run-interactive-ai-tests.js --mode quick",

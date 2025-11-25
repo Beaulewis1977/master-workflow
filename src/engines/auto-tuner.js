@@ -137,6 +137,12 @@ export class AutoTuner extends EventEmitter {
       const score = await objectiveFn(bestCandidate);
       this.recordObservation(bestCandidate, score);
 
+      // Early stopping based on improvement over best score
+      if (this.checkEarlyStop(score)) {
+        this.emit('earlyStop', { algorithm: 'bayesian', iter, bestScore: this.bestScore });
+        break;
+      }
+
       if (score > this.bestScore) {
         this.bestScore = score;
         this.bestConfig = bestCandidate;
@@ -330,9 +336,16 @@ export class AutoTuner extends EventEmitter {
       // Sort by fitness
       population.sort((a, b) => b.score - a.score);
 
+      // Early stopping based on best individual in population
+      const bestGenScore = population[0].score;
+      if (this.checkEarlyStop(bestGenScore)) {
+        this.emit('earlyStop', { algorithm: 'genetic', generation: gen, bestScore: this.bestScore });
+        break;
+      }
+
       // Update best
-      if (population[0].score > this.bestScore) {
-        this.bestScore = population[0].score;
+      if (bestGenScore > this.bestScore) {
+        this.bestScore = bestGenScore;
         this.bestConfig = population[0].config;
         this.metrics.improvements++;
       }
@@ -403,6 +416,12 @@ export class AutoTuner extends EventEmitter {
         }
       }
 
+      // Early stopping based on current score
+      if (this.checkEarlyStop(currentScore)) {
+        this.emit('earlyStop', { algorithm: 'annealing', iter, bestScore: this.bestScore, temperature });
+        break;
+      }
+
       // Cool down
       temperature *= coolingRate;
       this.emit('iteration', { iter, score: currentScore, temp: temperature });
@@ -461,6 +480,12 @@ export class AutoTuner extends EventEmitter {
       else bestArm.beta++;
 
       this.recordObservation(bestArm.config, score);
+
+      // Early stopping based on reward signal
+      if (this.checkEarlyStop(score)) {
+        this.emit('earlyStop', { algorithm: 'bandit', iter, bestScore: this.bestScore });
+        break;
+      }
 
       if (score > this.bestScore) {
         this.bestScore = score;
