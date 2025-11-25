@@ -130,7 +130,10 @@ export class PredictiveAnalytics extends EventEmitter {
 
     // Retrain models periodically
     if (this.history.tasks.length % 50 === 0) {
-      this.trainModels();
+      this.trainModels().catch(error => {
+        this.emit('training:error', error);
+        this.log(`Training failed: ${error.message}`);
+      });
     }
   }
 

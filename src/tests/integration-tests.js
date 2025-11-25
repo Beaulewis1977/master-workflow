@@ -343,7 +343,11 @@ class IntegrationTestSuite extends EventEmitter {
     );
     if (!patternAnalysis) throw new Error('Pattern analysis failed');
     
+    // Cleanup resources
     await engines.shutdown();
+    if (typeof system.shutdown === 'function') {
+      await system.shutdown();
+    }
   }
 
   async testEngineOptimizationInLoop() {

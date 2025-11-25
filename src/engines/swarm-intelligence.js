@@ -55,6 +55,10 @@ export class SwarmIntelligence extends EventEmitter {
 
     this.log(`Starting PSO with ${swarmSize} particles...`);
 
+    // Reset global best state for this optimization run
+    this.globalBest = null;
+    this.globalBestScore = -Infinity;
+
     // Initialize swarm
     this.swarm = [];
     for (let i = 0; i < swarmSize; i++) {
@@ -418,7 +422,7 @@ export class SwarmIntelligence extends EventEmitter {
   selectTaskByPheromone(tasks, pheromones, worker) {
     const weights = tasks.map(t => {
       const p = pheromones.get(t.id);
-      return p.attractiveness * (1 + worker.skills?.[t.type] || 1);
+      return p.attractiveness * (1 + (worker.skills?.[t.type] ?? 0));
     });
     
     const total = weights.reduce((a, b) => a + b, 0);

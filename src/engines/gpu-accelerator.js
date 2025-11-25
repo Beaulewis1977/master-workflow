@@ -343,6 +343,41 @@ export class GPUAccelerator extends EventEmitter {
       metrics: this.getMetrics()
     };
   }
+
+  /**
+   * Clean up GPU resources and workers
+   */
+  destroy() {
+    // Destroy GPU.js instance if available
+    if (this.gpuInstance) {
+      try {
+        this.gpuInstance.destroy();
+      } catch (e) {
+        this.log(`Error destroying GPU instance: ${e.message}`);
+      }
+      this.gpuInstance = null;
+    }
+    
+    // Terminate any workers (for future use)
+    for (const worker of this.workers) {
+      try {
+        worker.terminate();
+      } catch (e) {
+        this.log(`Error terminating worker: ${e.message}`);
+      }
+    }
+    this.workers = [];
+    
+    this.gpuAvailable = false;
+    this.emit('destroyed');
+  }
+
+  /**
+   * Alias for destroy() to match common patterns
+   */
+  shutdown() {
+    return this.destroy();
+  }
 }
 
 export default GPUAccelerator;

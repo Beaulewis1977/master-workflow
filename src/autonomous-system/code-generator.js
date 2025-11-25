@@ -105,26 +105,33 @@ export class CodeGenerator extends EventEmitter {
   async generateComponent(component) {
     const { type, name, properties, methods, dependencies } = component;
     const lang = this.options.language;
-    const template = this.templates[lang]?.[type] || this.templates.javascript.class;
     
-    const code = template.call(this, {
-      name,
-      properties: properties || [],
-      methods: methods || [],
-      dependencies: dependencies || [],
-      description: component.description || ''
-    });
+    try {
+      const template = this.templates[lang]?.[type] || this.templates.javascript.class;
+      
+      const code = template.call(this, {
+        name,
+        properties: properties || [],
+        methods: methods || [],
+        dependencies: dependencies || [],
+        description: component.description || ''
+      });
 
-    const filePath = this.getFilePath(name, type, lang);
-    
-    if (!this.options.dryRun) {
-      await this.writeFile(filePath, code);
+      const filePath = this.getFilePath(name, type, lang);
+      
+      if (!this.options.dryRun) {
+        await this.writeFile(filePath, code);
+      }
+
+      this.generated.push({ type, name, path: filePath, lines: code.split('\n').length });
+      this.log(`Generated ${type}: ${name} -> ${filePath}`);
+      
+      return { type, name, path: filePath, code, success: true };
+    } catch (error) {
+      this.log(`Failed to generate component ${name}: ${error.message}`);
+      this.emit('generation:error', { component: name, error });
+      return { type, name, success: false, error: error.message };
     }
-
-    this.generated.push({ type, name, path: filePath, lines: code.split('\n').length });
-    this.log(`Generated ${type}: ${name} -> ${filePath}`);
-    
-    return { type, name, path: filePath, code, success: true };
   }
 
   /**
@@ -133,21 +140,28 @@ export class CodeGenerator extends EventEmitter {
   async generateApi(api) {
     const { name, endpoints, middleware } = api;
     const lang = this.options.language;
-    const template = this.templates[lang]?.api || this.jsApiTemplate;
-    const code = template.call(this, {
-      name,
-      endpoints: endpoints || [],
-      middleware: middleware || []
-    });
-
-    const filePath = this.getFilePath(name, 'api', lang);
     
-    if (!this.options.dryRun) {
-      await this.writeFile(filePath, code);
-    }
+    try {
+      const template = this.templates[lang]?.api || this.jsApiTemplate;
+      const code = template.call(this, {
+        name,
+        endpoints: endpoints || [],
+        middleware: middleware || []
+      });
 
-    this.generated.push({ type: 'api', name, path: filePath });
-    return { type: 'api', name, path: filePath, code, success: true };
+      const filePath = this.getFilePath(name, 'api', lang);
+      
+      if (!this.options.dryRun) {
+        await this.writeFile(filePath, code);
+      }
+
+      this.generated.push({ type: 'api', name, path: filePath });
+      return { type: 'api', name, path: filePath, code, success: true };
+    } catch (error) {
+      this.log(`Failed to generate API ${name}: ${error.message}`);
+      this.emit('generation:error', { api: name, error });
+      return { type: 'api', name, success: false, error: error.message };
+    }
   }
 
   /**
@@ -156,21 +170,28 @@ export class CodeGenerator extends EventEmitter {
   async generateTest(testSpec) {
     const { name, target, cases } = testSpec;
     const lang = this.options.language;
-    const template = this.templates[lang]?.test || this.jsTestTemplate;
-    const code = template.call(this, {
-      name,
-      target: target || name,
-      cases: cases || []
-    });
-
-    const filePath = this.getFilePath(`${name}.test`, 'test', lang);
     
-    if (!this.options.dryRun) {
-      await this.writeFile(filePath, code);
-    }
+    try {
+      const template = this.templates[lang]?.test || this.jsTestTemplate;
+      const code = template.call(this, {
+        name,
+        target: target || name,
+        cases: cases || []
+      });
 
-    this.generated.push({ type: 'test', name, path: filePath });
-    return { type: 'test', name, path: filePath, code, success: true };
+      const filePath = this.getFilePath(`${name}.test`, 'test', lang);
+      
+      if (!this.options.dryRun) {
+        await this.writeFile(filePath, code);
+      }
+
+      this.generated.push({ type: 'test', name, path: filePath });
+      return { type: 'test', name, path: filePath, code, success: true };
+    } catch (error) {
+      this.log(`Failed to generate test ${name}: ${error.message}`);
+      this.emit('generation:error', { test: name, error });
+      return { type: 'test', name, success: false, error: error.message };
+    }
   }
 
   /**

@@ -58,14 +58,14 @@
 | Category | Servers |
 |----------|---------|
 | **Core** | filesystem, http, git, context7 |
-| **Development** | github, gitlab, npm, yarn |
+| **Development** | GitHub, gitlab, npm, yarn |
 | **Cloud** | aws, gcp, azure, vercel, netlify |
 | **Databases** | postgres, mysql, redis, mongodb, sqlite |
 | **AI/ML** | openai, anthropic, perplexity, huggingface |
 | **Communication** | slack, discord, teams, telegram |
 | **Monitoring** | prometheus, grafana, datadog, sentry |
 
-**Key Tools**: context7, fs, httpClient, git, openapi, browser, search, github, docker, k8s, postgres, redis, s3, grep
+**Key Tools**: context7, fs, httpClient, git, openapi, browser, search, GitHub, docker, k8s, postgres, redis, s3, grep
 
 ---
 
