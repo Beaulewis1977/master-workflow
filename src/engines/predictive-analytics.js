@@ -1025,34 +1025,17 @@ class LSTMModel {
     }
 
     try {
-      const predictions = [];
       const sequence = Array(this.sequenceLength).fill(features);
-      
-      // Monte Carlo dropout: run multiple predictions with dropout active
-      for (let i = 0; i < numSamples; i++) {
-        const inputTensor = tf.tensor3d([sequence]);
-        // Note: In TensorFlow.js, dropout is only active during training by default
-        // For true MC dropout, we'd need to modify the model, but this gives variance
-        const prediction = this.model.predict(inputTensor);
-        predictions.push(prediction.dataSync()[0]);
-        inputTensor.dispose();
-        prediction.dispose();
-      }
+      const inputTensor = tf.tensor3d([sequence]);
+      const prediction = this.model.predict(inputTensor).dataSync()[0];
+      inputTensor.dispose();
 
-      // Calculate statistics
-      const mean = predictions.reduce((a, b) => a + b, 0) / predictions.length;
-      const variance = predictions.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / predictions.length;
-      const std = Math.sqrt(variance);
-      
-      // 95% confidence interval
-      const zScore = 1.96;
-      
+      // Without true MC dropout, use heuristic confidence based on training metrics
       return {
-        prediction: mean,
-        confidence: Math.max(0.5, 1 - std / Math.abs(mean || 1)),
-        lower: mean - zScore * std,
-        upper: mean + zScore * std,
-        std
+        prediction,
+        confidence: 0.8, // Heuristic - could be based on validation loss
+        lower: prediction * 0.85,
+        upper: prediction * 1.15
       };
     } catch (error) {
       const prediction = this.fallbackModel.predict(features);

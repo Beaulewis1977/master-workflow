@@ -117,12 +117,11 @@ class GPUMemoryPool {
       return false;
     }
 
-    const bufferSize = size || metadata.size;
-    const alignedSize = this.alignSize(bufferSize);
+    const alignedSize = metadata.size; // Use tracked size, ignore passed size
 
     // Remove from in-use tracking
     this.inUse.delete(buffer);
-    this.stats.currentBytesInUse -= metadata.size;
+    this.stats.currentBytesInUse -= alignedSize;
     this.stats.releases++;
 
     // Add to pool for reuse
