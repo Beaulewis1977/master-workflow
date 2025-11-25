@@ -62,30 +62,26 @@ export class PredictiveAnalytics extends EventEmitter {
       verbose: options.verbose || false
     };
 
-    // LSTM configuration
+    // LSTM configuration (useLSTM will be determined in initialize() after deps are loaded)
     this.lstmConfig = {
       sequenceLength: options.sequenceLength || 10,
       lstmUnits: options.lstmUnits || [50, 25],
       dropoutRate: options.dropoutRate || 0.2,
       epochs: options.lstmEpochs || 50,
       batchSize: options.lstmBatchSize || 32,
-      useLSTM: options.useLSTM !== false && tfAvailable
+      useLSTM: options.useLSTM !== false // User preference, actual availability checked in initialize()
     };
 
-    // Model state - use LSTM if available, fallback to simple models
+    // Model state - initialized with fallback models, upgraded to LSTM in initialize() if available
     this.models = {
-      duration: this.lstmConfig.useLSTM 
-        ? new LSTMModel({ ...this.lstmConfig, outputType: 'regression' })
-        : new LinearRegression({ regularization: this.options.regularization }),
+      duration: new LinearRegression({ regularization: this.options.regularization }),
       resources: new LinearRegression({ regularization: this.options.regularization }),
-      failure: this.lstmConfig.useLSTM
-        ? new LSTMModel({ ...this.lstmConfig, outputType: 'classification' })
-        : new LogisticRegression({ regularization: this.options.regularization }),
+      failure: new LogisticRegression({ regularization: this.options.regularization }),
       timeSeries: new ARIMAModel()
     };
 
-    // Track if using LSTM
-    this.usingLSTM = this.lstmConfig.useLSTM;
+    // Track if using LSTM (set in initialize() after checking TF availability)
+    this.usingLSTM = false;
 
     // Feature scaler for normalization
     this.scaler = new FeatureScaler();
@@ -120,21 +116,34 @@ export class PredictiveAnalytics extends EventEmitter {
     // Initialize ML dependencies if not already done
     await initializePredictiveAnalyticsDeps();
     
+    // Now determine if we should use LSTM based on actual TF availability and user preference
+    const shouldUseLSTM = this.lstmConfig.useLSTM && tfAvailable;
     this.log(`TensorFlow.js available: ${tfAvailable}`);
-    this.log(`Using LSTM models: ${this.usingLSTM}`);
+    this.log(`User wants LSTM: ${this.lstmConfig.useLSTM}`);
+    this.log(`Will use LSTM models: ${shouldUseLSTM}`);
     
-    // Initialize LSTM models if using them
-    if (this.usingLSTM) {
+    // Create LSTM models if TensorFlow is available and user wants them
+    if (shouldUseLSTM) {
       try {
+        // Create and initialize LSTM models
+        this.models.duration = new LSTMModel({ ...this.lstmConfig, outputType: 'regression' });
+        this.models.failure = new LSTMModel({ ...this.lstmConfig, outputType: 'classification' });
+        
         await this.models.duration.initialize();
         await this.models.failure.initialize();
-        this.log('LSTM models initialized');
+        
+        this.usingLSTM = true;
+        this.log('LSTM models initialized successfully');
       } catch (error) {
-        this.log(`LSTM initialization failed, falling back to simple models: ${error.message}`);
+        this.log(`LSTM initialization failed, using fallback models: ${error.message}`);
         this.usingLSTM = false;
+        // Revert to fallback models
         this.models.duration = new LinearRegression({ regularization: this.options.regularization });
         this.models.failure = new LogisticRegression({ regularization: this.options.regularization });
       }
+    } else {
+      this.usingLSTM = false;
+      this.log('Using fallback models (LinearRegression/LogisticRegression)');
     }
     
     // Try to load saved models
