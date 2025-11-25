@@ -10,6 +10,15 @@ import { EventEmitter } from 'events';
 import fs from 'fs/promises';
 import path from 'path';
 
+// Isolation Forest for anomaly detection (with fallback)
+let IsolationForest = null;
+try {
+  const iforestModule = await import('ml-isolation-forest');
+  IsolationForest = iforestModule.IsolationForest || iforestModule.default;
+} catch (e) {
+  // Will use Z-score fallback
+}
+
 export class PredictiveAnalytics extends EventEmitter {
   constructor(options = {}) {
     super();
@@ -400,14 +409,95 @@ export class PredictiveAnalytics extends EventEmitter {
   }
 
   /**
-   * Anomaly detection
+   * Anomaly detection using Isolation Forest with Z-score fallback
+   * @param {number[]} data - Array of numeric values to analyze
+   * @param {Object} options - Detection options
+   * @param {number} options.contamination - Expected proportion of anomalies (default: 0.1)
+   * @param {number} options.nEstimators - Number of trees in the forest (default: 100)
+   * @returns {Array} Array of detected anomalies with scores
    */
-  async detectAnomalies(data) {
+  async detectAnomalies(data, options = {}) {
     if (data.length < 10) return [];
 
+    const contamination = options.contamination || 0.1;
+    const nEstimators = options.nEstimators || 100;
+
+    // Try Isolation Forest first
+    if (IsolationForest) {
+      try {
+        return await this._detectAnomaliesIsolationForest(data, { contamination, nEstimators });
+      } catch (error) {
+        this.log(`Isolation Forest failed, using Z-score fallback: ${error.message}`);
+      }
+    }
+
+    // Fallback to Z-score method
+    return this._detectAnomaliesZScore(data);
+  }
+
+  /**
+   * Isolation Forest anomaly detection
+   * @private
+   */
+  async _detectAnomaliesIsolationForest(data, options) {
+    const { contamination, nEstimators } = options;
+
+    // Prepare data as 2D array (required by ml-isolation-forest)
+    const features = data.map((value, index) => {
+      // Create feature vector: [value, index_normalized, rolling_mean_diff]
+      const windowSize = Math.min(5, index);
+      const window = data.slice(Math.max(0, index - windowSize), index + 1);
+      const rollingMean = window.reduce((a, b) => a + b, 0) / window.length;
+      return [
+        value,
+        index / data.length, // Normalized position
+        value - rollingMean   // Deviation from rolling mean
+      ];
+    });
+
+    // Create and fit Isolation Forest
+    const forest = new IsolationForest({
+      nEstimators,
+      contamination,
+      maxSamples: Math.min(256, data.length)
+    });
+
+    forest.fit(features);
+
+    // Get anomaly scores (-1 for anomalies, 1 for normal)
+    const predictions = forest.predict(features);
+    const scores = forest.anomalyScore ? forest.anomalyScore(features) : 
+                   features.map(() => 0); // Fallback if method not available
+
+    // Calculate threshold based on contamination
+    const sortedScores = [...scores].sort((a, b) => b - a);
+    const thresholdIndex = Math.floor(data.length * contamination);
+    const threshold = sortedScores[thresholdIndex] || 0.5;
+
+    const results = data.map((value, index) => {
+      const score = scores[index] || 0;
+      const isAnomaly = predictions[index] === -1 || score > threshold;
+      return {
+        index,
+        value,
+        anomalyScore: score,
+        isAnomaly,
+        method: 'isolation_forest',
+        threshold
+      };
+    });
+
+    this.log(`Isolation Forest detected ${results.filter(r => r.isAnomaly).length} anomalies`);
+    return results.filter(item => item.isAnomaly);
+  }
+
+  /**
+   * Z-score based anomaly detection (fallback method)
+   * @private
+   */
+  _detectAnomaliesZScore(data, zThreshold = 2.5) {
     const mean = data.reduce((a, b) => a + b, 0) / data.length;
     const std = Math.sqrt(data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length);
-    const threshold = 2.5; // Z-score threshold
 
     return data.map((value, index) => {
       const zScore = std > 0 ? (value - mean) / std : 0;
@@ -415,7 +505,10 @@ export class PredictiveAnalytics extends EventEmitter {
         index,
         value,
         zScore,
-        isAnomaly: Math.abs(zScore) > threshold
+        anomalyScore: Math.abs(zScore) / zThreshold, // Normalized score
+        isAnomaly: Math.abs(zScore) > zThreshold,
+        method: 'z_score',
+        threshold: zThreshold
       };
     }).filter(item => item.isAnomaly);
   }
