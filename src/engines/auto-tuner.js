@@ -1,8 +1,16 @@
 /**
- * Auto-Tuner Engine
- * ==================
+ * Auto-Tuner Engine v1.2.0
+ * =========================
  * Real optimization algorithms: Bayesian optimization with Gaussian Process,
  * genetic algorithms, simulated annealing, and multi-armed bandits.
+ *
+ * Features:
+ * - Bayesian optimization with GP surrogate and EI acquisition
+ * - Genetic algorithm with adaptive mutation
+ * - Simulated annealing with exponential cooling
+ * - Thompson sampling multi-armed bandits
+ * - Early stopping and convergence detection
+ * - Parallel candidate evaluation support
  */
 
 import { EventEmitter } from 'events';
@@ -27,7 +35,16 @@ export class AutoTuner extends EventEmitter {
     this.metrics = {
       iterations: 0,
       improvements: 0,
-      convergenceRate: 0
+      convergenceRate: 0,
+      earlyStops: 0,
+      totalEvaluations: 0
+    };
+
+    // Early stopping configuration
+    this.earlyStopConfig = {
+      patience: options.patience || 20,
+      minDelta: options.minDelta || 0.001,
+      noImprovementCount: 0
     };
   }
 
@@ -566,6 +583,59 @@ export class AutoTuner extends EventEmitter {
       bestConfig: this.bestConfig,
       bestScore: this.bestScore,
       metrics: this.getMetrics()
+    };
+  }
+
+  /**
+   * Check for early stopping condition
+   * @returns {boolean} Whether to stop early
+   */
+  checkEarlyStop(currentScore) {
+    if (currentScore > this.bestScore + this.earlyStopConfig.minDelta) {
+      this.earlyStopConfig.noImprovementCount = 0;
+      return false;
+    }
+
+    this.earlyStopConfig.noImprovementCount++;
+    if (this.earlyStopConfig.noImprovementCount >= this.earlyStopConfig.patience) {
+      this.metrics.earlyStops++;
+      this.log(`Early stopping: no improvement for ${this.earlyStopConfig.patience} iterations`);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Evaluate multiple candidates in parallel
+   * @param {Function} objectiveFn - Objective function
+   * @param {Array} candidates - Candidates to evaluate
+   * @returns {Promise<Array>} Evaluation results
+   */
+  async evaluateParallel(objectiveFn, candidates) {
+    const results = await Promise.all(
+      candidates.map(async (config) => {
+        const score = await objectiveFn(config);
+        this.metrics.totalEvaluations++;
+        return { config, score };
+      })
+    );
+    return results;
+  }
+
+  /**
+   * Reset optimizer state for new optimization run
+   */
+  reset() {
+    this.history = [];
+    this.bestConfig = null;
+    this.bestScore = -Infinity;
+    this.earlyStopConfig.noImprovementCount = 0;
+    this.metrics = {
+      iterations: 0,
+      improvements: 0,
+      convergenceRate: 0,
+      earlyStops: 0,
+      totalEvaluations: 0
     };
   }
 }
