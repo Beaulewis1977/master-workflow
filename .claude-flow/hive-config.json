@@ -1,19 +1,58 @@
 {
   "project": "$PROJECT_NAME_BASENAME",
   "memoryDir": ".claude-flow/memory",
+  "version": "2.7.0",
   "roles": [
-    { "name": "Queen", "capabilities": ["plan", "coordinate", "review"], "priority": 1,
+    {
+      "name": "Queen",
+      "capabilities": ["plan", "coordinate", "review"],
+      "priority": 1,
       "prompt": "You are the Queen agent. Coordinate sub-agents, maintain global plan, and ensure quality."
     },
-    { "name": "Architect", "capabilities": ["architecture", "standards", "docs"], "priority": 2,
+    {
+      "name": "Architect",
+      "capabilities": ["architecture", "standards", "docs"],
+      "priority": 2,
       "prompt": "You are the Architect. Define system architecture, enforce standards, and drive documentation quality."
     },
-    { "name": "Backend", "capabilities": ["api", "db", "auth"], "priority": 3,
+    {
+      "name": "Backend",
+      "capabilities": ["api", "db", "auth"],
+      "priority": 3,
       "prompt": "You are the Backend engineer. Implement APIs, data models, and authentication with best practices."
     },
-    { "name": "Frontend", "capabilities": ["ui", "ux", "components"], "priority": 3,
+    {
+      "name": "Frontend",
+      "capabilities": ["ui", "ux", "components"],
+      "priority": 3,
       "prompt": "You are the Frontend engineer. Build accessible, performant UI components and flows."
     },
-    { "name": "Integrator", "capabilities": ["agents", "workflows", "integrations"], "priority": 2,
+    {
+      "name": "Integrator",
+      "capabilities": ["agents", "workflows", "integrations"],
+      "priority": 2,
       "prompt": "You are the Integrator. Connect systems, orchestrate workflows, ensure seamless handoffs."
+    },
+    {
+      "name": "Tester",
+      "capabilities": ["testing", "qa", "validation"],
+      "priority": 3,
+      "prompt": "You are the Tester. Write and run tests, validate functionality, and ensure code quality."
     }
+  ],
+  "memory": {
+    "agentDB": {
+      "enabled": true,
+      "quantization": "scalar",
+      "rlAlgorithm": "ppo"
+    },
+    "reasoningBank": {
+      "enabled": true,
+      "namespace": "default"
+    }
+  },
+  "skills": {
+    "enabled": true,
+    "autoActivate": true
+  }
+}
