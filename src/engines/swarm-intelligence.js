@@ -497,6 +497,10 @@ export class SwarmIntelligence extends EventEmitter {
 
     this.log(`Starting Firefly Algorithm with ${numFireflies} fireflies...`);
 
+    // Reset global best state for this optimization run
+    this.globalBest = null;
+    this.globalBestScore = -Infinity;
+
     // Initialize fireflies
     const fireflies = [];
     for (let i = 0; i < numFireflies; i++) {
